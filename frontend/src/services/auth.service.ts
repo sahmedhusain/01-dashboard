@@ -22,17 +22,29 @@ export class AuthService {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+        try {
+          const error = await response.json();
+          throw new Error(error.message || 'Login failed');
+        } catch (jsonError) {
+          throw new Error(`Login failed with status ${response.status}`);
+        }
       }
 
-      const { token } = await response.json();
+      let token: string;
+      let user: any;
+      
+      try {
+        const response_data = await response.json();
+        token = response_data.token;
 
-      // Store the token
-      localStorage.setItem(TOKEN_KEY, token);
+        // Store the token
+        localStorage.setItem(TOKEN_KEY, token);
 
-      // Decode the JWT to get user info
-      const user = this.decodeToken(token);
+        // Decode the JWT to get user info
+        user = this.decodeToken(token);
+      } catch (jsonError) {
+        throw new Error('Invalid response from server');
+      }
 
       return {
         token,

@@ -24,20 +24,27 @@ check_command() {
 dev() {
     print_color "yellow" "Starting development servers..."
     
+    # Get the script directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
     # Start backend server
     print_color "yellow" "Starting Go backend server..."
-    cd backend && go run cmd/server/main.go &
+    (cd "$SCRIPT_DIR/backend" && go run cmd/server/main.go) &
     BACKEND_PID=$!
-    cd ..
     
     # Start frontend development server
     print_color "yellow" "Starting React frontend server..."
-    cd frontend && npm run dev &
+    (cd "$SCRIPT_DIR/frontend" && npm run dev) &
     FRONTEND_PID=$!
-    cd ..
     
     # Handle process termination
-    trap 'kill $BACKEND_PID $FRONTEND_PID' INT TERM
+    trap 'kill $BACKEND_PID $FRONTEND_PID 2>/dev/null' INT TERM
+    
+    print_color "green" "🚀 Development servers started!"
+    print_color "green" "Backend (GraphQL): http://localhost:8080"
+    print_color "green" "Frontend (React): http://localhost:3000"
+    print_color "yellow" "Press Ctrl+C to stop both servers"
+    
     wait
 }
 
@@ -45,32 +52,46 @@ dev() {
 test() {
     print_color "yellow" "Running tests..."
     
+    # Get the script directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
     # Run backend tests
     print_color "yellow" "Running backend tests..."
-    cd backend && go test ./... && cd ..
+    (cd "$SCRIPT_DIR/backend" && go test ./...)
     
     # Run frontend tests
     print_color "yellow" "Running frontend tests..."
-    cd frontend && npm run test && cd ..
+    (cd "$SCRIPT_DIR/frontend" && npm run test)
 }
 
 # Function to build for production
 build() {
     print_color "yellow" "Building for production..."
     
+    # Get the script directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
     # Build backend
     print_color "yellow" "Building backend..."
-    cd backend && go build -o bin/server cmd/server/main.go && cd ..
+    (cd "$SCRIPT_DIR/backend" && go build -o bin/server cmd/server/main.go)
     
     # Build frontend
     print_color "yellow" "Building frontend..."
-    cd frontend && npm run build && cd ..
+    (cd "$SCRIPT_DIR/frontend" && npm run build)
+    
+    print_color "green" "✅ Build completed!"
 }
 
 # Function to deploy
 deploy() {
     print_color "yellow" "Deploying to Vercel..."
-    cd frontend && vercel --prod && cd ..
+    
+    # Get the script directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    (cd "$SCRIPT_DIR/frontend" && vercel --prod)
+    
+    print_color "green" "✅ Deployment completed!"
 }
 
 # Main script

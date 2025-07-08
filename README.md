@@ -1,4 +1,4 @@
-# GraphQL Profile Page
+# GraphQL
 
 A comprehensive profile page application using GraphQL API, Go backend, and React frontend. The application displays user information, progress, and statistics from the school's GraphQL endpoint.
 
@@ -16,12 +16,14 @@ A comprehensive profile page application using GraphQL API, Go backend, and Reac
 ## Tech Stack
 
 ### Backend
+
 - Go
 - GraphQL (gqlgen)
 - Chi router
 - JWT authentication
 
 ### Frontend
+
 - React
 - TypeScript
 - Apollo Client
@@ -62,12 +64,14 @@ graphql/
 ## Getting Started
 
 1. Clone the repository:
+
    ```bash
    git clone https://learn.reboot01.com/git/sayehusain/graphql.git
    cd graphql
    ```
 
 2. Install dependencies:
+
    ```bash
    # Backend dependencies
    cd backend
@@ -81,6 +85,7 @@ graphql/
    ```
 
 3. Set up environment variables:
+
    - Copy `.env.example` to `.env` in both frontend and backend directories
    - Update the variables as needed
 
@@ -117,12 +122,14 @@ Uses Basic Authentication with base64 encoded credentials.
 ## Testing
 
 ### Backend Tests
+
 ```bash
 cd backend
 go test ./...
 ```
 
 ### Frontend Tests
+
 ```bash
 cd frontend
 npm test
@@ -133,6 +140,7 @@ npm test
 The application is configured for deployment on Vercel:
 
 1. Install Vercel CLI:
+
    ```bash
    npm install -g vercel
    ```

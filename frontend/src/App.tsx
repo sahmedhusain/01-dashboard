@@ -1,10 +1,13 @@
 import { ApolloProvider } from '@apollo/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeContextProvider } from './theme/ThemeProvider';
 import { apolloClient } from './lib/apollo-client';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import EnhancedDashboard from './pages/EnhancedDashboard';
+import { PageTransition } from './components/motion/MotionSystem';
 
 import { ReactElement } from 'react';
 
@@ -33,24 +36,43 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 function App() {
   return (
     <ApolloProvider client={apolloClient}>
-      <AuthProvider>
+      <ThemeContextProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <AuthProvider>
             <Routes>
-              <Route path="/login" element={<Login />} />
+              <Route 
+                path="/login" 
+                element={
+                  <PageTransition key="login">
+                    <Login />
+                  </PageTransition>
+                } 
+              />
               <Route
                 path="/dashboard"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <PageTransition key="dashboard">
+                      <Dashboard />
+                    </PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/enhanced"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition key="enhanced">
+                      <EnhancedDashboard />
+                    </PageTransition>
                   </ProtectedRoute>
                 }
               />
               <Route path="/" element={<Navigate to="/login" replace />} />
             </Routes>
-          </div>
+          </AuthProvider>
         </Router>
-      </AuthProvider>
+      </ThemeContextProvider>
     </ApolloProvider>
   );
 }

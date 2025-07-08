@@ -8,8 +8,7 @@
 
 **Sayed Ahmed Husain**
 
-*Full-stack developers passionate about building real-time web applications*
-
+_Full-stack developers passionate about building real-time web applications_
 
 ## 📄 License
 

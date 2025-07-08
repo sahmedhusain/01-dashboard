@@ -11,7 +11,8 @@ export const AUTH_CONFIG = {
   authProvider: 'graphql' as 'graphql' | 'local' | 'external',
   
   // Backend URLs
-  localBackendUrl: 'http://localhost:8080',
+  graphqlEndpoint: 'https://learn.reboot01.com/api/graphql-engine/v1/graphql',
+  authEndpoint: 'https://learn.reboot01.com/api/auth/signin',
   externalBackendUrl: 'https://learn.reboot01.com'
 };
 

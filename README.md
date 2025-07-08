@@ -1,163 +1,146 @@
-# GraphQL
+# GraphQL Profile Dashboard
 
-A comprehensive profile page application using GraphQL API, Go backend, and React frontend. The application displays user information, progress, and statistics from the school's GraphQL endpoint.
+A modern, Material Design 3 profile dashboard that displays your Reboot01 progress using GraphQL data. Built with React, Tailwind CSS, and Material-UI components.
 
 ## Features
 
-- JWT-based authentication
-- User profile information display
-- XP progress tracking
-- Project statistics
-- Audit history
-- Interactive SVG data visualization
-- Dark mode support
-- Responsive design
+- 🎨 Material Design 3 (MD3) UI/UX
+- 📊 Interactive SVG Charts
+  - XP Progress Line Chart
+  - Project Success Ratio Donut Chart
+- 🔐 Secure Authentication
+  - Basic Auth for signin
+  - JWT token handling
+  - Support for both username and email login
+- 📱 Responsive Design
+- 🌙 Dark Mode Support
+- 📈 Real-time Data Display
+  - User Profile Info
+  - XP and Level Progress
+  - Skills Analysis
+  - Project History
+  - Audit Statistics
 
 ## Tech Stack
 
-### Backend
+- **Frontend Framework**: React with TypeScript
+- **Styling**: Tailwind CSS + Material-UI
+- **State Management**: React Context + Apollo Client
+- **Data Fetching**: GraphQL with Apollo Client
+- **Animations**: Framer Motion
+- **Charts**: Custom SVG with D3.js
+- **Development**: Vite
+- **Testing**: Vitest + Cypress
+- **Deployment**: Netlify
 
-- Go
-- GraphQL (gqlgen)
-- Chi router
-- JWT authentication
+## Getting Started
 
-### Frontend
+### Prerequisites
 
-- React
-- TypeScript
-- Apollo Client
-- Tailwind CSS
-- SVG for data visualization
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://learn.reboot01.com/git/[your-username]/graphql.git
+   cd graphql
+   ```
+
+2. Make the run script executable:
+   ```bash
+   chmod +x run.sh
+   ```
+
+3. Set up the project:
+   ```bash
+   ./run.sh setup
+   ```
+
+### Development
+
+Start the development server:
+```bash
+./run.sh dev
+```
+
+The application will be available at `http://localhost:3001`
+
+### Testing
+
+Run the test suite:
+```bash
+./run.sh test
+```
+
+### Building for Production
+
+Create a production build:
+```bash
+./run.sh build
+```
+
+### Deployment
+
+Deploy to Netlify:
+```bash
+./run.sh deploy
+```
+
+#### Environment Variables
+
+Create a `.env.local` file in the `frontend` directory with the following variables:
+
+```env
+VITE_GRAPHQL_ENDPOINT=https://learn.reboot01.com/api/graphql-engine/v1/graphql
+VITE_AUTH_ENDPOINT=https://learn.reboot01.com/api/auth/signin
+
+# Optional: For automated deployment
+NETLIFY_AUTH_TOKEN=your_netlify_auth_token
+NETLIFY_SITE_ID=your_netlify_site_id
+```
 
 ## Project Structure
 
 ```
-graphql/
-├── backend/                # Go server
-│   ├── cmd/               # Entry point
-│   ├── config/           # Configuration
-│   ├── internal/         # Internal packages
-│   │   ├── auth/        # Authentication
-│   │   ├── graphql/     # GraphQL resolvers
-│   │   └── models/      # Data models
-│   └── tests/           # Backend tests
-├── frontend/             # React application
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── contexts/    # React contexts
-│   │   ├── graphql/     # GraphQL queries
-│   │   ├── hooks/       # Custom hooks
-│   │   ├── pages/       # Page components
-│   │   └── types/       # TypeScript types
-│   └── tests/           # Frontend tests
-└── run.sh               # Script for running & deployment
+frontend/
+├── src/
+│   ├── components/     # Reusable UI components
+│   │   ├── charts/    # SVG chart components
+│   │   ├── common/    # Common MD3 components
+│   │   ├── layout/    # Layout components
+│   │   └── motion/    # Animation components
+│   ├── config/        # Configuration files
+│   ├── contexts/      # React contexts
+│   ├── graphql/       # GraphQL queries and mutations
+│   ├── hooks/         # Custom React hooks
+│   ├── lib/          # Library configurations
+│   ├── pages/        # Page components
+│   ├── services/     # Authentication and API services
+│   ├── styles/       # Global styles
+│   ├── theme/        # MD3 theme configuration
+│   ├── types/        # TypeScript type definitions
+│   └── utils/        # Utility functions
+└── public/           # Static assets
 ```
 
-## Prerequisites
+## Available Commands
 
-- Go 1.20 or later
-- Node.js 16 or later
-- npm or yarn
-- Git
-
-## Getting Started
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://learn.reboot01.com/git/sayehusain/graphql.git
-   cd graphql
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   # Backend dependencies
-   cd backend
-   go mod download
-   cd ..
-
-   # Frontend dependencies
-   cd frontend
-   npm install
-   cd ..
-   ```
-
-3. Set up environment variables:
-
-   - Copy `.env.example` to `.env` in both frontend and backend directories
-   - Update the variables as needed
-
-4. Start the development servers:
-   ```bash
-   ./run.sh dev
-   ```
-
-## Available Scripts
-
-- `./run.sh dev` - Start development servers (backend and frontend)
-- `./run.sh test` - Run all tests
-- `./run.sh build` - Build for production
-- `./run.sh deploy` - Deploy to Vercel
-
-## API Documentation
-
-### GraphQL Endpoint
-
-The application uses the school's GraphQL API endpoint:
-\`\`\`
-https://learn.reboot01.com/api/graphql-engine/v1/graphql
-\`\`\`
-
-### Authentication
-
-Authentication is handled through:
-\`\`\`
-https://learn.reboot01.com/api/auth/signin
-\`\`\`
-
-Uses Basic Authentication with base64 encoded credentials.
-
-## Testing
-
-### Backend Tests
-
-```bash
-cd backend
-go test ./...
-```
-
-### Frontend Tests
-
-```bash
-cd frontend
-npm test
-```
-
-## Deployment
-
-The application is configured for deployment on Vercel:
-
-1. Install Vercel CLI:
-
-   ```bash
-   npm install -g vercel
-   ```
-
-2. Deploy:
-   ```bash
-   ./run.sh deploy
-   ```
+- `./run.sh setup` - Install dependencies and prepare the project
+- `./run.sh dev` - Start development server
+- `./run.sh build` - Create production build
+- `./run.sh test` - Run tests
+- `./run.sh deploy` - Deploy to Netlify
+- `./run.sh help` - Show help message
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin feature/my-new-feature`
-5. Submit a pull request
+1. Create a branch for your feature
+2. Make your changes
+3. Run tests to ensure everything works
+4. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.

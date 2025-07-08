@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useThemeMode } from '../theme/ThemeProvider';
+import { useProfile, UserStats } from '../hooks/useProfile';
 import { 
   MD3Layout,
   useLayoutState 
@@ -53,36 +54,12 @@ import {
 } from '../components/motion/MotionSystem';
 import { AnimatedSVGChart } from '../components/charts/AnimatedSVGCharts';
 
-// Mock data for the enhanced dashboard
-const mockUserData = {
-  id: '1',
-  login: 'ahmedsa',
-  displayName: 'Ahmed Sayed',
-  level: 12,
-  xp: 48750,
-  rank: 15,
-  walletAmount: 2250,
-  correctionPoints: 450,
-  skills: [
-    { name: 'JavaScript', level: 85 },
-    { name: 'React', level: 92 },
-    { name: 'TypeScript', level: 78 },
-    { name: 'GraphQL', level: 71 },
-    { name: 'Go', level: 65 },
-  ],
-  recentProjects: [
-    { name: 'ft_transcendence', status: 'completed', score: 125, date: '2024-01-15' },
-    { name: 'webserv', status: 'in_progress', score: 0, date: '2024-01-20' },
-    { name: 'inception', status: 'completed', score: 100, date: '2024-01-10' },
-  ],
-  achievements: [
-    { title: 'First Circle', description: 'Complete your first project', earned: true },
-    { title: 'Code Master', description: 'Submit 50 perfect solutions', earned: true },
-    { title: 'Peer Reviewer', description: 'Complete 100 evaluations', earned: false },
-  ],
-};
 
-const DashboardStats: React.FC = () => {
+interface DashboardStatsProps {
+  stats: UserStats;
+}
+
+const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
   const theme = useTheme();
 
   const getColorByName = (colorName: string) => {
@@ -98,31 +75,31 @@ const DashboardStats: React.FC = () => {
   const statsData = [
     {
       title: 'Level',
-      value: mockUserData.level,
+      value: stats.level,
       icon: <EmojiEvents />,
       color: 'warning',
-      subtitle: `${mockUserData.xp} XP`,
+      subtitle: `${stats.totalXP} XP`,
     },
     {
-      title: 'Rank',
-      value: `#${mockUserData.rank}`,
-      icon: <Star />,
+      title: 'Total Projects',
+      value: stats.projectStats.total,
+      icon: <Code />,
       color: 'primary',
-      subtitle: 'Global ranking',
+      subtitle: 'All projects',
     },
     {
-      title: 'Wallet',
-      value: `${mockUserData.walletAmount}₳`,
-      icon: <Speed />,
-      color: 'success',
-      subtitle: 'Available points',
-    },
-    {
-      title: 'Correction Points',
-      value: mockUserData.correctionPoints,
+      title: 'Completed',
+      value: stats.projectStats.completed,
       icon: <CheckCircle />,
+      color: 'success',
+      subtitle: 'Completed projects',
+    },
+    {
+      title: 'Audit Ratio',
+      value: `${Math.round(stats.auditRatio * 100)}%`,
+      icon: <Assessment />,
       color: 'info',
-      subtitle: 'For evaluations',
+      subtitle: 'Success rate',
     },
   ];
 
@@ -178,7 +155,11 @@ const DashboardStats: React.FC = () => {
   );
 };
 
-const SkillsSection: React.FC = () => {
+interface SkillsSectionProps {
+  skills: Array<{ name: string; level: number }>;
+}
+
+const SkillsSection: React.FC<SkillsSectionProps> = ({ skills }) => {
   return (
     <MD3Card variant="elevated">
       <CardContent>
@@ -193,7 +174,7 @@ const SkillsSection: React.FC = () => {
         </Box>
         
         <Box>
-          {mockUserData.skills.map((skill, index) => (
+          {skills.map((skill, index) => (
             <motion.div
               key={skill.name}
               initial={{ opacity: 0, x: -20 }}
@@ -227,7 +208,16 @@ const SkillsSection: React.FC = () => {
   );
 };
 
-const RecentProjectsSection: React.FC = () => {
+interface RecentProjectsSectionProps {
+  projects: Array<{
+    name: string;
+    status: string;
+    score: number;
+    date: string;
+  }>;
+}
+
+const RecentProjectsSection: React.FC<RecentProjectsSectionProps> = ({ projects }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'success';
@@ -260,7 +250,7 @@ const RecentProjectsSection: React.FC = () => {
         </Box>
         
         <List>
-          {mockUserData.recentProjects.map((project, index) => (
+          {projects.map((project, index) => (
             <motion.div
               key={project.name}
               initial={{ opacity: 0, y: 20 }}
@@ -319,16 +309,11 @@ const RecentProjectsSection: React.FC = () => {
   );
 };
 
-const XPProgressChart: React.FC = () => {
-  const xpData = [
-    { x: 0, y: 20, label: 'Jan' },
-    { x: 1, y: 35, label: 'Feb' },
-    { x: 2, y: 45, label: 'Mar' },
-    { x: 3, y: 28, label: 'Apr' },
-    { x: 4, y: 52, label: 'May' },
-    { x: 5, y: 48, label: 'Jun' },
-    { x: 6, y: 65, label: 'Jul' },
-  ];
+interface XPProgressChartProps {
+  data: Array<{ x: number; y: number; label: string }>;
+}
+
+const XPProgressChart: React.FC<XPProgressChartProps> = ({ data }) => {
 
   return (
     <MD3Card variant="elevated">
@@ -338,7 +323,7 @@ const XPProgressChart: React.FC = () => {
         </MD3Typography>
         <Box height={200} mt={2}>
           <AnimatedSVGChart
-            data={xpData}
+            data={data}
             type="line"
           />
         </Box>
@@ -347,7 +332,27 @@ const XPProgressChart: React.FC = () => {
   );
 };
 
-const AchievementsSection: React.FC = () => {
+const ProjectRatioChart: React.FC<{ data: Array<{ x: number; y: number; label: string; color: string }> }> = ({ data }) => {
+  return (
+    <MD3Card variant="elevated">
+      <CardContent>
+        <MD3Typography variant="h6" component="h2" gutterBottom>
+          Project Success Ratio
+        </MD3Typography>
+        <Box height={300} mt={2} display="flex" justifyContent="center">
+          <AnimatedSVGChart
+            data={data}
+            type="donut"
+            width={300}
+            height={300}
+          />
+        </Box>
+      </CardContent>
+    </MD3Card>
+  );
+};
+
+const AchievementsSection: React.FC<{ auditRatio: number }> = ({ auditRatio }) => {
   return (
     <MD3Card variant="filled">
       <CardContent>
@@ -356,7 +361,18 @@ const AchievementsSection: React.FC = () => {
         </MD3Typography>
         
         <Box>
-          {mockUserData.achievements.map((achievement, index) => (
+          {[
+            {
+              title: 'Audit Master',
+              description: `Your audit success rate is ${Math.round(auditRatio * 100)}%`,
+              earned: auditRatio >= 0.8
+            },
+            {
+              title: 'Consistent Reviewer',
+              description: 'Complete audits regularly',
+              earned: auditRatio > 0
+            }
+          ].map((achievement, index) => (
             <motion.div
               key={achievement.title}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -409,6 +425,27 @@ const AchievementsSection: React.FC = () => {
 export const EnhancedMD3Dashboard: React.FC = () => {
   const { toggleColorMode, mode } = useThemeMode();
   const { isMobile } = useLayoutState();
+  const { user, stats, xpProgressData, projectRatioData, loading, error } = useProfile();
+
+  if (loading) {
+    return (
+      <MD3Layout title="Loading...">
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <MD3Progress value={0} animate color="primary" />
+        </Box>
+      </MD3Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MD3Layout title="Error">
+        <Box p={3}>
+          <Typography color="error">Failed to load profile data: {error.message}</Typography>
+        </Box>
+      </MD3Layout>
+    );
+  }
 
   const sideSheetContent = (
     <Box p={3}>
@@ -443,7 +480,7 @@ export const EnhancedMD3Dashboard: React.FC = () => {
       </Box>
 
       <Box mt={4}>
-        <AchievementsSection />
+        <AchievementsSection auditRatio={stats.auditRatio} />
       </Box>
     </Box>
   );
@@ -474,23 +511,22 @@ export const EnhancedMD3Dashboard: React.FC = () => {
               <Box display="flex" alignItems="center" gap={3}>
                 <MD3Avatar
                   interactive
-                  level={mockUserData.level}
-                  rank={mockUserData.rank}
+                  level={stats.level}
                   sx={{ width: 80, height: 80 }}
                 >
                   <Person sx={{ fontSize: '2rem' }} />
                 </MD3Avatar>
                 <Box flexGrow={1}>
                   <MD3Typography variant="h4" component="h1" gradient>
-                    Welcome back, {mockUserData.displayName}!
+                    Welcome back!
                   </MD3Typography>
                   <Typography variant="h6" color="text.secondary" gutterBottom>
-                    @{mockUserData.login}
+                    @{user?.login}
                   </Typography>
                   <Box display="flex" gap={1} flexWrap="wrap">
-                    <MD3Chip label={`Level ${mockUserData.level}`} color="primary" />
-                    <MD3Chip label={`Rank #${mockUserData.rank}`} color="warning" />
-                    <MD3Chip label={`${mockUserData.xp} XP`} color="success" />
+                    <MD3Chip label={`Level ${stats.level}`} color="primary" />
+                    <MD3Chip label={`XP: ${stats.totalXP}`} color="warning" />
+                    <MD3Chip label={`Projects: ${stats.projectStats.completed}`} color="success" />
                   </Box>
                 </Box>
               </Box>
@@ -501,7 +537,7 @@ export const EnhancedMD3Dashboard: React.FC = () => {
         {/* Stats Overview */}
         <motion.div variants={fadeInUp}>
           <Box mb={3}>
-            <DashboardStats />
+            <DashboardStats stats={stats} />
           </Box>
         </motion.div>
 
@@ -510,7 +546,7 @@ export const EnhancedMD3Dashboard: React.FC = () => {
           <Grid item xs={12} md={6}>
             <motion.div variants={fadeInUp}>
               <Box mb={3}>
-                <SkillsSection />
+                <SkillsSection skills={stats.skills} />
               </Box>
             </motion.div>
           </Grid>
@@ -518,14 +554,21 @@ export const EnhancedMD3Dashboard: React.FC = () => {
           <Grid item xs={12} md={6}>
             <motion.div variants={fadeInUp}>
               <Box mb={3}>
-                <RecentProjectsSection />
+                <RecentProjectsSection projects={stats.recentProjects} />
               </Box>
             </motion.div>
           </Grid>
           
           <Grid item xs={12}>
             <motion.div variants={fadeInUp}>
-              <XPProgressChart />
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={8}>
+                  <XPProgressChart data={xpProgressData} />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <ProjectRatioChart data={projectRatioData} />
+                </Grid>
+              </Grid>
             </motion.div>
           </Grid>
         </Grid>

@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
 import { apolloClient } from '../lib/apollo-client';
 import type { LoginCredentials, AuthResponse, AuthError } from '../types/auth';
+import { AUTH_CONFIG } from '../config/auth.config';
 
 const TOKEN_KEY = 'jwt_token';
 
@@ -35,31 +36,38 @@ const REGISTER_MUTATION = gql`
 export class GraphQLAuthService {
   static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
-      console.log('Attempting GraphQL login...');
-
-      const { data } = await apolloClient.mutate({
-        mutation: LOGIN_MUTATION,
-        variables: {
-          login: credentials.username || credentials.email || '',
-          password: credentials.password
+      console.log('Attempting Basic auth login...');
+      
+      // Create base64 encoded credentials
+      const auth = btoa(`${credentials.username || credentials.email}:${credentials.password}`);
+      
+      // Get JWT token using Basic auth
+      const response = await fetch(AUTH_CONFIG.authEndpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${auth}`
         }
       });
 
-      if (!data?.login) {
-        throw new Error('No login data received');
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Invalid credentials');
       }
 
-      const { token, user } = data.login;
-
+      const token = await response.text();
+      
       // Store the token
       localStorage.setItem(TOKEN_KEY, token);
+
+      // Decode token to get user info
+      const decodedToken = this.decodeToken(token);
 
       return {
         token,
         user: {
-          id: user.id,
-          login: user.login,
-          email: user.email
+          id: decodedToken.id || decodedToken.sub,
+          login: decodedToken.login || decodedToken.username,
+          email: decodedToken.email
         }
       };
     } catch (error: any) {
@@ -126,7 +134,12 @@ export class GraphQLAuthService {
 
   static decodeToken(token: string): any {
     try {
-      const base64Url = token.split('.')[1];
+      const parts = token.split('.');
+      if (parts.length < 2 || !parts[1]) {
+        throw new Error('Invalid token format');
+      }
+
+      const base64Url = parts[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);

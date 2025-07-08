@@ -1,21 +1,30 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { onError } from '@apollo/client/link/error';
+import { AUTH_CONFIG } from '../config/auth.config';
 
-// Get GraphQL endpoint from environment or default to local
-const getGraphQLEndpoint = () => {
-  // You can set VITE_GRAPHQL_ENDPOINT in your .env file
-  return import.meta.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:8080/query';
-};
+const TOKEN_KEY = 'jwt_token';
 
 // Create the http link to the GraphQL API
 const httpLink = createHttpLink({
-  uri: getGraphQLEndpoint(),
+  uri: AUTH_CONFIG.graphqlEndpoint,
+});
+
+// Error handling link
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
 // Auth link to add the JWT token to requests
 const authLink = setContext((_, { headers }) => {
   // Get the token from localStorage
-  const token = localStorage.getItem('jwt_token');
+  const token = localStorage.getItem(TOKEN_KEY);
   
   return {
     headers: {
@@ -27,7 +36,7 @@ const authLink = setContext((_, { headers }) => {
 
 // Create the Apollo Client instance
 export const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([errorLink, authLink, httpLink]),
   cache: new InMemoryCache({
     typePolicies: {
       Query: {

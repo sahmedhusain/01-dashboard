@@ -31,6 +31,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { useThemeMode } from '../theme/ThemeProvider';
 import { AnimatedContainer, fadeInUp, springs } from '../components/motion/MotionSystem';
+import { DebugAuth } from '../components/DebugAuth';
 import type { LoginCredentials } from '../types/auth';
 
 export default function Login() {
@@ -328,6 +329,9 @@ export default function Login() {
               </CardContent>
             </Card>
           </motion.div>
+          
+          {/* Debug component - remove this in production */}
+          <DebugAuth />
         </AnimatedContainer>
       </Container>
     </Box>

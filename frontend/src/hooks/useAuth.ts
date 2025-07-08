@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthService } from '../services/auth.service';
+import { getAuthService } from '../config/auth.config';
 import type { LoginCredentials, AuthState, AuthError } from '../types/auth';
 
 const initialState: AuthState = {
@@ -17,6 +17,7 @@ export const useAuth = () => {
   // Check authentication status on mount
   useEffect(() => {
     const checkAuth = async () => {
+      const AuthService = getAuthService();
       const isAuthenticated = AuthService.isAuthenticated();
       if (isAuthenticated) {
         try {
@@ -52,6 +53,7 @@ export const useAuth = () => {
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
       setState((prev: AuthState) => ({ ...prev, loading: true, error: null }));
+      const AuthService = getAuthService();
       const response = await AuthService.login(credentials);
       setState({
         isAuthenticated: true,
@@ -73,6 +75,7 @@ export const useAuth = () => {
   }, [navigate]);
 
   const logout = useCallback(() => {
+    const AuthService = getAuthService();
     AuthService.logout();
     setState({
       ...initialState,

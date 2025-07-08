@@ -1,9 +1,15 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
+// Get GraphQL endpoint from environment or default to local
+const getGraphQLEndpoint = () => {
+  // You can set VITE_GRAPHQL_ENDPOINT in your .env file
+  return import.meta.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:8080/query';
+};
+
 // Create the http link to the GraphQL API
 const httpLink = createHttpLink({
-  uri: 'https://learn.reboot01.com/api/graphql-engine/v1/graphql',
+  uri: getGraphQLEndpoint(),
 });
 
 // Auth link to add the JWT token to requests

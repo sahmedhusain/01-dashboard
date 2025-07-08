@@ -7,6 +7,8 @@ import { useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import EnhancedDashboard from './pages/EnhancedDashboard';
+import EnhancedMD3Dashboard from './pages/EnhancedMD3Dashboard';
+import AdvancedSearch from './pages/AdvancedSearch';
 import { PageTransition } from './components/motion/MotionSystem';
 
 import { ReactElement } from 'react';
@@ -71,7 +73,27 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route
+                path="/md3"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition key="md3">
+                      <EnhancedMD3Dashboard />
+                    </PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/search"
+                element={
+                  <ProtectedRoute>
+                    <PageTransition key="search">
+                      <AdvancedSearch />
+                    </PageTransition>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/" element={<Navigate to="/md3" replace />} />
             </Routes>
           </AuthProvider>
         </Router>

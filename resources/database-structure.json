@@ -1,0 +1,262 @@
+{
+  "schema": "public",
+  "tables": {
+    "audit": {
+      "description": "Some exercises require reviews from other students or any other member of the school. The reviewer checks that some conditions are met by the code of the student being reviewed. This process is called an audit and it's kept in this table.",
+      "columns": {
+        "id": "Primary key identifier",
+        "groupId": "The group that the audit refers to",
+        "auditorId": "The user who's making the audit",
+        "attrs": "The attributes of the audits keep the feedback of the auditor for each question failed",
+        "grade": "A floating point number with the ratio between questions required to pass and questions approved. (Less than 1 means failed. More or equal than 1 means passed. More than 1 means that the student had bonus questions correct)",
+        "createdAt": "The timestamp of the time and date of creation",
+        "updatedAt": "The timestamp of the last update",
+        "code": "The code that must be used by the auditor to start the audit. This code is set to null after the audit is expired",
+        "resultId": "The result of the audit. resultId is filled when the group has enough audits to validate or fail a project",
+        "version": "A sha of the commit that the audit refers to",
+        "endAt": "It is used for expiration date (after this date the audit is expired)",
+        "private": "Used to access the code by the auditor"
+      }
+    },
+    "discordToken": {
+      "description": "TODO: remove",
+      "columns": {
+        "id": "Primary key identifier",
+        "accessToken": "Discord access token",
+        "refreshToken": "Discord refresh token",
+        "expiresAt": "Token expiration date"
+      }
+    },
+    "event": {
+      "description": "An event anchors an objects into time. Some object attributes are related to time, but they express time only in relative terms to the beginning of the event.",
+      "columns": {
+        "id": "Primary key identifier",
+        "createdAt": "The timestamp of the creation of the event",
+        "endAt": "The timestamp for the end of the event",
+        "registrationId": "The registration to the event",
+        "objectId": "The object that is used to generate the event",
+        "parentId": "The immediate event ancestor. The parent event",
+        "status": "Confirmation that the event finished correctly (NULL or done for now)",
+        "path": "The path of the event (the relative url of the event)",
+        "campus": "The campus that contains the event",
+        "code": "Used to unlock the exams"
+      }
+    },
+    "event_user": {
+      "description": "This table links users and events. A user can be in many events and an events have many users.",
+      "columns": {
+        "id": "Primary key identifier",
+        "createdAt": "Creation timestamp",
+        "userId": "User identifier",
+        "eventId": "Event identifier"
+      }
+    },
+    "group": {
+      "description": "Some projects are required to be made by groups. Those groups are kept in this table.",
+      "columns": {
+        "id": "Primary key identifier",
+        "objectId": "The object that is being done by the group. Usually projects or raids",
+        "eventId": "The groups only exist in relation to an event",
+        "captainId": "The captain of the group",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp",
+        "status": "See group_status for possible values (setup, working, audit, finished)",
+        "path": "Group path",
+        "campus": "Campus identifier"
+      }
+    },
+    "group_status": {
+      "description": "Status values for groups",
+      "columns": {
+        "status": "Possible values: setup, working, audit, finished"
+      }
+    },
+    "group_user": {
+      "description": "This table links users to groups. A user can be in many groups and a group contains many users.",
+      "columns": {
+        "id": "Primary key identifier",
+        "userId": "User identifier",
+        "groupId": "Group identifier",
+        "confirmed": "Boolean. False by default. True after the user represented by the user id confirms the group",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp"
+      }
+    },
+    "match": {
+      "description": "It is used for the bet system in the bonus exercises. Specifically to keep a record of the matches between students who will review and make a bet about each others code.",
+      "columns": {
+        "id": "Primary key identifier",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp",
+        "objectId": "The object that requires the match",
+        "userId": "The user that is matched",
+        "matchId": "The matched that is made to another user",
+        "confirmed": "The same as in group_user it's a way to keep track of invitations that had not been confirmed",
+        "bet": "boolean; For the optional exercises that require a bet. A bet can be true if the exercises is expected to pass and false otherwise",
+        "result": "boolean; True for correct bet",
+        "path": "Match path",
+        "campus": "Campus identifier",
+        "eventId": "The event the object in inserted in. (Piscine, Raid, etc)"
+      }
+    },
+    "object": {
+      "description": "Objects are generic representations of elements in the structure of the curriculum (Onboarding, campus, piscine, raids, etc). They are arranged in a hierarchical structure to allow unlimited nesting.",
+      "columns": {
+        "id": "Primary key identifier",
+        "name": "Object name",
+        "type": "Object type: onboarding, campus, exercise, quest, signup, exam, raid, project, piscine",
+        "status": "Currently not in used, but it should always be online to avoid errors. Values: online, offline, draft",
+        "attrs": "See object attributes documentation",
+        "childrenAttrs": "Attributes that are applied to all the children objects",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp",
+        "externalRelationUrl": "Maybe not needed",
+        "authorId": "Maybe not needed",
+        "campus": "The campus the object is related to",
+        "referenceId": "If the object is a duplication this field points to the reference object",
+        "referencedAt": "The timestamp of the creation of the copy object"
+      }
+    },
+    "object_child": {
+      "description": "It keeps a child-parent relationship between two objects. It's used to encapsulate objects inside each other.",
+      "columns": {
+        "id": "Primary key identifier",
+        "parentId": "Parent object identifier",
+        "childId": "Child object identifier",
+        "attrs": "Child attributes",
+        "key": "When generating the JS object this field will be the key of the child. It is also used in the url",
+        "index": "Defines the position of the child object inside the parent object"
+      }
+    },
+    "progress": {
+      "description": "It is a register of the steps in the progression of students doing the exercises and projects.",
+      "columns": {
+        "id": "Primary key identifier",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp",
+        "userId": "User identifier",
+        "groupId": "Group identifier",
+        "eventId": "Event identifier",
+        "version": "The sha of the last commit",
+        "grade": "Is the average of the grades of the results related to this progress if several exist",
+        "isDone": "Set to true as soon as a user fails a validation or when all validations required are done",
+        "path": "Progress path",
+        "campus": "Campus identifier",
+        "objectId": "Object identifier"
+      }
+    },
+    "record": {
+      "description": "Keeps a register for the bans. It can also keep the record of other situations, this is done by setting the banEndAt to a date already passed and the reason for the record.",
+      "columns": {
+        "id": "Primary key identifier",
+        "userId": "User identifier",
+        "authorId": "Author identifier",
+        "message": "Record message",
+        "banEndAt": "Ban end date",
+        "createdAt": "Creation timestamp"
+      }
+    },
+    "registration": {
+      "description": "Registrations to events (For example, an exam).",
+      "columns": {
+        "id": "Primary key identifier",
+        "createdAt": "When the registration was created",
+        "startAt": "When users can start registering to an event",
+        "endAt": "When the registration ends",
+        "eventStartAt": "Event at which the event will be started (and as such created)",
+        "objectId": "The object the registration refers to",
+        "parentId": "The parent object of the object the registration refers to",
+        "attrs": "Registration attributes",
+        "path": "Registration path",
+        "campus": "Campus identifier"
+      }
+    },
+    "registration_user": {
+      "description": "The user registered to events. A user can register to many events and and event can have many users.",
+      "columns": {
+        "id": "Primary key identifier",
+        "registrationId": "Registration identifier",
+        "userId": "User identifier",
+        "createdAt": "Creation timestamp"
+      }
+    },
+    "result": {
+      "description": "The result for each exercise and project made in the platform.",
+      "columns": {
+        "id": "Primary key identifier",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp",
+        "grade": "Result grade",
+        "attrs": "Result attributes",
+        "type": "Result type: tester, user_audit, admit_audit, admin_selection, status",
+        "userId": "User identifier",
+        "groupId": "Group identifier",
+        "objectId": "Object identifier",
+        "path": "Result path",
+        "version": "The version of the code the result refers to",
+        "eventId": "Event identifier",
+        "isLast": "Used to represent transitory states. A progress is only considered finished when isLast is true",
+        "campus": "Campus identifier"
+      }
+    },
+    "role": {
+      "description": "User roles and permissions",
+      "columns": {
+        "id": "Primary key identifier",
+        "slug": "Role slug",
+        "name": "Role name",
+        "description": "Role description",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp"
+      }
+    },
+    "token": {
+      "description": "Authentication tokens",
+      "columns": {
+        "id": "Primary key identifier",
+        "status": "Token status: active, expired",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp"
+      }
+    },
+    "transaction": {
+      "description": "It's a register of the rewards given to students.",
+      "columns": {
+        "id": "Primary key identifier",
+        "type": "Transaction type: xp (transaction giving xp), up (transaction correspondent to reviewing someone), down (transaction correspondent to reviewing you)",
+        "amount": "For type=xp: The amount of Xp that an object rewards. For type=up/down: a percentage of the change (10%)",
+        "userId": "User identifier",
+        "attrs": "Transaction attributes",
+        "createdAt": "Creation timestamp",
+        "path": "Transaction path",
+        "objectId": "Object identifier",
+        "eventId": "Event identifier",
+        "campus": "Campus identifier"
+      }
+    },
+    "user": {
+      "description": "User information and profile data",
+      "columns": {
+        "id": "Primary key identifier",
+        "githubId": "deprecated",
+        "githubLogin": "alias -> login",
+        "discordId": "deprecated (TODO: remove)",
+        "discordLogin": "deprecated (TODO: remove)",
+        "profile": "User profile information",
+        "attrs": "Extra information about the users (email, address, etc)",
+        "createdAt": "Creation timestamp",
+        "updatedAt": "Last update timestamp",
+        "discordDMChannelId": "deprecated (TODO: remove)",
+        "campus": "Campus identifier"
+      }
+    },
+    "user_role": {
+      "description": "Links users to their roles",
+      "columns": {
+        "id": "Primary key identifier",
+        "userId": "User identifier",
+        "roleId": "Role identifier"
+      }
+    }
+  }
+}

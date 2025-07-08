@@ -199,6 +199,7 @@ export default function Login() {
                       required
                       disabled={loading}
                       variant="outlined"
+                      autoComplete={loginMethod === 'username' ? 'username' : 'email'}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -234,6 +235,7 @@ export default function Login() {
                       required
                       disabled={loading}
                       variant="outlined"
+                      autoComplete="current-password"
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">

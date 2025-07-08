@@ -240,10 +240,9 @@ export function AnimatedButton({ children, className, onClick, disabled }: Anima
 // Page transition wrapper
 interface PageTransitionProps {
   children: ReactNode;
-  key?: string;
 }
 
-export function PageTransition({ children, key }: PageTransitionProps) {
+export function PageTransition({ children }: PageTransitionProps) {
   const shouldReduceMotion = useReducedMotion();
   
   if (shouldReduceMotion) {
@@ -253,7 +252,6 @@ export function PageTransition({ children, key }: PageTransitionProps) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={key}
         variants={pageVariants}
         initial="initial"
         animate="in"

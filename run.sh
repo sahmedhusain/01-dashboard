@@ -14,7 +14,6 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Project directories
-FRONTEND_DIR="./frontend"
 ROOT_DIR="."
 
 # Helper functions
@@ -55,19 +54,18 @@ print_warning() {
 
 # Check if frontend directory exists
 check_frontend() {
-    if [ ! -d "$FRONTEND_DIR" ]; then
-        print_error "Frontend directory not found: $FRONTEND_DIR"
+    if [ ! -d "$ROOT_DIR" ]; then
+        print_error "Frontend directory not found: $ROOT_DIR"
         exit 1
     fi
 }
 
 # Install dependencies if needed
 install_deps() {
-    if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
+    if [ ! -d "$ROOT_DIR/node_modules" ]; then
         print_status "Installing dependencies..."
-        cd "$FRONTEND_DIR"
-        npm install
         cd "$ROOT_DIR"
+        npm install
         print_success "Dependencies installed"
     fi
 }
@@ -78,7 +76,7 @@ dev() {
     check_frontend
     install_deps
 
-    cd "$FRONTEND_DIR"
+    cd "$ROOT_DIR"
     print_success "Development server starting at http://localhost:5173"
     npm run dev
 }
@@ -89,7 +87,7 @@ test() {
     check_frontend
     install_deps
 
-    cd "$FRONTEND_DIR"
+    cd "$ROOT_DIR"
 
     # Check if test script exists
     if npm run | grep -q "test"; then
@@ -107,7 +105,7 @@ build() {
     check_frontend
     install_deps
 
-    cd "$FRONTEND_DIR"
+    cd "$ROOT_DIR"
 
     # Clean previous build
     if [ -d "dist" ]; then
@@ -120,7 +118,7 @@ build() {
 
     if [ -d "dist" ]; then
         print_success "Build completed successfully!"
-        print_status "Build output: $FRONTEND_DIR/dist"
+        print_status "Build output: $ROOT_DIR/dist"
 
         # Show build size
         if command -v du &> /dev/null; then
@@ -139,12 +137,12 @@ preview() {
     check_frontend
 
     # Build first if dist doesn't exist
-    if [ ! -d "$FRONTEND_DIR/dist" ]; then
+    if [ ! -d "$ROOT_DIR/dist" ]; then
         print_status "No build found, building first..."
         build
     fi
 
-    cd "$FRONTEND_DIR"
+    cd "$ROOT_DIR"
     print_success "Preview server starting at http://localhost:4173"
     npm run preview
 }
@@ -158,7 +156,7 @@ deploy() {
 
     print_status "Deployment preparation steps:"
     echo "1. Build completed ✓"
-    echo "2. Static files ready in: $FRONTEND_DIR/dist"
+    echo "2. Static files ready in: $ROOT_DIR/dist"
     echo ""
     print_status "For Vercel deployment:"
     echo "1. Install Vercel CLI: npm i -g vercel"

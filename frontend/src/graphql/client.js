@@ -1,7 +1,11 @@
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
+import { ApolloClient, createHttpLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { GRAPHQL_ENDPOINT, getAuthHeader, clearAuthData } from '../utils/auth';
+import { createOptimizedCache, QueryPerformanceMonitor } from '../utils/graphqlOptimization';
+
+// Initialize performance monitor
+const performanceMonitor = new QueryPerformanceMonitor();
 
 // HTTP link for GraphQL endpoint
 const httpLink = createHttpLink({
@@ -21,13 +25,29 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// Error link to handle GraphQL and network errors
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+// Performance monitoring link
+const performanceLink = setContext((_, { headers }) => {
+  const queryId = performanceMonitor.startQuery('GraphQL Query', {});
+  return {
+    headers,
+    queryId,
+  };
+});
+
+// Error link to handle GraphQL and network errors with performance tracking
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  const queryId = operation.getContext().queryId;
+
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path, extensions }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
+
+      // Track error in performance monitor
+      if (queryId) {
+        performanceMonitor.endQuery(queryId, message);
+      }
 
       // Handle JWT-specific errors
       if (message.includes('JWT') || message.includes('JWS') || message.includes('verify')) {
@@ -49,6 +69,11 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) {
     console.error(`[Network error]: ${networkError}`);
 
+    // Track network error
+    if (queryId) {
+      performanceMonitor.endQuery(queryId, networkError.message);
+    }
+
     // Handle 401/403 network errors
     if (networkError.statusCode === 401 || networkError.statusCode === 403) {
       console.warn('Network authentication error, clearing auth data');
@@ -58,45 +83,28 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// Apollo Client configuration
+// Apollo Client configuration with optimized cache and performance monitoring
 const client = new ApolloClient({
-  link: from([errorLink, authLink, httpLink]),
-  cache: new InMemoryCache({
-    // Simplified cache configuration to avoid merge conflicts
-    addTypename: false,
-    typePolicies: {
-      Query: {
-        fields: {
-          // Disable merging for all fields to avoid conflicts
-          user: { merge: false },
-          transaction: { merge: false },
-          transaction_aggregate: { merge: false },
-          progress: { merge: false },
-          result: { merge: false },
-          result_aggregate: { merge: false },
-          audit: { merge: false },
-          audit_aggregate: { merge: false },
-          audits_given: { merge: false },
-          audits_received: { merge: false },
-        },
-      },
-    },
-  }),
+  link: from([errorLink, performanceLink, authLink, httpLink]),
+  cache: createOptimizedCache(),
   defaultOptions: {
     watchQuery: {
       errorPolicy: 'all',
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-first', // Use cache-first for better performance
       notifyOnNetworkStatusChange: true,
     },
     query: {
       errorPolicy: 'all',
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-first', // Use cache-first for better performance
     },
     mutate: {
       errorPolicy: 'all',
     },
   },
 });
+
+// Export performance monitor for use in hooks
+export { performanceMonitor };
 
 // Clear cache on initialization to avoid stale data
 client.clearStore().catch(console.warn);

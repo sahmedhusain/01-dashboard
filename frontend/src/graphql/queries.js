@@ -1532,3 +1532,480 @@ export const COMPARE_USERS = gql`
     }
   }
 `;
+
+// ===== ENHANCED QUERIES FOR NEW DASHBOARD FEATURES =====
+
+// Query to get XP earned by project for bar chart visualization
+export const GET_XP_BY_PROJECT = gql`
+  query GetXPByProject($userId: Int!) {
+    transaction(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+      }
+      order_by: { amount: desc }
+    ) {
+      id
+      amount
+      path
+      createdAt
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+  }
+`;
+
+// Query to get XP progression over time for line chart
+export const GET_XP_TIMELINE = gql`
+  query GetXPTimeline($userId: Int!) {
+    transaction(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+      }
+      order_by: { createdAt: asc }
+    ) {
+      id
+      amount
+      createdAt
+      path
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Query to get piscine-specific statistics
+export const GET_PISCINE_STATS = gql`
+  query GetPiscineStats($userId: Int!) {
+    # Get all piscine results
+    result(
+      where: {
+        userId: { _eq: $userId }
+        path: { _like: "%piscine%" }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      type
+      createdAt
+      path
+      object {
+        name
+        type
+        attrs
+      }
+    }
+
+    # Get piscine progress entries
+    progress(
+      where: {
+        userId: { _eq: $userId }
+        path: { _like: "%piscine%" }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      createdAt
+      path
+      object {
+        name
+        type
+        attrs
+      }
+    }
+  }
+`;
+
+// Enhanced profile query with campus and registration data
+export const GET_ENHANCED_PROFILE = gql`
+  query GetEnhancedProfile($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+      id
+      login
+      profile
+      attrs
+      createdAt
+      updatedAt
+      campus
+
+      # Get user's first event to determine registration/start date
+      events(
+        order_by: { createdAt: asc }
+        limit: 1
+      ) {
+        id
+        createdAt
+        path
+        campus
+      }
+
+      # Get total project count
+      results_aggregate {
+        aggregate {
+          count
+        }
+      }
+
+      # Get passed projects count
+      passed_projects: results_aggregate(
+        where: { grade: { _gte: 1 } }
+      ) {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`;
+
+// Query to get project timeline data
+export const GET_PROJECT_TIMELINE = gql`
+  query GetProjectTimeline($userId: Int!) {
+    result(
+      where: {
+        userId: { _eq: $userId }
+        object: { type: { _eq: "project" } }
+      }
+      order_by: { createdAt: asc }
+    ) {
+      id
+      grade
+      type
+      createdAt
+      updatedAt
+      path
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+
+    # Get corresponding XP transactions for projects
+    transaction(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+        object: { type: { _eq: "project" } }
+      }
+      order_by: { createdAt: asc }
+    ) {
+      id
+      amount
+      createdAt
+      path
+      object {
+        id
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Query to get detailed audit statistics
+export const GET_DETAILED_AUDIT_STATS = gql`
+  query GetDetailedAuditStats($userId: Int!) {
+    # Audits given by user
+    audits_given: audit(
+      where: { auditorId: { _eq: $userId } }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      createdAt
+      endAt
+      group {
+        id
+        path
+        object {
+          name
+          type
+        }
+      }
+    }
+
+    # Audits received by user (through group membership)
+    # Note: This is simplified since groupUsers field is not available
+    audits_received: audit(
+      where: { auditorId: { _eq: $userId } }
+      order_by: { createdAt: desc }
+      limit: 100
+    ) {
+      id
+      grade
+      createdAt
+      auditor {
+        id
+        login
+      }
+      group {
+        id
+        path
+        object {
+          name
+          type
+        }
+      }
+    }
+  }
+`;
+
+// Enhanced search queries with status filtering
+export const SEARCH_PROJECTS_BY_STATUS = gql`
+  query SearchProjectsByStatus(
+    $userId: Int!
+    $status: String!
+    $searchTerm: String = ""
+    $limit: Int = 20
+    $offset: Int = 0
+  ) {
+    # Search user's projects/results by status
+    results: result(
+      where: {
+        userId: { _eq: $userId }
+        _and: [
+          {
+            _or: [
+              { object: { name: { _ilike: $searchTerm } } }
+              { path: { _ilike: $searchTerm } }
+            ]
+          }
+          {
+            # Status filtering logic
+            _or: [
+              # Working: grade = 0 and recent activity
+              {
+                _and: [
+                  { grade: { _eq: 0 } }
+                  { updatedAt: { _gte: "2024-01-01" } }
+                ]
+              }
+              # Finished: grade >= 1 (passed)
+              { grade: { _gte: 1 } }
+              # Setup: very recent creation, no grade yet
+              {
+                _and: [
+                  { grade: { _eq: 0 } }
+                  { createdAt: { _gte: "2024-07-01" } }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+      order_by: { updatedAt: desc }
+      limit: $limit
+      offset: $offset
+    ) {
+      id
+      grade
+      type
+      createdAt
+      updatedAt
+      path
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+
+    # Get corresponding progress entries
+    progress: progress(
+      where: {
+        userId: { _eq: $userId }
+        _and: [
+          {
+            _or: [
+              { object: { name: { _ilike: $searchTerm } } }
+              { path: { _ilike: $searchTerm } }
+            ]
+          }
+        ]
+      }
+      order_by: { updatedAt: desc }
+      limit: $limit
+      offset: $offset
+    ) {
+      id
+      grade
+      isDone
+      createdAt
+      updatedAt
+      path
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+  }
+`;
+
+// Search audits by status
+export const SEARCH_AUDITS_BY_STATUS = gql`
+  query SearchAuditsByStatus(
+    $userId: Int!
+    $status: String!
+    $searchTerm: String = ""
+    $limit: Int = 20
+    $offset: Int = 0
+  ) {
+    # Audits given by user
+    audits_given: audit(
+      where: {
+        auditorId: { _eq: $userId }
+        _and: [
+          {
+            _or: [
+              { group: { path: { _ilike: $searchTerm } } }
+              { group: { object: { name: { _ilike: $searchTerm } } } }
+            ]
+          }
+          {
+            # Status filtering for audits
+            _or: [
+              # Working: audit in progress (no end date or recent)
+              { endAt: { _is_null: true } }
+              # Finished: audit completed
+              { endAt: { _is_null: false } }
+              # Setup: recently created
+              { createdAt: { _gte: "2024-07-01" } }
+            ]
+          }
+        ]
+      }
+      order_by: { createdAt: desc }
+      limit: $limit
+      offset: $offset
+    ) {
+      id
+      grade
+      createdAt
+      endAt
+      updatedAt
+      group {
+        id
+        path
+        object {
+          id
+          name
+          type
+        }
+      }
+    }
+
+    # Audits received (simplified since groupUsers not available)
+    audits_received: audit(
+      where: {
+        auditorId: { _eq: $userId }
+        _and: [
+          {
+            _or: [
+              { group: { path: { _ilike: $searchTerm } } }
+              { group: { object: { name: { _ilike: $searchTerm } } } }
+            ]
+          }
+        ]
+      }
+      order_by: { createdAt: desc }
+      limit: $limit
+      offset: $offset
+    ) {
+      id
+      grade
+      createdAt
+      endAt
+      auditor {
+        id
+        login
+      }
+      group {
+        id
+        path
+        object {
+          id
+          name
+          type
+        }
+      }
+    }
+  }
+`;
+
+// Enhanced user search with status filtering
+export const SEARCH_USERS_WITH_STATUS = gql`
+  query SearchUsersWithStatus(
+    $searchTerm: String!
+    $status: String = "all"
+    $campus: String = ""
+    $limit: Int = 20
+    $offset: Int = 0
+  ) {
+    users: user(
+      where: {
+        _and: [
+          {
+            _or: [
+              { login: { _ilike: $searchTerm } }
+              { profile: { _ilike: $searchTerm } }
+              { attrs: { _ilike: $searchTerm } }
+            ]
+          }
+          {
+            # Campus filtering if specified
+            campus: { _ilike: $campus }
+          }
+        ]
+      }
+      order_by: { login: asc }
+      limit: $limit
+      offset: $offset
+    ) {
+      id
+      login
+      profile
+      campus
+      createdAt
+      updatedAt
+
+      # Get recent activity to determine status
+      recent_results: results(
+        order_by: { updatedAt: desc }
+        limit: 5
+      ) {
+        id
+        grade
+        updatedAt
+        object {
+          name
+          type
+        }
+      }
+
+      # Get recent transactions for activity
+      recent_transactions: transactions(
+        where: { type: { _eq: "xp" } }
+        order_by: { createdAt: desc }
+        limit: 3
+      ) {
+        id
+        amount
+        createdAt
+      }
+    }
+  }
+`;

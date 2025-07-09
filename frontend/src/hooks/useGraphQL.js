@@ -20,6 +20,16 @@ import {
   COMPARE_USERS,
   ADVANCED_SEARCH,
   SEARCH_USERS,
+  GET_XP_BY_PROJECT,
+  GET_XP_TIMELINE,
+  GET_PISCINE_STATS,
+  GET_ENHANCED_PROFILE,
+  GET_PROJECT_TIMELINE,
+  GET_DETAILED_AUDIT_STATS,
+  // Enhanced search queries
+  SEARCH_PROJECTS_BY_STATUS,
+  SEARCH_AUDITS_BY_STATUS,
+  SEARCH_USERS_WITH_STATUS,
 } from '../graphql/queries';
 
 // Enhanced hook for user profile data with comprehensive information
@@ -4780,5 +4790,612 @@ export const useUserAnalytics = (options = {}) => {
     loading,
     error,
     refetch,
+  };
+};
+
+// ===== NEW ENHANCED HOOKS FOR DASHBOARD FEATURES =====
+
+// Hook to get XP earned by project for bar chart
+export const useXPByProject = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_XP_BY_PROJECT, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+  });
+
+  // Process data to group XP by project
+  const processXPByProject = (transactions) => {
+    if (!transactions) return [];
+
+    const projectXP = {};
+
+    transactions.forEach(transaction => {
+      const projectName = transaction.object?.name || transaction.path?.split('/').pop() || 'Unknown';
+      const projectPath = transaction.path;
+
+      if (!projectXP[projectPath]) {
+        projectXP[projectPath] = {
+          name: projectName,
+          path: projectPath,
+          totalXP: 0,
+          type: transaction.object?.type || 'unknown',
+          transactions: []
+        };
+      }
+
+      projectXP[projectPath].totalXP += transaction.amount;
+      projectXP[projectPath].transactions.push(transaction);
+    });
+
+    return Object.values(projectXP)
+      .sort((a, b) => b.totalXP - a.totalXP)
+      .slice(0, 20); // Top 20 projects
+  };
+
+  const xpByProject = processXPByProject(data?.transaction);
+
+  return {
+    xpByProject,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook to get XP progression over time for line chart
+export const useXPTimeline = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_XP_TIMELINE, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+  });
+
+  // Process data to create cumulative XP timeline
+  const processXPTimeline = (transactions) => {
+    if (!transactions) return [];
+
+    let cumulativeXP = 0;
+    return transactions.map(transaction => {
+      cumulativeXP += transaction.amount;
+      return {
+        date: new Date(transaction.createdAt),
+        xp: transaction.amount,
+        cumulativeXP,
+        project: transaction.object?.name || transaction.path?.split('/').pop(),
+        path: transaction.path,
+      };
+    });
+  };
+
+  const xpTimeline = processXPTimeline(data?.transaction);
+
+  return {
+    xpTimeline,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook to get piscine statistics for pie chart
+export const usePiscineStats = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_PISCINE_STATS, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+  });
+
+  // Process piscine data
+  const processPiscineStats = (results, progress) => {
+    if (!results && !progress) return { jsStats: {}, goStats: {}, overall: {} };
+
+    const allEntries = [...(results || []), ...(progress || [])];
+
+    const jsEntries = allEntries.filter(entry =>
+      entry.path?.includes('piscine-js') || entry.path?.includes('javascript')
+    );
+
+    const goEntries = allEntries.filter(entry =>
+      entry.path?.includes('piscine-go') || entry.path?.includes('golang')
+    );
+
+    const calculateStats = (entries) => {
+      const passed = entries.filter(entry => entry.grade >= 1).length;
+      const failed = entries.filter(entry => entry.grade < 1).length;
+      const total = entries.length;
+
+      return {
+        passed,
+        failed,
+        total,
+        passRate: total > 0 ? (passed / total) * 100 : 0,
+      };
+    };
+
+    return {
+      jsStats: calculateStats(jsEntries),
+      goStats: calculateStats(goEntries),
+      overall: calculateStats(allEntries),
+    };
+  };
+
+  const piscineStats = processPiscineStats(data?.result, data?.progress);
+
+  return {
+    piscineStats,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook to get enhanced profile data with campus and registration info
+export const useEnhancedProfile = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_ENHANCED_PROFILE, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+  });
+
+  const profile = data?.user?.[0];
+  const firstEvent = profile?.events?.[0];
+  const totalProjects = profile?.results_aggregate?.aggregate?.count || 0;
+  const passedProjects = profile?.passed_projects?.aggregate?.count || 0;
+
+  return {
+    profile: profile ? {
+      ...profile,
+      registrationDate: firstEvent?.createdAt,
+      startCampus: firstEvent?.campus,
+      totalProjects,
+      passedProjects,
+      passRate: totalProjects > 0 ? (passedProjects / totalProjects) * 100 : 0,
+    } : null,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook to get project timeline data
+export const useProjectTimeline = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_PROJECT_TIMELINE, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+  });
+
+  // Process timeline data
+  const processProjectTimeline = (results, transactions) => {
+    if (!results) return [];
+
+    const projectMap = {};
+
+    // Map results by project
+    results.forEach(result => {
+      const projectId = result.object?.id;
+      if (projectId) {
+        projectMap[projectId] = {
+          ...result,
+          xpEarned: 0,
+        };
+      }
+    });
+
+    // Add XP data to projects
+    if (transactions) {
+      transactions.forEach(transaction => {
+        const projectId = transaction.object?.id;
+        if (projectId && projectMap[projectId]) {
+          projectMap[projectId].xpEarned += transaction.amount;
+        }
+      });
+    }
+
+    return Object.values(projectMap)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  };
+
+  const projectTimeline = processProjectTimeline(data?.result, data?.transaction);
+
+  return {
+    projectTimeline,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook to get detailed audit statistics
+export const useDetailedAuditStats = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_DETAILED_AUDIT_STATS, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+  });
+
+  // Process audit statistics
+  const processAuditStats = (auditsGiven, auditsReceived) => {
+    const givenStats = {
+      total: auditsGiven?.length || 0,
+      passed: auditsGiven?.filter(audit => audit.grade >= 1).length || 0,
+      failed: auditsGiven?.filter(audit => audit.grade < 1).length || 0,
+    };
+
+    const receivedStats = {
+      total: auditsReceived?.length || 0,
+      passed: auditsReceived?.filter(audit => audit.grade >= 1).length || 0,
+      failed: auditsReceived?.filter(audit => audit.grade < 1).length || 0,
+    };
+
+    return {
+      given: {
+        ...givenStats,
+        passRate: givenStats.total > 0 ? (givenStats.passed / givenStats.total) * 100 : 0,
+      },
+      received: {
+        ...receivedStats,
+        passRate: receivedStats.total > 0 ? (receivedStats.passed / receivedStats.total) * 100 : 0,
+      },
+      ratio: receivedStats.total > 0 ? givenStats.total / receivedStats.total : 0,
+    };
+  };
+
+  const auditStats = processAuditStats(data?.audits_given, data?.audits_received);
+
+  return {
+    auditStats,
+    auditsGiven: data?.audits_given || [],
+    auditsReceived: data?.audits_received || [],
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// ===== ENHANCED SEARCH HOOKS WITH STATUS FILTERING =====
+
+// Hook to search projects by status (working, audit, setup, finished)
+export const useProjectSearch = () => {
+  const { user, isAuthenticated } = useAuth();
+  const [searchResults, setSearchResults] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  const [searchProjectsByStatus] = useLazyQuery(SEARCH_PROJECTS_BY_STATUS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      const processedResults = processProjectSearchResults(data);
+      setSearchResults(processedResults);
+      setLoading(false);
+    },
+    onError: (err) => {
+      setError(err);
+      setLoading(false);
+    },
+  });
+
+  const processProjectSearchResults = (data) => {
+    if (!data) return [];
+
+    const results = data.results || [];
+    const progress = data.progress || [];
+
+    // Combine and categorize results by status
+    const allItems = [...results, ...progress].map(item => {
+      const status = determineProjectStatus(item);
+      return {
+        ...item,
+        status,
+        type: item.isDone !== undefined ? 'progress' : 'result',
+      };
+    });
+
+    // Sort by most recent activity
+    return allItems.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  };
+
+  const determineProjectStatus = (item) => {
+    const now = new Date();
+    const updatedAt = new Date(item.updatedAt);
+    const createdAt = new Date(item.createdAt);
+    const daysSinceUpdate = (now - updatedAt) / (1000 * 60 * 60 * 24);
+    const daysSinceCreation = (now - createdAt) / (1000 * 60 * 60 * 24);
+
+    // Finished: has passing grade
+    if (item.grade >= 1) return 'finished';
+
+    // Setup: very recently created, no significant progress
+    if (daysSinceCreation <= 7 && item.grade === 0) return 'setup';
+
+    // Audit: project submitted for review (grade 0 but recent activity)
+    if (item.grade === 0 && daysSinceUpdate <= 3) return 'audit';
+
+    // Working: active development
+    if (item.grade === 0 && daysSinceUpdate <= 30) return 'working';
+
+    // Default to working for active items
+    return 'working';
+  };
+
+  const searchProjects = (searchTerm = '', status = 'all', options = {}) => {
+    if (!isAuthenticated || !user?.id) return;
+
+    setLoading(true);
+    setError(null);
+
+    const { limit = 20, offset = 0 } = options;
+
+    searchProjectsByStatus({
+      variables: {
+        userId: user.id,
+        status,
+        searchTerm: `%${searchTerm}%`,
+        limit,
+        offset,
+      },
+    });
+  };
+
+  const filterByStatus = (status) => {
+    if (status === 'all') return searchResults;
+    return searchResults.filter(item => item.status === status);
+  };
+
+  return {
+    searchResults,
+    searchProjects,
+    filterByStatus,
+    loading,
+    error,
+    // Status counts for UI
+    statusCounts: {
+      all: searchResults.length,
+      working: searchResults.filter(r => r.status === 'working').length,
+      audit: searchResults.filter(r => r.status === 'audit').length,
+      setup: searchResults.filter(r => r.status === 'setup').length,
+      finished: searchResults.filter(r => r.status === 'finished').length,
+    },
+  };
+};
+
+// Hook to search audits by status
+export const useAuditSearch = () => {
+  const { user, isAuthenticated } = useAuth();
+  const [searchResults, setSearchResults] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  const [searchAuditsByStatus] = useLazyQuery(SEARCH_AUDITS_BY_STATUS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      const processedResults = processAuditSearchResults(data);
+      setSearchResults(processedResults);
+      setLoading(false);
+    },
+    onError: (err) => {
+      setError(err);
+      setLoading(false);
+    },
+  });
+
+  const processAuditSearchResults = (data) => {
+    if (!data) return [];
+
+    const auditsGiven = (data.audits_given || []).map(audit => ({
+      ...audit,
+      type: 'given',
+      status: determineAuditStatus(audit),
+    }));
+
+    const auditsReceived = (data.audits_received || []).map(audit => ({
+      ...audit,
+      type: 'received',
+      status: determineAuditStatus(audit),
+    }));
+
+    return [...auditsGiven, ...auditsReceived]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  };
+
+  const determineAuditStatus = (audit) => {
+    const now = new Date();
+    const createdAt = new Date(audit.createdAt);
+    const endAt = audit.endAt ? new Date(audit.endAt) : null;
+    const daysSinceCreation = (now - createdAt) / (1000 * 60 * 60 * 24);
+
+    // Finished: audit has end date
+    if (endAt) return 'finished';
+
+    // Setup: very recently created
+    if (daysSinceCreation <= 1) return 'setup';
+
+    // Working: audit in progress
+    if (!endAt && daysSinceCreation <= 7) return 'working';
+
+    // Audit: waiting for completion
+    return 'audit';
+  };
+
+  const searchAudits = (searchTerm = '', status = 'all', options = {}) => {
+    if (!isAuthenticated || !user?.id) return;
+
+    setLoading(true);
+    setError(null);
+
+    const { limit = 20, offset = 0 } = options;
+
+    searchAuditsByStatus({
+      variables: {
+        userId: user.id,
+        status,
+        searchTerm: `%${searchTerm}%`,
+        limit,
+        offset,
+      },
+    });
+  };
+
+  const filterByStatus = (status) => {
+    if (status === 'all') return searchResults;
+    return searchResults.filter(item => item.status === status);
+  };
+
+  const filterByType = (type) => {
+    if (type === 'all') return searchResults;
+    return searchResults.filter(item => item.type === type);
+  };
+
+  return {
+    searchResults,
+    searchAudits,
+    filterByStatus,
+    filterByType,
+    loading,
+    error,
+    // Status counts for UI
+    statusCounts: {
+      all: searchResults.length,
+      working: searchResults.filter(r => r.status === 'working').length,
+      audit: searchResults.filter(r => r.status === 'audit').length,
+      setup: searchResults.filter(r => r.status === 'setup').length,
+      finished: searchResults.filter(r => r.status === 'finished').length,
+    },
+    // Type counts for UI
+    typeCounts: {
+      all: searchResults.length,
+      given: searchResults.filter(r => r.type === 'given').length,
+      received: searchResults.filter(r => r.type === 'received').length,
+    },
+  };
+};
+
+// Hook for enhanced user search with status filtering
+export const useEnhancedUserSearch = () => {
+  const [searchResults, setSearchResults] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  const [searchUsersWithStatus] = useLazyQuery(SEARCH_USERS_WITH_STATUS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      const processedResults = processUserSearchResults(data);
+      setSearchResults(processedResults);
+      setLoading(false);
+    },
+    onError: (err) => {
+      setError(err);
+      setLoading(false);
+    },
+  });
+
+  const processUserSearchResults = (data) => {
+    if (!data?.users) return [];
+
+    return data.users.map(user => {
+      const status = determineUserStatus(user);
+      const totalXP = user.recent_transactions?.reduce((sum, tx) => sum + tx.amount, 0) || 0;
+      const recentActivity = user.recent_results?.length > 0;
+
+      return {
+        ...user,
+        status,
+        totalXP,
+        recentActivity,
+        lastActive: user.recent_results?.[0]?.updatedAt || user.updatedAt,
+      };
+    });
+  };
+
+  const determineUserStatus = (user) => {
+    const now = new Date();
+    const lastUpdate = new Date(user.updatedAt);
+    const daysSinceUpdate = (now - lastUpdate) / (1000 * 60 * 60 * 24);
+
+    // Check recent results for activity patterns
+    const recentResults = user.recent_results || [];
+    const hasRecentActivity = recentResults.some(result => {
+      const resultDate = new Date(result.updatedAt);
+      const daysSinceResult = (now - resultDate) / (1000 * 60 * 60 * 24);
+      return daysSinceResult <= 7;
+    });
+
+    // Working: recent activity within a week
+    if (hasRecentActivity) return 'working';
+
+    // Setup: new user (created recently, minimal activity)
+    const createdAt = new Date(user.createdAt);
+    const daysSinceCreation = (now - createdAt) / (1000 * 60 * 60 * 24);
+    if (daysSinceCreation <= 30 && recentResults.length <= 2) return 'setup';
+
+    // Audit: has completed work but not recent activity
+    if (recentResults.length > 0 && daysSinceUpdate <= 30) return 'audit';
+
+    // Finished: has significant completed work
+    const completedWork = recentResults.filter(r => r.grade >= 1).length;
+    if (completedWork >= 3) return 'finished';
+
+    // Default to working
+    return 'working';
+  };
+
+  const searchUsers = (searchTerm = '', status = 'all', campus = '', options = {}) => {
+    setLoading(true);
+    setError(null);
+
+    const { limit = 20, offset = 0 } = options;
+
+    searchUsersWithStatus({
+      variables: {
+        searchTerm: `%${searchTerm}%`,
+        status,
+        campus: campus ? `%${campus}%` : '%',
+        limit,
+        offset,
+      },
+    });
+  };
+
+  const filterByStatus = (status) => {
+    if (status === 'all') return searchResults;
+    return searchResults.filter(user => user.status === status);
+  };
+
+  const filterByCampus = (campus) => {
+    if (!campus || campus === 'all') return searchResults;
+    return searchResults.filter(user =>
+      user.campus && user.campus.toLowerCase().includes(campus.toLowerCase())
+    );
+  };
+
+  return {
+    searchResults,
+    searchUsers,
+    filterByStatus,
+    filterByCampus,
+    loading,
+    error,
+    // Status counts for UI
+    statusCounts: {
+      all: searchResults.length,
+      working: searchResults.filter(u => u.status === 'working').length,
+      audit: searchResults.filter(u => u.status === 'audit').length,
+      setup: searchResults.filter(u => u.status === 'setup').length,
+      finished: searchResults.filter(u => u.status === 'finished').length,
+    },
+    // Campus distribution
+    campuses: [...new Set(searchResults.map(u => u.campus).filter(Boolean))],
   };
 };

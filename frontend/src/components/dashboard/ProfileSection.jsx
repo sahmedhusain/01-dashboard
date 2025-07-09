@@ -1,16 +1,26 @@
 import React from 'react';
-import { User, Mail, Calendar, Award, TrendingUp, Target } from 'lucide-react';
-import { useUserProfile, useXPStatistics, useProjectStatistics, useAuditRatio } from '../../hooks/useGraphQL';
+import { User, Mail, Calendar, Award, TrendingUp, Target, MapPin, Clock } from 'lucide-react';
+import {
+  useUserProfile,
+  useXPStatistics,
+  useProjectStatistics,
+  useAuditRatio,
+  useEnhancedProfile
+} from '../../hooks/useGraphQL';
 import Card from '../ui/Card';
 import { CircularProgress } from '../ui/Progress';
 import Badge, { StatusBadge, XPBadge, LevelBadge } from '../ui/Badge';
 import Loading, { CardSkeleton } from '../ui/Loading';
 
 const ProfileSection = () => {
-  const { profile, loading: profileLoading } = useUserProfile();
+  const { profile: basicProfile, loading: profileLoading } = useUserProfile();
+  const { profile: enhancedProfile, loading: enhancedLoading } = useEnhancedProfile();
   const { totalXP, loading: xpLoading } = useXPStatistics();
   const { passedProjects, passRate, loading: projectsLoading } = useProjectStatistics();
   const { auditRatio, auditsGiven, auditsReceived, loading: auditLoading } = useAuditRatio();
+
+  // Use enhanced profile if available, fallback to basic profile
+  const profile = enhancedProfile || basicProfile;
 
   // Calculate user level based on XP (example calculation)
   const calculateLevel = (xp) => {
@@ -21,7 +31,7 @@ const ProfileSection = () => {
   const nextLevelXP = userLevel * 1000;
   const currentLevelProgress = ((totalXP % 1000) / 1000) * 100;
 
-  if (profileLoading || xpLoading || projectsLoading || auditLoading) {
+  if (profileLoading || enhancedLoading || xpLoading || projectsLoading || auditLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -77,11 +87,25 @@ const ProfileSection = () => {
                     <Mail className="w-4 h-4" />
                     <span className="text-sm">{profile?.email || 'No email'}</span>
                   </div>
-                  
+
+                  <div className="flex items-center space-x-2 text-surface-300">
+                    <MapPin className="w-4 h-4" />
+                    <span className="text-sm">
+                      {profile?.campus || profile?.startCampus || 'Campus not specified'}
+                    </span>
+                  </div>
+
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Calendar className="w-4 h-4" />
                     <span className="text-sm">
                       Joined {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'Unknown'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2 text-surface-300">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-sm">
+                      Started {profile?.registrationDate ? new Date(profile.registrationDate).toLocaleDateString() : 'Unknown'}
                     </span>
                   </div>
                 </div>
@@ -89,11 +113,16 @@ const ProfileSection = () => {
                 <div className="flex flex-wrap gap-2">
                   <XPBadge xp={totalXP} />
                   <Badge variant="primary">
-                    {passedProjects} Projects Completed
+                    {profile?.passedProjects || passedProjects} / {profile?.totalProjects || 'N/A'} Projects
                   </Badge>
                   <Badge variant="accent">
                     Audit Ratio: {auditRatio.toFixed(2)}
                   </Badge>
+                  {profile?.passRate && (
+                    <Badge variant="success">
+                      {profile.passRate.toFixed(1)}% Success Rate
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>

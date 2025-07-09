@@ -124,7 +124,7 @@ build() {
 
         # Show build size
         if command -v du &> /dev/null; then
-            BUILD_SIZE=$(du -sh "$FRONTEND_DIR/dist" | cut -f1)
+            BUILD_SIZE=$(du -sh "dist" | cut -f1)
             print_status "Build size: $BUILD_SIZE"
         fi
     else

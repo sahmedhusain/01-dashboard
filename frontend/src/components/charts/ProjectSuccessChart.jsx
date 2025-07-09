@@ -11,7 +11,7 @@ const ProjectSuccessChart = ({
   const radius = size / 2 - 20;
   const center = size / 2;
 
-  const { passedAngle, failedAngle, passedPath, failedPath } = useMemo(() => {
+  const { passedPath, failedPath } = useMemo(() => {
     if (total === 0) return { passedAngle: 0, failedAngle: 0, passedPath: '', failedPath: '' };
 
     const passedAngle = (passedProjects / total) * 360;

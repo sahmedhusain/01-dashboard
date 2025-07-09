@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, Search, User, BarChart3, Trophy, Users, Menu, X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/authUtils.jsx';
 import { useDashboardData } from '../../hooks/useGraphQL';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
@@ -12,13 +12,11 @@ import SearchSection from './SearchSection';
 import StatsSection from './StatsSection';
 import AuditsSection from './AuditsSection';
 import TechnologiesSection from './TechnologiesSection';
-import SkillsSection from './SkillsSection';
-
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { logout, user } = useAuth();
-  const { profile, totalXP, passedProjects, auditRatio, loading, error } = useDashboardData();
+  const { profile, totalXP, loading, error } = useDashboardData();
 
   // Close mobile menu when tab changes
   useEffect(() => {
@@ -61,7 +59,7 @@ const Dashboard = () => {
               <Button onClick={() => window.location.reload()} className="w-full">
                 Reload Page
               </Button>
-              {process.env.NODE_ENV === 'development' && (
+              {import.meta.env.DEV && (
                 <details className="text-left text-xs">
                   <summary className="cursor-pointer text-surface-400 hover:text-surface-200">
                     Error Details (Development)

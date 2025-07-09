@@ -23,7 +23,43 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '^[A-Z_]|^_|motion|WrappedComponent',
+        argsIgnorePattern: '^_|WrappedComponent',
+        ignoreRestSiblings: true
+      }],
+    },
+  },
+  // Test files configuration
+  {
+    files: ['**/*.test.{js,jsx}', '**/test/**/*.{js,jsx}', '**/__tests__/**/*.{js,jsx}', '**/testUtils.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.jest,
+        ...globals.node,
+        vi: 'readonly',
+        global: 'readonly',
+        expect: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+        renderHook: 'readonly',
+        require: 'readonly',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '^[A-Z_]|^_',
+        argsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
+      'no-undef': 'off',
     },
   },
 ])

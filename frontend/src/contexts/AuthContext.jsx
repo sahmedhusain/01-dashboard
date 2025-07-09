@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 import {
   authenticateUser,
   storeAuthData,
@@ -204,36 +204,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  
-  return context;
-};
-
-// HOC for protected routes
-export const withAuth = (Component) => {
-  return function AuthenticatedComponent(props) {
-    const { isAuthenticated, isInitialized } = useAuth();
-
-    if (!isInitialized) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-400"></div>
-        </div>
-      );
-    }
-
-    if (!isAuthenticated) {
-      return <LoginPage />;
-    }
-
-    return <Component {...props} />;
-  };
-};
+// Export the context for use in authUtils.js
+export { AuthContext };
 
 export default AuthContext;

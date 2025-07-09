@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 const AuditStatsChart = ({ 
@@ -21,9 +21,9 @@ const AuditStatsChart = ({
   const barWidth = chartWidth / data.length * 0.6;
   const barSpacing = chartWidth / data.length;
 
-  const yScale = (value) => {
+  const yScale = useCallback((value) => {
     return chartHeight - (value / maxValue) * chartHeight;
-  };
+  }, [chartHeight, maxValue]);
 
   const yTicks = useMemo(() => {
     const tickCount = 5;

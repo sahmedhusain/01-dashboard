@@ -13,7 +13,7 @@ export const createOptimizedCache = () => {
         fields: {
           // User-related queries
           user: {
-            merge(existing = [], incoming) {
+            merge(_, incoming) {
               return incoming;
             },
           },
@@ -79,17 +79,17 @@ export const createOptimizedCache = () => {
       User: {
         fields: {
           transactions: {
-            merge(existing = [], incoming) {
+            merge(_, incoming) {
               return incoming;
             },
           },
           results: {
-            merge(existing = [], incoming) {
+            merge(_, incoming) {
               return incoming;
             },
           },
           progresses: {
-            merge(existing = [], incoming) {
+            merge(_, incoming) {
               return incoming;
             },
           },

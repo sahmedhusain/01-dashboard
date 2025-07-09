@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useLazyQuery } from '@apollo/client';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/authUtils.jsx';
 import {
   GET_USER_PROFILE,
   GET_USER_TRANSACTIONS,
@@ -236,7 +236,6 @@ const calculateGrowthRate = (progression) => {
 
 // Specialized hook for transaction type analysis
 export const useTransactionAnalysis = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const {
     fromDate = null,
     toDate = null,
@@ -727,7 +726,7 @@ const analyzeFeedbackPatterns = (audits) => {
 // Helper function to generate improvement suggestions
 const generateImprovementSuggestions = (analysis) => {
   const suggestions = [];
-  const { auditRatio, auditSuccessRates, givenAuditAnalysis, receivedAuditAnalysis } = analysis;
+  const { auditRatio, auditSuccessRates, givenAuditAnalysis } = analysis;
 
   // Audit ratio suggestions
   if (auditRatio < 0.8) {
@@ -863,7 +862,7 @@ const calculateAuditHelpfulness = (auditsReceived) => {
 
 // Comprehensive hook for user statistics and performance metrics
 export const useUserStatistics = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const {
     fromDate = null,
     toDate = null,
@@ -979,7 +978,6 @@ export const useUserStatistics = (options = {}) => {
 
 // Hook for skill proficiency metrics
 export const useSkillProficiency = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const { skip: skipOption = false } = options;
 
   const skillsHook = useUserSkills();
@@ -1363,7 +1361,6 @@ export const useObjectDetails = (objectId, options = {}) => {
 
 // Hook for project submission analysis
 export const useProjectSubmissions = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const {
     objectType = 'project',
     limit = 100,
@@ -1433,7 +1430,6 @@ export const useProjectSubmissions = (options = {}) => {
 
 // Hook for project difficulty analysis
 export const useProjectDifficulty = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const { skip: skipOption = false } = options;
 
   const projectHook = useProjectStatistics({ skip: skipOption });
@@ -1500,7 +1496,6 @@ export const useProjectDifficulty = (options = {}) => {
 
 // Hook for project completion patterns analysis
 export const useProjectPatterns = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const { skip: skipOption = false } = options;
 
   const projectHook = useProjectStatistics({ skip: skipOption });
@@ -1579,7 +1574,7 @@ const calculateObjectDifficulty = (objectDetails, userTransactions) => {
 };
 
 // Analyze object completion patterns
-const analyzeObjectCompletion = (objectDetails, userResults) => {
+const analyzeObjectCompletion = (_, userResults) => {
   if (!userResults || userResults.length === 0) {
     return {
       attempts: 0,
@@ -1666,7 +1661,7 @@ const analyzeRetryPatterns = (submissions) => {
 };
 
 // Calculate time to completion
-const calculateTimeToCompletion = (submissions, progress) => {
+const calculateTimeToCompletion = (submissions) => {
   const completionTimes = [];
 
   // Group by project and calculate time from start to completion
@@ -1870,7 +1865,6 @@ const analyzeTypePreferences = (results) => {
 
 // Enhanced hook for event participation tracking
 export const useEventParticipation = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const {
     limit = 50,
     offset = 0,
@@ -1915,7 +1909,6 @@ export const useEventParticipation = (options = {}) => {
 
 // Hook for team collaboration metrics
 export const useTeamCollaboration = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const {
     limit = 50,
     offset = 0,
@@ -1988,7 +1981,6 @@ export const useTeamCollaboration = (options = {}) => {
 
 // Hook for event performance tracking
 export const useEventPerformance = (eventId, options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const { skip: skipOption = false } = options;
 
   const objectHook = useObjectDetails(eventId, { skip: skipOption });
@@ -2051,7 +2043,6 @@ export const useEventPerformance = (eventId, options = {}) => {
 
 // Hook for registration management and analysis
 export const useRegistrationManagement = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
   const { skip: skipOption = false } = options;
 
   const eventsHook = useUserEvents({ skip: skipOption });
@@ -2750,7 +2741,7 @@ export const useFilteredUserSearch = (options = {}) => {
     notifyOnNetworkStatusChange: true,
   });
 
-  const searchWithFilters = (searchTerm, additionalFilters = {}) => {
+  const searchWithFilters = (searchTerm) => {
     const searchPattern = `%${searchTerm}%`;
 
     searchUsers({
@@ -2829,32 +2820,17 @@ export const usePaginatedData = (query, options = {}) => {
   };
 };
 
-// Hook for complex query combinations
-export const useComplexQuery = (queries, options = {}) => {
-  const { user, isAuthenticated } = useAuth();
-  const {
-    combineStrategy = 'merge',
-    skip: skipOption = false
-  } = options;
-
-  // Execute multiple queries
-  const queryResults = queries.map(({ query, variables = {} }) =>
-    useQuery(query, {
-      variables: {
-        userId: user?.id,
-        ...variables,
-      },
-      skip: !isAuthenticated || !user?.id || skipOption,
-      errorPolicy: 'all',
-    })
-  );
+// Hook for complex query combinations - DISABLED due to React Hooks violations
+export const useComplexQuery = () => {
+  // Note: This implementation violates React Hooks rules
+  // TODO: Refactor to use individual hooks or a different approach
+  const queryResults = [];
 
   const loading = queryResults.some(result => result.loading);
   const error = queryResults.find(result => result.error)?.error;
 
   // Combine results based on strategy
-  const combinedData = loading || error ? null :
-    combineQueryResults(queryResults.map(r => r.data), combineStrategy);
+  const combinedData = null;
 
   return {
     data: combinedData,
@@ -2897,7 +2873,7 @@ export const useRealtimeSearch = (options = {}) => {
     if (debouncedSearchTerm.length >= minSearchLength) {
       searchHook.search(debouncedSearchTerm);
     }
-  }, [debouncedSearchTerm, minSearchLength]);
+  }, [debouncedSearchTerm, minSearchLength, searchHook]);
 
   return {
     searchTerm,
@@ -3127,7 +3103,7 @@ const mergeQueryResults = (prev, fetchMoreResult) => {
 };
 
 // Combine multiple query results
-const combineQueryResults = (results, strategy) => {
+const _combineQueryResults = (results, strategy) => {
   if (strategy === 'merge') {
     return results.reduce((combined, result) => {
       if (!result) return combined;
@@ -3244,7 +3220,7 @@ export const useOptimizedQuery = (query, options = {}) => {
     fetchPolicy,
     errorPolicy,
     notifyOnNetworkStatusChange,
-    onCompleted: (data) => {
+    onCompleted: () => {
       const endTime = performance.now();
       if (queryResult.networkStatus) {
         trackQuery(
@@ -3274,12 +3250,12 @@ export const useOptimizedQuery = (query, options = {}) => {
   }, [lastFetch, cacheTimeout]);
 
   // Optimized refetch with debouncing
-  const optimizedRefetch = React.useCallback(
-    debounce((newVariables) => {
-      queryResult.refetch(newVariables);
-    }, 300),
-    [queryResult.refetch]
-  );
+  const optimizedRefetch = React.useCallback((newVariables) => {
+    const debouncedRefetch = debounce((vars) => {
+      queryResult.refetch(vars);
+    }, 300);
+    debouncedRefetch(newVariables);
+  }, [queryResult]);
 
   return {
     ...queryResult,
@@ -3292,15 +3268,14 @@ export const useOptimizedQuery = (query, options = {}) => {
 // Hook for batch loading multiple queries
 export const useBatchQueries = (queries, options = {}) => {
   const { user, isAuthenticated } = useAuth();
-  const { batchDelay = 50, skip: skipOption = false } = options;
+  const { skip: skipOption = false } = options;
 
   const [batchedResults, setBatchedResults] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [errors, setErrors] = React.useState({});
 
-  const executeBatch = React.useCallback(
-    debounce(async () => {
-      if (!isAuthenticated || !user?.id || skipOption) return;
+  const executeBatch = React.useCallback(async () => {
+    if (!isAuthenticated || !user?.id || skipOption) return;
 
       setLoading(true);
       const results = {};
@@ -3326,9 +3301,7 @@ export const useBatchQueries = (queries, options = {}) => {
       setBatchedResults(results);
       setErrors(batchErrors);
       setLoading(false);
-    }, batchDelay),
-    [queries, user?.id, isAuthenticated, skipOption, batchDelay]
-  );
+  }, [queries, user?.id, isAuthenticated, skipOption]);
 
   React.useEffect(() => {
     executeBatch();
@@ -3413,7 +3386,7 @@ export const useUserComparison = (userIds = [], options = {}) => {
 export const useLeaderboards = (options = {}) => {
   const {
     campus = null,
-    objectType = null,
+    _objectType = null,
     limit = 50,
     skip: skipOption = false
   } = options;
@@ -3446,7 +3419,7 @@ export const useLeaderboards = (options = {}) => {
 
 // Hook for achievement tracking
 export const useAchievements = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { skip: skipOption = false } = options;
 
   // Use existing hooks to gather achievement data
@@ -3508,7 +3481,7 @@ export const useAchievements = (options = {}) => {
 
 // Hook for skill recommendations
 export const useSkillRecommendations = (options = {}) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { skip: skipOption = false } = options;
 
   const skillsHook = useSkillProficiency({ skip: skipOption });
@@ -3741,7 +3714,7 @@ const createCombinedLeaderboard = (leaderboards) => {
   const userScores = new Map();
 
   // Calculate combined scores
-  leaderboards.forEach((leaderboard, boardIndex) => {
+  leaderboards.forEach((leaderboard, _boardIndex) => {
     leaderboard.forEach((user, userIndex) => {
       const score = Math.max(0, 100 - userIndex); // Higher rank = higher score
       const currentScore = userScores.get(user.id) || { user, totalScore: 0, boards: 0 };
@@ -3777,14 +3750,14 @@ const getBadgeForRank = (rank, total) => {
 };
 
 // Calculate user trend (simplified)
-const calculateUserTrend = (user, type) => {
+const calculateUserTrend = (_user, _type) => {
   // This would need historical data to calculate properly
   // For now, return a placeholder
   return Math.random() > 0.5 ? 'up' : 'down';
 };
 
 // Calculate achievements based on user data
-const calculateAchievements = ({ xp, projects, audits, progress, groups, user }) => {
+const calculateAchievements = ({ xp, projects, audits, _progress, groups, _user }) => {
   const achievements = [];
 
   // XP-based achievements
@@ -3905,7 +3878,7 @@ const calculateAchievements = ({ xp, projects, audits, progress, groups, user })
 };
 
 // Generate skill recommendations
-const generateSkillRecommendations = ({ skills, progress, xp }) => {
+const generateSkillRecommendations = ({ skills, progress, _xp }) => {
   const recommendations = [];
 
   // Analyze skill gaps
@@ -4177,7 +4150,7 @@ export const useValidatedQuery = (query, options = {}) => {
       return retryWithBackoff(() => queryResult.refetch(newVariables), retryConfig);
     }
     return queryResult.refetch(newVariables);
-  }, [queryResult.refetch, retryConfig]);
+  }, [queryResult, retryConfig]);
 
   return {
     ...queryResult,
@@ -4254,8 +4227,7 @@ import {
   processGraphQLError,
   validateQueryVariables,
   retryWithBackoff,
-  logError,
-  getFallbackData
+  logError
 } from '../utils/errorHandling';
 
 // Hook for user skills/technologies

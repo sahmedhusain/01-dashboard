@@ -408,13 +408,13 @@ export const logError = (error, context = {}) => {
   };
 
   // Log to console in development
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.error('GraphQL Error:', logEntry);
   }
 
   // In production, you would send this to your error tracking service
   // Example: Sentry, LogRocket, etc.
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.PROD) {
     // sendToErrorTrackingService(logEntry);
   }
 

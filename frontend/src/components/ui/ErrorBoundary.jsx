@@ -1,16 +1,16 @@
-import React from 'react';
+import { Component } from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import Card from './Card';
 import Button from './Button';
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
@@ -21,7 +21,7 @@ class ErrorBoundary extends React.Component {
     });
     
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('Error caught by boundary:', error, errorInfo);
     }
   }
@@ -62,7 +62,7 @@ class ErrorBoundary extends React.Component {
                   We encountered an unexpected error. This has been logged and we'll look into it.
                 </p>
 
-                {process.env.NODE_ENV === 'development' && this.state.error && (
+                {import.meta.env.DEV && this.state.error && (
                   <details className="mb-6 text-left">
                     <summary className="cursor-pointer text-surface-400 hover:text-surface-200 mb-2">
                       Error Details (Development)

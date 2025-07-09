@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { User, Mail, Calendar, Award, TrendingUp, Target } from 'lucide-react';
 import { useUserProfile, useXPStatistics, useProjectStatistics, useAuditRatio } from '../../hooks/useGraphQL';
 import Card from '../ui/Card';
@@ -10,7 +9,7 @@ import Loading, { CardSkeleton } from '../ui/Loading';
 const ProfileSection = () => {
   const { profile, loading: profileLoading } = useUserProfile();
   const { totalXP, loading: xpLoading } = useXPStatistics();
-  const { passedProjects, totalProjects, passRate, loading: projectsLoading } = useProjectStatistics();
+  const { passedProjects, passRate, loading: projectsLoading } = useProjectStatistics();
   const { auditRatio, auditsGiven, auditsReceived, loading: auditLoading } = useAuditRatio();
 
   // Calculate user level based on XP (example calculation)

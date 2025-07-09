@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { gql } from '@apollo/client';
 import { 
   GET_USER_PROFILE, 
   GET_XP_STATISTICS, 

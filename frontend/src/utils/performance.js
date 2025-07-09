@@ -1,6 +1,7 @@
 /**
  * Performance monitoring utilities
  */
+import React from 'react';
 
 // Performance metrics collection
 class PerformanceMonitor {
@@ -96,7 +97,7 @@ class PerformanceMonitor {
     this.metrics.get(name).push(metric);
 
     // Log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`📊 Performance: ${name} = ${value.toFixed(2)}ms`, metadata);
     }
   }
@@ -181,7 +182,7 @@ export const reportMetrics = () => {
   const metrics = performanceMonitor.getAllMetrics();
   
   // In a real application, you would send this to your analytics service
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.table(
       Object.entries(metrics).reduce((acc, [key, values]) => {
         acc[key] = {
@@ -211,7 +212,7 @@ export const getMemoryUsage = () => {
 
 // Bundle size analysis helper
 export const logBundleInfo = () => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('📦 Bundle Analysis:');
     console.log('- React version:', React.version);
     console.log('- Memory usage:', getMemoryUsage());

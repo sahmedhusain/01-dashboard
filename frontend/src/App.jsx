@@ -1,6 +1,7 @@
-import React from 'react';
+
 import { ApolloProvider } from '@apollo/client';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { useAuth } from './contexts/authUtils.jsx';
 import client from './graphql/client';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';

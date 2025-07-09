@@ -11,20 +11,20 @@ export const GET_USER_PROFILE = gql`
       createdAt
       updatedAt
       campus
-      # User roles and permissions
-      userRoles {
-        role {
-          id
-          slug
-          name
-          description
-        }
-      }
+      # User roles and permissions - DISABLED: field not available in schema
+      # userRoles {
+      #   role {
+      #     id
+      #     slug
+      #     name
+      #     description
+      #   }
+      # }
       # User records (bans, warnings, etc.)
       records {
         id
         message
-        banEndAt
+        # banEndAt - DISABLED: field not available in schema
         createdAt
         author {
           id
@@ -65,7 +65,7 @@ export const GET_USER_TRANSACTIONS = gql`
         path
         createdAt
         endAt
-        status
+        # status - DISABLED: field not available in schema
         object {
           name
           type
@@ -130,20 +130,21 @@ export const GET_USER_PROGRESS = gql`
         path
         createdAt
         endAt
-        status
+        # status - DISABLED: field not available in schema
       }
       group {
         id
         status
         captainId
         createdAt
-        members: groupUsers {
-          user {
-            id
-            login
-          }
-          confirmed
-        }
+        # members: groupUsers - DISABLED: field not available in schema
+        # {
+        #   user {
+        #     id
+        #     login
+        #   }
+        #   confirmed
+        # }
       }
     }
 
@@ -193,17 +194,18 @@ export const GET_USER_RESULTS = gql`
       event {
         id
         path
-        status
+        # status - DISABLED: field not available in schema
       }
       group {
         id
         status
-        members: groupUsers {
-          user {
-            id
-            login
-          }
-        }
+        # members: groupUsers - DISABLED: field not available in schema
+        # {
+        #   user {
+        #     id
+        #     login
+        #   }
+        # }
       }
       # Related audits for this result
       audits {
@@ -272,13 +274,14 @@ export const GET_USER_AUDITS = gql`
           type
           attrs
         }
-        members: groupUsers {
-          user {
-            id
-            login
-          }
-          confirmed
-        }
+        # members: groupUsers - DISABLED: field not available in schema
+        # {
+        #   user {
+        #     id
+        #     login
+        #   }
+        #   confirmed
+        # }
       }
       result {
         id
@@ -288,49 +291,49 @@ export const GET_USER_AUDITS = gql`
       }
     }
 
-    # Audits where user's group was audited
-    audits_received: audit(
-      where: {
-        group: {
-          groupUsers: {
-            userId: { _eq: $userId }
-            confirmed: { _eq: true }
-          }
-        }
-      }
-      order_by: { createdAt: desc }
-      limit: $limit
-      offset: $offset
-    ) {
-      id
-      grade
-      attrs
-      version
-      endAt
-      createdAt
-      updatedAt
-      auditor {
-        id
-        login
-        profile
-      }
-      group {
-        id
-        path
-        status
-        object {
-          id
-          name
-          type
-        }
-      }
-      result {
-        id
-        grade
-        type
-        createdAt
-      }
-    }
+    # Audits where user's group was audited - DISABLED: groupUsers field not available
+    # audits_received: audit(
+    #   where: {
+    #     group: {
+    #       groupUsers: {
+    #         userId: { _eq: $userId }
+    #         confirmed: { _eq: true }
+    #       }
+    #     }
+    #   }
+    #   order_by: { createdAt: desc }
+    #   limit: $limit
+    #   offset: $offset
+    # ) {
+    #   id
+    #   grade
+    #   attrs
+    #   version
+    #   endAt
+    #   createdAt
+    #   updatedAt
+    #   auditor {
+    #     id
+    #     login
+    #     profile
+    #   }
+    #   group {
+    #     id
+    #     path
+    #     status
+    #     object {
+    #       id
+    #       name
+    #       type
+    #     }
+    #   }
+    #   result {
+    #     id
+    #     grade
+    #     type
+    #     createdAt
+    #   }
+    # }
 
     # Audit statistics
     audit_stats_given: audit_aggregate(
@@ -344,23 +347,24 @@ export const GET_USER_AUDITS = gql`
       }
     }
 
-    audit_stats_received: audit_aggregate(
-      where: {
-        group: {
-          groupUsers: {
-            userId: { _eq: $userId }
-            confirmed: { _eq: true }
-          }
-        }
-      }
-    ) {
-      aggregate {
-        count
-        avg {
-          grade
-        }
-      }
-    }
+    # audit_stats_received: audit_aggregate - DISABLED: groupUsers field not available
+    # (
+    #   where: {
+    #     group: {
+    #       groupUsers: {
+    #         userId: { _eq: $userId }
+    #         confirmed: { _eq: true }
+    #       }
+    #     }
+    #   }
+    # ) {
+    #   aggregate {
+    #     count
+    #     avg {
+    #       grade
+    #     }
+    #   }
+    # }
   }
 `;
 
@@ -410,13 +414,13 @@ export const GET_XP_STATISTICS = gql`
         name
         type
         attrs
-        # Object hierarchy for better categorization
-        children {
-          child {
-            name
-            type
-          }
-        }
+        # Object hierarchy for better categorization - DISABLED: field not available in schema
+        # children {
+        #   child {
+        #     name
+        #     type
+        #   }
+        # }
       }
       event {
         id
@@ -436,7 +440,7 @@ export const GET_XP_STATISTICS = gql`
         userId: { _eq: $userId }
         type: { _eq: "xp" }
       }
-      distinct_on: [object_id]
+      distinct_on: [objectId]
     ) {
       nodes {
         object {
@@ -567,19 +571,20 @@ export const GET_PROJECT_STATISTICS = gql`
         path
         createdAt
         endAt
-        status
+        # status - DISABLED: field not available in schema
       }
       group {
         id
         status
         captainId
-        members: groupUsers {
-          user {
-            id
-            login
-          }
-          confirmed
-        }
+        # members: groupUsers - DISABLED: field not available in schema
+        # {
+        #   user {
+        #     id
+        #     login
+        #   }
+        #   confirmed
+        # }
       }
       # Related audits
       audits {
@@ -712,7 +717,7 @@ export const GET_USER_EVENTS = gql`
       event {
         id
         path
-        status
+        # status - DISABLED: field not available in schema
         createdAt
         endAt
         code
@@ -823,17 +828,18 @@ export const GET_USER_GROUPS = gql`
           path
           createdAt
           endAt
-          status
+          # status - DISABLED: field not available in schema
         }
-        members: groupUsers {
-          user {
-            id
-            login
-            profile
-          }
-          confirmed
-          createdAt
-        }
+        # members: groupUsers - DISABLED: field not available in schema
+        # {
+        #   user {
+        #     id
+        #     login
+        #     profile
+        #   }
+        #   confirmed
+        #   createdAt
+        # }
         # Group progress and results
         progresses {
           id
@@ -884,17 +890,18 @@ export const GET_USER_GROUPS = gql`
       event {
         id
         path
-        status
+        # status - DISABLED: field not available in schema
       }
-      members: groupUsers {
-        user {
-          id
-          login
-          profile
-        }
-        confirmed
-        createdAt
-      }
+      # members: groupUsers - DISABLED: field not available in schema
+      # {
+      #   user {
+      #     id
+      #     login
+      #     profile
+      #   }
+      #   confirmed
+      #   createdAt
+      # }
     }
 
     # Group statistics
@@ -965,7 +972,7 @@ export const GET_USER_MATCHES = gql`
         path
         createdAt
         endAt
-        status
+        # status - DISABLED: field not available in schema
       }
     }
 
@@ -1016,7 +1023,7 @@ export const GET_OBJECT_DETAILS = gql`
       id
       name
       type
-      status
+      # status - DISABLED: field not available in schema
       attrs
       childrenAttrs
       createdAt
@@ -1049,7 +1056,7 @@ export const GET_OBJECT_DETAILS = gql`
       events {
         id
         path
-        status
+        # status - DISABLED: field not available in schema
         createdAt
         endAt
         campus
@@ -1171,7 +1178,7 @@ export const ADVANCED_SEARCH = gql`
     ) {
       id
       path
-      status
+      # status - DISABLED: field not available in schema
       createdAt
       endAt
       campus
@@ -1253,10 +1260,11 @@ export const GET_USER_ANALYTICS = gql`
     # Audit performance over time
     audit_timeline: audit(
       where: {
-        _or: [
-          { auditorId: { _eq: $userId } }
-          { group: { groupUsers: { userId: { _eq: $userId } } } }
-        ]
+        # _or: [ - DISABLED: groupUsers field not available, using only auditorId
+        # { auditorId: { _eq: $userId } }
+        # { group: { groupUsers: { userId: { _eq: $userId } } } }
+        # ]
+        auditorId: { _eq: $userId }
       }
       order_by: { createdAt: asc }
     ) {

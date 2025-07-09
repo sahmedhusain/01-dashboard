@@ -60,7 +60,7 @@ export const authenticateUser = async (identifier, password) => {
     const cleanToken = token.trim().replace(/^["']|["']$/g, '');
 
     // Debug logging in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('Raw token length:', token.length);
       console.log('Clean token length:', cleanToken.length);
       console.log('Token parts:', cleanToken.split('.').length);
@@ -143,7 +143,7 @@ export const isValidTokenFormat = (token) => {
       if (!/^[A-Za-z0-9_-]+$/.test(part)) throw new Error('Invalid characters');
     });
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

@@ -357,7 +357,7 @@ export const mockLocalStorage = () => {
 
 // Mock fetch
 export const mockFetch = (responses = {}) => {
-  return jest.fn((url, options) => {
+  return jest.fn((url, _options) => {
     const response = responses[url] || { ok: true, json: () => Promise.resolve({}) };
     return Promise.resolve(response);
   });
@@ -366,7 +366,7 @@ export const mockFetch = (responses = {}) => {
 // Mock GraphQL client
 export const mockGraphQLClient = (responses = {}) => {
   return {
-    query: jest.fn(({ query, variables }) => {
+    query: jest.fn(({ query, _variables }) => {
       const queryName = query.definitions[0]?.name?.value;
       const response = responses[queryName] || { data: {} };
       return Promise.resolve(response);

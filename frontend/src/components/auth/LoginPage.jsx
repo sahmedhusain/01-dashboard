@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, User, Mail, Lock, LogIn } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/authUtils.jsx';
 import { getIdentifierType } from '../../utils/auth';
 
 const LoginPage = () => {
@@ -26,7 +26,7 @@ const LoginPage = () => {
     if (error) {
       clearError();
     }
-  }, [formData.identifier, formData.password]);
+  }, [formData.identifier, formData.password, error, clearError]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

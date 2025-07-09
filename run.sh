@@ -27,6 +27,7 @@ print_help() {
     echo -e "  ${GREEN}dev${NC}     - Start development server"
     echo -e "  ${GREEN}test${NC}    - Run tests"
     echo -e "  ${GREEN}build${NC}   - Build for production"
+    echo -e "  ${GREEN}preview${NC} - Preview production build"
     echo -e "  ${GREEN}deploy${NC}  - Prepare for deployment (Vercel)"
     echo -e "  ${GREEN}help${NC}    - Show this help message"
     echo ""
@@ -132,6 +133,22 @@ build() {
     fi
 }
 
+# Preview production build
+preview() {
+    print_status "Starting preview server..."
+    check_frontend
+
+    # Build first if dist doesn't exist
+    if [ ! -d "$FRONTEND_DIR/dist" ]; then
+        print_status "No build found, building first..."
+        build
+    fi
+
+    cd "$FRONTEND_DIR"
+    print_success "Preview server starting at http://localhost:4173"
+    npm run preview
+}
+
 # Prepare for deployment
 deploy() {
     print_status "Preparing for deployment..."
@@ -166,6 +183,9 @@ case "${1:-help}" in
         ;;
     "build")
         build
+        ;;
+    "preview")
+        preview
         ;;
     "deploy")
         deploy

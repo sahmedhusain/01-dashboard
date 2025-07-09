@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo \"Tests will be implemented with Vitest\" && exit 0",
+    "test:watch": "echo \"Test watch mode will be implemented\" && exit 0",
+    "analyze": "npx vite-bundle-analyzer dist",
+    "clean": "rm -rf dist node_modules/.vite",
+    "type-check": "echo \"Type checking will be implemented with TypeScript\" && exit 0"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",

@@ -1,0 +1,81 @@
+# Import required fragments
+#import "../fragments/user-fragments.graphql"
+#import "../fragments/transaction-fragments.graphql"
+#import "../fragments/audit-fragments.graphql"
+#import "../fragments/role-fragments.graphql"
+#import "../fragments/record-fragments.graphql"
+
+# Enhanced Audit Ratio Query with comprehensive audit data
+query GetAuditRatio($userId: Int!, $campus: String = null) {
+  user(where: { id: { _eq: $userId } }) {
+    ...UserInfo
+    # Direct audit metrics from user table
+    auditRatio
+    totalUp
+    totalDown
+    totalUpBonus
+    auditsAssigned
+
+    # Up transactions aggregate
+    upTransactions: transactions_aggregate(
+      where: {
+        type: { _eq: "up" }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Down transactions aggregate
+    downTransactions: transactions_aggregate(
+      where: {
+        type: { _eq: "down" }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Audits given by user (as auditor)
+    auditsGiven: audits_aggregate {
+      ...AuditAggregateInfo
+    }
+
+    # Audits received through group membership
+    auditsReceived: audits_aggregate(
+      where: {
+        group: {
+          groupUsers: {
+            userId: { _eq: $userId }
+          }
+        }
+      }
+    ) {
+      ...AuditAggregateInfo
+    }
+
+    # User roles with enhanced data
+    user_roles {
+      ...UserRoleInfo
+      role {
+        ...RoleInfo
+      }
+    }
+
+    # User records with enhanced author data
+    records {
+      ...RecordInfo
+      author {
+        ...UserBasicInfo
+      }
+    }
+
+    # Records authored by this user
+    recordsByAuthorid {
+      ...RecordInfo
+      user {
+        ...UserBasicInfo
+      }
+    }
+  }
+}

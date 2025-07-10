@@ -1,0 +1,105 @@
+# General queries for top transactions, total XP, and technologies
+
+# Get top transaction query
+query GetTopTransaction($campus: String = null, $pathPattern: String = "%") {
+  transaction(
+    order_by: { amount: desc }
+    limit: 1
+    where: {
+      type: { _eq: "xp" }
+      path: { _like: $pathPattern }
+      campus: { _eq: $campus }
+    }
+  ) {
+    amount
+    type
+    createdAt
+    path
+    campus
+    object {
+      name
+      type
+      attrs
+    }
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get total XP query
+query GetTotalXP($eventPath: String = null, $campus: String = null) {
+  transaction_aggregate(
+    where: {
+      type: { _eq: "xp" }
+      event: { path: { _eq: $eventPath } }
+      campus: { _eq: $campus }
+    }
+  ) {
+    aggregate {
+      sum {
+        # XP amount in bytes, converted to KB using factor of 1000
+        amount
+      }
+      count
+    }
+  }
+}
+
+# Get user technologies query
+query GetUserTechnologies {
+  transaction(
+    where: {
+      _and: [
+        { type: { _iregex: "(^|[^[:alnum:]_])[[:alnum:]_]*skill_[[:alnum:]_]*($|[^[:alnum:]_])" } }
+        { type: { _like: "%skill%" } }
+        { object: { type: { _eq: "project" } } }
+        { type: { _in: [
+          "skill_git", "skill_go", "skill_js",
+          "skill_html", "skill_css", "skill_unix", "skill_docker",
+          "skill_sql"
+        ] } }
+      ]
+    }
+    order_by: [{ type: asc }, { createdAt: desc }]
+    distinct_on: type
+  ) {
+    amount
+    type
+    createdAt
+    object {
+      name
+      type
+    }
+  }
+}
+
+# Get user technical skills query
+query GetUserTechnicalSkills {
+  transaction(
+    where: {
+      _and: [
+        { type: { _iregex: "(^|[^[:alnum:]_])[[:alnum:]_]*skill_[[:alnum:]_]*($|[^[:alnum:]_])" } }
+        { type: { _like: "%skill%" } }
+        { object: { type: { _eq: "project" } } }
+        { type: { _in: [
+          "skill_prog", "skill_algo", "skill_sys-admin", "skill_front-end",
+          "skill_back-end", "skill_stats", "skill_ai", "skill_game",
+          "skill_tcp"
+        ] } }
+      ]
+    }
+    order_by: [{ type: asc }, { createdAt: desc }]
+    distinct_on: type
+  ) {
+    amount
+    type
+    createdAt
+    object {
+      name
+      type
+    }
+  }
+}

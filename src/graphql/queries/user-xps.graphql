@@ -1,0 +1,19 @@
+# Import required fragments
+#import "../fragments/xp-fragments.graphql"
+
+# Query for user XPs (separate from transactions)
+query GetUserXPs($userId: Int!, $limit: Int = 100, $offset: Int = 0) {
+  user(where: { id: { _eq: $userId } }) {
+    id
+    login
+
+    # User XPs
+    xps(
+      limit: $limit
+      offset: $offset
+      order_by: { createdAt: desc }
+    ) {
+      ...XPInfo
+    }
+  }
+}

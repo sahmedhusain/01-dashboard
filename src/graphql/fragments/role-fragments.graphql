@@ -1,0 +1,38 @@
+# Role-related fragments
+fragment RoleInfo on role {
+  id
+  slug
+  name
+  description
+  createdAt
+  updatedAt
+}
+
+fragment UserRoleInfo on user_role {
+  id
+  userId
+  roleId
+  createdAt
+  updatedAt
+}
+
+fragment UserRoleAggregateInfo on user_role_aggregate {
+  aggregate {
+    count
+  }
+}
+
+fragment UserRolesViewInfo on user_roles_view {
+  id
+  userId
+  roleId
+  slug
+  name
+  description
+}
+
+fragment UserRolesViewAggregateInfo on user_roles_view_aggregate {
+  aggregate {
+    count
+  }
+}

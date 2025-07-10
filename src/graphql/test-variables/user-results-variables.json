@@ -1,0 +1,8 @@
+{
+  "comment": "Variables for user results query",
+  "userId": 1559,
+  "limit": 50,
+  "offset": 0,
+  "type": "project",
+  "minGrade": 1.0
+}

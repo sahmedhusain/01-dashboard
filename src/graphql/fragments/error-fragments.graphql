@@ -1,0 +1,13 @@
+# Error handling fragments for consistent error patterns
+fragment ErrorInfo on Error {
+  message
+  code
+  path
+}
+
+# Pagination info fragment for consistent pagination
+fragment PaginationInfo on Query {
+  totalCount: aggregate {
+    count
+  }
+}

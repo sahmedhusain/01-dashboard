@@ -1,0 +1,48 @@
+# Import required fragments
+#import "../fragments/object-fragments.graphql"
+#import "../fragments/user-fragments.graphql"
+
+# Query for user created objects
+query GetUserCreatedObjects($userId: Int!, $limit: Int = 50, $offset: Int = 0, $objectType: String = null) {
+  user(where: { id: { _eq: $userId } }) {
+    id
+    login
+
+    # Objects created by user
+    objects(
+      where: { type: { _eq: $objectType } }
+      limit: $limit
+      offset: $offset
+      order_by: { createdAt: desc }
+    ) {
+      ...ObjectInfo
+      reference {
+        ...ObjectInfo
+        author {
+          ...UserBasicInfo
+        }
+      }
+      # Objects that reference this object
+      referencedBy: objectsByReferenceId(limit: 5) {
+        ...ObjectInfo
+      }
+      # Object children
+      children: objectChildrenByParentId(limit: 10) {
+        id
+        key
+        index
+        attrs
+        child {
+          ...ObjectInfo
+        }
+      }
+    }
+
+    # Objects aggregate
+    objects_aggregate(
+      where: { type: { _eq: $objectType } }
+    ) {
+      ...ObjectAggregateInfo
+    }
+  }
+}

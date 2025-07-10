@@ -1,0 +1,75 @@
+# Import required fragments
+#import "../fragments/user-fragments.graphql"
+#import "../fragments/transaction-fragments.graphql"
+#import "../fragments/result-fragments.graphql"
+
+# Advanced skill analytics with campus filtering
+query GetSkillAnalytics($userId: Int!, $campus: String = null) {
+  user(where: { id: { _eq: $userId } }) {
+    ...UserInfo
+
+    # Skill-based transactions
+    skillTransactions: transactions_aggregate(
+      where: {
+        type: { _like: "%skill%" }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Programming skills
+    programmingSkills: transactions_aggregate(
+      where: {
+        type: { _in: ["skill_prog", "skill_algo"] }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Technology skills
+    technologySkills: transactions_aggregate(
+      where: {
+        type: { _in: ["skill_git", "skill_go", "skill_js", "skill_html", "skill_css", "skill_unix", "skill_docker", "skill_sql"] }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Advanced skills
+    advancedSkills: transactions_aggregate(
+      where: {
+        type: { _in: ["skill_sys-admin", "skill_front-end", "skill_back-end", "skill_stats", "skill_ai", "skill_game", "skill_tcp"] }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Project-based skill development
+    projectSkillDevelopment: results_aggregate(
+      where: {
+        object: { type: { _eq: "project" } }
+        grade: { _gte: 1 }
+        isLast: { _eq: true }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...ResultAggregateInfo
+    }
+
+    # Exercise-based skill development
+    exerciseSkillDevelopment: results_aggregate(
+      where: {
+        object: { type: { _eq: "exercise" } }
+        grade: { _gte: 1 }
+        isLast: { _eq: true }
+        campus: { _eq: $campus }
+      }
+    ) {
+      ...ResultAggregateInfo
+    }
+  }
+}

@@ -1,0 +1,22 @@
+# Label-related fragments
+fragment LabelInfo on label {
+  id
+  name
+  description
+  color
+  createdAt
+  updatedAt
+}
+
+fragment LabelUserInfo on label_user {
+  id
+  userId
+  labelId
+  createdAt
+}
+
+fragment LabelUserAggregateInfo on label_user_aggregate {
+  aggregate {
+    count
+  }
+}

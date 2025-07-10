@@ -26,6 +26,20 @@ import {
   GET_ENHANCED_PROFILE,
   GET_PROJECT_TIMELINE,
   GET_DETAILED_AUDIT_STATS,
+  // Enhanced queries from introspection
+  GET_ENHANCED_USER_PROFILE,
+  GET_COMPREHENSIVE_USER_ANALYTICS,
+  GET_PERFORMANCE_ANALYTICS,
+  GET_COLLABORATION_ANALYTICS,
+  GET_CAMPUS_COMPARISON_ANALYTICS,
+  GET_USER_EVENTS_DETAILED,
+  GET_USER_LABELS,
+  GET_USER_MATCHES_DETAILED,
+  GET_USER_OBJECT_AVAILABILITIES,
+  GET_USER_PROGRESS_BY_PATH,
+  GET_USER_SESSIONS,
+  GET_USER_XPS,
+  GET_USER_CREATED_OBJECTS,
   // Enhanced search queries
   SEARCH_PROJECTS_BY_STATUS,
   SEARCH_AUDITS_BY_STATUS,
@@ -5411,5 +5425,355 @@ export const useEnhancedUserSearch = () => {
     },
     // Campus distribution
     campuses: [...new Set(searchResults.map(u => u.campus).filter(Boolean))],
+  };
+};
+
+// ============================================================================
+// ENHANCED HOOKS BASED ON INTROSPECTION DATA
+// ============================================================================
+
+// Hook for enhanced user profile with all relationships
+export const useEnhancedUserProfile = (userId, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_ENHANCED_USER_PROFILE, {
+    variables: { userId: targetUserId },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const enhancedProfile = data?.user?.[0] || null;
+
+  return {
+    enhancedProfile,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for comprehensive user analytics
+export const useComprehensiveUserAnalytics = (userId, campus = null, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_COMPREHENSIVE_USER_ANALYTICS, {
+    variables: { userId: targetUserId, campus },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const analytics = data?.user?.[0] || null;
+
+  // Process analytics data
+  const processedAnalytics = analytics ? {
+    userInfo: {
+      id: analytics.id,
+      login: analytics.login,
+      firstName: analytics.firstName,
+      lastName: analytics.lastName,
+      campus: analytics.campus,
+      auditRatio: analytics.auditRatio,
+      totalUp: analytics.totalUp,
+      totalDown: analytics.totalDown,
+      totalUpBonus: analytics.totalUpBonus,
+      auditsAssigned: analytics.auditsAssigned,
+    },
+    aggregates: {
+      transactions: analytics.transactions_aggregate?.aggregate || {},
+      xpTransactions: analytics.xpTransactions?.aggregate || {},
+      upTransactions: analytics.upTransactions?.aggregate || {},
+      downTransactions: analytics.downTransactions?.aggregate || {},
+      progresses: analytics.progresses_aggregate?.aggregate || {},
+      completedProgress: analytics.completedProgress?.aggregate || {},
+      results: analytics.results_aggregate?.aggregate || {},
+      passedResults: analytics.passedResults?.aggregate || {},
+      projectResults: analytics.projectResults?.aggregate || {},
+      audits: analytics.audits_aggregate?.aggregate || {},
+      events: analytics.events_aggregate?.aggregate || {},
+      groups: analytics.groups_aggregate?.aggregate || {},
+      groupsAsCaptain: analytics.groupsByCaptainid_aggregate?.aggregate || {},
+      labels: analytics.labels_aggregate?.aggregate || {},
+      matches: analytics.matches_aggregate?.aggregate || {},
+      objectAvailabilities: analytics.objectAvailabilities_aggregate?.aggregate || {},
+      objects: analytics.objects_aggregate?.aggregate || {},
+      progressesByPath: analytics.progressesByPath_aggregate?.aggregate || {},
+      registrations: analytics.registrations_aggregate?.aggregate || {},
+      userRoles: analytics.user_roles_aggregate?.aggregate || {},
+      roles: analytics.roles_aggregate?.aggregate || {},
+      sessions: analytics.sessions_aggregate?.aggregate || {},
+    },
+  } : null;
+
+  return {
+    analytics: processedAnalytics,
+    rawAnalytics: analytics,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for performance analytics with time filtering
+export const usePerformanceAnalytics = (userId, startDate, endDate, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_PERFORMANCE_ANALYTICS, {
+    variables: {
+      userId: targetUserId,
+      startDate: startDate?.toISOString(),
+      endDate: endDate?.toISOString(),
+    },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const performanceData = data?.user?.[0] || null;
+
+  return {
+    performanceData,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for collaboration analytics
+export const useCollaborationAnalytics = (userId, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_COLLABORATION_ANALYTICS, {
+    variables: { userId: targetUserId },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const collaborationData = data?.user?.[0] || null;
+
+  // Process collaboration metrics
+  const processedData = collaborationData ? {
+    userInfo: {
+      id: collaborationData.id,
+      login: collaborationData.login,
+      firstName: collaborationData.firstName,
+      lastName: collaborationData.lastName,
+    },
+    groupParticipation: collaborationData.groups || [],
+    leadershipRoles: collaborationData.groupsByCaptainid || [],
+    auditRelationships: collaborationData.audits || [],
+    skillProgression: collaborationData.skillTransactions || [],
+    competitiveMatches: collaborationData.matches || [],
+  } : null;
+
+  return {
+    collaborationData: processedData,
+    rawData: collaborationData,
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for detailed user events and registrations
+export const useUserEventsDetailed = (userId, limit = 50, offset = 0, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_EVENTS_DETAILED, {
+    variables: { userId: targetUserId, limit, offset },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    events: userData?.events || [],
+    eventsAggregate: userData?.events_aggregate?.aggregate || {},
+    registrations: userData?.registrations || [],
+    registrationsAggregate: userData?.registrations_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user labels
+export const useUserLabels = (userId, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_LABELS, {
+    variables: { userId: targetUserId },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    labels: userData?.labels || [],
+    labelsAggregate: userData?.labels_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user matches (betting/competition system)
+export const useUserMatchesDetailed = (userId, limit = 50, offset = 0, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_MATCHES_DETAILED, {
+    variables: { userId: targetUserId, limit, offset },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    matches: userData?.matches || [],
+    matchesAggregate: userData?.matches_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user object availabilities
+export const useUserObjectAvailabilities = (userId, limit = 50, offset = 0, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_OBJECT_AVAILABILITIES, {
+    variables: { userId: targetUserId, limit, offset },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    objectAvailabilities: userData?.objectAvailabilities || [],
+    objectAvailabilitiesAggregate: userData?.objectAvailabilities_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user progress by path
+export const useUserProgressByPath = (userId, pathPattern = '%', limit = 50, offset = 0, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_PROGRESS_BY_PATH, {
+    variables: { userId: targetUserId, pathPattern, limit, offset },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    progressesByPath: userData?.progressesByPath || [],
+    progressesByPathAggregate: userData?.progressesByPath_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user sessions
+export const useUserSessions = (userId, limit = 10, offset = 0, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_SESSIONS, {
+    variables: { userId: targetUserId, limit, offset },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    sessions: userData?.sessions || [],
+    sessionsAggregate: userData?.sessions_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user XPs (separate from transactions)
+export const useUserXPs = (userId, limit = 100, offset = 0, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_XPS, {
+    variables: { userId: targetUserId, limit, offset },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    xps: userData?.xps || [],
+    loading,
+    error,
+    refetch,
+  };
+};
+
+// Hook for user created objects
+export const useUserCreatedObjects = (userId, limit = 50, offset = 0, objectType = null, options = {}) => {
+  const { user, isAuthenticated } = useAuth();
+  const targetUserId = userId || user?.id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_CREATED_OBJECTS, {
+    variables: { userId: targetUserId, limit, offset, objectType },
+    skip: !isAuthenticated || !targetUserId,
+    errorPolicy: 'all',
+    fetchPolicy: options.fetchPolicy || 'cache-first',
+    ...options,
+  });
+
+  const userData = data?.user?.[0] || null;
+
+  return {
+    objects: userData?.objects || [],
+    objectsAggregate: userData?.objects_aggregate?.aggregate || {},
+    loading,
+    error,
+    refetch,
   };
 };

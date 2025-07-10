@@ -1,0 +1,89 @@
+# Import required fragments
+#import "../fragments/user-fragments.graphql"
+#import "../fragments/transaction-fragments.graphql"
+#import "../fragments/result-fragments.graphql"
+#import "../fragments/audit-fragments.graphql"
+#import "../fragments/progress-fragments.graphql"
+
+# Advanced performance analytics with time-based insights
+query GetPerformanceAnalytics($userId: Int!, $startDate: timestamptz, $endDate: timestamptz) {
+  user(where: { id: { _eq: $userId } }) {
+    ...UserInfo
+
+    # Time-filtered transaction analytics
+    recentTransactions: transactions_aggregate(
+      where: {
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Recent XP gains
+    recentXP: transactions_aggregate(
+      where: {
+        type: { _eq: "xp" }
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    # Recent project completions
+    recentProjects: results_aggregate(
+      where: {
+        object: { type: { _eq: "project" } }
+        createdAt: { _gte: $startDate, _lte: $endDate }
+        isLast: { _eq: true }
+      }
+    ) {
+      ...ResultAggregateInfo
+    }
+
+    # Recent audits given
+    recentAuditsGiven: audits_aggregate(
+      where: {
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...AuditAggregateInfo
+    }
+
+    # Recent progress updates
+    recentProgress: progresses_aggregate(
+      where: {
+        updatedAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...ProgressAggregateInfo
+    }
+
+    # Activity by object type
+    projectActivity: transactions_aggregate(
+      where: {
+        object: { type: { _eq: "project" } }
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    exerciseActivity: transactions_aggregate(
+      where: {
+        object: { type: { _eq: "exercise" } }
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+
+    questActivity: transactions_aggregate(
+      where: {
+        object: { type: { _eq: "quest" } }
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      ...TransactionAggregateInfo
+    }
+  }
+}

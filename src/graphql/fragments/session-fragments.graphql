@@ -1,0 +1,15 @@
+# Session fragments (TOAD sessions)
+fragment ToadSessionInfo on toad_sessions {
+  id
+  userId
+  sessionData
+  createdAt
+  updatedAt
+  expiresAt
+}
+
+fragment ToadSessionsAggregateInfo on toad_sessions_aggregate {
+  aggregate {
+    count
+  }
+}

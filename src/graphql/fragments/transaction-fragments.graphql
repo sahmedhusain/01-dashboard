@@ -1,0 +1,32 @@
+# Transaction fragment following official database structure
+fragment TransactionInfo on transaction {
+  id
+  type
+  amount
+  userId
+  attrs
+  createdAt
+  path
+  objectId
+  eventId
+  campus
+}
+
+# Transaction aggregate fragment for statistical data
+fragment TransactionAggregateInfo on transaction_aggregate {
+  aggregate {
+    count
+    avg {
+      amount
+    }
+    max {
+      amount
+    }
+    min {
+      amount
+    }
+    sum {
+      amount
+    }
+  }
+}

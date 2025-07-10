@@ -5,6 +5,7 @@ A modern, responsive student profile dashboard for the reboot01 platform built w
 ## 🚀 Features
 
 ### Core GraphQL System
+
 - **Comprehensive Query System**: 30+ specialized GraphQL queries covering all data types
 - **Advanced User Progression**: Detailed progress tracking with completion rates and time-based analysis
 - **XP & Transaction System**: Complete XP tracking with breakdown by project types and transaction categorization
@@ -15,12 +16,14 @@ A modern, responsive student profile dashboard for the reboot01 platform built w
 - **Advanced Search**: Powerful search with filtering, sorting, and pagination capabilities
 
 ### Performance & Optimization
+
 - **Intelligent Caching**: Optimized Apollo Client cache with field-level policies
 - **Query Batching**: Automatic query batching for improved performance
 - **Performance Monitoring**: Real-time query performance tracking and optimization
 - **Error Handling**: Comprehensive error processing with retry logic and fallback mechanisms
 
 ### Additional Features
+
 - **User Comparison Tools**: Compare performance metrics between users
 - **Leaderboards**: Multiple leaderboard types with ranking and percentile calculations
 - **Achievement System**: Comprehensive achievement tracking with rarity and progress indicators
@@ -29,6 +32,7 @@ A modern, responsive student profile dashboard for the reboot01 platform built w
 - **Real-time Analytics**: Live performance insights and trend analysis
 
 ### UI & UX
+
 - **Authentication**: JWT-based login with secure token management
 - **Interactive Charts**: SVG-based data visualizations for XP, projects, and audits
 - **Responsive Design**: Mobile-first approach with Material Design 3 principles
@@ -38,6 +42,7 @@ A modern, responsive student profile dashboard for the reboot01 platform built w
 ## 📱 Screenshots
 
 The dashboard includes:
+
 - User profile with level progression and statistics
 - XP progression charts and project success rates
 - Audit history with filtering and sorting
@@ -63,6 +68,7 @@ The dashboard includes:
 The system implements a comprehensive GraphQL architecture with:
 
 ### Query Organization
+
 ```
 ├── User Management (Profile, Authentication, Roles)
 ├── Progress Tracking (Progress, Results, Completion Analysis)
@@ -75,6 +81,7 @@ The system implements a comprehensive GraphQL architecture with:
 ```
 
 ### Performance Features
+
 - **Intelligent Caching**: Field-level cache policies with automatic invalidation
 - **Query Batching**: Automatic batching of concurrent queries (50ms window)
 - **Performance Monitoring**: Real-time query performance tracking
@@ -82,7 +89,9 @@ The system implements a comprehensive GraphQL architecture with:
 - **Data Optimization**: Pagination, filtering, and selective field fetching
 
 ### Hook System
+
 30+ specialized React hooks providing:
+
 - Type-safe data fetching
 - Automatic loading and error states
 - Performance optimization
@@ -120,15 +129,18 @@ The system implements a comprehensive GraphQL architecture with:
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd graphql
    ```
 
 2. **Install dependencies**
+
    ```bash
    ./run.sh dev
    ```
+
    This will automatically install dependencies and start the development server.
 
 3. **Open your browser**
@@ -164,6 +176,7 @@ VITE_AUTH_ENDPOINT=https://learn.reboot01.com/api/auth/signin
 ### GraphQL Endpoint
 
 The application connects to:
+
 - **GraphQL API**: `https://learn.reboot01.com/api/graphql-engine/v1/graphql`
 - **Authentication**: `https://learn.reboot01.com/api/auth/signin`
 
@@ -177,6 +190,7 @@ The dashboard includes several interactive charts:
 4. **Technology Skills**: Interactive skill cards with progress bars
 
 All charts are built with custom SVG components and include:
+
 - Smooth animations and transitions
 - Interactive hover effects
 - Responsive design
@@ -211,6 +225,7 @@ The application follows Material Design 3 principles with:
 ### Vercel (Recommended)
 
 1. **Connect Repository**
+
    - Import project to Vercel
    - Configure build settings:
      - Build Command: `npm run build`
@@ -228,6 +243,7 @@ The application follows Material Design 3 principles with:
 ### Manual Deployment
 
 1. **Build the project**
+
    ```bash
    ./run.sh build
    ```
@@ -237,6 +253,7 @@ The application follows Material Design 3 principles with:
 ## 🧪 Testing
 
 Testing setup includes:
+
 - Unit tests for components
 - Integration tests for GraphQL queries
 - E2E tests for user flows

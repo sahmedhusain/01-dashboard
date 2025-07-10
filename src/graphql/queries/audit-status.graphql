@@ -1,0 +1,50 @@
+# Audit Status Query
+query GetAuditStatus($userId: Int!) {
+  user(where: { id: { _eq: $userId } }) {
+    id
+    login
+
+    # Audits given by user (as auditor)
+    validAuditsGiven: audit_aggregate(
+      where: {
+        auditorId: { _eq: $userId }
+        grade: { _gte: 1 }
+      }
+    ) {
+      aggregate {
+        count
+      }
+      nodes {
+        id
+        grade
+        group {
+          id
+          path
+          captainId
+          status
+        }
+      }
+    }
+
+    failedAuditsGiven: audit_aggregate(
+      where: {
+        auditorId: { _eq: $userId }
+        grade: { _lt: 1 }
+      }
+    ) {
+      aggregate {
+        count
+      }
+      nodes {
+        id
+        grade
+        group {
+          id
+          path
+          captainId
+          status
+        }
+      }
+    }
+  }
+}

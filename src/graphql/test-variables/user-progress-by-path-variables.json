@@ -1,0 +1,7 @@
+{
+  "comment": "Variables for user progress by path query",
+  "userId": 1559,
+  "pathPattern": "%madere%",
+  "limit": 50,
+  "offset": 0
+}

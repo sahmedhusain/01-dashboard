@@ -1,0 +1,6 @@
+{
+  "comment": "Variables for general queries (top transaction, total XP, technologies)",
+  "campus": "madere",
+  "pathPattern": "%madere%",
+  "eventPath": "/madere/div-01"
+}

@@ -1,0 +1,7 @@
+{
+  "comment": "Variables for user progress query",
+  "userId": 1559,
+  "limit": 50,
+  "offset": 0,
+  "isDone": true
+}

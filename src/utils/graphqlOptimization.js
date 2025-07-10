@@ -1,11 +1,22 @@
 // GraphQL Performance Optimization Utilities
 import { InMemoryCache } from '@apollo/client';
+// Import GraphQL queries from the extracted files
+import {
+  GET_ENHANCED_USER_PROFILE,
+  GET_COMPREHENSIVE_USER_ANALYTICS,
+  GET_USER_PROGRESS_BY_PATH,
+  GET_USER_LABELS,
+  GET_PERFORMANCE_ANALYTICS,
+  GET_USER_EVENTS_DETAILED,
+  GET_USER_OBJECT_AVAILABILITIES,
+  GET_USER_XPS
+} from '../graphql/queries.js';
 
 // ============================================================================
 // CACHING STRATEGIES
 // ============================================================================
 
-// Enhanced cache configuration with field policies
+// Enhanced cache configuration with field policies for all new types
 export const createOptimizedCache = () => {
   return new InMemoryCache({
     typePolicies: {
@@ -13,6 +24,7 @@ export const createOptimizedCache = () => {
         fields: {
           // User-related queries
           user: {
+            keyArgs: ['where'],
             merge(_, incoming) {
               return incoming;
             },
@@ -37,25 +49,7 @@ export const createOptimizedCache = () => {
               return incoming;
             },
           },
-          result: {
-            keyArgs: ['where', 'order_by'],
-            merge(existing = [], incoming, { args }) {
-              if (args?.offset && args.offset > 0) {
-                return [...existing, ...incoming];
-              }
-              return incoming;
-            },
-          },
-          audit: {
-            keyArgs: ['where', 'order_by'],
-            merge(existing = [], incoming, { args }) {
-              if (args?.offset && args.offset > 0) {
-                return [...existing, ...incoming];
-              }
-              return incoming;
-            },
-          },
-          // Event and group queries
+          // Enhanced relationship fields
           event: {
             keyArgs: ['where', 'order_by'],
             merge(existing = [], incoming, { args }) {
@@ -74,25 +68,302 @@ export const createOptimizedCache = () => {
               return incoming;
             },
           },
+          audit: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          result: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          object: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          // New relationship fields from introspection
+          eventUser: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          groupUser: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          labelUser: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          match: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          objectAvailability: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          progressByPathView: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          record: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          registration: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          registrationUser: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          userRole: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          toadSessions: {
+            keyArgs: ['where', 'order_by'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
         },
       },
-      User: {
+      // Enhanced user type with all new fields from introspection
+      user: {
+        keyFields: ['id'],
         fields: {
-          transactions: {
-            merge(_, incoming) {
+          // Basic fields
+          profile: { merge: true },
+          attrs: { merge: true },
+
+          // Relationship fields with pagination support
+          events: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
               return incoming;
             },
           },
-          results: {
-            merge(_, incoming) {
+          groups: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
               return incoming;
             },
           },
-          progresses: {
-            merge(_, incoming) {
+          groupsByCaptainid: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
               return incoming;
             },
           },
+          labels: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          matches: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          objectAvailabilities: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          objects: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          progressesByPath: {
+            keyArgs: ['where', 'limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          records: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          recordsByAuthorid: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          registrations: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          user_roles: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          roles: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          sessions: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+          xps: {
+            keyArgs: ['limit', 'offset'],
+            merge(existing = [], incoming, { args }) {
+              if (args?.offset && args.offset > 0) {
+                return [...existing, ...incoming];
+              }
+              return incoming;
+            },
+          },
+
+          // Existing transaction/result fields
+          transactions: { merge: false },
+          results: { merge: false },
+          progresses: { merge: false },
+
+          // Aggregate fields - always replace for fresh data
+          transactions_aggregate: { merge: false },
+          progresses_aggregate: { merge: false },
+          results_aggregate: { merge: false },
+          audits_aggregate: { merge: false },
+          events_aggregate: { merge: false },
+          groups_aggregate: { merge: false },
+          groupsByCaptainid_aggregate: { merge: false },
+          labels_aggregate: { merge: false },
+          matches_aggregate: { merge: false },
+          objectAvailabilities_aggregate: { merge: false },
+          objects_aggregate: { merge: false },
+          progressesByPath_aggregate: { merge: false },
+          registrations_aggregate: { merge: false },
+          user_roles_aggregate: { merge: false },
+          roles_aggregate: { merge: false },
+          sessions_aggregate: { merge: false },
         },
       },
       // Aggregate fields optimization
@@ -325,9 +596,258 @@ export const invalidateCache = (client, patterns = []) => {
 export const getCacheSize = (client) => {
   const cache = client.cache;
   const data = cache.extract();
-  
+
   return {
     entries: Object.keys(data).length,
     sizeEstimate: JSON.stringify(data).length, // Rough estimate in characters
   };
+};
+
+// ============================================================================
+// ENHANCED PERFORMANCE OPTIMIZATIONS FOR NEW QUERIES
+// ============================================================================
+
+// Query priority system for enhanced queries
+export const QUERY_PRIORITIES = {
+  CRITICAL: 1,    // User profile, authentication
+  HIGH: 2,        // Dashboard data, XP statistics
+  MEDIUM: 3,      // Analytics, detailed views
+  LOW: 4,         // Background data, optional features
+};
+
+// Enhanced query configurations with priorities
+export const ENHANCED_QUERY_CONFIGS = {
+  GET_ENHANCED_USER_PROFILE: {
+    priority: QUERY_PRIORITIES.HIGH,
+    cacheTimeout: 5 * 60 * 1000, // 5 minutes
+    retryAttempts: 3,
+    batchable: false, // Profile queries should be immediate
+  },
+  GET_COMPREHENSIVE_USER_ANALYTICS: {
+    priority: QUERY_PRIORITIES.MEDIUM,
+    cacheTimeout: 10 * 60 * 1000, // 10 minutes
+    retryAttempts: 2,
+    batchable: true,
+  },
+  GET_PERFORMANCE_ANALYTICS: {
+    priority: QUERY_PRIORITIES.MEDIUM,
+    cacheTimeout: 15 * 60 * 1000, // 15 minutes
+    retryAttempts: 2,
+    batchable: true,
+  },
+  GET_COLLABORATION_ANALYTICS: {
+    priority: QUERY_PRIORITIES.LOW,
+    cacheTimeout: 20 * 60 * 1000, // 20 minutes
+    retryAttempts: 1,
+    batchable: true,
+  },
+  GET_USER_EVENTS_DETAILED: {
+    priority: QUERY_PRIORITIES.MEDIUM,
+    cacheTimeout: 10 * 60 * 1000,
+    retryAttempts: 2,
+    batchable: true,
+  },
+  GET_USER_LABELS: {
+    priority: QUERY_PRIORITIES.LOW,
+    cacheTimeout: 30 * 60 * 1000, // 30 minutes (labels change rarely)
+    retryAttempts: 1,
+    batchable: true,
+  },
+  GET_USER_MATCHES_DETAILED: {
+    priority: QUERY_PRIORITIES.LOW,
+    cacheTimeout: 15 * 60 * 1000,
+    retryAttempts: 1,
+    batchable: true,
+  },
+  GET_USER_OBJECT_AVAILABILITIES: {
+    priority: QUERY_PRIORITIES.MEDIUM,
+    cacheTimeout: 5 * 60 * 1000,
+    retryAttempts: 2,
+    batchable: true,
+  },
+  GET_USER_PROGRESS_BY_PATH: {
+    priority: QUERY_PRIORITIES.HIGH,
+    cacheTimeout: 2 * 60 * 1000, // 2 minutes (progress changes frequently)
+    retryAttempts: 3,
+    batchable: false,
+  },
+  GET_USER_SESSIONS: {
+    priority: QUERY_PRIORITIES.LOW,
+    cacheTimeout: 60 * 60 * 1000, // 1 hour
+    retryAttempts: 1,
+    batchable: true,
+  },
+  GET_USER_XPS: {
+    priority: QUERY_PRIORITIES.MEDIUM,
+    cacheTimeout: 10 * 60 * 1000,
+    retryAttempts: 2,
+    batchable: true,
+  },
+  GET_USER_CREATED_OBJECTS: {
+    priority: QUERY_PRIORITIES.MEDIUM,
+    cacheTimeout: 15 * 60 * 1000,
+    retryAttempts: 2,
+    batchable: true,
+  },
+};
+
+// Enhanced query batcher with priority support
+export class EnhancedQueryBatcher extends QueryBatcher {
+  constructor(client, batchInterval = 50) {
+    super(client, batchInterval);
+    this.priorityQueues = {
+      [QUERY_PRIORITIES.CRITICAL]: [],
+      [QUERY_PRIORITIES.HIGH]: [],
+      [QUERY_PRIORITIES.MEDIUM]: [],
+      [QUERY_PRIORITIES.LOW]: [],
+    };
+  }
+
+  // Add query with priority
+  addPriorityQuery(query, variables, options = {}) {
+    const queryName = query.definitions[0]?.name?.value;
+    const config = ENHANCED_QUERY_CONFIGS[queryName] || {
+      priority: QUERY_PRIORITIES.MEDIUM,
+      batchable: true,
+    };
+
+    if (!config.batchable) {
+      // Execute immediately for non-batchable queries
+      return this.client.query({ query, variables, ...options });
+    }
+
+    const priority = config.priority;
+    const queryKey = this.generateQueryKey(query, variables);
+
+    return new Promise((resolve, reject) => {
+      if (this.pendingQueries.has(queryKey)) {
+        this.pendingQueries.get(queryKey).callbacks.push({ resolve, reject });
+      } else {
+        const queryItem = {
+          query,
+          variables,
+          options,
+          callbacks: [{ resolve, reject }],
+          priority,
+          timestamp: Date.now(),
+        };
+
+        this.pendingQueries.set(queryKey, queryItem);
+        this.priorityQueues[priority].push(queryKey);
+      }
+
+      this.scheduleBatch();
+    });
+  }
+
+  // Execute batches by priority
+  async executeBatch() {
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
+      this.batchTimer = null;
+    }
+
+    // Process queries by priority
+    for (const priority of [
+      QUERY_PRIORITIES.CRITICAL,
+      QUERY_PRIORITIES.HIGH,
+      QUERY_PRIORITIES.MEDIUM,
+      QUERY_PRIORITIES.LOW,
+    ]) {
+      const queryKeys = this.priorityQueues[priority];
+      if (queryKeys.length === 0) continue;
+
+      // Execute queries in this priority level
+      const batchPromises = queryKeys.map(async (queryKey) => {
+        const queryItem = this.pendingQueries.get(queryKey);
+        if (!queryItem) return;
+
+        try {
+          const result = await this.client.query({
+            query: queryItem.query,
+            variables: queryItem.variables,
+            ...queryItem.options,
+          });
+
+          queryItem.callbacks.forEach(({ resolve }) => resolve(result));
+        } catch (error) {
+          queryItem.callbacks.forEach(({ reject }) => reject(error));
+        }
+
+        this.pendingQueries.delete(queryKey);
+      });
+
+      await Promise.all(batchPromises);
+      this.priorityQueues[priority] = [];
+
+      // Add small delay between priority levels to prevent overwhelming
+      if (priority !== QUERY_PRIORITIES.LOW) {
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+    }
+  }
+}
+
+// Enhanced cache warming for new queries
+export const warmEnhancedCache = async (client, userId, campus = null) => {
+  const enhancedQueries = [
+    {
+      query: GET_ENHANCED_USER_PROFILE,
+      variables: { userId },
+      priority: QUERY_PRIORITIES.HIGH,
+    },
+    {
+      query: GET_COMPREHENSIVE_USER_ANALYTICS,
+      variables: { userId, campus },
+      priority: QUERY_PRIORITIES.MEDIUM,
+    },
+    {
+      query: GET_USER_PROGRESS_BY_PATH,
+      variables: { userId, pathPattern: '%', limit: 20 },
+      priority: QUERY_PRIORITIES.HIGH,
+    },
+    {
+      query: GET_USER_LABELS,
+      variables: { userId },
+      priority: QUERY_PRIORITIES.LOW,
+    },
+    {
+      query: GET_PERFORMANCE_ANALYTICS,
+      variables: {
+        userId,
+        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+        endDate: new Date().toISOString()
+      },
+      priority: QUERY_PRIORITIES.MEDIUM,
+    },
+    {
+      query: GET_USER_EVENTS_DETAILED,
+      variables: { userId, limit: 20 },
+      priority: QUERY_PRIORITIES.MEDIUM,
+    },
+    {
+      query: GET_USER_OBJECT_AVAILABILITIES,
+      variables: { userId, limit: 20 },
+      priority: QUERY_PRIORITIES.MEDIUM,
+    },
+    {
+      query: GET_USER_XPS,
+      variables: { userId, limit: 50 },
+      priority: QUERY_PRIORITIES.MEDIUM,
+    },
+  ];
+
+  const batcher = new EnhancedQueryBatcher(client);
+
+  const warmingPromises = enhancedQueries.map(({ query, variables }) => {
+    return batcher.addPriorityQuery(query, variables, {
+      fetchPolicy: 'cache-first',
+      errorPolicy: 'ignore',
+    }).catch(error => {
+      const queryName = query.definitions[0]?.name?.value || 'Unknown Query';
+      console.warn(`Cache warming failed for ${queryName}:`, error);
+    });
+  });
+
+  await Promise.all(warmingPromises);
 };

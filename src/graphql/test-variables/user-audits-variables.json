@@ -1,0 +1,7 @@
+{
+  "comment": "Variables for user audits query",
+  "userId": 1559,
+  "limit": 50,
+  "offset": 0,
+  "asAuditor": true
+}

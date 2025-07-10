@@ -1,0 +1,10 @@
+# Record fragments (for user records/bans/warnings)
+fragment RecordInfo on record {
+  id
+  userId
+  authorId
+  message
+  banEndAt
+  createdAt
+  updatedAt
+}

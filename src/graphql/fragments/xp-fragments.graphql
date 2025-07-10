@@ -1,0 +1,9 @@
+# XP-related fragments (from user.xps field)
+fragment XPInfo on xp {
+  id
+  userId
+  amount
+  originEventId
+  path
+  createdAt
+}

@@ -1,0 +1,54 @@
+# Project Statistics Query
+query GetProjectStatistics($userId: Int!) {
+  # All project results
+  projectResults: result(
+    where: {
+      userId: { _eq: $userId }
+      object: { type: { _eq: "project" } }
+      isLast: { _eq: true }
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    grade
+    createdAt
+    updatedAt
+    path
+    object {
+      name
+      type
+    }
+    event {
+      id
+      path
+      createdAt
+      endAt
+    }
+  }
+
+  # Project statistics aggregates
+  totalProjects: result_aggregate(
+    where: {
+      userId: { _eq: $userId }
+      object: { type: { _eq: "project" } }
+      isLast: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  passedProjects: result_aggregate(
+    where: {
+      userId: { _eq: $userId }
+      object: { type: { _eq: "project" } }
+      grade: { _gte: 1 }
+      isLast: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

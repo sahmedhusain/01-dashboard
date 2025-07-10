@@ -1,0 +1,125 @@
+# Import required fragments
+#import "../fragments/progress-fragments.graphql"
+#import "../fragments/object-fragments.graphql"
+#import "../fragments/user-fragments.graphql"
+#import "../fragments/group-fragments.graphql"
+
+# Enhanced user progress query following official database structure
+query GetUserProgress($userId: Int!, $limit: Int = 50, $offset: Int = 0, $isDone: Boolean = null) {
+  progress(
+    where: {
+      userId: { _eq: $userId }
+      isDone: { _eq: $isDone }
+    }
+    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...ProgressInfo
+    # Related object information following official structure
+    object {
+      ...ObjectInfo
+      # Author information
+      author {
+        ...UserInfo
+      }
+      # Reference relationships
+      reference {
+        id
+        name
+        type
+        attrs
+      }
+      # Object children relationships
+      children: objectChildrenByParentId {
+        id
+        key
+        index
+        attrs
+        child {
+          id
+          name
+          type
+          attrs
+        }
+      }
+    }
+    # Related event information following official structure
+    event {
+      id
+      path
+      createdAt
+      endAt
+      campus
+      # Parent event relationship
+      parent {
+        id
+        path
+        campus
+      }
+      # Registration information
+      registration {
+        id
+        startAt
+        endAt
+        eventStartAt
+      }
+      # Related object
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+    # Related group information following official structure
+    group {
+      id
+      status
+      captainId
+      createdAt
+      updatedAt
+      path
+      campus
+      # Group users following official group_user table structure
+      groupUsers {
+        id
+        confirmed
+        createdAt
+        updatedAt
+        user {
+          ...UserInfo
+        }
+      }
+      # Captain information
+      captain {
+        ...UserInfo
+      }
+      # Related object
+      object {
+        id
+        name
+        type
+        attrs
+      }
+      # Related event
+      event {
+        id
+        path
+        campus
+      }
+    }
+  }
+
+  # Progress statistics
+  progress_aggregate(
+    where: { userId: { _eq: $userId } }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+}

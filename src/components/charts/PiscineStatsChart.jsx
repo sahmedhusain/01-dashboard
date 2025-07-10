@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 const PiscineStatsChart = ({ 
@@ -8,51 +8,65 @@ const PiscineStatsChart = ({
   className = ""
 }) => {
   const chartData = useMemo(() => {
-    const { jsStats = {}, goStats = {}, overall = {} } = data;
-    
-    // Create pie chart data for overall piscine performance
-    const segments = [];
-    
-    if (overall.passed > 0) {
-      segments.push({
-        label: 'Passed',
-        value: overall.passed,
-        percentage: (overall.passed / overall.total) * 100,
-        color: 'rgb(34, 197, 94)', // green
-        hoverColor: 'rgb(22, 163, 74)',
-      });
-    }
-    
-    if (overall.failed > 0) {
-      segments.push({
-        label: 'Failed',
-        value: overall.failed,
-        percentage: (overall.failed / overall.total) * 100,
-        color: 'rgb(239, 68, 68)', // red
-        hoverColor: 'rgb(220, 38, 38)',
-      });
-    }
+    try {
+      if (!data || typeof data !== 'object') {
+        return { segments: [], jsStats: {}, goStats: {}, overall: {} };
+      }
 
-    // Calculate angles for pie segments
-    let currentAngle = -90; // Start from top
-    const segmentsWithAngles = segments.map(segment => {
-      const angle = (segment.percentage / 100) * 360;
-      const result = {
-        ...segment,
-        startAngle: currentAngle,
-        endAngle: currentAngle + angle,
-        angle,
+      const { jsStats = {}, goStats = {}, overall = {} } = data;
+
+      // Validate overall stats
+      if (!overall.total || overall.total <= 0) {
+        return { segments: [], jsStats, goStats, overall };
+      }
+
+      // Create pie chart data for overall piscine performance
+      const segments = [];
+
+      if (overall.passed > 0) {
+        segments.push({
+          label: 'Passed',
+          value: overall.passed,
+          percentage: (overall.passed / overall.total) * 100,
+          color: 'rgb(34, 197, 94)', // green
+          hoverColor: 'rgb(22, 163, 74)',
+        });
+      }
+
+      if (overall.failed > 0) {
+        segments.push({
+          label: 'Failed',
+          value: overall.failed,
+          percentage: (overall.failed / overall.total) * 100,
+          color: 'rgb(239, 68, 68)', // red
+          hoverColor: 'rgb(220, 38, 38)',
+        });
+      }
+
+      // Calculate angles for pie segments
+      let currentAngle = -90; // Start from top
+      const segmentsWithAngles = segments.map(segment => {
+        const angle = (segment.percentage / 100) * 360;
+        const result = {
+          ...segment,
+          startAngle: currentAngle,
+          endAngle: currentAngle + angle,
+          angle,
+        };
+        currentAngle += angle;
+        return result;
+      });
+
+      return {
+        segments: segmentsWithAngles,
+        jsStats,
+        goStats,
+        overall,
       };
-      currentAngle += angle;
-      return result;
-    });
-
-    return {
-      segments: segmentsWithAngles,
-      jsStats,
-      goStats,
-      overall,
-    };
+    } catch (error) {
+      console.error('Error processing piscine stats data:', error);
+      return { segments: [], jsStats: {}, goStats: {}, overall: {} };
+    }
   }, [data]);
 
   const centerX = width / 2;

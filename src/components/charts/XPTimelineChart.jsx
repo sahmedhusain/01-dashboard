@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { formatXP, formatDate } from '../../utils/dataFormatting';
 
@@ -11,27 +11,38 @@ const XPTimelineChart = ({
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return { points: [], maxXP: 0, dateRange: null };
 
-    // Filter out invalid data points
-    const validData = data.filter(d =>
-      d &&
-      d.date &&
-      !isNaN(new Date(d.date).getTime()) &&
-      d.cumulativeXP != null &&
-      !isNaN(d.cumulativeXP)
-    );
+    try {
+      // Filter out invalid data points with enhanced validation
+      const validData = data.filter(d => {
+        if (!d) return false;
 
-    if (validData.length === 0) return { points: [], maxXP: 0, dateRange: null };
+        // Validate date
+        if (!d.date) return false;
+        const dateObj = new Date(d.date);
+        if (isNaN(dateObj.getTime())) return false;
 
-    const sortedData = [...validData].sort((a, b) => new Date(a.date) - new Date(b.date));
-    const maxXP = Math.max(...sortedData.map(d => d.cumulativeXP));
-    const minDate = new Date(sortedData[0].date);
-    const maxDate = new Date(sortedData[sortedData.length - 1].date);
+        // Validate XP value
+        if (d.cumulativeXP == null || isNaN(d.cumulativeXP) || d.cumulativeXP < 0) return false;
 
-    return {
-      points: sortedData,
-      maxXP: isNaN(maxXP) ? 0 : maxXP,
-      dateRange: { min: minDate, max: maxDate },
-    };
+        return true;
+      });
+
+      if (validData.length === 0) return { points: [], maxXP: 0, dateRange: null };
+
+      const sortedData = [...validData].sort((a, b) => new Date(a.date) - new Date(b.date));
+      const maxXP = Math.max(...sortedData.map(d => d.cumulativeXP));
+      const minDate = new Date(sortedData[0].date);
+      const maxDate = new Date(sortedData[sortedData.length - 1].date);
+
+      return {
+        points: sortedData,
+        maxXP: isNaN(maxXP) || maxXP < 0 ? 0 : maxXP,
+        dateRange: { min: minDate, max: maxDate },
+      };
+    } catch (error) {
+      console.error('Error processing XP timeline data:', error);
+      return { points: [], maxXP: 0, dateRange: null };
+    }
   }, [data]);
 
   const margin = { top: 30, right: 60, bottom: 60, left: 80 };

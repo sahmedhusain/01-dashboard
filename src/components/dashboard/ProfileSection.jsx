@@ -1,5 +1,5 @@
 import { Mail, Calendar, Award, TrendingUp, Target, MapPin, Clock } from 'lucide-react';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../../hooks/useData';
 import Card from '../ui/Card';
 import { CircularProgress } from '../ui/Progress';
 import Badge, { XPBadge, LevelBadge } from '../ui/Badge';
@@ -9,52 +9,42 @@ import {
   formatDate,
   formatXP,
   getXPProgress,
-  getXPForNextLevel
+  getUserDisplayName,
+  getUserEmail,
+  getAvatarUrl,
+  formatPercentage
 } from '../../utils/dataFormatting';
 
 const ProfileSection = () => {
   const {
     userData,
-    xpData,
     projectData,
     auditData,
+    skills,
+    piscineStats,
     loading
   } = useData();
 
-  // Extract user info from the processed data structure
-  const userProfile = userData?.profile || {};
-  const userAttrs = userData?.attrs || {};
-
-  // User identification (prioritize full name from attrs, fallback to login)
-  const firstName = userAttrs.firstName || userProfile.firstName || '';
-  const lastName = userAttrs.lastName || userProfile.lastName || '';
-  const fullName = firstName && lastName ? `${firstName} ${lastName}` : '';
-  const displayName = fullName || userData?.login || 'Unknown User';
-  const username = userData?.login || 'unknown';
-
-  // Contact and location info
-  const email = userAttrs.email || userProfile.email || 'No email provided';
+  // Extract user info using enhanced utility functions
+  const displayName = getUserDisplayName(userData) || 'Unknown User';
+  const email = getUserEmail(userData) || 'No email provided';
   const campus = userData?.campus || 'Unknown Campus';
   const registrationDate = userData?.createdAt;
+  const avatarUrl = getAvatarUrl(userData);
 
   // XP and level data (calculated in DataContext)
   const totalXP = userData?.totalXP || 0;
   const userLevel = userData?.level || 0;
   const levelProgress = getXPProgress(totalXP, userLevel);
-  const nextLevelXP = getXPForNextLevel(userLevel);
-  const xpToNextLevel = nextLevelXP - totalXP;
 
   // Project statistics
-  const totalProjects = projectData?.totalProjects || 0;
   const passedProjects = projectData?.passedProjects || 0;
-  const failedProjects = projectData?.failedProjects || 0;
   const passRate = projectData?.passRate || 0;
 
   // Audit statistics
   const auditRatio = auditData?.auditRatio || 0;
   const auditsGiven = auditData?.given?.count || 0;
   const auditsReceived = auditData?.received?.count || 0;
-  const avgAuditGrade = auditData?.given?.avgGrade || 0;
 
   if (loading) {
     return (
@@ -89,7 +79,11 @@ const ProfileSection = () => {
               {/* Avatar */}
               <div className="flex-shrink-0">
                 <Avatar
-                  user={userData}
+                  user={{
+                    ...userData,
+                    avatarUrl: avatarUrl,
+                    displayName: displayName
+                  }}
                   size="xl"
                   showBorder
                   animate
@@ -145,7 +139,7 @@ const ProfileSection = () => {
                   </Badge>
                   {passRate > 0 && (
                     <Badge variant="success">
-                      {passRate.toFixed(1)}% Success Rate
+                      {formatPercentage(passRate)} Success Rate
                     </Badge>
                   )}
                 </div>
@@ -177,9 +171,14 @@ const ProfileSection = () => {
               color="primary"
               label={`Level ${userLevel}`}
             />
-            <p className="text-sm text-surface-300 mt-4 text-center">
-              {formatXP(levelProgress.required - levelProgress.current)} XP to next level
-            </p>
+            <div className="text-center mt-4 space-y-1">
+              <p className="text-sm text-surface-300">
+                {formatXP(levelProgress.required - levelProgress.current)} XP to next level
+              </p>
+              <p className="text-xs text-surface-400">
+                {formatXP(levelProgress.current)} / {formatXP(levelProgress.required)} XP
+              </p>
+            </div>
           </Card.Content>
         </Card>
 
@@ -246,19 +245,102 @@ const ProfileSection = () => {
               <div className="flex justify-between items-center">
                 <span className="text-surface-300">Success Rate</span>
                 <span className="text-primary-300 font-semibold">
-                  {passRate.toFixed(1)}%
+                  {formatPercentage(passRate)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-surface-300">Audits Given</span>
                 <span className="text-accent-300 font-semibold">
                   {auditsGiven}
                 </span>
               </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-surface-300">Current Level</span>
+                <span className="text-primary-300 font-semibold">
+                  Level {userLevel}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-surface-300">Campus</span>
+                <span className="text-surface-200 font-medium">
+                  {campus}
+                </span>
+              </div>
             </div>
           </Card.Content>
         </Card>
+
+        {/* Skills Overview */}
+        {skills && skills.length > 0 && (
+          <Card>
+            <Card.Header>
+              <Card.Title className="flex items-center">
+                <Target className="w-5 h-5 mr-2" />
+                Top Skills
+              </Card.Title>
+            </Card.Header>
+
+            <Card.Content>
+              <div className="space-y-2">
+                {skills.slice(0, 5).map((skill, index) => (
+                  <div key={skill.name || index} className="flex justify-between items-center">
+                    <span className="text-surface-300 text-sm">{skill.name}</span>
+                    <span className="text-primary-300 font-medium text-sm">
+                      {formatXP(skill.totalXP)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card.Content>
+          </Card>
+        )}
+
+        {/* Piscine Performance */}
+        {piscineStats && (
+          <Card>
+            <Card.Header>
+              <Card.Title className="flex items-center">
+                <Award className="w-5 h-5 mr-2" />
+                Piscine Performance
+              </Card.Title>
+            </Card.Header>
+
+            <Card.Content>
+              <div className="space-y-3">
+                {piscineStats.jsStats && piscineStats.jsStats.total > 0 && (
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-surface-300 text-sm">JavaScript</span>
+                      <span className="text-primary-300 font-medium text-sm">
+                        {formatPercentage(piscineStats.jsStats.passRate)}
+                      </span>
+                    </div>
+                    <div className="text-xs text-surface-400">
+                      {piscineStats.jsStats.passed}/{piscineStats.jsStats.total} passed
+                    </div>
+                  </div>
+                )}
+
+                {piscineStats.goStats && piscineStats.goStats.total > 0 && (
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-surface-300 text-sm">Go</span>
+                      <span className="text-primary-300 font-medium text-sm">
+                        {formatPercentage(piscineStats.goStats.passRate)}
+                      </span>
+                    </div>
+                    <div className="text-xs text-surface-400">
+                      {piscineStats.goStats.passed}/{piscineStats.goStats.total} passed
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card.Content>
+          </Card>
+        )}
       </div>
     </div>
   );

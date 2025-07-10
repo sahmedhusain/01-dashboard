@@ -1,90 +1,83 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Code, Database, Globe, Server, Filter, Search } from 'lucide-react';
-import { useData } from '../../contexts/DataContext';
+import { Code, Database, Globe, Server, Filter, Search, Award, Zap, Target } from 'lucide-react';
+import { useData } from '../../hooks/useData';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Progress from '../ui/Progress';
-import Loading, { CardSkeleton } from '../ui/Loading';
+import { CardSkeleton } from '../ui/Loading';
+import { formatXP, calculateProficiencyLevel } from '../../utils/dataFormatting';
+
+// Helper functions for skill categorization
+const categorizeSkill = (skillName) => {
+  const name = skillName.toLowerCase();
+
+  if (name.includes('javascript') || name.includes('go') || name.includes('python') ||
+      name.includes('java') || name.includes('c++') || name.includes('rust')) {
+    return 'language';
+  } else if (name.includes('react') || name.includes('vue') || name.includes('angular') ||
+             name.includes('express') || name.includes('django')) {
+    return 'framework';
+  } else if (name.includes('sql') || name.includes('database') || name.includes('mongodb') ||
+             name.includes('postgres')) {
+    return 'database';
+  } else if (name.includes('docker') || name.includes('git') || name.includes('linux') ||
+             name.includes('bash')) {
+    return 'tool';
+  } else if (name.includes('graphql') || name.includes('rest') || name.includes('api')) {
+    return 'api';
+  }
+  return 'general';
+};
+
+
 
 const TechnologiesSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('xp'); // 'xp', 'projects', 'name'
-  const { userData, xpData, projectData, loading } = useData();
+  const [filterType, setFilterType] = useState('all'); // 'all', 'language', 'framework', 'tool', 'database'
+  const { skills, loading } = useData();
 
-  // Extract skills/technologies from project and transaction data
-  const transactions = xpData?.transactions || [];
-  const results = projectData?.results || [];
+  // Use real skills data from DataContext with enhanced processing
+  const rawSkills = skills || [];
 
-  // Analyze technologies from project paths and names
-  const skillsMap = new Map();
+  // Enhanced technology categorization and proficiency analysis
+  const enhancedSkills = rawSkills.map(skill => {
+    const proficiency = calculateProficiencyLevel(
+      skill.totalXP || 0,
+      skill.completedProjects || 0,
+      skill.averageGrade || 0
+    );
 
-  // Process transactions to extract technology XP
-  transactions.forEach(transaction => {
-    if (transaction.object?.name && transaction.amount) {
-      const projectName = transaction.object.name.toLowerCase();
-      const xpAmount = Math.round(transaction.amount / 1000); // Convert bytes to KB
-
-      // Detect technology from project name
-      let technology = 'General';
-      let type = 'project';
-
-      if (projectName.includes('javascript') || projectName.includes('js')) {
-        technology = 'JavaScript';
-        type = 'language';
-      } else if (projectName.includes('go') || projectName.includes('golang')) {
-        technology = 'Go';
-        type = 'language';
-      } else if (projectName.includes('react')) {
-        technology = 'React';
-        type = 'framework';
-      } else if (projectName.includes('docker')) {
-        technology = 'Docker';
-        type = 'tool';
-      } else if (projectName.includes('sql') || projectName.includes('database')) {
-        technology = 'SQL';
-        type = 'database';
-      } else if (projectName.includes('graphql')) {
-        technology = 'GraphQL';
-        type = 'api';
-      } else if (projectName.includes('node')) {
-        technology = 'Node.js';
-        type = 'runtime';
-      } else if (projectName.includes('git')) {
-        technology = 'Git';
-        type = 'tool';
-      }
-
-      if (!skillsMap.has(technology)) {
-        skillsMap.set(technology, { name: technology, totalXP: 0, projects: 0, type });
-      }
-
-      const skill = skillsMap.get(technology);
-      skill.totalXP += xpAmount;
-      skill.projects += 1;
-    }
+    return {
+      ...skill,
+      proficiency,
+      type: categorizeSkill(skill.name),
+      icon: getSkillIcon(skill.name)
+    };
   });
 
-  // Convert map to array and add level calculation
-  const extractedSkills = Array.from(skillsMap.values()).map(skill => ({
-    ...skill,
-    level: skill.totalXP > 2000 ? 'Advanced' : skill.totalXP > 1000 ? 'Intermediate' : 'Beginner'
-  }));
+  // Calculate technology statistics
+  const totalTechnologies = enhancedSkills.length;
+  const advancedSkills = enhancedSkills.filter(s => s.proficiency.level === 'Advanced' || s.proficiency.level === 'Expert').length;
+  const totalXP = enhancedSkills.reduce((sum, skill) => sum + (skill.totalXP || 0), 0);
+  const averageProficiency = enhancedSkills.length > 0
+    ? enhancedSkills.reduce((sum, skill) => sum + skill.proficiency.score, 0) / enhancedSkills.length
+    : 0;
 
-  // Use only real extracted skills data - no mock data
-  const displaySkills = extractedSkills;
-
-  // Filter and sort skills
-  const filteredSkills = displaySkills
-    .filter(skill =>
-      skill.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  // Filter and sort enhanced skills
+  const filteredSkills = enhancedSkills
+    .filter(skill => {
+      const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = filterType === 'all' || skill.type === filterType;
+      return matchesSearch && matchesType;
+    })
     .sort((a, b) => {
       switch (sortBy) {
         case 'xp':
-          return b.totalXP - a.totalXP;
+          return (b.totalXP || 0) - (a.totalXP || 0);
         case 'projects':
-          return b.projects - a.projects;
+          return (b.completedProjects || 0) - (a.completedProjects || 0);
         case 'name':
           return a.name.localeCompare(b.name);
         default:
@@ -119,7 +112,9 @@ const TechnologiesSection = () => {
     }
   };
 
-  const maxXP = Math.max(...displaySkills.map(s => s.totalXP));
+  const maxXP = enhancedSkills.length > 0
+    ? Math.max(...enhancedSkills.map(s => s.totalXP || 0))
+    : 1;
 
   if (loading) {
     return (
@@ -132,6 +127,73 @@ const TechnologiesSection = () => {
 
   return (
     <div className="space-y-6">
+      {/* Technology Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <Card.Content className="flex items-center space-x-4">
+            <div className="p-3 bg-blue-500/20 rounded-lg">
+              <Code className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{totalTechnologies}</p>
+              <p className="text-surface-300 text-sm">Technologies</p>
+              <Badge variant="primary" size="sm" className="mt-1">
+                Total Skills
+              </Badge>
+            </div>
+          </Card.Content>
+        </Card>
+
+        <Card>
+          <Card.Content className="flex items-center space-x-4">
+            <div className="p-3 bg-green-500/20 rounded-lg">
+              <Award className="w-6 h-6 text-green-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{advancedSkills}</p>
+              <p className="text-surface-300 text-sm">Advanced Skills</p>
+              <Badge variant="success" size="sm" className="mt-1">
+                Expert Level
+              </Badge>
+            </div>
+          </Card.Content>
+        </Card>
+
+        <Card>
+          <Card.Content className="flex items-center space-x-4">
+            <div className="p-3 bg-purple-500/20 rounded-lg">
+              <Zap className="w-6 h-6 text-purple-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{formatXP(totalXP)}</p>
+              <p className="text-surface-300 text-sm">Total Tech XP</p>
+              <Badge variant="accent" size="sm" className="mt-1">
+                Experience
+              </Badge>
+            </div>
+          </Card.Content>
+        </Card>
+
+        <Card>
+          <Card.Content className="flex items-center space-x-4">
+            <div className="p-3 bg-orange-500/20 rounded-lg">
+              <Target className="w-6 h-6 text-orange-400" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white">{averageProficiency.toFixed(0)}</p>
+              <p className="text-surface-300 text-sm">Avg Proficiency</p>
+              <Badge
+                variant={averageProficiency >= 70 ? 'success' : averageProficiency >= 40 ? 'primary' : 'warning'}
+                size="sm"
+                className="mt-1"
+              >
+                {averageProficiency >= 70 ? 'High' : averageProficiency >= 40 ? 'Medium' : 'Low'}
+              </Badge>
+            </div>
+          </Card.Content>
+        </Card>
+      </div>
+
       {/* Search and Filter Controls */}
       <Card>
         <Card.Content>
@@ -148,9 +210,25 @@ const TechnologiesSection = () => {
               />
             </div>
 
-            {/* Sort */}
+            {/* Type Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="w-4 h-4 text-surface-400" />
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="material-input"
+              >
+                <option value="all">All Types</option>
+                <option value="language">Languages</option>
+                <option value="framework">Frameworks</option>
+                <option value="database">Databases</option>
+                <option value="tool">Tools</option>
+                <option value="api">APIs</option>
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center space-x-2">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -179,7 +257,7 @@ const TechnologiesSection = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <div className="p-2 bg-primary-500/20 rounded-lg text-primary-400">
-                      {getSkillIcon(skill.type)}
+                      <skill.icon className="w-4 h-4" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">{skill.name}</h3>
@@ -187,10 +265,10 @@ const TechnologiesSection = () => {
                     </div>
                   </div>
                   <Badge
-                    variant={getSkillColor(skill.level || 'Beginner')}
+                    variant={getSkillColor(skill.proficiency.level)}
                     size="sm"
                   >
-                    {skill.level || 'Beginner'}
+                    {skill.proficiency.level}
                   </Badge>
                 </div>
 
@@ -199,10 +277,10 @@ const TechnologiesSection = () => {
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-surface-300">Experience</span>
-                      <span className="text-primary-300">{skill.totalXP.toLocaleString()} XP</span>
+                      <span className="text-primary-300">{formatXP(skill.totalXP || 0)}</span>
                     </div>
                     <Progress
-                      value={skill.totalXP}
+                      value={skill.totalXP || 0}
                       max={maxXP}
                       size="sm"
                       color="primary"
@@ -210,11 +288,33 @@ const TechnologiesSection = () => {
                     />
                   </div>
 
+                  {/* Proficiency Progress */}
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-surface-300">Proficiency</span>
+                      <span className="text-accent-300">{skill.proficiency.score}/100</span>
+                    </div>
+                    <Progress
+                      value={skill.proficiency.score}
+                      max={100}
+                      size="sm"
+                      color="accent"
+                      showValue={false}
+                    />
+                  </div>
+
                   {/* Projects Count */}
                   <div className="flex justify-between text-sm">
                     <span className="text-surface-300">Projects</span>
-                    <span className="text-accent-300 font-medium">{skill.projects}</span>
+                    <span className="text-white font-medium">{skill.completedProjects || 0}</span>
                   </div>
+
+                  {/* Next Level Progress */}
+                  {skill.proficiency.pointsToNext > 0 && (
+                    <div className="text-xs text-surface-400">
+                      {skill.proficiency.pointsToNext} points to next level
+                    </div>
+                  )}
                 </div>
               </Card.Content>
             </Card>

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, Search, User, BarChart3, Trophy, Users, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/authUtils.jsx';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../../hooks/useData';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Loading from '../ui/Loading';
+import ErrorBoundary from '../ui/ErrorBoundary';
 import MobileNavigation from '../ui/MobileNavigation';
 import ProfileSection from './ProfileSection';
 import SearchSection from './SearchSection';
@@ -17,7 +18,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { logout, user } = useAuth();
-  const { userStatistics, totalXP, loading, error } = useData();
+  const { userStatistics, totalXP, loading, error, refetchAll } = useData();
 
   // Close mobile menu when tab changes
   useEffect(() => {
@@ -38,8 +39,27 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loading size="lg" text="Loading your dashboard..." />
+      <div className="min-h-screen bg-surface-900 flex items-center justify-center">
+        <Loading
+          size="lg"
+          text="Loading your dashboard..."
+          variant="dots"
+          error={error}
+          retry={refetchAll}
+        />
+      </div>
+    );
+  }
+
+  // Show error state if there's an error and no data
+  if (error && !userStatistics) {
+    return (
+      <div className="min-h-screen bg-surface-900 flex items-center justify-center">
+        <Loading
+          error={error}
+          retry={refetchAll}
+          text="Failed to load dashboard"
+        />
       </div>
     );
   }
@@ -78,7 +98,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 pb-20 md:pb-0">
+    <ErrorBoundary showDetails={import.meta.env.DEV}>
+      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 pb-20 md:pb-0">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-surface-900/80 backdrop-blur-md border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -225,7 +246,8 @@ const Dashboard = () => {
           {activeTab === 'technologies' && <TechnologiesSection />}
         </motion.div>
       </main>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 };
 

@@ -3251,7 +3251,7 @@ export const useQueryPerformance = () => {
   };
 };
 
-// Hook for optimized data fetching with caching strategies
+// Hook for optimized data fetching with enhanced caching strategies
 export const useOptimizedQuery = (query, options = {}) => {
   const { user, isAuthenticated } = useAuth();
   const { trackQuery } = useQueryPerformance();
@@ -3259,16 +3259,18 @@ export const useOptimizedQuery = (query, options = {}) => {
   const {
     variables = {},
     fetchPolicy = 'cache-first',
+    nextFetchPolicy = 'cache-only', // Prefer cache after first load
     errorPolicy = 'all',
     notifyOnNetworkStatusChange = true,
     skip: skipOption = false,
     cacheTimeout = 5 * 60 * 1000, // 5 minutes
+    pollInterval = 0, // Disable polling by default for performance
   } = options;
 
   const [lastFetch, setLastFetch] = React.useState(null);
   const [isStale, setIsStale] = React.useState(false);
 
-  // Enhanced query with performance tracking
+  // Enhanced query with performance tracking and optimization
   const queryResult = useQuery(query, {
     variables: {
       userId: user?.id,
@@ -3276,8 +3278,10 @@ export const useOptimizedQuery = (query, options = {}) => {
     },
     skip: !isAuthenticated || !user?.id || skipOption,
     fetchPolicy,
+    nextFetchPolicy,
     errorPolicy,
     notifyOnNetworkStatusChange,
+    pollInterval,
     onCompleted: () => {
       const endTime = performance.now();
       if (queryResult.networkStatus) {
@@ -3444,7 +3448,6 @@ export const useUserComparison = (userIds = [], options = {}) => {
 export const useLeaderboards = (options = {}) => {
   const {
     campus = null,
-    _objectType = null,
     limit = 50,
     skip: skipOption = false
   } = options;
@@ -3815,7 +3818,7 @@ const calculateUserTrend = (_user, _type) => {
 };
 
 // Calculate achievements based on user data
-const calculateAchievements = ({ xp, projects, audits, _progress, groups, _user }) => {
+const calculateAchievements = ({ xp, projects, audits, groups }) => {
   const achievements = [];
 
   // XP-based achievements
@@ -3936,7 +3939,7 @@ const calculateAchievements = ({ xp, projects, audits, _progress, groups, _user 
 };
 
 // Generate skill recommendations
-const generateSkillRecommendations = ({ skills, progress, _xp }) => {
+const generateSkillRecommendations = ({ skills, progress }) => {
   const recommendations = [];
 
   // Analyze skill gaps

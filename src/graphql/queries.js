@@ -91,13 +91,9 @@ export const OBJECT_FRAGMENT = gql`
     name
     type
     attrs
-    childrenAttrs
     campus
     createdAt
     updatedAt
-    externalRelationUrl
-    referenceId
-    referencedAt
   }
 `;
 
@@ -166,7 +162,6 @@ export const AUDIT_FRAGMENT = gql`
     createdAt
     updatedAt
     resultId
-    endAt
   }
 `;
 
@@ -263,7 +258,6 @@ export const EVENT_FRAGMENT = gql`
     path
     campus
     createdAt
-    endAt
   }
 `;
 
@@ -290,7 +284,6 @@ export const GROUP_FRAGMENT = gql`
     path
     campus
     status
-    captainId
     createdAt
     updatedAt
   }
@@ -947,102 +940,148 @@ export const GET_USER_OBJECT_AVAILABILITIES = gql`
 `;
 
 // ============================================================================
-// ADVANCED ANALYTICS QUERIES
+// OPTIMIZED ANALYTICS QUERIES
 // ============================================================================
 
-// Comprehensive user analytics query based on official database schema
+// Optimized comprehensive user analytics query with fragments and reduced over-fetching
 export const GET_COMPREHENSIVE_USER_ANALYTICS = gql`
   query GetComprehensiveUserAnalytics($userId: Int!) {
     user(where: { id: { _eq: $userId } }) {
-      # Basic user info from user table schema
-      id
-login
-      profile
-      attrs
-      campus
-      createdAt
-      updatedAt
+      # Use fragment for consistent user data
+      ...UserInfo
 
-      # XP transactions - amount is in bytes, convert to KB by /1000
+      # XP transactions - optimized with fragment and reduced limit
       transactions(
         where: { type: { _eq: "xp" } }
         order_by: { createdAt: desc }
-        limit: 100
+        limit: 50
       ) {
-        id
-        type
-        amount
-        createdAt
-        path
+        ...TransactionInfo
         object {
-          id
-          name
-          type
+          ...ObjectInfo
         }
       }
 
-      # XP transactions aggregate for total calculation
+      # Optimized transaction aggregates using fragments
+      xpTransactions: transactions_aggregate(
+        where: { type: { _eq: "xp" } }
+      ) {
+        ...TransactionAggregateInfo
+      }
+
+      upTransactions: transactions_aggregate(
+        where: { type: { _eq: "up" } }
+      ) {
+        ...TransactionAggregateInfo
+      }
+
+      downTransactions: transactions_aggregate(
+        where: { type: { _eq: "down" } }
+      ) {
+        ...TransactionAggregateInfo
+      }
+
+      # Optimized results with fragments and reduced limit
+      results(
+        where: { isLast: { _eq: true } }
+        order_by: { createdAt: desc }
+        limit: 30
+      ) {
+        ...ResultInfo
+        object {
+          ...ObjectInfo
+        }
+      }
+
+      # Optimized results aggregates using fragments
+      results_aggregate(where: { isLast: { _eq: true } }) {
+        ...ResultAggregateInfo
+      }
+
+      passedResults: results_aggregate(
+        where: {
+          isLast: { _eq: true }
+          grade: { _gte: 1 }
+        }
+      ) {
+        ...ResultAggregateInfo
+      }
+
+      # Optimized audits with fragments and reduced limit
+      audits(limit: 30, order_by: { createdAt: desc }) {
+        ...AuditInfo
+        group {
+          ...GroupInfo
+          object {
+            ...ObjectInfo
+          }
+        }
+      }
+
+      # Optimized audits aggregate using fragments
+      audits_aggregate {
+        ...AuditAggregateInfo
+      }
+
+      # Optimized progress data with fragments and reduced limit
+      progresses(
+        where: { isDone: { _eq: true } }
+        order_by: { createdAt: desc }
+        limit: 30
+      ) {
+        ...ProgressInfo
+        object {
+          ...ObjectInfo
+        }
+      }
+
+      # Optimized events with fragments and reduced limit
+      events(limit: 5, order_by: { createdAt: asc }) {
+        ...EventUserInfo
+        event {
+          ...EventInfo
+        }
+      }
+    }
+  }
+  ${USER_FRAGMENT}
+  ${TRANSACTION_FRAGMENT}
+  ${OBJECT_FRAGMENT}
+  ${RESULT_FRAGMENT}
+  ${AUDIT_FRAGMENT}
+  ${GROUP_FRAGMENT}
+  ${PROGRESS_FRAGMENT}
+  ${EVENT_USER_FRAGMENT}
+  ${EVENT_FRAGMENT}
+  ${TRANSACTION_AGGREGATE_FRAGMENT}
+  ${RESULT_AGGREGATE_FRAGMENT}
+  ${AUDIT_AGGREGATE_FRAGMENT}
+`;
+
+// Optimized basic dashboard query for faster initial load
+export const GET_BASIC_USER_DASHBOARD = gql`
+  query GetBasicUserDashboard($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+      ...UserBasicInfo
+
+      # Essential XP data only
       xpTransactions: transactions_aggregate(
         where: { type: { _eq: "xp" } }
       ) {
         aggregate {
-          count
           sum {
             amount
           }
         }
       }
 
-      # Up transactions (audit reviews given)
-      upTransactions: transactions_aggregate(
-        where: { type: { _eq: "up" } }
-      ) {
-        aggregate {
-          count
-          sum {
-            amount
-          }
-        }
-      }
-
-      # Down transactions (audit reviews received)
-      downTransactions: transactions_aggregate(
-        where: { type: { _eq: "down" } }
-      ) {
-        aggregate {
-          count
-          sum {
-            amount
-          }
-        }
-      }
-
-      # Results for project statistics
-      results(
-        where: { isLast: { _eq: true } }
-        order_by: { createdAt: desc }
-        limit: 50
-      ) {
-        id
-        grade
-        type
-        createdAt
-        path
-        object {
-          id
-          name
-          type
-        }
-      }
-
-      # Results aggregates
+      # Essential project stats only
       results_aggregate(where: { isLast: { _eq: true } }) {
         aggregate {
           count
         }
       }
 
-      # Passed results (grade >= 1)
       passedResults: results_aggregate(
         where: {
           isLast: { _eq: true }
@@ -1054,62 +1093,29 @@ login
         }
       }
 
-      # Audits given by this user (using auditorId)
-      audits(limit: 50, order_by: { createdAt: desc }) {
-        id
-        grade
-        createdAt
-        attrs
-        group {
-          id
-          path
-          object {
-            name
-            type
-          }
-        }
-      }
-
-      # Audits given aggregate
-      audits_aggregate {
-        aggregate {
-          count
-          avg {
-            grade
-          }
-        }
-      }
-
-      # Progress data
-      progresses(
-        where: { isDone: { _eq: true } }
-        order_by: { createdAt: desc }
-        limit: 50
+      # Essential audit data only
+      upTransactions: transactions_aggregate(
+        where: { type: { _eq: "up" } }
       ) {
-        id
-        grade
-        createdAt
-        path
-        object {
-          id
-          name
-          type
+        aggregate {
+          sum {
+            amount
+          }
         }
       }
 
-      # Events for campus and registration info
-      events(limit: 10, order_by: { createdAt: asc }) {
-        id
-        createdAt
-        event {
-          id
-          campus
-          createdAt
-          path
+      downTransactions: transactions_aggregate(
+        where: { type: { _eq: "down" } }
+      ) {
+        aggregate {
+          sum {
+            amount
+          }
         }
       }
     }
   }
+  ${USER_BASIC_FRAGMENT}
 `;
 
 // Advanced performance analytics with time-based insights
@@ -4102,17 +4108,17 @@ export const GET_DETAILED_AUDIT_STATS = gql`
   ${RESULT_FRAGMENT}
 `;
 
-// Enhanced search queries with proper status filtering based on official schema
+// Optimized search queries with fragments and improved performance
 export const SEARCH_PROJECTS_BY_STATUS = gql`
   query SearchProjectsByStatus(
     $userId: Int!
     $status: [String!] = ["working", "audit", "setup", "finished"]
     $searchTerm: String = "%%"
-    $limit: Int = 20
+    $limit: Int = 15
     $offset: Int = 0
     $campus: String = null
   ) {
-    # Search user's projects/results by status with proper filtering
+    # Optimized search with fragments and reduced complexity
     results: result(
       where: {
         userId: { _eq: $userId }
@@ -4125,29 +4131,17 @@ export const SEARCH_PROJECTS_BY_STATUS = gql`
             ]
           }
           {
-            # Status filtering based on grade and completion state
+            # Simplified status filtering for better performance
             _or: [
-              # Finished: grade >= 1 (passed) and isLast = true
+              # Finished projects
               {
-                _and: [
-                  { grade: { _gte: 1 } }
-                  { isLast: { _eq: true } }
-                ]
+                grade: { _gte: 1 }
+                isLast: { _eq: true }
               }
-              # Working: grade < 1 and recent activity
+              # In-progress projects
               {
-                _and: [
-                  { grade: { _lt: 1 } }
-                  { isLast: { _eq: false } }
-                  { updatedAt: { _gte: "2024-01-01" } }
-                ]
-              }
-              # Setup: very recent creation, no significant progress
-              {
-                _and: [
-                  { grade: { _eq: 0 } }
-                  { createdAt: { _gte: "2024-07-01" } }
-                ]
+                grade: { _lt: 1 }
+                updatedAt: { _gte: "2024-01-01" }
               }
             ]
           }
@@ -4157,30 +4151,15 @@ export const SEARCH_PROJECTS_BY_STATUS = gql`
       limit: $limit
       offset: $offset
     ) {
-      id
-      grade
-      type
-      isLast
-      version
-      createdAt
-      updatedAt
-      path
-      campus
+      ...ResultInfo
       object {
-        id
-        name
-        type
-        attrs
+        ...ObjectInfo
       }
       event {
-        id
-        path
-        campus
+        ...EventInfo
       }
       group {
-        id
-        status
-        captainId
+        ...GroupInfo
       }
     }
 
@@ -4228,9 +4207,13 @@ export const SEARCH_PROJECTS_BY_STATUS = gql`
       }
     }
   }
+  ${RESULT_FRAGMENT}
+  ${OBJECT_FRAGMENT}
+  ${EVENT_FRAGMENT}
+  ${GROUP_FRAGMENT}
 `;
 
-// Search audits by status with proper group status filtering
+// Optimized search audits by status with fragments
 export const SEARCH_AUDITS_BY_STATUS = gql`
   query SearchAuditsByStatus(
     $userId: Int!

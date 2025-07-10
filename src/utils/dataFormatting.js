@@ -559,6 +559,131 @@ export const processAuditData = (auditsGiven = [], auditsReceived = []) => {
 };
 
 /**
+ * Calculate collaboration score based on audit and group participation metrics
+ * @param {Object} auditData - Audit statistics
+ * @param {Object} groupData - Group participation data
+ * @returns {number} Collaboration score (0-100)
+ */
+export const calculateCollaborationScore = (auditData = {}, groupData = {}) => {
+  let score = 0;
+
+  // Audit ratio contribution (0-30 points)
+  const auditRatio = auditData.auditRatio || 0;
+  if (auditRatio >= 1.0) {
+    score += Math.min(30, auditRatio * 15);
+  }
+
+  // Audit success rates (0-25 points)
+  const auditSuccessRate = auditData.given?.successRate || 0;
+  score += (auditSuccessRate / 100) * 25;
+
+  // Group participation (0-25 points)
+  const groupsParticipated = groupData.totalGroups || 0;
+  const leadershipRatio = groupData.leadershipRatio || 0;
+  score += Math.min(15, groupsParticipated * 2);
+  score += Math.min(10, (leadershipRatio / 100) * 10);
+
+  // Network diversity (0-20 points)
+  const uniqueCollaborators = auditData.uniqueCollaborators || 0;
+  score += Math.min(20, uniqueCollaborators * 2);
+
+  return Math.min(100, score);
+};
+
+/**
+ * Calculate skill growth trend from historical progress data
+ * @param {Array} progressHistory - Array of progress objects sorted by date
+ * @returns {number} Growth trend score (-100 to 100)
+ */
+export const calculateSkillGrowthTrend = (progressHistory) => {
+  if (!Array.isArray(progressHistory) || progressHistory.length < 2) return 0;
+
+  const sortedProgress = progressHistory
+    .filter(p => p.updatedAt && p.grade != null)
+    .sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+
+  if (sortedProgress.length < 2) return 0;
+
+  // Calculate moving average over time
+  const windowSize = Math.min(3, sortedProgress.length);
+  const movingAverages = [];
+
+  for (let i = windowSize - 1; i < sortedProgress.length; i++) {
+    const window = sortedProgress.slice(i - windowSize + 1, i + 1);
+    const average = window.reduce((sum, p) => sum + p.grade, 0) / window.length;
+    movingAverages.push(average);
+  }
+
+  if (movingAverages.length < 2) return 0;
+
+  // Calculate trend slope
+  const firstAvg = movingAverages[0];
+  const lastAvg = movingAverages[movingAverages.length - 1];
+  const trend = ((lastAvg - firstAvg) / firstAvg) * 100;
+
+  return Math.max(-100, Math.min(100, trend));
+};
+
+/**
+ * Analyze performance trends over time
+ * @param {Array} results - Array of result objects with dates and grades
+ * @returns {Object} Performance trend analysis
+ */
+export const analyzePerformanceTrend = (results) => {
+  if (!Array.isArray(results) || results.length < 3) {
+    return { trend: 'insufficient_data', slope: 0, confidence: 0 };
+  }
+
+  const sortedResults = results
+    .filter(r => r.createdAt && r.grade != null)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  if (sortedResults.length < 3) {
+    return { trend: 'insufficient_data', slope: 0, confidence: 0 };
+  }
+
+  // Calculate moving average
+  const windowSize = Math.min(3, sortedResults.length);
+  const movingAverages = [];
+
+  for (let i = windowSize - 1; i < sortedResults.length; i++) {
+    const window = sortedResults.slice(i - windowSize + 1, i + 1);
+    const average = window.reduce((sum, result) => sum + result.grade, 0) / window.length;
+    movingAverages.push({
+      date: sortedResults[i].createdAt,
+      average,
+      index: i
+    });
+  }
+
+  if (movingAverages.length < 2) {
+    return { trend: 'stable', slope: 0, confidence: 0 };
+  }
+
+  // Calculate trend slope using linear regression
+  const n = movingAverages.length;
+  const sumX = movingAverages.reduce((sum, _, i) => sum + i, 0);
+  const sumY = movingAverages.reduce((sum, avg) => sum + avg.average, 0);
+  const sumXY = movingAverages.reduce((sum, avg, i) => sum + (i * avg.average), 0);
+  const sumXX = movingAverages.reduce((sum, _, i) => sum + (i * i), 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const confidence = Math.min(100, (n / 10) * 100); // Higher confidence with more data points
+
+  let trend = 'stable';
+  if (slope > 0.05) trend = 'improving';
+  else if (slope < -0.05) trend = 'declining';
+
+  return {
+    trend,
+    slope: slope * 100, // Convert to percentage
+    confidence,
+    movingAverages,
+    dataPoints: n
+  };
+};
+
+/**
  * Calculate comprehensive user statistics from GraphQL data
  * @param {Object} userData - Complete user data from GraphQL
  * @returns {Object} Comprehensive user statistics
@@ -598,6 +723,15 @@ export const calculateUserStatistics = (userData) => {
   // Process skill data
   const skillData = processSkillData(user.transactions || []);
 
+  // Calculate collaboration score
+  const collaborationScore = calculateCollaborationScore(auditMetrics, {
+    totalGroups: user.groups_aggregate?.aggregate?.count || 0,
+    leadershipRatio: 0 // Would need group captain data
+  });
+
+  // Analyze performance trends
+  const performanceTrend = analyzePerformanceTrend(user.results || []);
+
   return {
     // Basic info
     id: user.id,
@@ -626,8 +760,566 @@ export const calculateUserStatistics = (userData) => {
     // Skills
     skills: skillData,
 
+    // Advanced analytics
+    collaborationScore,
+    performanceTrend,
+
     // Raw data for advanced processing
     rawData: user,
+  };
+};
+
+// ============================================================================
+// ADVANCED ANALYTICS PROCESSORS
+// ============================================================================
+
+/**
+ * Analyze project difficulty progression over time
+ * @param {Array} projectResults - Array of project results with grades and dates
+ * @returns {Object} Difficulty progression analysis
+ */
+export const analyzeDifficultyProgression = (projectResults) => {
+  if (!Array.isArray(projectResults) || projectResults.length === 0) {
+    return { trend: 'stable', score: 0, progression: 'unknown' };
+  }
+
+  // Sort by creation date
+  const sortedResults = projectResults
+    .filter(r => r.createdAt && r.grade != null)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  if (sortedResults.length < 3) {
+    return { trend: 'stable', score: 0, progression: 'insufficient_data' };
+  }
+
+  // Calculate moving average of grades
+  const windowSize = Math.min(3, sortedResults.length);
+  const movingAverages = [];
+
+  for (let i = windowSize - 1; i < sortedResults.length; i++) {
+    const window = sortedResults.slice(i - windowSize + 1, i + 1);
+    const average = window.reduce((sum, result) => sum + result.grade, 0) / window.length;
+    movingAverages.push(average);
+  }
+
+  if (movingAverages.length < 2) {
+    return { trend: 'stable', score: 0, progression: 'stable' };
+  }
+
+  // Calculate trend
+  const firstHalf = movingAverages.slice(0, Math.floor(movingAverages.length / 2));
+  const secondHalf = movingAverages.slice(Math.floor(movingAverages.length / 2));
+
+  const firstHalfAvg = firstHalf.reduce((sum, avg) => sum + avg, 0) / firstHalf.length;
+  const secondHalfAvg = secondHalf.reduce((sum, avg) => sum + avg, 0) / secondHalf.length;
+
+  const improvement = secondHalfAvg - firstHalfAvg;
+
+  let trend = 'stable';
+  let progression = 'maintaining';
+
+  if (improvement > 0.1) {
+    trend = 'improving';
+    progression = 'advancing';
+  } else if (improvement < -0.1) {
+    trend = 'declining';
+    progression = 'struggling';
+  }
+
+  return {
+    trend,
+    score: improvement * 100,
+    progression,
+    firstHalfAverage: firstHalfAvg,
+    secondHalfAverage: secondHalfAvg,
+    totalProjects: sortedResults.length
+  };
+};
+
+/**
+ * Calculate progress velocity (completion rate over time)
+ * @param {Array} completionTimeline - Array of completion events with dates
+ * @returns {Object} Progress velocity metrics
+ */
+export const calculateProgressVelocity = (completionTimeline) => {
+  if (!Array.isArray(completionTimeline) || completionTimeline.length < 2) {
+    return { velocity: 0, trend: 'insufficient_data', projectsPerWeek: 0 };
+  }
+
+  const sortedCompletions = completionTimeline
+    .filter(c => c.createdAt)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  if (sortedCompletions.length < 2) {
+    return { velocity: 0, trend: 'insufficient_data', projectsPerWeek: 0 };
+  }
+
+  const firstCompletion = new Date(sortedCompletions[0].createdAt);
+  const lastCompletion = new Date(sortedCompletions[sortedCompletions.length - 1].createdAt);
+  const daysDiff = (lastCompletion - firstCompletion) / (1000 * 60 * 60 * 24);
+
+  if (daysDiff <= 0) {
+    return { velocity: 0, trend: 'single_day', projectsPerWeek: 0 };
+  }
+
+  const velocity = sortedCompletions.length / daysDiff; // Projects per day
+  const projectsPerWeek = velocity * 7;
+
+  // Calculate trend over recent period
+  const recentPeriodDays = Math.min(30, daysDiff / 2);
+  const recentDate = new Date(lastCompletion.getTime() - (recentPeriodDays * 24 * 60 * 60 * 1000));
+  const recentCompletions = sortedCompletions.filter(c => new Date(c.createdAt) >= recentDate);
+
+  const recentVelocity = recentCompletions.length / recentPeriodDays;
+  const overallVelocity = sortedCompletions.length / daysDiff;
+
+  let trend = 'stable';
+  if (recentVelocity > overallVelocity * 1.2) trend = 'accelerating';
+  else if (recentVelocity < overallVelocity * 0.8) trend = 'decelerating';
+
+  return {
+    velocity: velocity,
+    projectsPerWeek: Math.round(projectsPerWeek * 10) / 10,
+    trend,
+    totalDays: Math.round(daysDiff),
+    recentVelocity: recentVelocity,
+    overallVelocity: overallVelocity
+  };
+};
+
+/**
+ * Analyze time management patterns from project completion data
+ * @param {Array} progressData - Array of progress objects with timestamps
+ * @param {Array} resultData - Array of result objects with timestamps
+ * @returns {Object} Time management analysis
+ */
+export const analyzeTimeManagement = (progressData = [], resultData = []) => {
+  const allEvents = [
+    ...progressData.map(p => ({ ...p, type: 'progress', date: p.updatedAt })),
+    ...resultData.map(r => ({ ...r, type: 'result', date: r.createdAt }))
+  ].filter(e => e.date);
+
+  if (allEvents.length === 0) {
+    return {
+      pattern: 'no_data',
+      peakHours: [],
+      consistency: 0,
+      workingDays: 0
+    };
+  }
+
+  // Analyze activity by hour of day
+  const hourlyActivity = {};
+  const dailyActivity = {};
+
+  allEvents.forEach(event => {
+    const date = new Date(event.date);
+    const hour = date.getHours();
+    const day = date.toISOString().split('T')[0];
+
+    hourlyActivity[hour] = (hourlyActivity[hour] || 0) + 1;
+    dailyActivity[day] = (dailyActivity[day] || 0) + 1;
+  });
+
+  // Find peak hours
+  const peakHours = Object.entries(hourlyActivity)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 3)
+    .map(([hour, count]) => ({ hour: parseInt(hour), count }));
+
+  // Calculate consistency (standard deviation of daily activity)
+  const dailyCounts = Object.values(dailyActivity);
+  const avgDaily = dailyCounts.reduce((sum, count) => sum + count, 0) / dailyCounts.length;
+  const variance = dailyCounts.reduce((sum, count) => sum + Math.pow(count - avgDaily, 2), 0) / dailyCounts.length;
+  const consistency = Math.max(0, 100 - Math.sqrt(variance) * 10); // Higher is more consistent
+
+  // Determine pattern
+  let pattern = 'irregular';
+  if (consistency > 70) pattern = 'consistent';
+  else if (consistency > 40) pattern = 'moderate';
+
+  return {
+    pattern,
+    peakHours,
+    consistency: Math.round(consistency),
+    workingDays: Object.keys(dailyActivity).length,
+    averageActivitiesPerDay: Math.round(avgDaily * 10) / 10,
+    totalActivities: allEvents.length
+  };
+};
+
+/**
+ * Calculate proficiency level for a skill based on XP, projects, and grades
+ * @param {number} totalXP - Total XP earned in this skill
+ * @param {number} completedProjects - Number of completed projects
+ * @param {number} averageGrade - Average grade across projects
+ * @returns {Object} Proficiency analysis
+ */
+export const calculateProficiencyLevel = (totalXP, completedProjects, averageGrade) => {
+  let level = 'Beginner';
+  let score = 0;
+
+  // XP contribution (0-40 points)
+  const xpScore = Math.min(40, (totalXP / 10000) * 40); // 10K XP = max XP score
+
+  // Project completion contribution (0-30 points)
+  const projectScore = Math.min(30, completedProjects * 3);
+
+  // Grade quality contribution (0-30 points)
+  const gradeScore = (averageGrade || 0) * 30;
+
+  score = xpScore + projectScore + gradeScore;
+
+  if (score >= 80) level = 'Expert';
+  else if (score >= 60) level = 'Advanced';
+  else if (score >= 35) level = 'Intermediate';
+  else if (score >= 15) level = 'Beginner';
+  else level = 'Novice';
+
+  return {
+    level,
+    score: Math.round(score),
+    breakdown: {
+      xpScore: Math.round(xpScore),
+      projectScore: Math.round(projectScore),
+      gradeScore: Math.round(gradeScore)
+    },
+    nextLevelThreshold: getNextLevelThreshold(level),
+    pointsToNext: Math.max(0, getNextLevelThreshold(level) - score)
+  };
+};
+
+/**
+ * Get threshold score for next proficiency level
+ * @param {string} currentLevel - Current proficiency level
+ * @returns {number} Score needed for next level
+ */
+const getNextLevelThreshold = (currentLevel) => {
+  const thresholds = {
+    'Novice': 15,
+    'Beginner': 35,
+    'Intermediate': 60,
+    'Advanced': 80,
+    'Expert': 100
+  };
+
+  const levels = Object.keys(thresholds);
+  const currentIndex = levels.indexOf(currentLevel);
+
+  if (currentIndex === -1 || currentIndex === levels.length - 1) return 100;
+
+  return thresholds[levels[currentIndex + 1]];
+};
+
+/**
+ * Generate learning path recommendations based on user data
+ * @param {Object} userData - User statistics and progress data
+ * @returns {Object} Learning path recommendations
+ */
+export const generateLearningPathRecommendations = (userData) => {
+  if (!userData) return { recommendations: [], focus: 'unknown' };
+
+  const { skills = [], performanceTrend = {}, collaborationScore = 0, totalXP = 0 } = userData;
+
+  const recommendations = [];
+  let primaryFocus = 'skill_development';
+
+  // Analyze skill gaps
+  const skillLevels = skills.map(skill => ({
+    name: skill.name,
+    proficiency: calculateProficiencyLevel(skill.totalXP || 0, skill.completedProjects || 0, skill.averageGrade || 0)
+  }));
+
+  const beginnerSkills = skillLevels.filter(s => s.proficiency.level === 'Beginner' || s.proficiency.level === 'Novice');
+  const advancedSkills = skillLevels.filter(s => s.proficiency.level === 'Advanced' || s.proficiency.level === 'Expert');
+
+  // Skill development recommendations
+  if (beginnerSkills.length > 0) {
+    recommendations.push({
+      type: 'skill_focus',
+      priority: 'high',
+      title: 'Strengthen Foundation Skills',
+      description: `Focus on improving ${beginnerSkills.slice(0, 2).map(s => s.name).join(' and ')} to build a stronger foundation.`,
+      skills: beginnerSkills.slice(0, 3).map(s => s.name),
+      estimatedTime: '2-4 weeks'
+    });
+  }
+
+  // Performance trend recommendations
+  if (performanceTrend.trend === 'declining') {
+    recommendations.push({
+      type: 'performance_improvement',
+      priority: 'high',
+      title: 'Address Performance Decline',
+      description: 'Recent performance shows a declining trend. Consider reviewing fundamentals and seeking mentorship.',
+      actionItems: ['Review recent failed projects', 'Practice core concepts', 'Seek peer feedback'],
+      estimatedTime: '1-2 weeks'
+    });
+    primaryFocus = 'performance_recovery';
+  } else if (performanceTrend.trend === 'improving') {
+    recommendations.push({
+      type: 'skill_advancement',
+      priority: 'medium',
+      title: 'Advance to Next Level',
+      description: 'Your performance is improving! Consider tackling more challenging projects.',
+      actionItems: ['Take on advanced projects', 'Mentor other students', 'Explore new technologies'],
+      estimatedTime: '3-6 weeks'
+    });
+  }
+
+  // Collaboration recommendations
+  if (collaborationScore < 30) {
+    recommendations.push({
+      type: 'collaboration',
+      priority: 'medium',
+      title: 'Improve Collaboration Skills',
+      description: 'Increase participation in peer reviews and group projects to build collaboration skills.',
+      actionItems: ['Participate in more audits', 'Join group projects', 'Provide constructive feedback'],
+      estimatedTime: 'Ongoing'
+    });
+  }
+
+  // XP-based recommendations
+  if (totalXP < 50000) {
+    recommendations.push({
+      type: 'xp_building',
+      priority: 'medium',
+      title: 'Build Experience Points',
+      description: 'Focus on completing projects to build your XP and advance your level.',
+      actionItems: ['Complete pending projects', 'Retry failed projects', 'Explore bonus challenges'],
+      estimatedTime: '4-8 weeks'
+    });
+  }
+
+  // Advanced skill recommendations
+  if (advancedSkills.length >= 2 && totalXP > 100000) {
+    recommendations.push({
+      type: 'specialization',
+      priority: 'low',
+      title: 'Consider Specialization',
+      description: `You have strong skills in ${advancedSkills.slice(0, 2).map(s => s.name).join(' and ')}. Consider specializing further.`,
+      skills: advancedSkills.slice(0, 2).map(s => s.name),
+      estimatedTime: '8-12 weeks'
+    });
+    primaryFocus = 'specialization';
+  }
+
+  return {
+    recommendations: recommendations.sort((a, b) => {
+      const priorityOrder = { high: 3, medium: 2, low: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    }),
+    primaryFocus,
+    skillAnalysis: skillLevels,
+    overallReadiness: calculateOverallReadiness(userData)
+  };
+};
+
+/**
+ * Calculate overall readiness score for advanced challenges
+ * @param {Object} userData - User statistics
+ * @returns {Object} Readiness assessment
+ */
+const calculateOverallReadiness = (userData) => {
+  const { totalXP = 0, skills = [], performanceTrend = {}, collaborationScore = 0 } = userData;
+
+  let readinessScore = 0;
+
+  // XP contribution (0-25 points)
+  readinessScore += Math.min(25, (totalXP / 200000) * 25);
+
+  // Skills diversity (0-25 points)
+  const skillCount = skills.length;
+  readinessScore += Math.min(25, skillCount * 3);
+
+  // Performance trend (0-25 points)
+  if (performanceTrend.trend === 'improving') readinessScore += 25;
+  else if (performanceTrend.trend === 'stable') readinessScore += 15;
+  else if (performanceTrend.trend === 'declining') readinessScore += 5;
+
+  // Collaboration (0-25 points)
+  readinessScore += Math.min(25, (collaborationScore / 100) * 25);
+
+  let readinessLevel = 'Not Ready';
+  if (readinessScore >= 80) readinessLevel = 'Highly Ready';
+  else if (readinessScore >= 60) readinessLevel = 'Ready';
+  else if (readinessScore >= 40) readinessLevel = 'Partially Ready';
+
+  return {
+    score: Math.round(readinessScore),
+    level: readinessLevel,
+    breakdown: {
+      xp: Math.min(25, (totalXP / 200000) * 25),
+      skills: Math.min(25, skillCount * 3),
+      performance: performanceTrend.trend === 'improving' ? 25 : (performanceTrend.trend === 'stable' ? 15 : 5),
+      collaboration: Math.min(25, (collaborationScore / 100) * 25)
+    }
+  };
+};
+
+/**
+ * Analyze collaboration frequency patterns
+ * @param {Array} groupData - Array of group participation data
+ * @returns {Object} Collaboration frequency analysis
+ */
+export const analyzeCollaborationFrequency = (groupData = []) => {
+  if (!Array.isArray(groupData) || groupData.length === 0) {
+    return { frequency: 0, pattern: 'none', averageInterval: 0 };
+  }
+
+  const sortedGroups = groupData
+    .filter(g => g.createdAt)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  if (sortedGroups.length < 2) {
+    return { frequency: 0, pattern: 'single', averageInterval: 0 };
+  }
+
+  // Calculate time between collaborations
+  const intervals = [];
+  for (let i = 1; i < sortedGroups.length; i++) {
+    const prev = new Date(sortedGroups[i - 1].createdAt);
+    const curr = new Date(sortedGroups[i].createdAt);
+    intervals.push((curr - prev) / (1000 * 60 * 60 * 24)); // Days
+  }
+
+  const averageInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
+
+  let pattern = 'rare';
+  if (averageInterval <= 7) pattern = 'frequent';
+  else if (averageInterval <= 30) pattern = 'regular';
+  else if (averageInterval <= 90) pattern = 'occasional';
+
+  return {
+    frequency: Math.round((365 / averageInterval) * 10) / 10, // Collaborations per year
+    pattern,
+    averageInterval: Math.round(averageInterval),
+    totalCollaborations: sortedGroups.length,
+    timeSpan: Math.round((new Date(sortedGroups[sortedGroups.length - 1].createdAt) - new Date(sortedGroups[0].createdAt)) / (1000 * 60 * 60 * 24))
+  };
+};
+
+/**
+ * Calculate network density and influence metrics
+ * @param {Array} groupData - Group participation data
+ * @param {Array} auditData - Audit relationship data
+ * @returns {Object} Network analysis metrics
+ */
+export const calculateNetworkMetrics = (groupData = [], auditData = []) => {
+  const uniqueCollaborators = new Set();
+  const connections = new Map();
+
+  // Process group collaborations
+  groupData.forEach(group => {
+    if (group.members && Array.isArray(group.members)) {
+      group.members.forEach(member => {
+        if (member.id) {
+          uniqueCollaborators.add(member.id);
+
+          // Track connections
+          group.members.forEach(otherMember => {
+            if (otherMember.id && otherMember.id !== member.id) {
+              const key = [member.id, otherMember.id].sort().join('-');
+              connections.set(key, (connections.get(key) || 0) + 1);
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // Process audit relationships
+  auditData.forEach(audit => {
+    if (audit.auditorId && audit.auditeeId) {
+      uniqueCollaborators.add(audit.auditorId);
+      uniqueCollaborators.add(audit.auditeeId);
+
+      const key = [audit.auditorId, audit.auditeeId].sort().join('-');
+      connections.set(key, (connections.get(key) || 0) + 1);
+    }
+  });
+
+  const totalCollaborators = uniqueCollaborators.size;
+  const totalConnections = connections.size;
+  const maxPossibleConnections = totalCollaborators > 1 ? (totalCollaborators * (totalCollaborators - 1)) / 2 : 0;
+
+  const networkDensity = maxPossibleConnections > 0 ? (totalConnections / maxPossibleConnections) * 100 : 0;
+
+  // Calculate influence score based on connection strength
+  const connectionStrengths = Array.from(connections.values());
+  const averageConnectionStrength = connectionStrengths.length > 0 ?
+    connectionStrengths.reduce((sum, strength) => sum + strength, 0) / connectionStrengths.length : 0;
+
+  const influenceScore = Math.min(100, (totalCollaborators * 2) + (averageConnectionStrength * 5) + (networkDensity * 0.5));
+
+  return {
+    uniqueCollaborators: totalCollaborators,
+    totalConnections,
+    networkDensity: Math.round(networkDensity * 10) / 10,
+    averageConnectionStrength: Math.round(averageConnectionStrength * 10) / 10,
+    influenceScore: Math.round(influenceScore),
+    networkSize: totalCollaborators > 10 ? 'large' : (totalCollaborators > 5 ? 'medium' : 'small')
+  };
+};
+
+/**
+ * Analyze team performance and leadership effectiveness
+ * @param {Array} teamData - Team/group performance data
+ * @param {string} userId - Current user ID
+ * @returns {Object} Team performance analysis
+ */
+export const analyzeTeamPerformance = (teamData = [], userId) => {
+  if (!Array.isArray(teamData) || teamData.length === 0) {
+    return {
+      averageTeamGrade: 0,
+      teamSuccessRate: 0,
+      leadershipEffectiveness: 0,
+      teamDiversity: 0
+    };
+  }
+
+  const teamsAsLeader = teamData.filter(team => team.captainId === userId);
+  const teamsAsMember = teamData.filter(team => team.captainId !== userId);
+
+  // Calculate average team grades
+  const allGrades = teamData.map(team => team.grade || 0).filter(grade => grade > 0);
+  const averageTeamGrade = allGrades.length > 0 ? allGrades.reduce((sum, grade) => sum + grade, 0) / allGrades.length : 0;
+
+  // Calculate success rate
+  const successfulTeams = teamData.filter(team => (team.grade || 0) >= 1).length;
+  const teamSuccessRate = teamData.length > 0 ? (successfulTeams / teamData.length) * 100 : 0;
+
+  // Calculate leadership effectiveness
+  const leaderGrades = teamsAsLeader.map(team => team.grade || 0).filter(grade => grade > 0);
+  const memberGrades = teamsAsMember.map(team => team.grade || 0).filter(grade => grade > 0);
+
+  const avgLeaderGrade = leaderGrades.length > 0 ? leaderGrades.reduce((sum, grade) => sum + grade, 0) / leaderGrades.length : 0;
+  const avgMemberGrade = memberGrades.length > 0 ? memberGrades.reduce((sum, grade) => sum + grade, 0) / memberGrades.length : 0;
+
+  const leadershipEffectiveness = avgMemberGrade > 0 ? (avgLeaderGrade / avgMemberGrade) * 100 : 100;
+
+  // Calculate team diversity (based on different team members)
+  const allTeamMembers = new Set();
+  teamData.forEach(team => {
+    if (team.members && Array.isArray(team.members)) {
+      team.members.forEach(member => {
+        if (member.id && member.id !== userId) {
+          allTeamMembers.add(member.id);
+        }
+      });
+    }
+  });
+
+  const teamDiversity = Math.min(100, allTeamMembers.size * 10); // Max 100 for 10+ unique collaborators
+
+  return {
+    averageTeamGrade: Math.round(averageTeamGrade * 100) / 100,
+    teamSuccessRate: Math.round(teamSuccessRate * 10) / 10,
+    leadershipEffectiveness: Math.round(leadershipEffectiveness),
+    teamDiversity: Math.round(teamDiversity),
+    teamsLed: teamsAsLeader.length,
+    teamsParticipated: teamData.length,
+    uniqueCollaborators: allTeamMembers.size
   };
 };
 

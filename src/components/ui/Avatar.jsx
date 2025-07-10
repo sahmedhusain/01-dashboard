@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
@@ -187,13 +187,13 @@ export const AvatarWithStatus = ({
 /**
  * Clickable avatar with hover effects
  */
-export const ClickableAvatar = ({ 
-  user, 
-  onClick, 
-  size = 'md', 
+export const ClickableAvatar = ({
+  user,
+  onClick,
+  size = 'md',
   className = '',
-  showTooltip = true,
-  ...props 
+  showTooltip: _showTooltip = true,
+  ...props
 }) => {
   return (
     <Avatar

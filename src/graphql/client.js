@@ -90,17 +90,24 @@ const client = new ApolloClient({
   defaultOptions: {
     watchQuery: {
       errorPolicy: 'all',
-      fetchPolicy: 'cache-first', // Use cache-first for better performance
+      fetchPolicy: 'cache-first', // Optimized for performance
+      nextFetchPolicy: 'cache-first', // Stick to cache after first load
       notifyOnNetworkStatusChange: true,
     },
     query: {
       errorPolicy: 'all',
-      fetchPolicy: 'cache-first', // Use cache-first for better performance
+      fetchPolicy: 'cache-first', // Optimized for performance
+      nextFetchPolicy: 'cache-only', // Prefer cache for subsequent queries
     },
     mutate: {
       errorPolicy: 'all',
+      fetchPolicy: 'no-cache', // Always fresh for mutations
     },
   },
+  // Enable query deduplication for better performance
+  queryDeduplication: true,
+  // Add connection directive for pagination
+  connectToDevTools: import.meta.env.DEV,
 });
 
 // Export performance monitor for use in hooks

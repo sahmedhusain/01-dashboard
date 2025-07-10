@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Users, TrendingUp, Filter, Clock, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import {
-  useUserSearch,
   useProjectSearch,
   useAuditSearch,
   useEnhancedUserSearch
@@ -10,7 +9,6 @@ import {
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Loading from '../ui/Loading';
-import Badge from '../ui/Badge';
 
 // Search Result Item Component
 const SearchResultItem = ({ result, type }) => {
@@ -108,24 +106,11 @@ const SearchResultItem = ({ result, type }) => {
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState('projects');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedCampus, setSelectedCampus] = useState('');
 
-  // Legacy search states for backward compatibility
-  const [groupSearch, setGroupSearch] = useState({
-    cohort: 'All Cohorts',
-    status: 'Working',
-  });
 
-  const [userSearch, setUserSearch] = useState({
-    username: '',
-    status: 'Working',
-  });
-
-  const [rankingSearch, setRankingSearch] = useState({
-    cohort: 'All Cohorts',
-    limit: '0',
-  });
 
   // Enhanced search hooks
   const {
@@ -140,9 +125,7 @@ const SearchSection = () => {
     searchResults: auditResults,
     searchAudits,
     filterByStatus: filterAuditsByStatus,
-    filterByType: filterAuditsByType,
     statusCounts: auditStatusCounts,
-    typeCounts: auditTypeCounts,
     loading: auditLoading
   } = useAuditSearch();
 
@@ -150,14 +133,10 @@ const SearchSection = () => {
     searchResults: userResults,
     searchUsers: searchEnhancedUsers,
     filterByStatus: filterUsersByStatus,
-    filterByCampus,
     statusCounts: userStatusCounts,
     campuses,
     loading: userLoading
   } = useEnhancedUserSearch();
-
-  // Legacy hook for backward compatibility
-  const { searchUsers, users, loading: legacyLoading } = useUserSearch();
 
   // Status options for filtering
   const statusOptions = [
@@ -174,32 +153,43 @@ const SearchSection = () => {
     { value: 'users', label: 'Users', icon: Search },
   ];
 
-  const cohorts = [
-    'All Cohorts',
-    'Cohort 1',
-    'Cohort 2',
-    'Cohort 3',
-    'Cohort 4',
-  ];
+  // Get available campuses from user search hook
+  const availableCampuses = ['All Campuses', ...(campuses || [])];
+
+  // Debounce search term for auto-search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Auto-search when debounced term changes
+  useEffect(() => {
+    if (debouncedSearchTerm.trim() || selectedStatus !== 'all' || selectedCampus) {
+      handleSearch();
+    }
+  }, [debouncedSearchTerm, selectedStatus, selectedCampus, activeTab, handleSearch]);
 
   // Enhanced search handlers
-  const handleSearch = () => {
-    if (!searchTerm.trim() && selectedStatus === 'all') return;
+  const handleSearch = useCallback(() => {
+    const term = debouncedSearchTerm || searchTerm;
 
     switch (activeTab) {
       case 'projects':
-        searchProjects(searchTerm, selectedStatus);
+        searchProjects(term, selectedStatus === 'all' ? ['working', 'audit', 'setup', 'finished'] : [selectedStatus]);
         break;
       case 'audits':
-        searchAudits(searchTerm, selectedStatus);
+        searchAudits(term, selectedStatus === 'all' ? ['working', 'audit', 'setup', 'finished'] : [selectedStatus]);
         break;
       case 'users':
-        searchEnhancedUsers(searchTerm, selectedStatus, selectedCampus);
+        searchEnhancedUsers(term, selectedStatus, selectedCampus);
         break;
       default:
         break;
     }
-  };
+  }, [activeTab, debouncedSearchTerm, searchTerm, selectedStatus, selectedCampus, searchProjects, searchAudits, searchEnhancedUsers]);
 
   const handleStatusChange = (status) => {
     setSelectedStatus(status);
@@ -212,22 +202,42 @@ const SearchSection = () => {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setSearchTerm('');
+    setDebouncedSearchTerm('');
     setSelectedStatus('all');
+    setSelectedCampus('');
   };
 
-  // Legacy handlers for backward compatibility
-  const handleGroupSearch = () => {
-    console.log('Group search - legacy');
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setDebouncedSearchTerm('');
+    setSelectedStatus('all');
+    setSelectedCampus('');
   };
 
-  const handleUserAdvanceSearch = () => {
-    if (searchTerm.trim()) {
-      searchUsers(searchTerm);
+  // Enhanced search handlers
+  const handleCampusChange = (campus) => {
+    setSelectedCampus(campus === 'All Campuses' ? '' : campus);
+    // Auto-search when campus changes
+    setTimeout(() => {
+      handleSearch();
+    }, 100);
+  };
+
+  const handleLoadMore = () => {
+    const currentResults = getCurrentResults();
+    const newOffset = currentResults.length;
+
+    switch (activeTab) {
+      case 'projects':
+        searchProjects(searchTerm, selectedStatus, { offset: newOffset });
+        break;
+      case 'audits':
+        searchAudits(searchTerm, selectedStatus, { offset: newOffset });
+        break;
+      case 'users':
+        searchEnhancedUsers(searchTerm, selectedStatus, selectedCampus, { offset: newOffset });
+        break;
     }
-  };
-
-  const handleRankingSearch = () => {
-    console.log('Ranking search - legacy');
   };
 
   // Get current results based on active tab
@@ -323,9 +333,17 @@ const SearchSection = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder={`Search ${activeTab}...`}
-                  className="material-input pl-10 w-full"
+                  placeholder={`Search ${activeTab}... (auto-search enabled)`}
+                  className="material-input pl-10 pr-10 w-full"
                 />
+                {searchTerm && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-surface-400 hover:text-surface-200 transition-colors"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
             </div>
 
@@ -444,206 +462,104 @@ const SearchSection = () => {
         </Card>
       )}
 
-      {/* Legacy Search Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-      {/* Group Search */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center text-primary-300">
-            <Users className="w-5 h-5 mr-2" />
-            Group Search
-          </Card.Title>
-        </Card.Header>
-        
-        <Card.Content className="space-y-4">
-          {/* Cohort Dropdown */}
-          <div>
-            <label className="block text-sm font-medium text-surface-200 mb-2">
-              Select Cohort
-            </label>
-            <div className="relative">
-              <select
-                value={groupSearch.cohort}
-                onChange={(e) => setGroupSearch(prev => ({ ...prev, cohort: e.target.value }))}
-                className="material-input w-full appearance-none"
-              >
-                {cohorts.map((cohort) => (
-                  <option key={cohort} value={cohort} className="bg-surface-800">
-                    {cohort}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+      {/* Additional Search Features */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Campus Filter for Users */}
+        {activeTab === 'users' && (
+          <Card>
+            <Card.Header>
+              <Card.Title className="flex items-center text-primary-300">
+                <Users className="w-5 h-5 mr-2" />
+                Campus Filter
+              </Card.Title>
+            </Card.Header>
 
-          {/* Status Input */}
-          <div>
-            <input
-              type="text"
-              value={groupSearch.status}
-              onChange={(e) => setGroupSearch(prev => ({ ...prev, status: e.target.value }))}
-              className="material-input w-full"
-              placeholder="Status"
-            />
-          </div>
+            <Card.Content className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-surface-200 mb-2">
+                  Select Campus
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedCampus ? selectedCampus : 'All Campuses'}
+                    onChange={(e) => handleCampusChange(e.target.value)}
+                    className="material-input w-full appearance-none"
+                  >
+                    {availableCampuses.map((campus) => (
+                      <option key={campus} value={campus} className="bg-surface-800">
+                        {campus}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </Card.Content>
+          </Card>
+        )}
 
-          <Button 
-            onClick={handleGroupSearch}
-            className="w-full"
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Search
-          </Button>
-        </Card.Content>
-      </Card>
+        {/* Load More Results */}
+        {getCurrentResults().length > 0 && (
+          <Card>
+            <Card.Header>
+              <Card.Title className="flex items-center text-primary-300">
+                <TrendingUp className="w-5 h-5 mr-2" />
+                Load More Results
+              </Card.Title>
+            </Card.Header>
 
-      {/* User Advance Search */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center text-primary-300">
-            <Search className="w-5 h-5 mr-2" />
-            User Advance Search
-          </Card.Title>
-        </Card.Header>
-        
-        <Card.Content className="space-y-4">
-          {/* Username Input */}
-          <div>
-            <input
-              type="text"
-              value={userSearch.username}
-              onChange={(e) => setUserSearch(prev => ({ ...prev, username: e.target.value }))}
-              className="material-input w-full"
-              placeholder="Username"
-            />
-          </div>
-
-          {/* Status Input */}
-          <div>
-            <input
-              type="text"
-              value={userSearch.status}
-              onChange={(e) => setUserSearch(prev => ({ ...prev, status: e.target.value }))}
-              className="material-input w-full"
-              placeholder="Status"
-            />
-          </div>
-
-          <Button 
-            onClick={handleUserAdvanceSearch}
-            className="w-full"
-            loading={legacyLoading}
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Search
-          </Button>
-
-          {/* Search Results */}
-          {users.length > 0 && (
-            <div className="mt-4 space-y-2">
-              <h4 className="text-sm font-medium text-surface-200">Results:</h4>
-              {users.map((user) => (
-                <motion.div
-                  key={user.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 bg-surface-800/50 rounded-lg"
+            <Card.Content>
+              <div className="text-center">
+                <p className="text-surface-300 text-sm mb-4">
+                  Showing {getCurrentResults().length} results. Load more to see additional items.
+                </p>
+                <Button
+                  onClick={handleLoadMore}
+                  className="w-full"
+                  disabled={getCurrentLoading()}
                 >
-                  <p className="text-white font-medium">{user.login}</p>
-                  {(user.firstName || user.lastName) && (
-                    <p className="text-surface-300 text-sm">
-                      {user.firstName} {user.lastName}
-                    </p>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </Card.Content>
-      </Card>
-
-      {/* Ranking Search */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center text-primary-300">
-            <TrendingUp className="w-5 h-5 mr-2" />
-            Ranking Search
-          </Card.Title>
-        </Card.Header>
-        
-        <Card.Content className="space-y-4">
-          {/* Limit Input */}
-          <div>
-            <input
-              type="number"
-              value={rankingSearch.limit}
-              onChange={(e) => setRankingSearch(prev => ({ ...prev, limit: e.target.value }))}
-              className="material-input w-full"
-              placeholder="0"
-              min="0"
-            />
-          </div>
-
-          {/* Cohort Dropdown */}
-          <div>
-            <select
-              value={rankingSearch.cohort}
-              onChange={(e) => setRankingSearch(prev => ({ ...prev, cohort: e.target.value }))}
-              className="material-input w-full appearance-none"
-            >
-              {cohorts.map((cohort) => (
-                <option key={cohort} value={cohort} className="bg-surface-800">
-                  {cohort}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Button 
-            onClick={handleRankingSearch}
-            className="w-full"
-          >
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Search Rankings
-          </Button>
-        </Card.Content>
-      </Card>
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Load More
+                </Button>
+              </div>
+            </Card.Content>
+          </Card>
+        )}
+      </div>
 
       {/* Search Tips */}
-      <Card className="xl:col-span-3">
+      <Card>
         <Card.Header>
           <Card.Title className="flex items-center">
             <Filter className="w-5 h-5 mr-2" />
             Search Tips
           </Card.Title>
         </Card.Header>
-        
+
         <Card.Content>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <h4 className="font-medium text-white mb-2">Group Search</h4>
+              <h4 className="font-medium text-white mb-2">Project Search</h4>
               <p className="text-surface-300 text-sm">
-                Search for groups by cohort and status. Filter by working status to find active groups.
+                Search your projects by name and filter by status (working, audit, setup, finished).
               </p>
             </div>
-            
+
+            <div>
+              <h4 className="font-medium text-white mb-2">Audit Search</h4>
+              <p className="text-surface-300 text-sm">
+                Find audits you've given or received. Filter by status to see current audit activities.
+              </p>
+            </div>
+
             <div>
               <h4 className="font-medium text-white mb-2">User Search</h4>
               <p className="text-surface-300 text-sm">
-                Find specific users by username. Add status filters to narrow down results.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="font-medium text-white mb-2">Ranking Search</h4>
-              <p className="text-surface-300 text-sm">
-                View top performers by cohort. Set a limit to see top N users or leave as 0 for all.
+                Search for other users by login or name. Filter by campus to find local peers.
               </p>
             </div>
           </div>
         </Card.Content>
       </Card>
-      </div>
     </div>
   );
 };

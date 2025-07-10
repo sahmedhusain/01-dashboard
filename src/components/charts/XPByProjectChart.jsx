@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { formatXP } from '../../utils/dataFormatting';
 
@@ -12,20 +12,34 @@ const XPByProjectChart = ({
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return [];
 
-    // Filter out invalid projects and take top projects by XP
-    const validProjects = data.filter(d => d && d.totalXP != null && !isNaN(d.totalXP) && d.totalXP > 0);
-    if (validProjects.length === 0) return [];
+    try {
+      // Filter out invalid projects with enhanced validation
+      const validProjects = data.filter(d => {
+        if (!d) return false;
+        if (d.totalXP == null || isNaN(d.totalXP) || d.totalXP <= 0) return false;
+        // Ensure project has a name
+        if (!d.name && !d.projectName && !d.object?.name) return false;
+        return true;
+      });
 
-    const topProjects = validProjects.slice(0, maxBars);
-    const maxXP = Math.max(...topProjects.map(d => d.totalXP));
+      if (validProjects.length === 0) return [];
 
-    if (maxXP === 0 || isNaN(maxXP)) return [];
+      const topProjects = validProjects.slice(0, maxBars);
+      const maxXP = Math.max(...topProjects.map(d => d.totalXP));
 
-    return topProjects.map((project, index) => ({
-      ...project,
-      percentage: (project.totalXP / maxXP) * 100,
-      index,
-    }));
+      if (maxXP === 0 || isNaN(maxXP)) return [];
+
+      return topProjects.map((project, index) => ({
+        ...project,
+        // Ensure project name is available
+        name: project.name || project.projectName || project.object?.name || 'Unknown Project',
+        percentage: (project.totalXP / maxXP) * 100,
+        index,
+      }));
+    } catch (error) {
+      console.error('Error processing XP by project data:', error);
+      return [];
+    }
   }, [data, maxBars]);
 
   const margin = { top: 20, right: 80, bottom: 40, left: 200 };

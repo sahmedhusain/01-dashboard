@@ -1,14 +1,15 @@
-import React from 'react';
-import { BarChart3, TrendingUp, PieChart, Activity, Clock, Target } from 'lucide-react';
-import { useData } from '../../contexts/DataContext';
+import { BarChart3, TrendingUp, PieChart, Activity, Clock, Target, Award, Zap } from 'lucide-react';
+import { useData } from '../../hooks/useData';
 import Card from '../ui/Card';
-import Loading, { CardSkeleton } from '../ui/Loading';
+import { CardSkeleton } from '../ui/Loading';
+import Badge from '../ui/Badge';
 import XPProgressChart from '../charts/XPProgressChart';
 import ProjectSuccessChart from '../charts/ProjectSuccessChart';
 import AuditStatsChart from '../charts/AuditStatsChart';
 import XPByProjectChart from '../charts/XPByProjectChart';
 import XPTimelineChart from '../charts/XPTimelineChart';
 import PiscineStatsChart from '../charts/PiscineStatsChart';
+import { formatXP, formatPercentage } from '../../utils/dataFormatting';
 
 const StatsSection = () => {
   const {
@@ -16,12 +17,14 @@ const StatsSection = () => {
     xpData,
     projectData,
     auditData,
+    piscineStats,
+    skills,
     loading
   } = useData();
 
   // Extract chart data from the new data structure
   const xpTimeline = xpData?.timeline || [];
-  const xpByProject = xpData?.byProject || [];
+  const xpByProject = xpData?.xpByProject || [];
   const totalXP = userData?.totalXP || 0;
   const userLevel = userData?.level || 0;
 
@@ -55,6 +58,82 @@ const StatsSection = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      {/* Statistics Overview Cards */}
+      <Card>
+        <Card.Header>
+          <Card.Title className="flex items-center">
+            <TrendingUp className="w-5 h-5 mr-2" />
+            XP Statistics
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Total XP</span>
+              <Badge variant="primary">{formatXP(totalXP)}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Current Level</span>
+              <Badge variant="accent">Level {userLevel}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Projects Completed</span>
+              <Badge variant="success">{passedProjects}</Badge>
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
+
+      <Card>
+        <Card.Header>
+          <Card.Title className="flex items-center">
+            <Target className="w-5 h-5 mr-2" />
+            Performance Metrics
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Success Rate</span>
+              <Badge variant="primary">{formatPercentage(passRate)}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Audit Ratio</span>
+              <Badge variant="accent">{auditRatio.toFixed(2)}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Audits Given</span>
+              <Badge variant="success">{auditsGiven}</Badge>
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
+
+      <Card>
+        <Card.Header>
+          <Card.Title className="flex items-center">
+            <Award className="w-5 h-5 mr-2" />
+            Achievement Summary
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Total Projects</span>
+              <Badge variant="primary">{totalProjects}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Failed Projects</span>
+              <Badge variant="error">{failedProjects}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-surface-300">Audits Received</span>
+              <Badge variant="accent">{auditsReceived}</Badge>
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
+
       {/* XP Timeline Chart - Full width */}
       <div className="lg:col-span-2 xl:col-span-3">
         <Card>
@@ -118,13 +197,51 @@ const StatsSection = () => {
         <Card.Content>
           <div className="flex justify-center">
             <PiscineStatsChart
-              data={[]} // TODO: Add piscine stats to data context
+              data={piscineStats || {}}
               width={400}
               height={350}
             />
           </div>
         </Card.Content>
       </Card>
+
+      {/* Skills Development Tracking */}
+      {skills && skills.length > 0 && (
+        <Card>
+          <Card.Header>
+            <Card.Title className="flex items-center">
+              <Zap className="w-5 h-5 mr-2" />
+              Skill Development
+            </Card.Title>
+            <Card.Description>
+              Top technologies and programming languages
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <div className="space-y-3">
+              {skills.slice(0, 6).map((skill, index) => (
+                <div key={skill.name || index} className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-primary-400"></div>
+                    <span className="text-surface-200 text-sm capitalize">
+                      {skill.name?.replace(/_/g, ' ') || 'Unknown Skill'}
+                    </span>
+                  </div>
+                  <Badge variant="primary" size="sm">
+                    {formatXP(skill.totalXP)}
+                  </Badge>
+                </div>
+              ))}
+              {skills.length === 0 && (
+                <div className="text-center text-surface-400 py-4">
+                  <Zap className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>No skill data available yet</p>
+                </div>
+              )}
+            </div>
+          </Card.Content>
+        </Card>
+      )}
 
       {/* Original XP Progress Chart */}
       <Card>

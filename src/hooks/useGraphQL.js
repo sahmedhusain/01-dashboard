@@ -5070,19 +5070,6 @@ export const useProjectSearch = () => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
 
-  const [searchProjectsByStatus] = useLazyQuery(SEARCH_PROJECTS_BY_STATUS, {
-    errorPolicy: 'all',
-    onCompleted: (data) => {
-      const processedResults = processProjectSearchResults(data);
-      setSearchResults(processedResults);
-      setLoading(false);
-    },
-    onError: (err) => {
-      setError(err);
-      setLoading(false);
-    },
-  });
-
   const processProjectSearchResults = (data) => {
     if (!data) return [];
 
@@ -5126,6 +5113,19 @@ export const useProjectSearch = () => {
     return 'working';
   };
 
+  const [searchProjectsByStatus] = useLazyQuery(SEARCH_PROJECTS_BY_STATUS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      const processedResults = processProjectSearchResults(data);
+      setSearchResults(processedResults);
+      setLoading(false);
+    },
+    onError: (err) => {
+      setError(err);
+      setLoading(false);
+    },
+  });
+
   const searchProjects = (searchTerm = '', status = 'all', options = {}) => {
     if (!isAuthenticated || !user?.id) return;
 
@@ -5134,13 +5134,22 @@ export const useProjectSearch = () => {
 
     const { limit = 20, offset = 0 } = options;
 
+    // Ensure searchTerm is a valid string
+    const validSearchTerm = searchTerm && typeof searchTerm === 'string' ? searchTerm.trim() : '';
+    const searchPattern = validSearchTerm ? `%${validSearchTerm}%` : '%%';
+
+    // Handle status parameter - can be string or array
+    const statusArray = Array.isArray(status) ? status :
+                       status === 'all' ? ['working', 'audit', 'setup', 'finished'] : [status];
+
     searchProjectsByStatus({
       variables: {
         userId: user.id,
-        status,
-        searchTerm: `%${searchTerm}%`,
+        status: statusArray,
+        searchTerm: searchPattern,
         limit,
         offset,
+        campus: "Bahrain", // Always filter by Bahrain campus
       },
     });
   };
@@ -5173,19 +5182,6 @@ export const useAuditSearch = () => {
   const [searchResults, setSearchResults] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
-
-  const [searchAuditsByStatus] = useLazyQuery(SEARCH_AUDITS_BY_STATUS, {
-    errorPolicy: 'all',
-    onCompleted: (data) => {
-      const processedResults = processAuditSearchResults(data);
-      setSearchResults(processedResults);
-      setLoading(false);
-    },
-    onError: (err) => {
-      setError(err);
-      setLoading(false);
-    },
-  });
 
   const processAuditSearchResults = (data) => {
     if (!data) return [];
@@ -5225,6 +5221,19 @@ export const useAuditSearch = () => {
     return 'audit';
   };
 
+  const [searchAuditsByStatus] = useLazyQuery(SEARCH_AUDITS_BY_STATUS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      const processedResults = processAuditSearchResults(data);
+      setSearchResults(processedResults);
+      setLoading(false);
+    },
+    onError: (err) => {
+      setError(err);
+      setLoading(false);
+    },
+  });
+
   const searchAudits = (searchTerm = '', status = 'all', options = {}) => {
     if (!isAuthenticated || !user?.id) return;
 
@@ -5233,13 +5242,22 @@ export const useAuditSearch = () => {
 
     const { limit = 20, offset = 0 } = options;
 
+    // Ensure searchTerm is a valid string
+    const validSearchTerm = searchTerm && typeof searchTerm === 'string' ? searchTerm.trim() : '';
+    const searchPattern = validSearchTerm ? `%${validSearchTerm}%` : '%%';
+
+    // Handle status parameter - can be string or array
+    const statusArray = Array.isArray(status) ? status :
+                       status === 'all' ? ['working', 'audit', 'setup', 'finished'] : [status];
+
     searchAuditsByStatus({
       variables: {
         userId: user.id,
-        status,
-        searchTerm: `%${searchTerm}%`,
+        status: statusArray,
+        searchTerm: searchPattern,
         limit,
         offset,
+        campus: "Bahrain", // Always filter by Bahrain campus
       },
     });
   };
@@ -5283,19 +5301,6 @@ export const useEnhancedUserSearch = () => {
   const [searchResults, setSearchResults] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
-
-  const [searchUsersWithStatus] = useLazyQuery(SEARCH_USERS_WITH_STATUS, {
-    errorPolicy: 'all',
-    onCompleted: (data) => {
-      const processedResults = processUserSearchResults(data);
-      setSearchResults(processedResults);
-      setLoading(false);
-    },
-    onError: (err) => {
-      setError(err);
-      setLoading(false);
-    },
-  });
 
   const processUserSearchResults = (data) => {
     if (!data?.users) return [];
@@ -5347,17 +5352,37 @@ export const useEnhancedUserSearch = () => {
     return 'working';
   };
 
-  const searchUsers = (searchTerm = '', status = 'all', campus = '', options = {}) => {
+  const [searchUsersWithStatus] = useLazyQuery(SEARCH_USERS_WITH_STATUS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      const processedResults = processUserSearchResults(data);
+      setSearchResults(processedResults);
+      setLoading(false);
+    },
+    onError: (err) => {
+      setError(err);
+      setLoading(false);
+    },
+  });
+
+  const searchUsers = (searchTerm = '', status = 'all', options = {}) => {
     setLoading(true);
     setError(null);
 
     const { limit = 20, offset = 0 } = options;
 
+    // Ensure searchTerm is a valid string - this query requires a non-null searchTerm
+    const validSearchTerm = searchTerm && typeof searchTerm === 'string' ? searchTerm.trim() : '';
+    const searchPattern = validSearchTerm ? `%${validSearchTerm}%` : '%%';
+
+    // Always filter by Bahrain campus
+    const campusPattern = "%Bahrain%";
+
     searchUsersWithStatus({
       variables: {
-        searchTerm: `%${searchTerm}%`,
+        searchTerm: searchPattern,
         status,
-        campus: campus ? `%${campus}%` : '%',
+        campus: campusPattern,
         limit,
         offset,
       },

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Users, TrendingUp, Filter, Clock, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import {
@@ -138,6 +138,14 @@ const SearchSection = () => {
     loading: userLoading
   } = useEnhancedUserSearch();
 
+  // Store stable references to search functions to prevent infinite re-renders
+  const searchFunctionsRef = useRef({});
+  searchFunctionsRef.current = {
+    searchProjects,
+    searchAudits,
+    searchEnhancedUsers
+  };
+
   // Status options for filtering
   const statusOptions = [
     { value: 'all', label: 'All Status', icon: Filter, color: 'text-surface-400' },
@@ -156,6 +164,26 @@ const SearchSection = () => {
   // Get available campuses from user search hook
   const availableCampuses = ['All Campuses', ...(campuses || [])];
 
+  // Enhanced search handlers
+  const handleSearch = useCallback(() => {
+    const term = debouncedSearchTerm || searchTerm;
+    const { searchProjects, searchAudits, searchEnhancedUsers } = searchFunctionsRef.current;
+
+    switch (activeTab) {
+      case 'projects':
+        searchProjects(term, selectedStatus === 'all' ? ['working', 'audit', 'setup', 'finished'] : [selectedStatus]);
+        break;
+      case 'audits':
+        searchAudits(term, selectedStatus === 'all' ? ['working', 'audit', 'setup', 'finished'] : [selectedStatus]);
+        break;
+      case 'users':
+        searchEnhancedUsers(term, selectedStatus);
+        break;
+      default:
+        break;
+    }
+  }, [activeTab, debouncedSearchTerm, searchTerm, selectedStatus]);
+
   // Debounce search term for auto-search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -167,29 +195,10 @@ const SearchSection = () => {
 
   // Auto-search when debounced term changes
   useEffect(() => {
-    if (debouncedSearchTerm.trim() || selectedStatus !== 'all' || selectedCampus) {
+    if (debouncedSearchTerm.trim() || selectedStatus !== 'all') {
       handleSearch();
     }
-  }, [debouncedSearchTerm, selectedStatus, selectedCampus, activeTab, handleSearch]);
-
-  // Enhanced search handlers
-  const handleSearch = useCallback(() => {
-    const term = debouncedSearchTerm || searchTerm;
-
-    switch (activeTab) {
-      case 'projects':
-        searchProjects(term, selectedStatus === 'all' ? ['working', 'audit', 'setup', 'finished'] : [selectedStatus]);
-        break;
-      case 'audits':
-        searchAudits(term, selectedStatus === 'all' ? ['working', 'audit', 'setup', 'finished'] : [selectedStatus]);
-        break;
-      case 'users':
-        searchEnhancedUsers(term, selectedStatus, selectedCampus);
-        break;
-      default:
-        break;
-    }
-  }, [activeTab, debouncedSearchTerm, searchTerm, selectedStatus, selectedCampus, searchProjects, searchAudits, searchEnhancedUsers]);
+  }, [debouncedSearchTerm, selectedStatus, activeTab, handleSearch]);
 
   const handleStatusChange = (status) => {
     setSelectedStatus(status);

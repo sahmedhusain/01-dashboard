@@ -158,7 +158,7 @@ const XPProgressChart = ({
               transition={{ duration: 0.3, delay: 0.1 * i }}
               className="cursor-pointer hover:r-6 transition-all"
             >
-              <title>{`${new Date(d.date).toLocaleDateString()}: ${d.cumulative.toLocaleString()} XP`}</title>
+              <title>{`${new Date(d.date).toLocaleDateString()}: ${(d.cumulative || 0).toLocaleString()} XP`}</title>
             </motion.circle>
           ))}
 
@@ -193,7 +193,7 @@ const XPProgressChart = ({
               fontSize="12"
               fontFamily="Inter, sans-serif"
             >
-              {tick.value.toLocaleString()}
+              {(tick.value || 0).toLocaleString()}
             </text>
           ))}
 

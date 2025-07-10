@@ -121,7 +121,16 @@ export const getStoredToken = () => {
  */
 export const getStoredUser = () => {
   const userData = localStorage.getItem(USER_KEY);
-  return userData ? JSON.parse(userData) : null;
+  if (!userData) return null;
+
+  try {
+    return JSON.parse(userData);
+  } catch (e) {
+    console.warn('Error parsing stored user data:', e);
+    // Clear corrupted data
+    localStorage.removeItem(USER_KEY);
+    return null;
+  }
 };
 
 /**

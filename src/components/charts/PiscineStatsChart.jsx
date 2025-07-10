@@ -179,7 +179,7 @@ const PiscineStatsChart = ({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.2 + 0.3 }}
               >
-                {segment.percentage.toFixed(1)}%
+                {(segment.percentage || 0).toFixed(1)}%
               </motion.text>
 
               {/* Value Label */}

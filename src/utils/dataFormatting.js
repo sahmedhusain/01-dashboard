@@ -77,27 +77,19 @@ export const getAvatarUrl = (user) => {
   
   // Check profile field for avatar data
   if (user.profile) {
-    try {
-      const profile = typeof user.profile === 'string' ? JSON.parse(user.profile) : user.profile;
-      if (profile.avatar) return profile.avatar;
-      if (profile.avatarUrl) return profile.avatarUrl;
-      if (profile.picture) return profile.picture;
-    } catch (e) {
-      console.warn('Error parsing user profile for avatar:', e);
-    }
+    const profile = safeJsonParse(user.profile, {});
+    if (profile.avatar) return profile.avatar;
+    if (profile.avatarUrl) return profile.avatarUrl;
+    if (profile.picture) return profile.picture;
   }
-  
+
   // Check attrs field for avatar data
   if (user.attrs) {
-    try {
-      const attrs = typeof user.attrs === 'string' ? JSON.parse(user.attrs) : user.attrs;
-      if (attrs.avatar) return attrs.avatar;
-      if (attrs.avatarUrl) return attrs.avatarUrl;
-      if (attrs.picture) return attrs.picture;
-      if (attrs.image) return attrs.image;
-    } catch (e) {
-      console.warn('Error parsing user attrs for avatar:', e);
-    }
+    const attrs = safeJsonParse(user.attrs, {});
+    if (attrs.avatar) return attrs.avatar;
+    if (attrs.avatarUrl) return attrs.avatarUrl;
+    if (attrs.picture) return attrs.picture;
+    if (attrs.image) return attrs.image;
   }
   
   return null;
@@ -122,16 +114,12 @@ export const getUserDisplayName = (user) => {
 
   // Try to get full name from profile JSON field
   if (user.profile) {
-    try {
-      const profile = typeof user.profile === 'string' ? JSON.parse(user.profile) : user.profile;
-      if (profile.firstName && profile.lastName) {
-        return `${profile.firstName} ${profile.lastName}`;
-      }
-      if (profile.name) return profile.name;
-      if (profile.displayName) return profile.displayName;
-    } catch (e) {
-      console.warn('Error parsing user profile for display name:', e);
+    const profile = safeJsonParse(user.profile, {});
+    if (profile.firstName && profile.lastName) {
+      return `${profile.firstName} ${profile.lastName}`;
     }
+    if (profile.name) return profile.name;
+    if (profile.displayName) return profile.displayName;
   }
 
   // Fallback to login or username
@@ -151,22 +139,14 @@ export const getUserEmail = (user) => {
 
   // Check profile field
   if (user.profile) {
-    try {
-      const profile = typeof user.profile === 'string' ? JSON.parse(user.profile) : user.profile;
-      if (profile.email) return profile.email;
-    } catch (e) {
-      console.warn('Error parsing user profile for email:', e);
-    }
+    const profile = safeJsonParse(user.profile, {});
+    if (profile.email) return profile.email;
   }
 
   // Check attrs field
   if (user.attrs) {
-    try {
-      const attrs = typeof user.attrs === 'string' ? JSON.parse(user.attrs) : user.attrs;
-      if (attrs.email) return attrs.email;
-    } catch (e) {
-      console.warn('Error parsing user attrs for email:', e);
-    }
+    const attrs = safeJsonParse(user.attrs, {});
+    if (attrs.email) return attrs.email;
   }
 
   return null;
@@ -262,20 +242,31 @@ export const truncateText = (text, maxLength = 50, suffix = '...') => {
 };
 
 /**
- * Safe JSON parse with fallback
- * @param {string} jsonString - JSON string to parse
+ * Safe JSON parse with fallback - handles both strings and objects
+ * @param {string|object} data - JSON string to parse or object to return as-is
  * @param {*} fallback - Fallback value if parsing fails
  * @returns {*} Parsed object or fallback
  */
-export const safeJsonParse = (jsonString, fallback = {}) => {
-  if (!jsonString) return fallback;
-  
-  try {
-    return JSON.parse(jsonString);
-  } catch (e) {
-    console.warn('Error parsing JSON:', e);
-    return fallback;
+export const safeJsonParse = (data, fallback = {}) => {
+  if (!data) return fallback;
+
+  // If it's already an object, return it as-is
+  if (typeof data === 'object' && data !== null) {
+    return data;
   }
+
+  // If it's a string, try to parse it
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.warn('Error parsing JSON:', e);
+      return fallback;
+    }
+  }
+
+  // For any other type, return fallback
+  return fallback;
 };
 
 /**

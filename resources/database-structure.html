@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Schema Public | public</title>
+<meta name="generator" content="Jekyll v3.10.0">
+<meta property="og:title" content="Schema Public">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="📚 @01-edu’s Public Repository">
+<meta property="og:description" content="📚 @01-edu’s Public Repository">
+<link rel="canonical" href="http://public.01-edu.org/docs/db/database-structure.html">
+<meta property="og:url" content="http://public.01-edu.org/docs/db/database-structure.html">
+<meta property="og:site_name" content="public">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Schema Public">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"📚 @01-edu’s Public Repository","headline":"Schema Public","url":"http://public.01-edu.org/docs/db/database-structure.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="/assets/css/style.css?v=6351fcd6b3dfbf7de9fa5240b4d3cc55387c2c47">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="http://public.01-edu.org/">public</a></h1>
+      
+
+      <h1 id="schema-public">Schema Public</h1>
+
+<h2 id="tables">Tables<a class="anchorjs-link " href="#tables" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<h3 id="audit">audit<a class="anchorjs-link " href="#audit" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Some exercises require reviews from other students or any other member of the school. The reviewer checks that some conditions are met by the code of the student being reviewed. This process is called an <code class="language-plaintext highlighter-rouge">audit</code> and it’s kept in this table.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id.</li>
+  <li>groupId: The group that the audit refers to.</li>
+  <li>auditorId: The user who’s making the audit.</li>
+  <li>attrs: The attributes of the audits keep the feedback of the auditor for each question failed.</li>
+  <li>grade: A floating point number with the ratio between questions required to pass and questions approved. (Less than 1 means failed. More or equal than 1 means passed. More than 1 means that the student had bonus questions correct).</li>
+  <li>createdAt: The timestamp of the time and date of creation.</li>
+  <li>updatedAt: The timestamp of the last update.</li>
+  <li>code: The code that must be used by the auditor to start the audit. This code is set to null after the audit is expired.</li>
+  <li>resultId: The result of the audit. <code class="language-plaintext highlighter-rouge">resultId</code> is filled when the group has enough audits to validate or fail a project - that means that while it’s not filled, audits are still “doable” (if no grade, so not done), and then after they are not needed anymore</li>
+  <li>version: A sha of the commit that the audit refers to.</li>
+  <li>endAt: It is used for expiration date (after this date the audit is expired).</li>
+  <li>private: Used to access the code by the auditor.</li>
+</ul>
+
+<h3 id="discordtoken-todo-remove">discordToken (TODO: remove)<a class="anchorjs-link " href="#discordtoken-todo-remove" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>accessToken</li>
+  <li>refreshToken</li>
+  <li>expiresAt</li>
+</ul>
+
+<h3 id="event">event<a class="anchorjs-link " href="#event" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>An event anchors an objects into time.</p>
+<blockquote>
+  <p>Note: Some <a href="attributes.md">object attributes</a> are related to time, but they express time only in relative terms to the beginning of the event.
+Also, live edits (i.e., editing an event while is ongoing) it’s not supported. The changes will only take effect after reloading the page.</p>
+</blockquote>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>createdAt: The timestamp of the creation of the event.</li>
+  <li>endAt: The timestamp for the end of the event.</li>
+  <li>registrationId: The registration to the event.</li>
+  <li>objectId: The object that is used to generate the event.</li>
+  <li>parentId: The immediate event ancestor. The parent event.</li>
+  <li>status: Confirmation that the event finished correctly (NULL or done for now).</li>
+  <li>path: The path of the event (the relative url of the event).</li>
+  <li>campus: The campus that contains the event.</li>
+  <li>code: Used to unlock the exams.</li>
+</ul>
+
+<h3 id="event_user">event_user<a class="anchorjs-link " href="#event_user" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>This table links users and events. A user can be in many events and an events have many users.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>createdAt</li>
+  <li>userId</li>
+  <li>eventId</li>
+</ul>
+
+<h3 id="group">group<a class="anchorjs-link " href="#group" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Some projects are required to be made by groups. Those groups are kept in this table.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>objectId: The object that is being “done” by the group. Usually projects or raids.</li>
+  <li>eventId : The groups only exist in relation to an event</li>
+  <li>captainId: The captain of the group.</li>
+  <li>createdAt.</li>
+  <li>updatedAt.</li>
+  <li>status: See <a href="#group_status">group_status</a> for possible values.</li>
+  <li>path.</li>
+  <li>campus.</li>
+</ul>
+
+<h3 id="group_status">group_status<a class="anchorjs-link " href="#group_status" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Columns:</p>
+<ul>
+  <li>status
+Possible values (for now)
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">setup</code></li>
+      <li><code class="language-plaintext highlighter-rouge">working</code></li>
+      <li><code class="language-plaintext highlighter-rouge">audit</code></li>
+      <li><code class="language-plaintext highlighter-rouge">finished</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="group_user">group_user<a class="anchorjs-link " href="#group_user" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>This table links users to groups. A user can be in many groups and a group contains many users.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>userId</li>
+  <li>groupId</li>
+  <li>confirmed: Boolean. False by default. True after the user represented by the user id confirms the group.</li>
+  <li>createdAt</li>
+  <li>updatedAt</li>
+</ul>
+
+<h3 id="match">match<a class="anchorjs-link " href="#match" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>It is used for the <code class="language-plaintext highlighter-rouge">bet</code> system in the bonus exercises. Specifically to keep a record of the matches between students who will review and make a bet about each others code.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>createdAt</li>
+  <li>updatedAt</li>
+  <li>objectId: The object that requires the match.</li>
+  <li>userId: The user that is matched.</li>
+  <li>matchId: The matched that is made to another user.</li>
+  <li>confirmed: The same as in group_user it’s a way to keep track of invitations that had not been confirmed.</li>
+  <li>bet: boolean; For the optional exercises that require a bet. A bet can be true if the exercises is expected to pass and false otherwise.</li>
+  <li>result: boolean; True for correct bet.</li>
+  <li>path</li>
+  <li>campus</li>
+  <li>eventId: The event the object in inserted in. (Piscine, Raid, etc).</li>
+</ul>
+
+<h3 id="object">object<a class="anchorjs-link " href="#object" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Objects are generic representations of elements in the structure of the curriculum (Onboarding, campus, piscine, raids, etc). They are arranged in a hierarchical structure to allow unlimited nesting (see <a href="#object_child">object_child</a>). They also keep the timeline of the events relaying in durations (ex. <code class="language-plaintext highlighter-rouge">duration</code>, <code class="language-plaintext highlighter-rouge">eventDuration</code>, etc) specified by <a href="attributes.md">attributes</a> (<code class="language-plaintext highlighter-rouge">attrs</code>).</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>name</li>
+  <li>type:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">onboarding</code></li>
+      <li><code class="language-plaintext highlighter-rouge">campus</code></li>
+      <li><code class="language-plaintext highlighter-rouge">exercise</code></li>
+      <li><code class="language-plaintext highlighter-rouge">quest</code></li>
+      <li><code class="language-plaintext highlighter-rouge">signup</code></li>
+      <li><code class="language-plaintext highlighter-rouge">exam</code></li>
+      <li><code class="language-plaintext highlighter-rouge">raid</code></li>
+      <li><code class="language-plaintext highlighter-rouge">project</code></li>
+      <li><code class="language-plaintext highlighter-rouge">piscine</code></li>
+    </ul>
+  </li>
+  <li>status: (Currently not in used, but it should always be <code class="language-plaintext highlighter-rouge">online</code> to avoid errors TODO: remove at some point).
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">online</code></li>
+      <li><code class="language-plaintext highlighter-rouge">offline</code></li>
+      <li><code class="language-plaintext highlighter-rouge">draft</code></li>
+    </ul>
+  </li>
+  <li>attrs: See <a href="attributes.md">object attributes</a>.</li>
+  <li>childrenAttrs: Attributes that are applied to all the children objects.</li>
+  <li>createdAt</li>
+  <li>updatedAt</li>
+  <li>externalRelationUrl (Maybe not needed).</li>
+  <li>authorId (Maybe not needed).</li>
+  <li>campus: The campus the object is related to.</li>
+  <li>referenceId: If the object is a duplication this field points to the reference object.</li>
+  <li>referencedAt: The timestamp of the creation of the copy object.</li>
+</ul>
+
+<h3 id="object_child">object_child<a class="anchorjs-link " href="#object_child" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>It keeps a child-parent relationship between two objects. It’s used to encapsulate objects inside each other.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>parentId</li>
+  <li>childId</li>
+  <li>attrs</li>
+  <li>key: When generating the JS object this field will be the <code class="language-plaintext highlighter-rouge">key</code> of the child. It is also used in the url.</li>
+  <li>index: Defines the position of the child object inside the parent object.</li>
+</ul>
+
+<h3 id="progress">progress<a class="anchorjs-link " href="#progress" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>It is a register of the steps in the progression of students doing the exercises and projects.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>createdAt</li>
+  <li>updateAt</li>
+  <li>userId</li>
+  <li>groupId</li>
+  <li>eventId</li>
+  <li>version: the sha of the last commit</li>
+  <li>grade: is the average of the grades of the results related to this progress if several exist.</li>
+  <li>isDone: set to trure as soon as a user fails a validation or when all validations required are done.</li>
+  <li>path</li>
+  <li>campus</li>
+  <li>objectId</li>
+</ul>
+
+<h3 id="record">record<a class="anchorjs-link " href="#record" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Keeps a register for the bans. It can also keep the record of other situations, this is done by setting the banEndAt to a date already passed and the reason for the record.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>userId</li>
+  <li>authorId</li>
+  <li>message</li>
+  <li>banEndAt</li>
+  <li>createdAt</li>
+</ul>
+
+<h3 id="registration">registration<a class="anchorjs-link " href="#registration" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Registrations to events (For example, an exam).</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>createdAt, When the registration was created.</li>
+  <li>startAt, When users can start registering to an event.</li>
+  <li>endAt, When the registration ends.</li>
+  <li>eventStartAt, Event at which the event will be started (and as such created). Event don’t exist only when they start</li>
+  <li>objectId, The object the registration refers to.</li>
+  <li>parentId, The parent object of the object the registration refers to.</li>
+  <li>attrs</li>
+  <li>path</li>
+  <li>campus</li>
+</ul>
+
+<h3 id="registration_user">registration_user<a class="anchorjs-link " href="#registration_user" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>The user registered to events. A user can register to many events and and event can have many users.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>registrationId</li>
+  <li>userId</li>
+  <li>createdAt</li>
+</ul>
+
+<h3 id="result">result<a class="anchorjs-link " href="#result" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>The result for each exercise and project made in the platform.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>createdAt</li>
+  <li>updatedAt</li>
+  <li>grade</li>
+  <li>attrs</li>
+  <li>type:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">tester</code></li>
+      <li><code class="language-plaintext highlighter-rouge">user_audit</code></li>
+      <li><code class="language-plaintext highlighter-rouge">admit_audit</code></li>
+      <li><code class="language-plaintext highlighter-rouge">admin_selection</code></li>
+      <li><code class="language-plaintext highlighter-rouge">status</code></li>
+    </ul>
+  </li>
+  <li>userId</li>
+  <li>groupId</li>
+  <li>objectId</li>
+  <li>path</li>
+  <li>version, The version of the code the result refers to.</li>
+  <li>eventId</li>
+  <li>isLast, Used to represent transitory states. A progress is only considered finished when <code class="language-plaintext highlighter-rouge">isLast</code> is <code class="language-plaintext highlighter-rouge">true</code>.</li>
+  <li>campus</li>
+</ul>
+
+<h3 id="role">role<a class="anchorjs-link " href="#role" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>slug</li>
+  <li>name</li>
+  <li>description</li>
+  <li>createdAt</li>
+  <li>updatedAt</li>
+</ul>
+
+<h3 id="token">token<a class="anchorjs-link " href="#token" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>status
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">active</code></li>
+      <li><code class="language-plaintext highlighter-rouge">expired</code></li>
+    </ul>
+  </li>
+  <li>createdAt</li>
+  <li>updatedAt</li>
+</ul>
+
+<h3 id="transaction">transaction<a class="anchorjs-link " href="#transaction" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>It’s a register of the rewards given to students.</p>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>type:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">xp</code>: transaction giving xp</li>
+      <li><code class="language-plaintext highlighter-rouge">up</code>: transaction correspondent to reviewing someone</li>
+      <li><code class="language-plaintext highlighter-rouge">down</code>: transaction correspondent to reviewing you</li>
+    </ul>
+  </li>
+  <li>amount:
+    <ul>
+      <li>type = xp; The amount of Xp that an object rewards.</li>
+      <li>
+        <table>
+          <tbody>
+            <tr>
+              <td>type = up</td>
+              <td>&nbsp;</td>
+              <td>down; a percentage of the change (10%);</td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </li>
+  <li>userId</li>
+  <li>attrs</li>
+  <li>createdAt</li>
+  <li>path</li>
+  <li>objectId</li>
+  <li>eventId</li>
+  <li>campus</li>
+</ul>
+
+<h3 id="user">user<a class="anchorjs-link " href="#user" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>githubId: (deprecated).</li>
+  <li>githubLogin: alias -&gt; login.</li>
+  <li>discordId: depracated (TODO: remove)</li>
+  <li>discordLogin: depracated (TODO: remove)</li>
+  <li>profile</li>
+  <li>attrs: Extra information about the users (email, address, etc).</li>
+  <li>createdAt</li>
+  <li>updateAt</li>
+  <li>discordDMChannelld: depracated (TODO: remove)</li>
+  <li>campus</li>
+</ul>
+
+<h3 id="user_role">user_role<a class="anchorjs-link " href="#user_role" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Columns:</p>
+<ul>
+  <li>id</li>
+  <li>userId</li>
+  <li>roleId</li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous" type="text/javascript"></script>
+    <script type="text/javascript">anchors.add();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95c068606b0a4f74',t:'MTc1MTk4NjM3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe><script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;rayId&quot;:&quot;95c068606b0a4f74&quot;,&quot;serverTiming&quot;:{&quot;name&quot;:{&quot;cfExtPri&quot;:true,&quot;cfEdge&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfL4&quot;:true,&quot;cfSpeedBrain&quot;:true,&quot;cfCacheStatus&quot;:true}},&quot;version&quot;:&quot;2025.6.2&quot;,&quot;token&quot;:&quot;70549fd437274e1baf85989383ee1938&quot;}" crossorigin="anonymous"></script>
+
+
+</body></html>

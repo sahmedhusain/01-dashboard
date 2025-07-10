@@ -46,9 +46,23 @@ export const useUserProfile = () => {
 
   const profile = data?.user?.[0] || null;
 
+  // Extract enhanced profile data
+  const enhancedProfile = profile ? {
+    ...profile,
+    // Add computed fields
+    registrationDate: profile.events?.[0]?.createdAt,
+    startCampus: profile.events?.[0]?.campus,
+    totalXP: profile.totalXP?.aggregate?.sum?.amount || 0,
+    totalProjects: profile.projectResults?.aggregate?.count || 0,
+    passedProjects: profile.passedProjects?.aggregate?.count || 0,
+    passRate: profile.projectResults?.aggregate?.count > 0
+      ? (profile.passedProjects?.aggregate?.count / profile.projectResults?.aggregate?.count) * 100
+      : 0,
+  } : null;
+
   return {
-    profile,
-    userRoles: profile?.userRoles || [],
+    profile: enhancedProfile,
+    userRoles: [], // userRoles field not available in GraphQL schema
     records: profile?.records || [],
     loading,
     error,

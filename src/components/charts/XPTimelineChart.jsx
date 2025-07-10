@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { formatXP, formatDate } from '../../utils/dataFormatting';
 
 const XPTimelineChart = ({ 
   data = [], 
@@ -26,15 +27,10 @@ const XPTimelineChart = ({
   const chartWidth = width - margin.left - margin.right;
   const chartHeight = height - margin.top - margin.bottom;
 
-  const formatXP = (xp) => {
-    if (xp >= 1000000) return `${(xp / 1000000).toFixed(1)}M`;
-    if (xp >= 1000) return `${(xp / 1000).toFixed(1)}K`;
-    return xp.toString();
-  };
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', { 
-      month: 'short', 
+  // Using centralized formatXP and formatDate functions from utils
+  const formatDateForChart = (date) => {
+    return formatDate(date, {
+      month: 'short',
       day: 'numeric',
       year: '2-digit'
     });
@@ -171,7 +167,7 @@ const XPTimelineChart = ({
                   textAnchor="middle"
                   className="fill-surface-400 text-xs"
                 >
-                  {formatDate(date)}
+                  {formatDateForChart(date)}
                 </text>
               </g>
             );
@@ -254,7 +250,7 @@ const XPTimelineChart = ({
                     textAnchor="middle"
                     className="fill-surface-400 text-xs pointer-events-none"
                   >
-                    {formatDate(point.date)}
+                    {formatDateForChart(point.date)}
                   </text>
                 </motion.g>
               </motion.g>

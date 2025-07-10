@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Database Relations | public</title>
+<meta name="generator" content="Jekyll v3.10.0">
+<meta property="og:title" content="Database Relations">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="📚 @01-edu’s Public Repository">
+<meta property="og:description" content="📚 @01-edu’s Public Repository">
+<link rel="canonical" href="http://public.01-edu.org/docs/db/db-relations.html">
+<meta property="og:url" content="http://public.01-edu.org/docs/db/db-relations.html">
+<meta property="og:site_name" content="public">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Database Relations">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"📚 @01-edu’s Public Repository","headline":"Database Relations","url":"http://public.01-edu.org/docs/db/db-relations.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="/assets/css/style.css?v=6351fcd6b3dfbf7de9fa5240b4d3cc55387c2c47">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="http://public.01-edu.org/">public</a></h1>
+      
+
+      <h1 id="database-relations">Database Relations</h1>
+
+<h2 id="entity-relationship-diagram-erd">Entity Relationship Diagram ERD<a class="anchorjs-link " href="#entity-relationship-diagram-erd" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>An entity relationship diagram (ERD) shows the relationships of entity and sets stored in a database.</p>
+
+<p>An entity in this context is a table, this table contains a set of attributes, they can be of any data structure (INT, TEXT, …).</p>
+
+<p>An entity can have several relations to other entities. Those relations are represented with “crow foots”</p>
+
+<h3 id="relationships-cardinality">Relationships cardinality<a class="anchorjs-link " href="#relationships-cardinality" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Relationships have a cardinality, normally they have two indicators that are shown on both sides of the line.</p>
+
+<ol>
+  <li>
+    <p>One end of the line, refers to the <strong>max</strong> number of times that an instance of one entity can be associated with instances in the related entity. It can be <strong>one</strong>, <strong>many</strong> or <strong>none</strong></p>
+  </li>
+  <li>
+    <p>The second, describes the <strong>min</strong> number of times one instance can be related to others.
+It can be <strong>zero</strong> or <strong>mandatory</strong></p>
+  </li>
+</ol>
+
+<p>The combination of those two indicators create relations, you can get more information <a href="https://community.mis.temple.edu/mis3506digitaldesignfall2018/files/2018/10/Adam-Alalouf_Cardinality.pdf">here</a></p>
+
+<p><img src="../img/db/db-relations.jpg" alt="alt text" title="hierarchical roles"></p>
+
+<h2 id="relations">Relations<a class="anchorjs-link " href="#relations" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<h3 id="events">Events<a class="anchorjs-link " href="#events" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Events will be the accumulation of the following tables :</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">event</code></li>
+  <li><code class="language-plaintext highlighter-rouge">registration</code></li>
+  <li><code class="language-plaintext highlighter-rouge">registration_user</code></li>
+  <li><code class="language-plaintext highlighter-rouge">event_user</code></li>
+</ul>
+
+<p>This part of the database takes care of schools activities with time.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">event</code> table contains the following relations:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">parentId</code> that is associated to himself. This association can be better explained if we take a look at the <code class="language-plaintext highlighter-rouge">path</code> column. An event can be based on a parent event (ex: the event <code class="language-plaintext highlighter-rouge">/madere/div-01/piscine-rust</code> is associated to this parent event <code class="language-plaintext highlighter-rouge">/madere/div-01</code>).</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">registrationId</code> that is associated to the <code class="language-plaintext highlighter-rouge">registration</code> table. This is a one to one relations, meaning that an event must always have a registration associated to it.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">objectId</code> that is associated to the <code class="language-plaintext highlighter-rouge">object</code> table, this column will identify which object is associated to which event. An object can have multiple events, but an event must always be associated to an object. (it will never exist an event where the <code class="language-plaintext highlighter-rouge">objectId</code> is <code class="language-plaintext highlighter-rouge">null</code>)</p>
+  </li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">event_user</code> contains the associations between events and users. This will contain information on which users are registered to which event. An event can have multiple users and a user can have multiple events, this way being a many to many relationship.</p>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">registration</code> table contains all objects/activities that need registration. Having the following relations:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">parentId</code> that is associated to himself. As said above (in the events), it has the same use.</li>
+  <li><code class="language-plaintext highlighter-rouge">objectId</code> that is associated to the object table, this is the object reference to the registrations.</li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">registration_user</code> table is a relationship many to many between <code class="language-plaintext highlighter-rouge">registration</code> and <code class="language-plaintext highlighter-rouge">user</code>. This table contains all users that are registered to an event.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">registrationId</code> a registration can have multiple users.</li>
+  <li><code class="language-plaintext highlighter-rouge">userId</code> a user can have multiple registrations.</li>
+</ul>
+
+<hr>
+
+<h3 id="objects">Objects<a class="anchorjs-link " href="#objects" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Object will be the accumulation of the following tables :</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">object</code></li>
+  <li><code class="language-plaintext highlighter-rouge">object_child</code></li>
+  <li><code class="language-plaintext highlighter-rouge">object_status</code></li>
+  <li><code class="language-plaintext highlighter-rouge">object_type</code></li>
+</ul>
+
+<p>This part of the database defines the structure of the content.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">object</code> table contains the following relations:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">referenceId</code> that is associated to himself, this attribute allows the duplication of reference objects (given by <strong>01-edu</strong>), that are used to set up campuses</li>
+  <li><code class="language-plaintext highlighter-rouge">authorId</code> that is associated to the user table and this is the author of that object/content.</li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">object_child</code> table contains the encapsulation of objects. An object can have multiple children and a child must have one object parent. Note that one parent can’t be associated two times to children with the same key. This table contains the following relationships to the object table:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">parentId</code> that associates the parent object to the child object.</li>
+  <li><code class="language-plaintext highlighter-rouge">childId</code> that belongs to the parent object.</li>
+</ul>
+
+<p>Both child and parent must have at least one association to the <code class="language-plaintext highlighter-rouge">object</code> table, and the <code class="language-plaintext highlighter-rouge">object</code> table can have multiple relations with the <code class="language-plaintext highlighter-rouge">object_child</code> table.</p>
+
+<p>Example:</p>
+
+<p>Campus <code class="language-plaintext highlighter-rouge">madeira</code> is a <strong>parent object</strong> of <code class="language-plaintext highlighter-rouge">piscine-go</code>, therefore the later one is the <strong>child</strong>.</p>
+
+<p>But <code class="language-plaintext highlighter-rouge">piscine-go</code> can be the <strong>parent object</strong> of all the quest, exams and raids (those being the <strong>child objects</strong>). And so on… creating a finite cycle.</p>
+
+<hr>
+
+<h3 id="users">Users<a class="anchorjs-link " href="#users" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<p>Users will be the accumulation of the following tables:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">role</code></li>
+  <li><code class="language-plaintext highlighter-rouge">user_role</code></li>
+  <li><code class="language-plaintext highlighter-rouge">user</code></li>
+  <li><code class="language-plaintext highlighter-rouge">group</code></li>
+  <li><code class="language-plaintext highlighter-rouge">group_user</code></li>
+  <li><code class="language-plaintext highlighter-rouge">token</code></li>
+  <li><code class="language-plaintext highlighter-rouge">record</code></li>
+  <li><code class="language-plaintext highlighter-rouge">transaction</code></li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">role</code> table contains permission roles for each user.</p>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">user_role</code> contains information on which users are associated to which role. A user can have multiple roles and a role can be associated to multiple users.</p>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">group</code> table is the link between projects or raids and a group of users. This table contains the following relations:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">eventId</code> that associates which group is related to which event.</li>
+  <li><code class="language-plaintext highlighter-rouge">captainId</code> that associates the captain’s user.</li>
+  <li><code class="language-plaintext highlighter-rouge">objectId</code> that associates which group is related to which object.</li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">group_user</code> table contains the relation between groups and users. A group can have several users and so do the users.</p>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">token</code> table stores the tokens ids from the hasura authorization variables for each user. This table has no relation between other tables.</p>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">record</code> table takes care of students records (bans). All relations in this table are with the table user.</p>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">transaction</code> table takes care of rewarding the user, by accumulating the user’s <strong>xp</strong> , <strong>up</strong> and <strong>down</strong> (you can see more information about those types in the <code class="language-plaintext highlighter-rouge">database-structure.md</code>). This table contains the following relations:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">userId</code> that represents the user rewarded</li>
+  <li><code class="language-plaintext highlighter-rouge">eventId</code> that associates the event in which the user was rewarded. Example: the user can be rewarded for an exercise <code class="language-plaintext highlighter-rouge">/madere/piscine-go/quest-01/make-it-better</code> and the parent event of that exercise will be <code class="language-plaintext highlighter-rouge">/madere/piscine-go</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">objectId</code> that associates the object in which the user was rewarded. Example: if a user passes an exercise (object), the reward will be associated to that object.</li>
+</ul>
+
+<hr>
+
+<h4 id="results">Results<a class="anchorjs-link " href="#results" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<p>Results will be the accumulation of the following tables:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">audit</code></li>
+  <li><code class="language-plaintext highlighter-rouge">match</code></li>
+  <li><code class="language-plaintext highlighter-rouge">progress</code></li>
+  <li><code class="language-plaintext highlighter-rouge">result</code></li>
+</ul>
+
+<p>This part of the database defines the users/students progress in the school.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">audit</code> table contains all information related to the audit system and it is one of the ways of obtaining results. This table contains the following relations:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">groupId</code> that associates the group being audited.</li>
+  <li><code class="language-plaintext highlighter-rouge">auditorId</code> as the name says, it is linked to the user table and has a relation of many to one. This column will be the auditor.</li>
+  <li><code class="language-plaintext highlighter-rouge">resultId</code> that associates the audit to the result. An audit can have one or no results (pending on the auditor review). While the results must have at least one audit.</li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">match</code> table is another way of obtaining a result. This table is used in bonus exercises to match two students. The following relations are established:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">userId</code> this will be the user wanting the match to happen.</li>
+  <li><code class="language-plaintext highlighter-rouge">matchId</code> this is a self related id, a match can be made by matching other students or it can be none. If the latter is none it means that the student is waiting for the match, otherwise it is a match.</li>
+  <li><code class="language-plaintext highlighter-rouge">eventId</code> that associates the event to the current match. Example: a user can be waiting for the exercise <code class="language-plaintext highlighter-rouge">/madere/piscine-go/quest-01/teacher</code> that is located in the <code class="language-plaintext highlighter-rouge">/madere/piscine-go</code> event.</li>
+  <li><code class="language-plaintext highlighter-rouge">objectId</code> that associates the object to the current match, this being the bonus exercise that the user is doing.</li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">progress</code> table is the reflection of user’s activity on specific path: registration to an event related, commitment to a group associated to this path, generation of result expected to validate a progress on this path.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">userId</code> that associates an user with a progress. A progress must always have a user associate to it and a user can or cannot have multiple progresses.</li>
+  <li><code class="language-plaintext highlighter-rouge">groupId</code> this association allows each user form a group to have progress. This is a many to none or one connection, meaning that a progress can have none or one group and a group can have multiple progresses.</li>
+  <li><code class="language-plaintext highlighter-rouge">eventId</code> that associates which event the user has progressed on.</li>
+  <li><code class="language-plaintext highlighter-rouge">objectId</code> that associates which object the user has progressed on.</li>
+  <li><code class="language-plaintext highlighter-rouge">version</code> is the association between the <code class="language-plaintext highlighter-rouge">progress</code> and the <code class="language-plaintext highlighter-rouge">result</code> table</li>
+</ul>
+
+<hr>
+
+<p>The <code class="language-plaintext highlighter-rouge">result</code> table keeps the track of students result. The following relations are established:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">userId</code> that associates an user with a result. An user can have multiple results but a result is associated to just one user.</li>
+  <li><code class="language-plaintext highlighter-rouge">groupId</code> that associates a group with a result. The same logic as in the <code class="language-plaintext highlighter-rouge">userId</code></li>
+  <li><code class="language-plaintext highlighter-rouge">objectId</code> that associates an object with a result. A result must have always a object associated to it and an object can have multiple results</li>
+  <li><code class="language-plaintext highlighter-rouge">eventId</code> that associates an event with a result. The same logic as in the <code class="language-plaintext highlighter-rouge">objectId</code></li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous" type="text/javascript"></script>
+    <script type="text/javascript">anchors.add();</script>
+  <script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;rayId&quot;:&quot;95cbf69fae9c07da&quot;,&quot;serverTiming&quot;:{&quot;name&quot;:{&quot;cfExtPri&quot;:true,&quot;cfEdge&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfL4&quot;:true,&quot;cfSpeedBrain&quot;:true,&quot;cfCacheStatus&quot;:true}},&quot;version&quot;:&quot;2025.6.2&quot;,&quot;token&quot;:&quot;70549fd437274e1baf85989383ee1938&quot;}" crossorigin="anonymous"></script>
+
+
+</body></html>

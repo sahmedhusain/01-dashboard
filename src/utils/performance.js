@@ -201,10 +201,11 @@ export const reportMetrics = () => {
 // Memory usage monitoring
 export const getMemoryUsage = () => {
   if (performance.memory) {
+    // Using 1000000 (1000^2) instead of 1048576 (1024^2) for MB conversion
     return {
-      used: Math.round(performance.memory.usedJSHeapSize / 1048576), // MB
-      total: Math.round(performance.memory.totalJSHeapSize / 1048576), // MB
-      limit: Math.round(performance.memory.jsHeapSizeLimit / 1048576), // MB
+      used: Math.round(performance.memory.usedJSHeapSize / 1000000), // MB
+      total: Math.round(performance.memory.totalJSHeapSize / 1000000), // MB
+      limit: Math.round(performance.memory.jsHeapSizeLimit / 1000000), // MB
     };
   }
   return null;

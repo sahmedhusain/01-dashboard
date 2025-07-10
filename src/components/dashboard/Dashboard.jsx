@@ -12,6 +12,7 @@ import SearchSection from './SearchSection';
 import StatsSection from './StatsSection';
 import AuditsSection from './AuditsSection';
 import TechnologiesSection from './TechnologiesSection';
+import { getUserDisplayName, formatNumber } from '../../utils/dataFormatting';
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -100,10 +101,10 @@ const Dashboard = () => {
             <div className="hidden md:flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-white">
-                  {profile?.firstName || profile?.login || user?.username}
+                  {getUserDisplayName(profile) || user?.username}
                 </p>
                 <p className="text-xs text-surface-400">
-                  {totalXP.toLocaleString()} XP
+                  {formatNumber(totalXP)} XP
                 </p>
               </div>
               <Button
@@ -144,10 +145,10 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-white">
-                    {profile?.firstName || profile?.login || user?.username}
+                    {getUserDisplayName(profile) || user?.username}
                   </p>
                   <p className="text-xs text-surface-400">
-                    {totalXP.toLocaleString()} XP
+                    {formatNumber(totalXP)} XP
                   </p>
                 </div>
                 <Button

@@ -11,6 +11,14 @@ import Card from '../ui/Card';
 import { CircularProgress } from '../ui/Progress';
 import Badge, { StatusBadge, XPBadge, LevelBadge } from '../ui/Badge';
 import Loading, { CardSkeleton } from '../ui/Loading';
+import Avatar from '../ui/Avatar';
+import {
+  getUserDisplayName,
+  getUserEmail,
+  calculateUserLevel,
+  calculateLevelProgress,
+  formatDate
+} from '../../utils/dataFormatting';
 
 const ProfileSection = () => {
   const { profile: basicProfile, loading: profileLoading } = useUserProfile();
@@ -22,14 +30,13 @@ const ProfileSection = () => {
   // Use enhanced profile if available, fallback to basic profile
   const profile = enhancedProfile || basicProfile;
 
-  // Calculate user level based on XP (example calculation)
-  const calculateLevel = (xp) => {
-    return Math.floor(xp / 1000) + 1;
-  };
+  // Calculate user level and progress using utility functions
+  const userLevel = calculateUserLevel(totalXP);
+  const levelProgress = calculateLevelProgress(totalXP);
 
-  const userLevel = calculateLevel(totalXP);
-  const nextLevelXP = userLevel * 1000;
-  const currentLevelProgress = ((totalXP % 1000) / 1000) * 100;
+  // Extract user data using utility functions
+  const displayName = getUserDisplayName(profile);
+  const email = getUserEmail(profile);
 
   if (profileLoading || enhancedLoading || xpLoading || projectsLoading || auditLoading) {
     return (
@@ -63,19 +70,19 @@ const ProfileSection = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-6 md:space-y-0 md:space-x-8">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <div className="w-24 h-24 bg-gradient-to-r from-primary-400 to-accent-400 rounded-full flex items-center justify-center">
-                  <User className="w-12 h-12 text-white" />
-                </div>
+                <Avatar
+                  user={profile}
+                  size="xl"
+                  showBorder
+                  animate
+                />
               </div>
 
               {/* Profile Info */}
               <div className="flex-1 space-y-4">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-1">
-                    {profile?.firstName && profile?.lastName 
-                      ? `${profile.firstName} ${profile.lastName}`
-                      : profile?.login || 'User'
-                    }
+                    {displayName}
                   </h2>
                   <p className="text-surface-300">
                     @{profile?.login || 'username'}
@@ -85,7 +92,7 @@ const ProfileSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Mail className="w-4 h-4" />
-                    <span className="text-sm">{profile?.email || 'No email'}</span>
+                    <span className="text-sm">{email || 'No email'}</span>
                   </div>
 
                   <div className="flex items-center space-x-2 text-surface-300">
@@ -98,14 +105,14 @@ const ProfileSection = () => {
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Calendar className="w-4 h-4" />
                     <span className="text-sm">
-                      Joined {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'Unknown'}
+                      Joined {formatDate(profile?.createdAt)}
                     </span>
                   </div>
 
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Clock className="w-4 h-4" />
                     <span className="text-sm">
-                      Started {profile?.registrationDate ? new Date(profile.registrationDate).toLocaleDateString() : 'Unknown'}
+                      Started {formatDate(profile?.registrationDate)}
                     </span>
                   </div>
                 </div>
@@ -146,14 +153,14 @@ const ProfileSection = () => {
           
           <Card.Content className="flex flex-col items-center">
             <CircularProgress
-              value={currentLevelProgress}
+              value={levelProgress.progressPercentage}
               max={100}
               size={120}
               color="primary"
               label={`Level ${userLevel}`}
             />
             <p className="text-sm text-surface-300 mt-4 text-center">
-              Next rank in {Math.ceil((nextLevelXP - totalXP) / 100)} levels
+              {levelProgress.xpNeeded} XP to next level
             </p>
           </Card.Content>
         </Card>

@@ -54,6 +54,7 @@ export const formatBytes = (bytes, decimals = 1) => {
  * @returns {number} Value in kilobytes
  */
 export const bytesToKB = (bytes) => {
+  if (bytes == null || isNaN(bytes)) return 0;
   return Number(bytes) / BYTES_TO_KB_FACTOR;
 };
 
@@ -383,9 +384,10 @@ export const processTransactionData = (transactions) => {
 
   // Create timeline data with cumulative XP
   const sortedTransactions = xpTransactions
+    .filter(t => t.createdAt && t.amount != null) // Filter out invalid transactions
     .map(t => ({
       date: t.createdAt,
-      amount: bytesToKB(t.amount),
+      amount: bytesToKB(t.amount) || 0, // Ensure amount is never NaN
       project: t.object?.name || t.path?.split('/').pop() || 'Unknown',
       type: t.object?.type || 'unknown',
     }))
@@ -394,9 +396,11 @@ export const processTransactionData = (transactions) => {
   // Calculate cumulative XP for timeline chart
   let cumulativeXP = 0;
   const timeline = sortedTransactions.map(transaction => {
-    cumulativeXP += transaction.amount;
+    const amount = isNaN(transaction.amount) ? 0 : transaction.amount;
+    cumulativeXP += amount;
     return {
       ...transaction,
+      amount,
       cumulativeXP,
     };
   });

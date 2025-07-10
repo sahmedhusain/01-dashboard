@@ -13,15 +13,16 @@ const AuditStatsChart = ({
   const chartHeight = height - margin.top - margin.bottom;
 
   const data = [
-    { label: 'Audits Given', value: auditsGiven, color: '#14b8a6' },
-    { label: 'Audits Received', value: auditsReceived, color: '#d946ef' },
+    { label: 'Audits Given', value: auditsGiven || 0, color: '#14b8a6' },
+    { label: 'Audits Received', value: auditsReceived || 0, color: '#d946ef' },
   ];
 
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map(d => d.value), 1); // Ensure maxValue is at least 1
   const barWidth = chartWidth / data.length * 0.6;
   const barSpacing = chartWidth / data.length;
 
   const yScale = useCallback((value) => {
+    if (maxValue === 0 || isNaN(maxValue) || isNaN(value)) return chartHeight;
     return chartHeight - (value / maxValue) * chartHeight;
   }, [chartHeight, maxValue]);
 

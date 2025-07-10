@@ -11,11 +11,16 @@ const XPByProjectChart = ({
 }) => {
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return [];
-    
-    // Take top projects by XP and limit to maxBars
-    const topProjects = data.slice(0, maxBars);
+
+    // Filter out invalid projects and take top projects by XP
+    const validProjects = data.filter(d => d && d.totalXP != null && !isNaN(d.totalXP) && d.totalXP > 0);
+    if (validProjects.length === 0) return [];
+
+    const topProjects = validProjects.slice(0, maxBars);
     const maxXP = Math.max(...topProjects.map(d => d.totalXP));
-    
+
+    if (maxXP === 0 || isNaN(maxXP)) return [];
+
     return topProjects.map((project, index) => ({
       ...project,
       percentage: (project.totalXP / maxXP) * 100,

@@ -10,15 +10,26 @@ const XPTimelineChart = ({
 }) => {
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return { points: [], maxXP: 0, dateRange: null };
-    
-    const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Filter out invalid data points
+    const validData = data.filter(d =>
+      d &&
+      d.date &&
+      !isNaN(new Date(d.date).getTime()) &&
+      d.cumulativeXP != null &&
+      !isNaN(d.cumulativeXP)
+    );
+
+    if (validData.length === 0) return { points: [], maxXP: 0, dateRange: null };
+
+    const sortedData = [...validData].sort((a, b) => new Date(a.date) - new Date(b.date));
     const maxXP = Math.max(...sortedData.map(d => d.cumulativeXP));
     const minDate = new Date(sortedData[0].date);
     const maxDate = new Date(sortedData[sortedData.length - 1].date);
-    
+
     return {
       points: sortedData,
-      maxXP,
+      maxXP: isNaN(maxXP) ? 0 : maxXP,
       dateRange: { min: minDate, max: maxDate },
     };
   }, [data]);
@@ -38,29 +49,40 @@ const XPTimelineChart = ({
 
   // Generate path for the line
   const generatePath = (points) => {
-    if (points.length === 0) return '';
-    
+    if (points.length === 0 || !chartData.dateRange || chartData.maxXP === 0) return '';
+
     const pathCommands = points.map((point, index) => {
-      const x = ((new Date(point.date) - chartData.dateRange.min) / 
-                 (chartData.dateRange.max - chartData.dateRange.min)) * chartWidth;
+      const dateRange = chartData.dateRange.max - chartData.dateRange.min;
+      if (dateRange === 0) return index === 0 ? `M 0 ${chartHeight}` : `L 0 ${chartHeight}`;
+
+      const x = ((new Date(point.date) - chartData.dateRange.min) / dateRange) * chartWidth;
       const y = chartHeight - (point.cumulativeXP / chartData.maxXP) * chartHeight;
-      
-      return index === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
+
+      // Ensure coordinates are valid numbers
+      const safeX = isNaN(x) ? 0 : Math.max(0, Math.min(chartWidth, x));
+      const safeY = isNaN(y) ? chartHeight : Math.max(0, Math.min(chartHeight, y));
+
+      return index === 0 ? `M ${safeX} ${safeY}` : `L ${safeX} ${safeY}`;
     });
-    
+
     return pathCommands.join(' ');
   };
 
   // Generate area path for gradient fill
   const generateAreaPath = (points) => {
-    if (points.length === 0) return '';
-    
+    if (points.length === 0 || !chartData.dateRange) return '';
+
     const linePath = generatePath(points);
+    if (!linePath) return '';
+
     const lastPoint = points[points.length - 1];
-    const lastX = ((new Date(lastPoint.date) - chartData.dateRange.min) / 
-                   (chartData.dateRange.max - chartData.dateRange.min)) * chartWidth;
-    
-    return `${linePath} L ${lastX} ${chartHeight} L 0 ${chartHeight} Z`;
+    const dateRange = chartData.dateRange.max - chartData.dateRange.min;
+    if (dateRange === 0) return `${linePath} L 0 ${chartHeight} L 0 ${chartHeight} Z`;
+
+    const lastX = ((new Date(lastPoint.date) - chartData.dateRange.min) / dateRange) * chartWidth;
+    const safeLastX = isNaN(lastX) ? 0 : Math.max(0, Math.min(chartWidth, lastX));
+
+    return `${linePath} L ${safeLastX} ${chartHeight} L 0 ${chartHeight} Z`;
   };
 
   if (!chartData.points.length) {

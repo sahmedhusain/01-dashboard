@@ -171,7 +171,7 @@ const AuditsSection = () => {
               Audits ({filteredAudits.length})
             </div>
             <Badge variant="primary" size="sm">
-              {((passedAudits / mockAudits.length) * 100).toFixed(0)}% Pass Rate
+              {displayAudits.length > 0 ? ((passedAudits / displayAudits.length) * 100).toFixed(0) : 0}% Pass Rate
             </Badge>
           </Card.Title>
           <Card.Description>

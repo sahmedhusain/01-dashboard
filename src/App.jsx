@@ -1,6 +1,7 @@
 
 import { ApolloProvider } from '@apollo/client';
 import { AuthProvider } from './contexts/AuthContext';
+import { DataProvider } from './contexts/DataContext';
 import { useAuth } from './contexts/authUtils.jsx';
 import client from './graphql/client';
 import LoginPage from './components/auth/LoginPage';
@@ -32,7 +33,9 @@ function App() {
     <ErrorBoundary>
       <ApolloProvider client={client}>
         <AuthProvider>
-          <AppContent />
+          <DataProvider>
+            <AppContent />
+          </DataProvider>
         </AuthProvider>
       </ApolloProvider>
     </ErrorBoundary>

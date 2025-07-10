@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code, Database, Globe, Server, Filter, Search } from 'lucide-react';
-import { useUserSkills } from '../../hooks/useGraphQL';
+import { useData } from '../../contexts/DataContext';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Progress from '../ui/Progress';
@@ -10,21 +10,69 @@ import Loading, { CardSkeleton } from '../ui/Loading';
 const TechnologiesSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('xp'); // 'xp', 'projects', 'name'
-  const { skills, loading } = useUserSkills();
+  const { userData, xpData, projectData, loading } = useData();
 
-  // Mock data for demonstration
-  const mockSkills = [
-    { name: 'JavaScript', totalXP: 2500, projects: 8, type: 'language', level: 'Advanced' },
-    { name: 'Go', totalXP: 1800, projects: 5, type: 'language', level: 'Intermediate' },
-    { name: 'React', totalXP: 1500, projects: 6, type: 'framework', level: 'Intermediate' },
-    { name: 'Docker', totalXP: 1200, projects: 4, type: 'tool', level: 'Intermediate' },
-    { name: 'PostgreSQL', totalXP: 1000, projects: 3, type: 'database', level: 'Beginner' },
-    { name: 'GraphQL', totalXP: 800, projects: 2, type: 'api', level: 'Beginner' },
-    { name: 'Node.js', totalXP: 1400, projects: 5, type: 'runtime', level: 'Intermediate' },
-    { name: 'Git', totalXP: 2000, projects: 10, type: 'tool', level: 'Advanced' },
-  ];
+  // Extract skills/technologies from project and transaction data
+  const transactions = xpData?.transactions || [];
+  const results = projectData?.results || [];
 
-  const displaySkills = skills.length > 0 ? skills : mockSkills;
+  // Analyze technologies from project paths and names
+  const skillsMap = new Map();
+
+  // Process transactions to extract technology XP
+  transactions.forEach(transaction => {
+    if (transaction.object?.name && transaction.amount) {
+      const projectName = transaction.object.name.toLowerCase();
+      const xpAmount = Math.round(transaction.amount / 1000); // Convert bytes to KB
+
+      // Detect technology from project name
+      let technology = 'General';
+      let type = 'project';
+
+      if (projectName.includes('javascript') || projectName.includes('js')) {
+        technology = 'JavaScript';
+        type = 'language';
+      } else if (projectName.includes('go') || projectName.includes('golang')) {
+        technology = 'Go';
+        type = 'language';
+      } else if (projectName.includes('react')) {
+        technology = 'React';
+        type = 'framework';
+      } else if (projectName.includes('docker')) {
+        technology = 'Docker';
+        type = 'tool';
+      } else if (projectName.includes('sql') || projectName.includes('database')) {
+        technology = 'SQL';
+        type = 'database';
+      } else if (projectName.includes('graphql')) {
+        technology = 'GraphQL';
+        type = 'api';
+      } else if (projectName.includes('node')) {
+        technology = 'Node.js';
+        type = 'runtime';
+      } else if (projectName.includes('git')) {
+        technology = 'Git';
+        type = 'tool';
+      }
+
+      if (!skillsMap.has(technology)) {
+        skillsMap.set(technology, { name: technology, totalXP: 0, projects: 0, type });
+      }
+
+      const skill = skillsMap.get(technology);
+      skill.totalXP += xpAmount;
+      skill.projects += 1;
+    }
+  });
+
+  // Convert map to array and add level calculation
+  const extractedSkills = Array.from(skillsMap.values()).map(skill => ({
+    ...skill,
+    level: skill.totalXP > 2000 ? 'Advanced' : skill.totalXP > 1000 ? 'Intermediate' : 'Beginner'
+  }));
+
+  // Use only real extracted skills data - no mock data
+  const displaySkills = extractedSkills;
 
   // Filter and sort skills
   const filteredSkills = displaySkills

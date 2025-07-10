@@ -45,6 +45,37 @@ import {
   SEARCH_AUDITS_BY_STATUS,
   SEARCH_USERS_WITH_STATUS,
 } from '../graphql/queries';
+import {
+  calculateUserStatistics,
+} from '../utils/dataFormatting';
+
+// Simplified hook for dashboard data - now uses DataContext for most data
+export const useDashboardData = () => {
+  const { user, isAuthenticated } = useAuth();
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_PROFILE, {
+    variables: { userId: user?.id },
+    skip: !isAuthenticated || !user?.id,
+    errorPolicy: 'all',
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-first',
+  });
+
+  const profile = data?.user?.[0] || null;
+
+  // Extract basic XP from transactions if available
+  const totalXP = profile?.transactions_aggregate?.aggregate?.sum?.amount
+    ? profile.transactions_aggregate.aggregate.sum.amount / 1000 // Convert bytes to KB
+    : 0;
+
+  return {
+    profile,
+    totalXP,
+    loading,
+    error,
+    refetch,
+  };
+};
 
 // Enhanced hook for user profile data with comprehensive information
 export const useUserProfile = () => {
@@ -60,19 +91,8 @@ export const useUserProfile = () => {
 
   const profile = data?.user?.[0] || null;
 
-  // Extract enhanced profile data
-  const enhancedProfile = profile ? {
-    ...profile,
-    // Add computed fields
-    registrationDate: profile.events?.[0]?.createdAt,
-    startCampus: profile.events?.[0]?.campus,
-    totalXP: profile.totalXP?.aggregate?.sum?.amount || 0,
-    totalProjects: profile.projectResults?.aggregate?.count || 0,
-    passedProjects: profile.passedProjects?.aggregate?.count || 0,
-    passRate: profile.projectResults?.aggregate?.count > 0
-      ? (profile.passedProjects?.aggregate?.count / profile.projectResults?.aggregate?.count) * 100
-      : 0,
-  } : null;
+  // Extract enhanced profile data using new utility functions
+  const enhancedProfile = profile ? calculateUserStatistics(profile) : null;
 
   return {
     profile: enhancedProfile,
@@ -4319,62 +4339,7 @@ export const useUserSkills = () => {
   };
 };
 
-// Hook for dashboard data (simplified to avoid cache conflicts)
-export const useDashboardData = () => {
 
-  // Use separate hooks to avoid cache merge conflicts
-  const { profile, loading: profileLoading, error: profileError } = useUserProfile();
-  const { totalXP, loading: xpLoading, error: xpError } = useXPStatistics();
-  const { passedProjects, loading: projectsLoading, error: projectsError } = useProjectStatistics();
-  const { auditsGiven, auditsReceived, auditRatio, loading: auditLoading, error: auditError } = useAuditRatio();
-
-  // Calculate loading state first
-  const loading = profileLoading || xpLoading || projectsLoading || auditLoading;
-
-  // Debug logging in development
-  if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
-    if (profileError) console.log('Profile error:', profileError.message);
-    if (xpError) console.log('XP error:', xpError.message);
-    if (projectsError) console.log('Projects error:', projectsError.message);
-    if (auditError) console.log('Audit error:', auditError.message);
-
-    if (!loading && !profileError && !xpError && !projectsError && !auditError) {
-      console.log('✅ Dashboard data loaded successfully:', {
-        profile: !!profile,
-        totalXP,
-        passedProjects,
-        auditsGiven,
-        auditsReceived,
-        auditRatio
-      });
-    }
-  }
-
-  // Only report critical errors (like authentication failures)
-  // Ignore data-specific errors to allow partial loading
-  const criticalError = profileError && (
-    profileError.message?.includes('JWT') ||
-    profileError.message?.includes('authentication') ||
-    profileError.message?.includes('unauthorized')
-  );
-
-  const error = criticalError ? profileError : null;
-
-  return {
-    profile,
-    totalXP,
-    passedProjects,
-    auditsGiven,
-    auditsReceived,
-    auditRatio,
-    loading,
-    error,
-    refetch: () => {
-      // Refetch all individual queries
-      window.location.reload();
-    },
-  };
-};
 
 // Hook for user search
 export const useUserSearch = () => {

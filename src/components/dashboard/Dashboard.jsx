@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, Search, User, BarChart3, Trophy, Users, Menu, X } from 'lucide-react';
 import { useAuth } from '../../contexts/authUtils.jsx';
-import { useDashboardData } from '../../hooks/useGraphQL';
+import { useData } from '../../contexts/DataContext';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Loading from '../ui/Loading';
@@ -12,12 +12,12 @@ import SearchSection from './SearchSection';
 import StatsSection from './StatsSection';
 import AuditsSection from './AuditsSection';
 import TechnologiesSection from './TechnologiesSection';
-import { getUserDisplayName, formatNumber } from '../../utils/dataFormatting';
+import { getUserDisplayName, formatXP } from '../../utils/dataFormatting';
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { logout, user } = useAuth();
-  const { profile, totalXP, loading, error } = useDashboardData();
+  const { userStatistics, totalXP, loading, error } = useData();
 
   // Close mobile menu when tab changes
   useEffect(() => {
@@ -101,10 +101,10 @@ const Dashboard = () => {
             <div className="hidden md:flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-white">
-                  {getUserDisplayName(profile) || user?.username}
+                  {getUserDisplayName(userStatistics) || user?.username}
                 </p>
                 <p className="text-xs text-surface-400">
-                  {formatNumber(totalXP)} XP
+                  {formatXP(totalXP)}
                 </p>
               </div>
               <Button
@@ -145,10 +145,10 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-white">
-                    {getUserDisplayName(profile) || user?.username}
+                    {getUserDisplayName(userStatistics) || user?.username}
                   </p>
                   <p className="text-xs text-surface-400">
-                    {formatNumber(totalXP)} XP
+                    {formatXP(totalXP)}
                   </p>
                 </div>
                 <Button

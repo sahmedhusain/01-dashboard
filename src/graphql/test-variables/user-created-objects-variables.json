@@ -1,7 +1,0 @@
-{
-  "comment": "Variables for user created objects query",
-  "userId": 1559,
-  "limit": 50,
-  "offset": 0,
-  "objectType": "project"
-}

@@ -1,0 +1,1089 @@
+{
+  "schema": {
+    "description": "This document describes the database schema for the 01-edu platform, including tables, columns, and their relationships.",
+    "tables": [
+      {
+        "name": "audit",
+        "description": "Stores reviews from other students or members for exercises. The reviewer checks if the code meets certain conditions.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "groupId",
+            "type": "integer",
+            "description": "The group that the audit refers to.",
+            "foreign_key": "group.id"
+          },
+          {
+            "name": "auditorId",
+            "type": "integer",
+            "description": "The user who is making the audit.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "The attributes of the audits keep the feedback of the auditor for each question failed."
+          },
+          {
+            "name": "grade",
+            "type": "float",
+            "description": "A floating point number with the ratio between questions required to pass and questions approved."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "The timestamp of the time and date of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "The timestamp of the last update."
+          },
+          {
+            "name": "code",
+            "type": "string",
+            "description": "The code that must be used by the auditor to start the audit. This code is set to null after the audit is expired."
+          },
+          {
+            "name": "resultId",
+            "type": "integer",
+            "description": "The result of the audit. Filled when the group has enough audits to validate or fail a project.",
+            "foreign_key": "result.id"
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "description": "A sha of the commit that the audit refers to."
+          },
+          {
+            "name": "endAt",
+            "type": "timestamp",
+            "description": "It is used for expiration date (after this date the audit is expired)."
+          },
+          {
+            "name": "private",
+            "type": "json",
+            "description": "Used to access the code by the auditor."
+          }
+        ]
+      },
+      {
+        "name": "event",
+        "description": "An event anchors objects into time.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "The timestamp of the creation of the event."
+          },
+          {
+            "name": "endAt",
+            "type": "timestamp",
+            "description": "The timestamp for the end of the event."
+          },
+          {
+            "name": "registrationId",
+            "type": "integer",
+            "description": "The registration to the event.",
+            "foreign_key": "registration.id"
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object that is used to generate the event.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "parentId",
+            "type": "integer",
+            "description": "The immediate event ancestor. The parent event.",
+            "foreign_key": "event.id"
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Confirmation that the event finished correctly (NULL or done for now)."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "The path of the event (the relative url of the event)."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "The campus that contains the event."
+          },
+          {
+            "name": "code",
+            "type": "string",
+            "description": "Used to unlock the exams."
+          }
+        ]
+      },
+      {
+        "name": "event_user",
+        "description": "Links users and events (many-to-many).",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "Foreign key to the user table.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "eventId",
+            "type": "integer",
+            "description": "Foreign key to the event table.",
+            "foreign_key": "event.id"
+          }
+        ]
+      },
+      {
+        "name": "group",
+        "description": "Represents groups of users for projects.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object that is being 'done' by the group.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "eventId",
+            "type": "integer",
+            "description": "The groups only exist in relation to an event.",
+            "foreign_key": "event.id"
+          },
+          {
+            "name": "captainId",
+            "type": "integer",
+            "description": "The captain of the group.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Status of the group (e.g., 'setup', 'working').",
+            "foreign_key": "group_status.status"
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path related to the group."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "Campus where the group belongs."
+          }
+        ]
+      },
+      {
+        "name": "group_status",
+        "description": "Possible statuses for a group.",
+        "columns": [
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Primary key. Possible values: 'setup', 'working', 'audit', 'finished'."
+          }
+        ]
+      },
+      {
+        "name": "group_user",
+        "description": "Links users to groups (many-to-many).",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "Foreign key to the user table.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "groupId",
+            "type": "integer",
+            "description": "Foreign key to the group table.",
+            "foreign_key": "group.id"
+          },
+          {
+            "name": "confirmed",
+            "type": "boolean",
+            "description": "True after the user confirms the group."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          }
+        ]
+      },
+      {
+        "name": "match",
+        "description": "Used for the 'bet' system in bonus exercises to record matches between students.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object that requires the match.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "The user that is matched.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "matchId",
+            "type": "integer",
+            "description": "The match that is made to another user.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "confirmed",
+            "type": "boolean",
+            "description": "Keeps track of invitations that had not been confirmed."
+          },
+          {
+            "name": "bet",
+            "type": "boolean",
+            "description": "A bet can be true if the exercise is expected to pass and false otherwise."
+          },
+          {
+            "name": "result",
+            "type": "boolean",
+            "description": "True for correct bet."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path related to the match."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "Campus where the match belongs."
+          },
+          {
+            "name": "eventId",
+            "type": "integer",
+            "description": "The event the object is inserted in.",
+            "foreign_key": "event.id"
+          }
+        ]
+      },
+      {
+        "name": "object",
+        "description": "Generic representations of elements in the curriculum structure (e.g., campus, piscine, exercise).",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Name of the object."
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "description": "Type of the object (e.g., 'onboarding', 'campus', 'exercise')."
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Status of the object (e.g., 'online', 'offline')."
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "Object attributes, see attributes.md for more details."
+          },
+          {
+            "name": "childrenAttrs",
+            "type": "json",
+            "description": "Attributes that are applied to all the children objects."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          },
+          {
+            "name": "authorId",
+            "type": "integer",
+            "description": "The author of the object.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "The campus the object is related to."
+          },
+          {
+            "name": "referenceId",
+            "type": "integer",
+            "description": "If the object is a duplication this field points to the reference object.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "referencedAt",
+            "type": "timestamp",
+            "description": "The timestamp of the creation of the copy object."
+          }
+        ]
+      },
+      {
+        "name": "object_child",
+        "description": "Defines a child-parent relationship between two objects to create a hierarchy.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "parentId",
+            "type": "integer",
+            "description": "The parent object.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "childId",
+            "type": "integer",
+            "description": "The child object.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "Attributes specific to this relationship."
+          },
+          {
+            "name": "key",
+            "type": "string",
+            "description": "The key of the child when generating a JS object, also used in the URL."
+          },
+          {
+            "name": "index",
+            "type": "integer",
+            "description": "Defines the position of the child object inside the parent object."
+          }
+        ]
+      },
+      {
+        "name": "progress",
+        "description": "A register of the steps in the progression of students doing exercises and projects.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "The user associated with the progress.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "groupId",
+            "type": "integer",
+            "description": "The group associated with the progress.",
+            "foreign_key": "group.id"
+          },
+          {
+            "name": "eventId",
+            "type": "integer",
+            "description": "The event in which the progress was made.",
+            "foreign_key": "event.id"
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "description": "The sha of the last commit."
+          },
+          {
+            "name": "grade",
+            "type": "float",
+            "description": "The average of the grades of the results related to this progress."
+          },
+          {
+            "name": "isDone",
+            "type": "boolean",
+            "description": "Set to true as soon as a user fails a validation or when all validations required are done."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path related to the progress."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "Campus where the progress was made."
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object on which progress was made.",
+            "foreign_key": "object.id"
+          }
+        ]
+      },
+      {
+        "name": "record",
+        "description": "Keeps a register for bans and other situations.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "The user the record is about.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "authorId",
+            "type": "integer",
+            "description": "The user who created the record.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "description": "A message explaining the record."
+          },
+          {
+            "name": "banEndAt",
+            "type": "timestamp",
+            "description": "The timestamp when the ban ends."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          }
+        ]
+      },
+      {
+        "name": "registration",
+        "description": "Registrations to events (e.g., an exam).",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "When the registration was created."
+          },
+          {
+            "name": "startAt",
+            "type": "timestamp",
+            "description": "When users can start registering to an event."
+          },
+          {
+            "name": "endAt",
+            "type": "timestamp",
+            "description": "When the registration ends."
+          },
+          {
+            "name": "eventStartAt",
+            "type": "timestamp",
+            "description": "Event at which the event will be started."
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object the registration refers to.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "parentId",
+            "type": "integer",
+            "description": "The parent object of the object the registration refers to.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "Attributes of the registration."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path related to the registration."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "Campus where the registration is valid."
+          }
+        ]
+      },
+      {
+        "name": "registration_user",
+        "description": "Links users to registrations (many-to-many).",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "registrationId",
+            "type": "integer",
+            "description": "Foreign key to the registration table.",
+            "foreign_key": "registration.id"
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "Foreign key to the user table.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          }
+        ]
+      },
+      {
+        "name": "result",
+        "description": "The result for each exercise and project made in the platform.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          },
+          {
+            "name": "grade",
+            "type": "float",
+            "description": "The grade of the result."
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "Attributes of the result."
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "description": "Type of the result (e.g., 'tester', 'user_audit')."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "The user associated with the result.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "groupId",
+            "type": "integer",
+            "description": "The group associated with the result.",
+            "foreign_key": "group.id"
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object associated with the result.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path related to the result."
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "description": "The version of the code the result refers to."
+          },
+          {
+            "name": "eventId",
+            "type": "integer",
+            "description": "The event associated with the result.",
+            "foreign_key": "event.id"
+          },
+          {
+            "name": "isLast",
+            "type": "boolean",
+            "description": "Used to represent transitory states. A progress is only considered finished when isLast is true."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "Campus where the result was achieved."
+          }
+        ]
+      },
+      {
+        "name": "role",
+        "description": "Defines user roles and permissions.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "slug",
+            "type": "string",
+            "description": "A unique identifier for the role."
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The name of the role."
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "A description of the role."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          }
+        ]
+      },
+      {
+        "name": "token",
+        "description": "Stores authentication tokens.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Status of the token ('active', 'expired')."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          }
+        ]
+      },
+      {
+        "name": "transaction",
+        "description": "A register of the rewards given to students.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "description": "Type of transaction ('xp', 'up', 'down')."
+          },
+          {
+            "name": "amount",
+            "type": "integer",
+            "description": "The amount of the transaction."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "The user who received the reward.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "Attributes of the transaction."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path related to the transaction."
+          },
+          {
+            "name": "objectId",
+            "type": "integer",
+            "description": "The object for which the reward was given.",
+            "foreign_key": "object.id"
+          },
+          {
+            "name": "eventId",
+            "type": "integer",
+            "description": "The event in which the reward was given.",
+            "foreign_key": "event.id"
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "Campus where the transaction occurred."
+          }
+        ]
+      },
+      {
+        "name": "user",
+        "description": "Stores user information.",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "login",
+            "type": "string",
+            "description": "User's login name."
+          },
+          {
+            "name": "profile",
+            "type": "json",
+            "description": "User's profile information."
+          },
+          {
+            "name": "attrs",
+            "type": "json",
+            "description": "Extra information about the users (email, address, etc)."
+          },
+          {
+            "name": "createdAt",
+            "type": "timestamp",
+            "description": "Timestamp of creation."
+          },
+          {
+            "name": "updatedAt",
+            "type": "timestamp",
+            "description": "Timestamp of last update."
+          },
+          {
+            "name": "campus",
+            "type": "string",
+            "description": "The campus the user belongs to."
+          }
+        ]
+      },
+      {
+        "name": "user_role",
+        "description": "Links users to roles (many-to-many).",
+        "columns": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "Primary key."
+          },
+          {
+            "name": "userId",
+            "type": "integer",
+            "description": "Foreign key to the user table.",
+            "foreign_key": "user.id"
+          },
+          {
+            "name": "roleId",
+            "type": "integer",
+            "description": "Foreign key to the role table.",
+            "foreign_key": "role.id"
+          }
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from_table": "audit",
+        "to_table": "group",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "audit",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "audit",
+        "to_table": "result",
+        "type": "one-to-one-or-zero"
+      },
+      {
+        "from_table": "event",
+        "to_table": "registration",
+        "type": "one-to-one"
+      },
+      {
+        "from_table": "event",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "event",
+        "to_table": "event",
+        "type": "many-to-one",
+        "description": "Self-referencing for parent-child event relationships."
+      },
+      {
+        "from_table": "event_user",
+        "to_table": "event",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "event_user",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "group",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "group",
+        "to_table": "event",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "group",
+        "to_table": "user",
+        "type": "many-to-one",
+        "description": "captainId relationship"
+      },
+      {
+        "from_table": "group_user",
+        "to_table": "group",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "group_user",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "match",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "match",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "match",
+        "to_table": "event",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "object",
+        "to_table": "user",
+        "type": "many-to-one",
+        "description": "authorId relationship"
+      },
+      {
+        "from_table": "object",
+        "to_table": "object",
+        "type": "many-to-one",
+        "description": "Self-referencing for duplications (referenceId)."
+      },
+      {
+        "from_table": "object_child",
+        "to_table": "object",
+        "type": "many-to-one",
+        "description": "Parent and Child relationships."
+      },
+      {
+        "from_table": "progress",
+        "to_table": "user",
+        "type": "many-to-one-or-zero"
+      },
+      {
+        "from_table": "progress",
+        "to_table": "group",
+        "type": "many-to-one-or-zero"
+      },
+      {
+        "from_table": "progress",
+        "to_table": "event",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "progress",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "record",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "registration",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "registration_user",
+        "to_table": "registration",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "registration_user",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "result",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "result",
+        "to_table": "group",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "result",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "result",
+        "to_table": "event",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "transaction",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "transaction",
+        "to_table": "object",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "transaction",
+        "to_table": "event",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "user_role",
+        "to_table": "user",
+        "type": "many-to-one"
+      },
+      {
+        "from_table": "user_role",
+        "to_table": "role",
+        "type": "many-to-one"
+      }
+    ]
+  }
+}

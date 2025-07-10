@@ -1,102 +1,50 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, CheckCircle, XCircle, Clock, Search, Filter, Calendar } from 'lucide-react';
+import { useData } from '../../contexts/DataContext';
 import Card from '../ui/Card';
 import Badge, { StatusBadge } from '../ui/Badge';
 import Button from '../ui/Button';
+import Loading from '../ui/Loading';
+import { formatDate } from '../../utils/dataFormatting';
 
 const AuditsSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'pass', 'fail'
   const [sortBy, setSortBy] = useState('date'); // 'date', 'user', 'project'
 
-  // Mock audit data - will be replaced with real GraphQL data
-  const mockAudits = [
-    {
-      id: 1,
-      user: 'mohamedmoo',
-      project: 'mini-framework',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-15',
-      grade: 1.2
-    },
-    {
-      id: 2,
-      user: 'musabd',
-      project: 'social-network',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-14',
-      grade: 1.0
-    },
-    {
-      id: 3,
-      user: 'hadieif',
-      project: 'social-network',
-      result: 'Fail',
-      status: 'fail',
-      date: '2024-01-13',
-      grade: 0.8
-    },
-    {
-      id: 4,
-      user: 'aalmadhoo',
-      project: 'real-time-forum',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-12',
-      grade: 1.5
-    },
-    {
-      id: 5,
-      user: 'hussainali2',
-      project: 'graphql',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-11',
-      grade: 1.1
-    },
-    {
-      id: 6,
-      user: 'aabdulhu',
-      project: 'mini-framework',
-      result: 'Fail',
-      status: 'fail',
-      date: '2024-01-10',
-      grade: 0.6
-    },
-    {
-      id: 7,
-      user: 'yoowad',
-      project: 'graphql',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-09',
-      grade: 1.3
-    },
-    {
-      id: 8,
-      user: 'musabd',
-      project: 'real-time-forum',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-08',
-      grade: 1.0
-    },
-    {
-      id: 9,
-      user: 'mohamedmoo',
-      project: 'make-your-game',
-      result: 'Pass',
-      status: 'pass',
-      date: '2024-01-07',
-      grade: 1.4
-    }
-  ];
+  const { auditData, loading, error } = useData();
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    console.error('Error loading audit data:', error);
+  }
+
+  // Mock data moved below - using real audit data when available
+
+  // Extract and transform audit data from the new structure
+  const rawAudits = auditData?.audits || [];
+
+  // Transform raw audit data to display format
+  const audits = rawAudits.map(audit => ({
+    id: audit.id,
+    user: audit.group?.object?.name || 'Unknown Project',
+    project: audit.group?.path?.split('/').pop() || 'Unknown',
+    result: audit.grade >= 1 ? 'Pass' : 'Fail',
+    status: audit.grade >= 1 ? 'pass' : 'fail',
+    date: audit.createdAt,
+    grade: audit.grade || 0,
+    attrs: audit.attrs || {}
+  }));
+
+  // Use only real audit data - no mock data
+  const displayAudits = audits;
 
   // Filter and sort audits
-  const filteredAudits = mockAudits
+  const filteredAudits = displayAudits
     .filter(audit => {
       const matchesSearch =
         audit.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -120,9 +68,11 @@ const AuditsSection = () => {
       }
     });
 
-  const passedAudits = mockAudits.filter(a => a.status === 'pass').length;
-  const failedAudits = mockAudits.filter(a => a.status === 'fail').length;
-  const averageGrade = mockAudits.reduce((sum, a) => sum + a.grade, 0) / mockAudits.length;
+  const passedAudits = displayAudits.filter(a => a.status === 'pass').length;
+  const failedAudits = displayAudits.filter(a => a.status === 'fail').length;
+  const averageGrade = displayAudits.length > 0
+    ? displayAudits.reduce((sum, a) => sum + a.grade, 0) / displayAudits.length
+    : 0;
 
   return (
     <div className="space-y-6">

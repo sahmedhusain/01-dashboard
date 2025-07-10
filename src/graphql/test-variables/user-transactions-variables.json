@@ -1,8 +1,0 @@
-{
-  "comment": "Variables for user transactions query",
-  "userId": 1559,
-  "limit": 100,
-  "offset": 0,
-  "transactionTypes": ["xp", "up", "down"],
-  "campus": "madere"
-}

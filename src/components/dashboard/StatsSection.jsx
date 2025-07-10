@@ -1,13 +1,6 @@
 import React from 'react';
 import { BarChart3, TrendingUp, PieChart, Activity, Clock, Target } from 'lucide-react';
-import {
-  useXPStatistics,
-  useProjectStatistics,
-  useAuditRatio,
-  useXPByProject,
-  useXPTimeline,
-  usePiscineStats
-} from '../../hooks/useGraphQL';
+import { useData } from '../../contexts/DataContext';
 import Card from '../ui/Card';
 import Loading, { CardSkeleton } from '../ui/Loading';
 import XPProgressChart from '../charts/XPProgressChart';
@@ -18,16 +11,32 @@ import XPTimelineChart from '../charts/XPTimelineChart';
 import PiscineStatsChart from '../charts/PiscineStatsChart';
 
 const StatsSection = () => {
-  const { xpProgression, loading: xpLoading } = useXPStatistics();
-  const { passedProjects, failedProjects, loading: projectsLoading } = useProjectStatistics();
-  const { auditsGiven, auditsReceived, loading: auditLoading } = useAuditRatio();
+  const {
+    userData,
+    xpData,
+    projectData,
+    auditData,
+    loading
+  } = useData();
 
-  // New enhanced hooks
-  const { xpByProject, loading: xpByProjectLoading } = useXPByProject();
-  const { xpTimeline, loading: xpTimelineLoading } = useXPTimeline();
-  const { piscineStats, loading: piscineLoading } = usePiscineStats();
+  // Extract chart data from the new data structure
+  const xpTimeline = xpData?.timeline || [];
+  const xpByProject = xpData?.byProject || [];
+  const totalXP = userData?.totalXP || 0;
+  const userLevel = userData?.level || 0;
 
-  if (xpLoading || projectsLoading || auditLoading || xpByProjectLoading || xpTimelineLoading || piscineLoading) {
+  // Project statistics
+  const totalProjects = projectData?.totalProjects || 0;
+  const passedProjects = projectData?.passedProjects || 0;
+  const failedProjects = projectData?.failedProjects || 0;
+  const passRate = projectData?.passRate || 0;
+
+  // Audit statistics
+  const auditsGiven = auditData?.given?.count || 0;
+  const auditsReceived = auditData?.received?.count || 0;
+  const auditRatio = auditData?.auditRatio || 0;
+
+  if (loading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <CardSkeleton />
@@ -109,7 +118,7 @@ const StatsSection = () => {
         <Card.Content>
           <div className="flex justify-center">
             <PiscineStatsChart
-              data={piscineStats}
+              data={[]} // TODO: Add piscine stats to data context
               width={400}
               height={350}
             />
@@ -131,7 +140,7 @@ const StatsSection = () => {
         <Card.Content>
           <div className="flex justify-center">
             <XPProgressChart
-              data={xpProgression}
+              data={xpTimeline || []} // Use timeline data for progression
               width={400}
               height={300}
             />

@@ -12,22 +12,8 @@ const XPProgressChart = ({
   const chartHeight = height - margin.top - margin.bottom;
 
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) {
-      // Generate sample data if no data provided
-      const sampleData = [];
-      let cumulative = 0;
-      for (let i = 0; i < 12; i++) {
-        const xp = Math.floor(Math.random() * 500) + 100;
-        cumulative += xp;
-        sampleData.push({
-          date: new Date(2024, i, 1).toISOString().split('T')[0],
-          amount: xp,
-          cumulative,
-        });
-      }
-      return sampleData;
-    }
-    return data;
+    // Use only real data - no sample data generation
+    return data || [];
   }, [data]);
 
   const { xScale, yScale, maxY } = useMemo(() => {

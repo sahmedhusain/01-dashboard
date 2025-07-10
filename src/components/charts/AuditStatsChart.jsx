@@ -1,12 +1,12 @@
 import React, { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-const AuditStatsChart = ({ 
-  auditsGiven = 24, 
-  auditsReceived = 12, 
-  width = 400, 
-  height = 250, 
-  className = '' 
+const AuditStatsChart = ({
+  auditsGiven = 0,
+  auditsReceived = 0,
+  width = 400,
+  height = 250,
+  className = ''
 }) => {
   const margin = { top: 20, right: 30, bottom: 60, left: 60 };
   const chartWidth = width - margin.left - margin.right;

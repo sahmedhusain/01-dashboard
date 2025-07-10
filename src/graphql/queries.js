@@ -155,7 +155,7 @@ export const PROGRESS_FRAGMENT = gql`
   }
 `;
 
-// Audit fragment following official database structure
+// Audit fragment following official database structure (safe fields only)
 export const AUDIT_FRAGMENT = gql`
   fragment AuditInfo on audit {
     id
@@ -165,11 +165,8 @@ export const AUDIT_FRAGMENT = gql`
     grade
     createdAt
     updatedAt
-    code
     resultId
-    version
     endAt
-    private
   }
 `;
 
@@ -415,9 +412,6 @@ export const PROGRESS_BY_PATH_VIEW_AGGREGATE_FRAGMENT = gql`
   fragment ProgressByPathViewAggregateInfo on progress_by_path_view_aggregate {
     aggregate {
       count
-      avg {
-        grade
-      }
     }
   }
 `;
@@ -956,162 +950,166 @@ export const GET_USER_OBJECT_AVAILABILITIES = gql`
 // ADVANCED ANALYTICS QUERIES
 // ============================================================================
 
-// Comprehensive user analytics with all aggregate data
+// Comprehensive user analytics query based on official database schema
 export const GET_COMPREHENSIVE_USER_ANALYTICS = gql`
-  query GetComprehensiveUserAnalytics($userId: Int!, $campus: String = null) {
+  query GetComprehensiveUserAnalytics($userId: Int!) {
     user(where: { id: { _eq: $userId } }) {
-      ...UserInfo
+      # Basic user info from user table schema
+      id
+login
+      profile
+      attrs
+      campus
+      createdAt
+      updatedAt
 
-      # Direct metrics from user table
-      auditRatio
-      totalUp
-      totalDown
-      totalUpBonus
-      auditsAssigned
-
-      # All transaction aggregates
-      transactions_aggregate {
-        ...TransactionAggregateInfo
+      # XP transactions - amount is in bytes, convert to KB by /1000
+      transactions(
+        where: { type: { _eq: "xp" } }
+        order_by: { createdAt: desc }
+        limit: 100
+      ) {
+        id
+        type
+        amount
+        createdAt
+        path
+        object {
+          id
+          name
+          type
+        }
       }
 
-      # XP transactions aggregate
+      # XP transactions aggregate for total calculation
       xpTransactions: transactions_aggregate(
         where: { type: { _eq: "xp" } }
       ) {
-        ...TransactionAggregateInfo
+        aggregate {
+          count
+          sum {
+            amount
+          }
+        }
       }
 
-      # Up transactions aggregate
+      # Up transactions (audit reviews given)
       upTransactions: transactions_aggregate(
         where: { type: { _eq: "up" } }
       ) {
-        ...TransactionAggregateInfo
+        aggregate {
+          count
+          sum {
+            amount
+          }
+        }
       }
 
-      # Down transactions aggregate
+      # Down transactions (audit reviews received)
       downTransactions: transactions_aggregate(
         where: { type: { _eq: "down" } }
       ) {
-        ...TransactionAggregateInfo
+        aggregate {
+          count
+          sum {
+            amount
+          }
+        }
       }
 
-      # All progress aggregate
-      progresses_aggregate {
-        ...ProgressAggregateInfo
-      }
-
-      # Completed progress aggregate
-      completedProgress: progresses_aggregate(
-        where: { isDone: { _eq: true } }
+      # Results for project statistics
+      results(
+        where: { isLast: { _eq: true } }
+        order_by: { createdAt: desc }
+        limit: 50
       ) {
-        ...ProgressAggregateInfo
+        id
+        grade
+        type
+        createdAt
+        path
+        object {
+          id
+          name
+          type
+        }
       }
 
-      # All results aggregate
-      results_aggregate {
-        ...ResultAggregateInfo
+      # Results aggregates
+      results_aggregate(where: { isLast: { _eq: true } }) {
+        aggregate {
+          count
+        }
       }
 
-      # Passed results aggregate
+      # Passed results (grade >= 1)
       passedResults: results_aggregate(
-        where: { grade: { _gte: 1 } }
-      ) {
-        ...ResultAggregateInfo
-      }
-
-      # Project results aggregate
-      projectResults: results_aggregate(
         where: {
-          object: { type: { _eq: "project" } }
           isLast: { _eq: true }
+          grade: { _gte: 1 }
         }
       ) {
-        ...ResultAggregateInfo
+        aggregate {
+          count
+        }
+      }
+
+      # Audits given by this user (using auditorId)
+      audits(limit: 50, order_by: { createdAt: desc }) {
+        id
+        grade
+        createdAt
+        attrs
+        group {
+          id
+          path
+          object {
+            name
+            type
+          }
+        }
       }
 
       # Audits given aggregate
       audits_aggregate {
-        ...AuditAggregateInfo
+        aggregate {
+          count
+          avg {
+            grade
+          }
+        }
       }
 
-      # Events aggregate
-      events_aggregate {
-        ...EventUserAggregateInfo
+      # Progress data
+      progresses(
+        where: { isDone: { _eq: true } }
+        order_by: { createdAt: desc }
+        limit: 50
+      ) {
+        id
+        grade
+        createdAt
+        path
+        object {
+          id
+          name
+          type
+        }
       }
 
-      # Groups aggregate
-      groups_aggregate {
-        ...GroupUserAggregateInfo
-      }
-
-      # Groups as captain aggregate
-      groupsByCaptainid_aggregate {
-        ...GroupAggregateInfo
-      }
-
-      # Labels aggregate
-      labels_aggregate {
-        ...LabelUserAggregateInfo
-      }
-
-      # Matches aggregate
-      matches_aggregate {
-        ...MatchAggregateInfo
-      }
-
-      # Object availabilities aggregate
-      objectAvailabilities_aggregate {
-        ...ObjectAvailabilityAggregateInfo
-      }
-
-      # Created objects aggregate
-      objects_aggregate {
-        ...ObjectAggregateInfo
-      }
-
-      # Progress by path aggregate
-      progressesByPath_aggregate {
-        ...ProgressByPathViewAggregateInfo
-      }
-
-      # Registrations aggregate
-      registrations_aggregate {
-        ...RegistrationUserAggregateInfo
-      }
-
-      # User roles aggregate
-      user_roles_aggregate {
-        ...UserRoleAggregateInfo
-      }
-
-      # Roles view aggregate
-      roles_aggregate {
-        ...UserRolesViewAggregateInfo
-      }
-
-      # Sessions aggregate
-      sessions_aggregate {
-        ...ToadSessionsAggregateInfo
+      # Events for campus and registration info
+      events(limit: 10, order_by: { createdAt: asc }) {
+        id
+        createdAt
+        event {
+          id
+          campus
+          createdAt
+          path
+        }
       }
     }
   }
-  ${USER_FRAGMENT}
-  ${TRANSACTION_AGGREGATE_FRAGMENT}
-  ${PROGRESS_AGGREGATE_FRAGMENT}
-  ${RESULT_AGGREGATE_FRAGMENT}
-  ${AUDIT_AGGREGATE_FRAGMENT}
-  ${EVENT_USER_AGGREGATE_FRAGMENT}
-  ${GROUP_USER_AGGREGATE_FRAGMENT}
-  ${GROUP_AGGREGATE_FRAGMENT}
-  ${LABEL_USER_AGGREGATE_FRAGMENT}
-  ${MATCH_AGGREGATE_FRAGMENT}
-  ${OBJECT_AVAILABILITY_AGGREGATE_FRAGMENT}
-  ${OBJECT_AGGREGATE_FRAGMENT}
-  ${PROGRESS_BY_PATH_VIEW_AGGREGATE_FRAGMENT}
-  ${REGISTRATION_USER_AGGREGATE_FRAGMENT}
-  ${USER_ROLE_AGGREGATE_FRAGMENT}
-  ${USER_ROLES_VIEW_AGGREGATE_FRAGMENT}
-  ${TOAD_SESSIONS_AGGREGATE_FRAGMENT}
 `;
 
 // Advanced performance analytics with time-based insights

@@ -1,9 +1,0 @@
-# Markdown fragments
-fragment MarkdownInfo on markdown {
-  id
-  name
-  content
-  path
-  createdAt
-  updatedAt
-}

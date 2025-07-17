@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
 
+// This file contains all GraphQL queries and fragments
+// TODO: This file will be reorganized into smaller domain-specific files
+// for better maintainability and easier navigation
+
 // Error handling fragments for consistent error patterns
 export const ERROR_FRAGMENT = gql`
   fragment ErrorInfo on Error {

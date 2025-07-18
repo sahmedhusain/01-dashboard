@@ -1,0 +1,444 @@
+# ============================================================================
+# PROGRESS BASIC QUERIES
+# Core progress queries for user progression tracking
+# ============================================================================
+
+# Get progress by ID
+query GetProgressById($progressId: Int!) {
+  progress(where: { id: { _eq: $progressId } }) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+      createdAt
+      # Group captain
+      captain {
+        id
+        login
+        firstName
+        lastName
+      }
+      # Group members
+      group_users {
+        confirmed
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+      createdAt
+      endAt
+      status
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+      campus
+    }
+  }
+}
+
+# Get user progress
+query GetUserProgress($userLogin: String!, $limit: Int = 100, $offset: Int = 0) {
+  progress(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+      # Group members
+      group_users {
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+      createdAt
+      endAt
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+  }
+}
+
+# Get progress by object
+query GetProgressByObject($objectId: Int!, $limit: Int = 100) {
+  progress(
+    where: { objectId: { _eq: $objectId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+      # Group members
+      group_users {
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get progress by event
+query GetProgressByEvent($eventId: Int!, $limit: Int = 100) {
+  progress(
+    where: { eventId: { _eq: $eventId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+  }
+}
+
+# Get completed progress
+query GetCompletedProgress($limit: Int = 100, $offset: Int = 0) {
+  progress(
+    where: { isDone: { _eq: true } }
+    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get in-progress items
+query GetInProgress($limit: Int = 100, $offset: Int = 0) {
+  progress(
+    where: { isDone: { _eq: false } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get progress by campus
+query GetProgressByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) {
+  progress(
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get progress by grade range
+query GetProgressByGradeRange($minGrade: numeric!, $maxGrade: numeric!, $limit: Int = 100) {
+  progress(
+    where: { 
+      grade: { _gte: $minGrade, _lte: $maxGrade }
+    }
+    order_by: { grade: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get progress by date range
+query GetProgressByDateRange($startDate: timestamptz!, $endDate: timestamptz!, $limit: Int = 100) {
+  progress(
+    where: { 
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    version
+    grade
+    isDone
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project being progressed on
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}

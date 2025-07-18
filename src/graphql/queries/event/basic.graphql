@@ -1,0 +1,353 @@
+# ============================================================================
+# EVENT BASIC QUERIES
+# Core event queries for events, registrations, and user participation
+# ============================================================================
+
+# Get event by ID
+query GetEventById($eventId: Int!) {
+  event(where: { id: { _eq: $eventId } }) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Parent event
+    parent {
+      id
+      path
+      campus
+      createdAt
+      endAt
+    }
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+      childrenAttrs
+      campus
+      createdAt
+      updatedAt
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+      path
+      campus
+      attrs
+    }
+  }
+}
+
+# Get events by path pattern
+query GetEventsByPath($pathPattern: String!, $limit: Int = 50) {
+  event(
+    where: { path: { _like: $pathPattern } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+    }
+  }
+}
+
+# Get events by campus
+query GetEventsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) {
+  event(
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+    }
+  }
+}
+
+# Get active events
+query GetActiveEvents($currentTime: timestamptz!, $limit: Int = 50) {
+  event(
+    where: { 
+      _and: [
+        { createdAt: { _lte: $currentTime } }
+        { 
+          _or: [
+            { endAt: { _is_null: true } }
+            { endAt: { _gte: $currentTime } }
+          ]
+        }
+      ]
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+    }
+  }
+}
+
+# Get events by date range
+query GetEventsByDateRange($startDate: timestamptz!, $endDate: timestamptz!, $limit: Int = 100) {
+  event(
+    where: { 
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+    }
+  }
+}
+
+# Get event with participants
+query GetEventWithParticipants($eventId: Int!) {
+  event(where: { id: { _eq: $eventId } }) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+      attrs
+    }
+    # Event participants
+    event_users {
+      createdAt
+      user {
+        id
+        login
+        firstName
+        lastName
+        campus
+        auditRatio
+        totalUp
+        totalDown
+      }
+    }
+  }
+}
+
+# Get event with groups
+query GetEventWithGroups($eventId: Int!) {
+  event(where: { id: { _eq: $eventId } }) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Groups in this event
+    groups {
+      id
+      status
+      path
+      campus
+      createdAt
+      updatedAt
+      # Group captain
+      captain {
+        id
+        login
+        firstName
+        lastName
+      }
+      # Group members
+      group_users {
+        confirmed
+        createdAt
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+      # Object/project the group is working on
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+  }
+}
+
+# Get user's events
+query GetUserEvents($userLogin: String!, $limit: Int = 50) {
+  event_user(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    createdAt
+    event {
+      id
+      createdAt
+      endAt
+      status
+      path
+      campus
+      code
+      # Object/activity for the event
+      object {
+        id
+        name
+        type
+        status
+        attrs
+      }
+      # Registration details
+      registration {
+        id
+        startAt
+        endAt
+        eventStartAt
+      }
+    }
+  }
+}
+
+# Get events by object type
+query GetEventsByObjectType($objectType: String!, $limit: Int = 50) {
+  event(
+    where: { object: { type: { _eq: $objectType } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    endAt
+    status
+    path
+    campus
+    code
+    # Object/activity for the event
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration details
+    registration {
+      id
+      startAt
+      endAt
+      eventStartAt
+    }
+  }
+}

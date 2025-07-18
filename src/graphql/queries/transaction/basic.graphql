@@ -1,0 +1,338 @@
+# ============================================================================
+# TRANSACTION BASIC QUERIES
+# Core transaction queries for XP, skills, and audit transactions
+# ============================================================================
+
+# Get all transactions for a user
+query GetUserTransactions($userLogin: String!, $limit: Int = 100, $offset: Int = 0) {
+  transaction(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+      createdAt
+      endAt
+    }
+  }
+}
+
+# Get XP transactions for a user
+query GetUserXPTransactions($userLogin: String!, $limit: Int = 100) {
+  transaction(
+    where: { 
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: "xp" }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get skill transactions (up/down) for a user
+query GetUserSkillTransactions($userLogin: String!, $limit: Int = 100) {
+  transaction(
+    where: { 
+      user: { login: { _eq: $userLogin } }
+      type: { _in: ["up", "down"] }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get transactions by type
+query GetTransactionsByType($type: String!, $limit: Int = 100, $offset: Int = 0) {
+  transaction(
+    where: { type: { _eq: $type } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get transactions by object/project
+query GetTransactionsByObject($objectId: Int!, $limit: Int = 100) {
+  transaction(
+    where: { objectId: { _eq: $objectId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get transactions by event
+query GetTransactionsByEvent($eventId: Int!, $limit: Int = 100) {
+  transaction(
+    where: { eventId: { _eq: $eventId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+      createdAt
+      endAt
+    }
+  }
+}
+
+# Get transactions by campus
+query GetTransactionsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) {
+  transaction(
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get transactions by date range
+query GetTransactionsByDateRange($startDate: timestamptz!, $endDate: timestamptz!, $limit: Int = 100) {
+  transaction(
+    where: { 
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get transaction by ID
+query GetTransactionById($transactionId: Int!) {
+  transaction(where: { id: { _eq: $transactionId } }) {
+    id
+    type
+    amount
+    createdAt
+    path
+    attrs
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+    }
+    # Object/project information
+    object {
+      id
+      name
+      type
+      attrs
+      status
+      campus
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+      createdAt
+      endAt
+      status
+    }
+  }
+}

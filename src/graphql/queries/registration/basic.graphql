@@ -1,0 +1,398 @@
+# ============================================================================
+# REGISTRATION BASIC QUERIES
+# Core registration queries for event registrations and user participation
+# ============================================================================
+
+# Get registration by ID
+query GetRegistrationById($registrationId: Int!) {
+  registration(where: { id: { _eq: $registrationId } }) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+      campus
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+      campus
+    }
+  }
+}
+
+# Get registrations by campus
+query GetRegistrationsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) {
+  registration(
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration user count
+    registration_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get active registrations (currently open)
+query GetActiveRegistrations($currentTime: timestamptz!, $limit: Int = 50) {
+  registration(
+    where: { 
+      _and: [
+        { startAt: { _lte: $currentTime } }
+        { endAt: { _gte: $currentTime } }
+      ]
+    }
+    order_by: { startAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration user count
+    registration_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get upcoming registrations
+query GetUpcomingRegistrations($currentTime: timestamptz!, $limit: Int = 50) {
+  registration(
+    where: { 
+      startAt: { _gt: $currentTime }
+    }
+    order_by: { startAt: asc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+  }
+}
+
+# Get past registrations
+query GetPastRegistrations($currentTime: timestamptz!, $limit: Int = 100, $offset: Int = 0) {
+  registration(
+    where: { 
+      endAt: { _lt: $currentTime }
+    }
+    order_by: { endAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration user count
+    registration_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get registration with participants
+query GetRegistrationWithParticipants($registrationId: Int!) {
+  registration(where: { id: { _eq: $registrationId } }) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registered users
+    registration_users {
+      createdAt
+      user {
+        id
+        login
+        firstName
+        lastName
+        campus
+        auditRatio
+        totalUp
+        totalDown
+      }
+    }
+  }
+}
+
+# Get user registrations
+query GetUserRegistrations($userLogin: String!, $limit: Int = 50) {
+  registration_user(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    createdAt
+    registration {
+      id
+      createdAt
+      startAt
+      endAt
+      eventStartAt
+      path
+      campus
+      attrs
+      # Object being registered for
+      object {
+        id
+        name
+        type
+        status
+        attrs
+      }
+      # Parent object
+      parent {
+        id
+        name
+        type
+        status
+        attrs
+      }
+    }
+  }
+}
+
+# Get registrations by object
+query GetRegistrationsByObject($objectId: Int!, $limit: Int = 50) {
+  registration(
+    where: { objectId: { _eq: $objectId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration user count
+    registration_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get registrations by date range
+query GetRegistrationsByDateRange($startDate: timestamptz!, $endDate: timestamptz!, $limit: Int = 100) {
+  registration(
+    where: { 
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration user count
+    registration_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get registrations by event start date range
+query GetRegistrationsByEventStartRange($startDate: timestamptz!, $endDate: timestamptz!, $limit: Int = 100) {
+  registration(
+    where: { 
+      eventStartAt: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { eventStartAt: asc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    startAt
+    endAt
+    eventStartAt
+    path
+    campus
+    attrs
+    # Object being registered for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Parent object
+    parent {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Registration user count
+    registration_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}

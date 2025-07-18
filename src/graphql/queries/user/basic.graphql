@@ -1,0 +1,162 @@
+# ============================================================================
+# USER BASIC QUERIES
+# Core user information and profile queries
+# ============================================================================
+
+# Get basic user information by login
+query GetUserInfo($userLogin: String!) {
+  user(where: { login: { _eq: $userLogin } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    attrs
+    campus
+    profile
+    createdAt
+    updatedAt
+  }
+}
+
+# Get user information by ID
+query GetUserById($userId: Int!) {
+  user(where: { id: { _eq: $userId } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    attrs
+    campus
+    profile
+    createdAt
+    updatedAt
+  }
+}
+
+# Get multiple users by login list
+query GetUsersByLogins($userLogins: [String!]!) {
+  user(where: { login: { _in: $userLogins } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    attrs
+    campus
+    profile
+    createdAt
+    updatedAt
+  }
+}
+
+# Get users by campus
+query GetUsersByCampus($campus: String!) {
+  user(where: { campus: { _eq: $campus } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    attrs
+    campus
+    profile
+    createdAt
+    updatedAt
+  }
+}
+
+# Get user profile with extended information
+query GetUserProfile($userLogin: String!) {
+  user(where: { login: { _eq: $userLogin } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    attrs
+    campus
+    profile
+    createdAt
+    updatedAt
+    # User roles
+    user_roles {
+      role {
+        id
+        slug
+        name
+        description
+      }
+    }
+  }
+}
+
+# Search users by name or login
+query SearchUsers($searchTerm: String!, $limit: Int = 20) {
+  user(
+    where: {
+      _or: [
+        { login: { _ilike: $searchTerm } }
+        { firstName: { _ilike: $searchTerm } }
+        { lastName: { _ilike: $searchTerm } }
+      ]
+    }
+    limit: $limit
+    order_by: { login: asc }
+  ) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    campus
+    profile
+  }
+}
+
+# Get user count by campus
+query GetUserCountByCampus {
+  user_aggregate(distinct_on: campus) {
+    nodes {
+      campus
+    }
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get users with pagination
+query GetUsersWithPagination($limit: Int = 50, $offset: Int = 0, $orderBy: user_order_by = { login: asc }) {
+  user(limit: $limit, offset: $offset, order_by: [$orderBy]) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    campus
+    profile
+    createdAt
+    updatedAt
+  }
+  user_aggregate {
+    aggregate {
+      count
+    }
+  }
+}

@@ -1,0 +1,456 @@
+# ============================================================================
+# RESULT BASIC QUERIES
+# Core result queries for project and exercise results
+# ============================================================================
+
+# Get result by ID
+query GetResultById($resultId: Int!) {
+  result(where: { id: { _eq: $resultId } }) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+      createdAt
+      # Group captain
+      captain {
+        id
+        login
+        firstName
+        lastName
+      }
+      # Group members
+      group_users {
+        confirmed
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+      campus
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+      createdAt
+      endAt
+    }
+  }
+}
+
+# Get user results
+query GetUserResults($userLogin: String!, $limit: Int = 100, $offset: Int = 0) {
+  result(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+      # Group members
+      group_users {
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get results by object
+query GetResultsByObject($objectId: Int!, $limit: Int = 100) {
+  result(
+    where: { objectId: { _eq: $objectId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+      # Group members
+      group_users {
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get results by type
+query GetResultsByType($resultType: String!, $limit: Int = 100, $offset: Int = 0) {
+  result(
+    where: { type: { _eq: $resultType } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get results by event
+query GetResultsByEvent($eventId: Int!, $limit: Int = 100) {
+  result(
+    where: { eventId: { _eq: $eventId } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+  }
+}
+
+# Get latest results (isLast = true)
+query GetLatestResults($limit: Int = 100, $offset: Int = 0) {
+  result(
+    where: { isLast: { _eq: true } }
+    order_by: { updatedAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get results by grade range
+query GetResultsByGradeRange($minGrade: numeric!, $maxGrade: numeric!, $limit: Int = 100) {
+  result(
+    where: { 
+      grade: { _gte: $minGrade, _lte: $maxGrade }
+    }
+    order_by: { grade: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get results by campus
+query GetResultsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) {
+  result(
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Group information (if applicable)
+    group {
+      id
+      status
+      path
+      campus
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}
+
+# Get results by date range
+query GetResultsByDateRange($startDate: timestamptz!, $endDate: timestamptz!, $limit: Int = 100) {
+  result(
+    where: { 
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    createdAt
+    updatedAt
+    grade
+    attrs
+    type
+    version
+    isLast
+    path
+    campus
+    # User information
+    user {
+      id
+      login
+      firstName
+      lastName
+      campus
+    }
+    # Object/project the result is for
+    object {
+      id
+      name
+      type
+      status
+      attrs
+    }
+    # Event context
+    event {
+      id
+      path
+      campus
+    }
+  }
+}

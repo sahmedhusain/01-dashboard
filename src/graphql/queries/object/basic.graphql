@@ -1,0 +1,358 @@
+# ============================================================================
+# OBJECT BASIC QUERIES
+# Core object queries for curriculum structure and projects
+# ============================================================================
+
+# Get object by ID
+query GetObjectById($objectId: Int!) {
+  object(where: { id: { _eq: $objectId } }) {
+    id
+    name
+    type
+    attrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Reference object (if this is a copy)
+    # Note: referenceId field may not be available in current schema
+  }
+}
+
+# Get objects by type
+query GetObjectsByType($objectType: String!, $limit: Int = 100, $offset: Int = 0) {
+  object(
+    where: { type: { _eq: $objectType } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get objects by campus
+query GetObjectsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) {
+  object(
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get objects by status
+query GetObjectsByStatus($status: String!, $limit: Int = 100) {
+  object(
+    where: { status: { _eq: $status } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get object with children
+query GetObjectWithChildren($objectId: Int!) {
+  object(where: { id: { _eq: $objectId } }) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Children objects
+    children: object_children_as_parent {
+      key
+      index
+      attrs
+      child {
+        id
+        name
+        type
+        status
+        attrs
+        createdAt
+        updatedAt
+        campus
+      }
+    }
+  }
+}
+
+# Get object with parent
+query GetObjectWithParent($objectId: Int!) {
+  object(where: { id: { _eq: $objectId } }) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Parent objects
+    parents: object_children_as_child {
+      key
+      index
+      attrs
+      parent {
+        id
+        name
+        type
+        status
+        attrs
+        createdAt
+        updatedAt
+        campus
+      }
+    }
+  }
+}
+
+# Get object hierarchy (with children and parents)
+query GetObjectHierarchy($objectId: Int!) {
+  object(where: { id: { _eq: $objectId } }) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Children objects
+    children: object_children_as_parent(order_by: { index: asc }) {
+      key
+      index
+      attrs
+      child {
+        id
+        name
+        type
+        status
+        attrs
+        createdAt
+        updatedAt
+        campus
+      }
+    }
+    # Parent objects
+    parents: object_children_as_child {
+      key
+      index
+      attrs
+      parent {
+        id
+        name
+        type
+        status
+        attrs
+        createdAt
+        updatedAt
+        campus
+      }
+    }
+  }
+}
+
+# Search objects by name
+query SearchObjects($searchTerm: String!, $limit: Int = 50) {
+  object(
+    where: { name: { _ilike: $searchTerm } }
+    order_by: { name: asc }
+    limit: $limit
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get objects by author
+query GetObjectsByAuthor($authorLogin: String!, $limit: Int = 50) {
+  object(
+    where: { author: { login: { _eq: $authorLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get root objects (objects with no parents)
+query GetRootObjects($limit: Int = 50) {
+  object(
+    where: { 
+      _not: { 
+        object_children_as_child: {} 
+      }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    childrenAttrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Children count
+    children_aggregate: object_children_as_parent_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Get leaf objects (objects with no children)
+query GetLeafObjects($limit: Int = 100) {
+  object(
+    where: { 
+      _not: { 
+        object_children_as_parent: {} 
+      }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    name
+    type
+    status
+    attrs
+    createdAt
+    updatedAt
+    campus
+    # Author of the object
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    # Parent count
+    parents_aggregate: object_children_as_child_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}

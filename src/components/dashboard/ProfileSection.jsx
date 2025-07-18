@@ -17,34 +17,36 @@ import {
 
 const ProfileSection = () => {
   const {
-    userData,
-    projectData,
-    auditData,
+    user,
+    totalXP,
+    level,
+    auditRatio,
+    totalUp,
+    totalDown,
     skills,
-    piscineStats,
+    passedProjects,
+    failedProjects,
+    passRate,
     loading
   } = useData();
 
   // Extract user info using enhanced utility functions
-  const displayName = getUserDisplayName(userData) || 'Unknown User';
-  const email = getUserEmail(userData) || 'No email provided';
-  const campus = userData?.campus || 'Unknown Campus';
-  const registrationDate = userData?.createdAt;
-  const avatarUrl = getAvatarUrl(userData);
+  const displayName = getUserDisplayName(user) || 'Unknown User';
+  const email = getUserEmail(user) || 'No email provided';
+  const campus = user?.campus || 'Unknown Campus';
+  const registrationDate = user?.createdAt;
+  const avatarUrl = getAvatarUrl(user);
 
-  // XP and level data (calculated in DataContext)
-  const totalXP = userData?.totalXP || 0;
-  const userLevel = userData?.level || 0;
+  // XP and level data (now provided directly by DataContext)
+  const userLevel = level || 0;
   const levelProgress = getXPProgress(totalXP, userLevel);
 
-  // Project statistics
-  const passedProjects = projectData?.passedProjects || 0;
-  const passRate = projectData?.passRate || 0;
+  // Project statistics (now provided directly by DataContext)
+  const projectPassRate = passRate || 0;
 
-  // Audit statistics
-  const auditRatio = auditData?.auditRatio || 0;
-  const auditsGiven = auditData?.given?.count || 0;
-  const auditsReceived = auditData?.received?.count || 0;
+  // Audit statistics (now provided directly by DataContext)
+  const auditsGiven = totalUp/1000000 || 0;
+  const auditsReceived = totalDown || 0;
 
   if (loading) {
     return (
@@ -80,7 +82,7 @@ const ProfileSection = () => {
               <div className="flex-shrink-0">
                 <Avatar
                   user={{
-                    ...userData,
+                    ...user,
                     avatarUrl: avatarUrl,
                     displayName: displayName
                   }}
@@ -97,7 +99,7 @@ const ProfileSection = () => {
                     {displayName}
                   </h2>
                   <p className="text-surface-300">
-                    @{userData?.login || 'unknown'}
+                    @{user?.login || 'unknown'}
                   </p>
                 </div>
 
@@ -117,7 +119,7 @@ const ProfileSection = () => {
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Calendar className="w-4 h-4" />
                     <span className="text-sm">
-                      Joined {formatDate(userData?.createdAt)}
+                      Joined {formatDate(user?.createdAt)}
                     </span>
                   </div>
 
@@ -132,14 +134,14 @@ const ProfileSection = () => {
                 <div className="flex flex-wrap gap-2">
                   <XPBadge xp={totalXP} />
                   <Badge variant="primary">
-                    {passedProjects} / {(projectData?.totalProjects || 0)} Projects
+                    {passedProjects} / {(passedProjects + failedProjects)} Projects
                   </Badge>
                   <Badge variant="accent">
-                    Audit Ratio: {auditRatio.toFixed(2)}
+                    Audit Ratio: {auditRatio?.toFixed(2) || '0.00'}
                   </Badge>
-                  {passRate > 0 && (
+                  {projectPassRate > 0 && (
                     <Badge variant="success">
-                      {formatPercentage(passRate)} Success Rate
+                      {formatPercentage(projectPassRate)} Success Rate
                     </Badge>
                   )}
                 </div>
@@ -252,7 +254,7 @@ const ProfileSection = () => {
               <div className="flex justify-between items-center">
                 <span className="text-surface-300">Audits Given</span>
                 <span className="text-accent-300 font-semibold">
-                  {auditsGiven}
+                  {auditsGiven} MB
                 </span>
               </div>
 
@@ -298,49 +300,7 @@ const ProfileSection = () => {
           </Card>
         )}
 
-        {/* Piscine Performance */}
-        {piscineStats && (
-          <Card>
-            <Card.Header>
-              <Card.Title className="flex items-center">
-                <Award className="w-5 h-5 mr-2" />
-                Piscine Performance
-              </Card.Title>
-            </Card.Header>
-
-            <Card.Content>
-              <div className="space-y-3">
-                {piscineStats.jsStats && piscineStats.jsStats.total > 0 && (
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-surface-300 text-sm">JavaScript</span>
-                      <span className="text-primary-300 font-medium text-sm">
-                        {formatPercentage(piscineStats.jsStats.passRate)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-surface-400">
-                      {piscineStats.jsStats.passed}/{piscineStats.jsStats.total} passed
-                    </div>
-                  </div>
-                )}
-
-                {piscineStats.goStats && piscineStats.goStats.total > 0 && (
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-surface-300 text-sm">Go</span>
-                      <span className="text-primary-300 font-medium text-sm">
-                        {formatPercentage(piscineStats.goStats.passRate)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-surface-400">
-                      {piscineStats.goStats.passed}/{piscineStats.goStats.total} passed
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Card.Content>
-          </Card>
-        )}
+        {/* TODO: Implement Piscine Performance section with piscine-specific queries */}
       </div>
     </div>
   );

@@ -8,36 +8,33 @@ import ProjectSuccessChart from '../charts/ProjectSuccessChart';
 import AuditStatsChart from '../charts/AuditStatsChart';
 import XPByProjectChart from '../charts/XPByProjectChart';
 import XPTimelineChart from '../charts/XPTimelineChart';
-import PiscineStatsChart from '../charts/PiscineStatsChart';
 import { formatXP, formatPercentage } from '../../utils/dataFormatting';
 
 const StatsSection = () => {
   const {
-    userData,
-    xpData,
-    projectData,
-    auditData,
-    piscineStats,
+    totalXP,
+    level,
+    xpTimeline,
+    xpProjects,
+    totalProjects,
+    passedProjects,
+    failedProjects,
+    passRate,
+    auditRatio,
+    totalUp,
+    totalDown,
     skills,
     loading
   } = useData();
 
   // Extract chart data from the new data structure
-  const xpTimeline = xpData?.timeline || [];
-  const xpByProject = xpData?.xpByProject || [];
-  const totalXP = userData?.totalXP || 0;
-  const userLevel = userData?.level || 0;
+  const timelineData = xpTimeline || [];
+  const xpByProject = xpProjects || [];
+  const userLevel = level || 0;
 
-  // Project statistics
-  const totalProjects = projectData?.totalProjects || 0;
-  const passedProjects = projectData?.passedProjects || 0;
-  const failedProjects = projectData?.failedProjects || 0;
-  const passRate = projectData?.passRate || 0;
-
-  // Audit statistics
-  const auditsGiven = auditData?.given?.count || 0;
-  const auditsReceived = auditData?.received?.count || 0;
-  const auditRatio = auditData?.auditRatio || 0;
+  // Audit statistics (now provided directly by DataContext)
+  const auditsGiven = totalUp || 0;
+  const auditsReceived = totalDown || 0;
 
   if (loading) {
     return (
@@ -149,7 +146,7 @@ const StatsSection = () => {
           <Card.Content>
             <div className="flex justify-center">
               <XPTimelineChart
-                data={xpTimeline}
+                data={timelineData}
                 width={900}
                 height={400}
               />
@@ -183,27 +180,7 @@ const StatsSection = () => {
         </Card>
       </div>
 
-      {/* Piscine Statistics Chart */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center">
-            <Target className="w-5 h-5 mr-2" />
-            Piscine Performance
-          </Card.Title>
-          <Card.Description>
-            JavaScript and Go piscine statistics
-          </Card.Description>
-        </Card.Header>
-        <Card.Content>
-          <div className="flex justify-center">
-            <PiscineStatsChart
-              data={piscineStats || {}}
-              width={400}
-              height={350}
-            />
-          </div>
-        </Card.Content>
-      </Card>
+      {/* TODO: Implement Piscine Performance section with piscine-specific queries */}
 
       {/* Skills Development Tracking */}
       {skills && skills.length > 0 && (
@@ -257,7 +234,7 @@ const StatsSection = () => {
         <Card.Content>
           <div className="flex justify-center">
             <XPProgressChart
-              data={xpTimeline || []} // Use timeline data for progression
+              data={timelineData || []} // Use timeline data for progression
               width={400}
               height={300}
             />

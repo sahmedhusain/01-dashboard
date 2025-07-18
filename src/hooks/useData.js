@@ -1,3 +1,11 @@
+// ============================================================================
+// SIMPLIFIED DATA HOOKS EXPORTS
+// ============================================================================
+
+// Export all GraphQL data hooks
+export * from './useGraphQLData.js';
+
+// Legacy context hook (if still needed)
 import { useContext } from 'react';
 import { DataContext } from '../contexts/DataContext';
 

@@ -1,11 +1,12 @@
-import { ApolloClient, createHttpLink, from } from '@apollo/client';
+import { ApolloClient, createHttpLink, from, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { GRAPHQL_ENDPOINT, getAuthHeader, clearAuthData } from '../utils/auth';
-import { createOptimizedCache, QueryPerformanceMonitor } from '../utils/graphqlOptimization';
 
-// Initialize performance monitor
-const performanceMonitor = new QueryPerformanceMonitor();
+// ============================================================================
+// SIMPLIFIED APOLLO CLIENT CONFIGURATION
+// Following reference patterns with essential functionality only
+// ============================================================================
 
 // HTTP link for GraphQL endpoint
 const httpLink = createHttpLink({
@@ -15,7 +16,7 @@ const httpLink = createHttpLink({
 // Auth link to add JWT token to requests
 const authLink = setContext((_, { headers }) => {
   const authHeaders = getAuthHeader();
-  
+
   return {
     headers: {
       ...headers,
@@ -25,35 +26,18 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// Performance monitoring link
-const performanceLink = setContext((_, { headers }) => {
-  const queryId = performanceMonitor.startQuery('GraphQL Query', {});
-  return {
-    headers,
-    queryId,
-  };
-});
-
-// Error link to handle GraphQL and network errors with performance tracking
-const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
-  const queryId = operation.getContext().queryId;
-
+// Error link to handle GraphQL and network errors
+const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path, extensions }) => {
       console.error(
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       );
 
-      // Track error in performance monitor
-      if (queryId) {
-        performanceMonitor.endQuery(queryId, message);
-      }
-
       // Handle JWT-specific errors
       if (message.includes('JWT') || message.includes('JWS') || message.includes('verify')) {
         console.warn('JWT verification error detected, clearing auth data');
         clearAuthData();
-        // Don't auto-reload, let the app handle the redirect
         return;
       }
 
@@ -69,11 +53,6 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (networkError) {
     console.error(`[Network error]: ${networkError}`);
 
-    // Track network error
-    if (queryId) {
-      performanceMonitor.endQuery(queryId, networkError.message);
-    }
-
     // Handle 401/403 network errors
     if (networkError.statusCode === 401 || networkError.statusCode === 403) {
       console.warn('Network authentication error, clearing auth data');
@@ -83,37 +62,42 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   }
 });
 
-// Apollo Client configuration with optimized cache and performance monitoring
+// Simple cache configuration
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        user: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        transaction: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+      },
+    },
+  },
+});
+
+// Apollo Client configuration - simplified
 const client = new ApolloClient({
-  link: from([errorLink, performanceLink, authLink, httpLink]),
-  cache: createOptimizedCache(),
+  link: from([errorLink, authLink, httpLink]),
+  cache,
   defaultOptions: {
     watchQuery: {
       errorPolicy: 'all',
-      fetchPolicy: 'cache-first', // Optimized for performance
-      nextFetchPolicy: 'cache-first', // Stick to cache after first load
+      fetchPolicy: 'cache-first',
       notifyOnNetworkStatusChange: true,
     },
     query: {
       errorPolicy: 'all',
-      fetchPolicy: 'cache-first', // Optimized for performance
-      nextFetchPolicy: 'cache-only', // Prefer cache for subsequent queries
-    },
-    mutate: {
-      errorPolicy: 'all',
-      fetchPolicy: 'no-cache', // Always fresh for mutations
+      fetchPolicy: 'cache-first',
     },
   },
-  // Enable query deduplication for better performance
-  queryDeduplication: true,
-  // Add connection directive for pagination
   connectToDevTools: import.meta.env.DEV,
 });
-
-// Export performance monitor for use in hooks
-export { performanceMonitor };
-
-// Clear cache on initialization to avoid stale data
-client.clearStore().catch(console.warn);
 
 export default client;

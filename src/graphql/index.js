@@ -1,30 +1,15 @@
 // ============================================================================
-// GRAPHQL QUERIES AND FRAGMENTS - ORGANIZED EXPORTS
+// SIMPLIFIED GRAPHQL EXPORTS - FOLLOWING REFERENCE PATTERNS
 // ============================================================================
 
-// Export all fragments
-export * from './fragments.js';
-export * from './aggregateFragments.js';
+// Export core queries (simplified and optimized)
+export * from './coreQueries.js';
 
-// Export domain-specific queries
-export * from './userQueries.js';
-export * from './analyticsQueries.js';
-export * from './transactionQueries.js';
-export * from './auditQueries.js';
-export * from './progressQueries.js';
-export * from './coreEntityQueries.js';
-export * from './advancedAnalyticsQueries.js';
-
-// Export mutations and subscriptions
-export * from './mutations.js';
-export * from './subscriptions.js';
-
-// Export optimized queries
-export * from './optimizedQueries.js';
+// Export data service
+export { GraphQLService, graphqlService } from './dataService.js';
 
 // Re-export client for convenience
 export { default as client } from './client.js';
-export { performanceMonitor } from './client.js';
 
 // ============================================================================
 // QUERY CATEGORIES FOR EASY REFERENCE
@@ -117,54 +102,11 @@ export const ADVANCED_ANALYTICS_QUERIES = [
   'GET_LEARNING_VELOCITY_ANALYTICS',
 ];
 
-// Mutation queries
-export const MUTATION_QUERIES = [
-  'UPDATE_USER_PROFILE',
-  'UPDATE_USER_ATTRS',
-  'UPDATE_USER_PROFILE_DATA',
-  'CREATE_GROUP',
-  'UPDATE_GROUP_STATUS',
-  'ADD_USER_TO_GROUP',
-  'REMOVE_USER_FROM_GROUP',
-  'CONFIRM_GROUP_MEMBERSHIP',
-  'CREATE_MATCH',
-  'UPDATE_MATCH_RESULT',
-  'CONFIRM_MATCH',
-  'REGISTER_USER_FOR_EVENT',
-  'UNREGISTER_USER_FROM_EVENT',
-  'UPDATE_RESULT_GRADE',
-  'UPDATE_RESULT_ATTRS',
-  'CREATE_TOAD_SESSION',
-  'UPDATE_TOAD_SESSION',
-  'DELETE_EXPIRED_TOAD_SESSIONS',
-  'BATCH_UPDATE_USER_ATTRS',
-  'BATCH_ADD_USERS_TO_GROUP',
-  'UPSERT_USER_PROFILE',
-  'BULK_UPDATE_GROUP_STATUS',
-  'CLEANUP_EXPIRED_DATA',
-  'TRANSFER_GROUP_CAPTAINCY',
-];
+// NOTE: Mutation queries removed - not needed for current read-only objectives
+// If mutations are needed in the future, they can be recreated in a new mutations.js file
 
-// Subscription queries
-export const SUBSCRIPTION_QUERIES = [
-  'SUBSCRIBE_USER_PROFILE',
-  'SUBSCRIBE_USER_TRANSACTIONS',
-  'SUBSCRIBE_NEW_XP_TRANSACTIONS',
-  'SUBSCRIBE_USER_PROGRESS',
-  'SUBSCRIBE_USER_RESULTS',
-  'SUBSCRIBE_PROJECT_RESULTS',
-  'SUBSCRIBE_AUDITS_GIVEN',
-  'SUBSCRIBE_AUDITS_RECEIVED',
-  'SUBSCRIBE_GROUP_UPDATES',
-  'SUBSCRIBE_USER_GROUPS',
-  'SUBSCRIBE_GROUP_FORMATION',
-  'SUBSCRIBE_USER_MATCHES',
-  'SUBSCRIBE_MATCH_OPPORTUNITIES',
-  'SUBSCRIBE_USER_TOAD_SESSIONS',
-  'SUBSCRIBE_CAMPUS_ACTIVITY',
-  'SUBSCRIBE_XP_LEADERBOARD',
-  'SUBSCRIBE_USER_NOTIFICATIONS',
-];
+// NOTE: Subscription queries removed - not needed for current objectives
+// Real-time features can be added later if needed
 
 // Optimized queries
 export const OPTIMIZED_QUERIES = [
@@ -315,49 +257,15 @@ export const USAGE_PATTERNS = {
     'SUBSCRIBE_CAMPUS_ACTIVITY',
   ],
 
-  // For data modification
-  DATA_MODIFICATION: [
-    'UPDATE_USER_PROFILE',
-    'CREATE_GROUP',
-    'ADD_USER_TO_GROUP',
-    'UPDATE_RESULT_GRADE',
-  ],
+  // NOTE: Data modification features removed - read-only implementation
 };
 
 // ============================================================================
-// FRAGMENT COLLECTIONS
+// NOTE: FRAGMENTS REMOVED
 // ============================================================================
-
-export const CORE_FRAGMENTS = [
-  'USER_FRAGMENT',
-  'USER_BASIC_FRAGMENT',
-  'TRANSACTION_FRAGMENT',
-  'RESULT_FRAGMENT',
-  'AUDIT_FRAGMENT',
-  'PROGRESS_FRAGMENT',
-  'OBJECT_FRAGMENT',
-  'EVENT_FRAGMENT',
-  'GROUP_FRAGMENT',
-];
-
-export const AGGREGATE_FRAGMENTS = [
-  'TRANSACTION_AGGREGATE_FRAGMENT',
-  'RESULT_AGGREGATE_FRAGMENT',
-  'AUDIT_AGGREGATE_FRAGMENT',
-  'PROGRESS_AGGREGATE_FRAGMENT',
-  'OBJECT_AGGREGATE_FRAGMENT',
-];
-
-export const SPECIALIZED_FRAGMENTS = [
-  'LABEL_FRAGMENT',
-  'MATCH_FRAGMENT',
-  'RECORD_FRAGMENT',
-  'REGISTRATION_FRAGMENT',
-  'ROLE_FRAGMENT',
-  'TOAD_SESSION_FRAGMENT',
-  'XP_FRAGMENT',
-  'MARKDOWN_FRAGMENT',
-];
+// Fragments were removed to simplify the GraphQL implementation.
+// The new coreQueries.js uses direct field selection instead of fragments
+// for better performance and maintainability.
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -377,9 +285,8 @@ export function getQueriesByCategory(category) {
     progress: PROGRESS_QUERIES,
     core: CORE_ENTITY_QUERIES,
     advanced: ADVANCED_ANALYTICS_QUERIES,
-    mutations: MUTATION_QUERIES,
-    subscriptions: SUBSCRIPTION_QUERIES,
     optimized: OPTIMIZED_QUERIES,
+    // NOTE: mutations and subscriptions removed for current read-only implementation
   };
 
   return categoryMap[category] || [];
@@ -423,15 +330,13 @@ export function isRealtimeQuery(queryName) {
 
 /**
  * Get all fragments of a specific type
+ * NOTE: Fragments were removed in the simplified implementation
+ * This function is kept for backward compatibility but returns empty arrays
  * @param {string} type - Fragment type (core, aggregate, specialized)
- * @returns {string[]} Array of fragment names
+ * @returns {string[]} Array of fragment names (always empty in current implementation)
  */
 export function getFragmentsByType(type) {
-  const typeMap = {
-    core: CORE_FRAGMENTS,
-    aggregate: AGGREGATE_FRAGMENTS,
-    specialized: SPECIALIZED_FRAGMENTS,
-  };
-  
-  return typeMap[type] || [];
+  // Fragments were removed for simplification - return empty array
+  console.warn(`getFragmentsByType('${type}') called but fragments were removed for simplification`);
+  return [];
 }

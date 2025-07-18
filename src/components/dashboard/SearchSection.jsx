@@ -2,10 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Users, TrendingUp, Filter, Clock, CheckCircle, AlertCircle, Settings } from 'lucide-react';
 import {
-  useProjectSearch,
-  useAuditSearch,
-  useEnhancedUserSearch
-} from '../../hooks/useGraphQL';
+  useManualGraphQLData
+} from '../../hooks/useGraphQLData';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Loading from '../ui/Loading';
@@ -112,31 +110,26 @@ const SearchSection = () => {
 
 
 
-  // Enhanced search hooks
-  const {
-    searchResults: projectResults,
-    searchProjects,
-    filterByStatus: filterProjectsByStatus,
-    statusCounts: projectStatusCounts,
-    loading: projectLoading
-  } = useProjectSearch();
+  // TODO: Implement search functionality with new GraphQL system
+  // Placeholder data for now
+  const projectResults = [];
+  const auditResults = [];
+  const userResults = [];
+  const projectStatusCounts = {};
+  const auditStatusCounts = {};
+  const userStatusCounts = {};
+  const campuses = [];
+  const projectLoading = false;
+  const auditLoading = false;
+  const userLoading = false;
 
-  const {
-    searchResults: auditResults,
-    searchAudits,
-    filterByStatus: filterAuditsByStatus,
-    statusCounts: auditStatusCounts,
-    loading: auditLoading
-  } = useAuditSearch();
-
-  const {
-    searchResults: userResults,
-    searchUsers: searchEnhancedUsers,
-    filterByStatus: filterUsersByStatus,
-    statusCounts: userStatusCounts,
-    campuses,
-    loading: userLoading
-  } = useEnhancedUserSearch();
+  // Placeholder search functions
+  const searchProjects = () => {};
+  const searchAudits = () => {};
+  const searchEnhancedUsers = () => {};
+  const filterProjectsByStatus = () => {};
+  const filterAuditsByStatus = () => {};
+  const filterUsersByStatus = () => {};
 
   // Store stable references to search functions to prevent infinite re-renders
   const searchFunctionsRef = useRef({});

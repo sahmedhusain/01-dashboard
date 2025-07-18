@@ -10,6 +10,9 @@ import { formatXP, calculateProficiencyLevel } from '../../utils/dataFormatting'
 
 // Helper functions for skill categorization
 const categorizeSkill = (skillName) => {
+  if (!skillName || typeof skillName !== 'string') {
+    return 'other';
+  }
   const name = skillName.toLowerCase();
 
   if (name.includes('javascript') || name.includes('go') || name.includes('python') ||
@@ -49,11 +52,12 @@ const TechnologiesSection = () => {
       skill.averageGrade || 0
     );
 
+    const skillType = categorizeSkill(skill.name);
     return {
       ...skill,
       proficiency,
-      type: categorizeSkill(skill.name),
-      icon: getSkillIcon(skill.name)
+      type: skillType,
+      icon: getSkillIcon(skillType)
     };
   });
 

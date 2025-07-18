@@ -23,7 +23,7 @@ query GetMatchById($matchId: Int!) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -77,7 +77,7 @@ query GetUserMatches($userLogin: String!, $limit: Int = 50) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -124,7 +124,7 @@ query GetPendingMatches($limit: Int = 50) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -172,7 +172,7 @@ query GetConfirmedMatches($limit: Int = 100, $offset: Int = 0) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -219,7 +219,7 @@ query GetMatchesByObject($objectId: Int!, $limit: Int = 50) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -259,7 +259,7 @@ query GetMatchesByEvent($eventId: Int!, $limit: Int = 50) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -300,7 +300,7 @@ query GetMatchesByCampus($campus: String!, $limit: Int = 100) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -352,7 +352,7 @@ query GetSuccessfulBets($limit: Int = 50) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName
@@ -398,7 +398,7 @@ query GetFailedBets($limit: Int = 50) {
       campus
     }
     # Matched user
-    matched_user: user_by_match {
+    user {
       id
       login
       firstName

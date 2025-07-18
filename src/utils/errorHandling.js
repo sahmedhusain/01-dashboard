@@ -428,10 +428,11 @@ export const logError = (error, context = {}) => {
 // Provide fallback data when queries fail
 export const getFallbackData = (queryType, error) => {
   const processedError = processGraphQLError(error);
-  
+
   // Return appropriate fallback based on query type and error
   switch (queryType) {
     case 'user_profile':
+    case 'user_info':
       return {
         id: null,
         login: 'Unknown User',
@@ -439,15 +440,16 @@ export const getFallbackData = (queryType, error) => {
         loading: false,
         error: processedError,
       };
-    
+
     case 'user_transactions':
+    case 'transactions_by_type':
       return {
         transactions: [],
         totalCount: 0,
         loading: false,
         error: processedError,
       };
-    
+
     case 'user_progress':
       return {
         progress: [],
@@ -455,7 +457,39 @@ export const getFallbackData = (queryType, error) => {
         loading: false,
         error: processedError,
       };
-    
+
+    case 'user_statistics':
+      return {
+        totalUsers: 0,
+        averageAuditRatio: 0,
+        loading: false,
+        error: processedError,
+      };
+
+    case 'active_groups':
+    case 'user_groups':
+      return {
+        groups: [],
+        loading: false,
+        error: processedError,
+      };
+
+    case 'pending_audits':
+    case 'completed_audits':
+      return {
+        audits: [],
+        loading: false,
+        error: processedError,
+      };
+
+    case 'top_xp_earners':
+      return {
+        users: [],
+        aggregates: null,
+        loading: false,
+        error: processedError,
+      };
+
     default:
       return {
         data: null,

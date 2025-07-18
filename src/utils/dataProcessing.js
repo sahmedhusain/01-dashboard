@@ -101,7 +101,7 @@ export const processSkillsData = (skillsData) => {
 };
 
 // ============================================================================
-// AUDIT DATA PROCESSING
+// AUDIT DATA PROCESSING - UPDATED FOR CORRECTED SCHEMA
 // ============================================================================
 
 // Process audit ratio data
@@ -120,14 +120,35 @@ export const formatAuditRatio = (ratio) => {
   return typeof ratio === 'number' ? ratio.toFixed(2) : "0.00";
 };
 
-// Process audit status data
-export const processAuditStatus = (auditStatusData) => {
-  if (!auditStatusData) return { validAudits: [], failedAudits: [] };
+// Process audit list data (pending/completed)
+export const processAuditList = (auditListData) => {
+  if (!Array.isArray(auditListData)) return [];
 
-  return {
-    validAudits: auditStatusData.validAudits?.nodes || [],
-    failedAudits: auditStatusData.failedAudits?.nodes || [],
-  };
+  return auditListData.map(audit => ({
+    id: audit.id,
+    grade: audit.grade,
+    createdAt: audit.createdAt,
+    updatedAt: audit.updatedAt,
+    endAt: audit.endAt,
+    version: audit.version,
+    auditor: {
+      id: audit.auditor?.id,
+      login: audit.auditor?.login,
+      firstName: audit.auditor?.firstName,
+      lastName: audit.auditor?.lastName,
+      fullName: `${audit.auditor?.firstName || ''} ${audit.auditor?.lastName || ''}`.trim() || audit.auditor?.login,
+      campus: audit.auditor?.campus,
+    },
+    group: {
+      id: audit.group?.id,
+      status: audit.group?.status,
+      path: audit.group?.path,
+      campus: audit.group?.campus,
+      projectName: audit.group?.object?.name || audit.group?.path?.split('/').pop(),
+      projectType: audit.group?.object?.type,
+    },
+    attrs: audit.attrs || {},
+  }));
 };
 
 // ============================================================================
@@ -178,7 +199,7 @@ export const calculateCompletionRate = (progressData) => {
 };
 
 // ============================================================================
-// GROUP DATA PROCESSING
+// GROUP DATA PROCESSING - UPDATED FOR CORRECTED SCHEMA
 // ============================================================================
 
 // Process group data
@@ -189,16 +210,88 @@ export const processGroupData = (groupData) => {
     id: group.id,
     path: group.path,
     status: group.status,
-    projectName: group.object?.name || group.path.split('/').pop(),
+    campus: group.campus,
+    projectName: group.object?.name || group.path?.split('/').pop(),
     projectType: group.object?.type || 'project',
-    members: group.members?.map(member => ({
-      login: member.userLogin,
-      firstName: member.user?.firstName || '',
-      lastName: member.user?.lastName || '',
-      fullName: `${member.user?.firstName || ''} ${member.user?.lastName || ''}`.trim() || member.userLogin,
-    })) || [],
+    captain: {
+      id: group.captain?.id,
+      login: group.captain?.login,
+      firstName: group.captain?.firstName,
+      lastName: group.captain?.lastName,
+      fullName: `${group.captain?.firstName || ''} ${group.captain?.lastName || ''}`.trim() || group.captain?.login,
+    },
+    event: {
+      id: group.event?.id,
+      path: group.event?.path,
+      campus: group.event?.campus,
+    },
     createdAt: group.createdAt,
+    updatedAt: group.updatedAt,
+    attrs: group.object?.attrs || {},
   }));
+};
+
+// ============================================================================
+// USER STATISTICS PROCESSING
+// ============================================================================
+
+// Process user statistics aggregate data
+export const processUserStatistics = (userStatsData) => {
+  if (!userStatsData?.aggregate) return {
+    totalUsers: 0,
+    averageAuditRatio: 0,
+    averageTotalUp: 0,
+    averageTotalDown: 0,
+    maxAuditRatio: 0,
+    minAuditRatio: 0,
+  };
+
+  const { aggregate } = userStatsData;
+
+  return {
+    totalUsers: aggregate.count || 0,
+    averageAuditRatio: aggregate.avg?.auditRatio || 0,
+    averageTotalUp: aggregate.avg?.totalUp || 0,
+    averageTotalDown: aggregate.avg?.totalDown || 0,
+    maxAuditRatio: aggregate.max?.auditRatio || 0,
+    minAuditRatio: aggregate.min?.auditRatio || 0,
+    stddevAuditRatio: aggregate.stddev?.auditRatio || 0,
+    maxCreatedAt: aggregate.max?.createdAt,
+    minCreatedAt: aggregate.min?.createdAt,
+  };
+};
+
+// ============================================================================
+// TRANSACTION AGGREGATES PROCESSING
+// ============================================================================
+
+// Process top XP earners data
+export const processTopXPEarners = (topXPData) => {
+  if (!topXPData) return { users: [], aggregates: null };
+
+  return {
+    users: Array.isArray(topXPData.transaction) ? topXPData.transaction.map(tx => ({
+      id: tx.id,
+      type: tx.type,
+      amount: tx.amount,
+      createdAt: tx.createdAt,
+      user: {
+        id: tx.user?.id,
+        login: tx.user?.login,
+        firstName: tx.user?.firstName,
+        lastName: tx.user?.lastName,
+        fullName: `${tx.user?.firstName || ''} ${tx.user?.lastName || ''}`.trim() || tx.user?.login,
+        campus: tx.user?.campus,
+      },
+      object: {
+        id: tx.object?.id,
+        name: tx.object?.name,
+        type: tx.object?.type,
+        attrs: tx.object?.attrs || {},
+      },
+    })) : [],
+    aggregates: topXPData.transaction_aggregate?.aggregate || null,
+  };
 };
 
 // ============================================================================
@@ -352,4 +445,111 @@ export const processProjectResults = (resultsData) => {
     passRate,
     results,
   };
+};
+
+// ============================================================================
+// ROLE DATA PROCESSING
+// ============================================================================
+
+// Process roles data
+export const processRolesData = (rolesData) => {
+  if (!Array.isArray(rolesData)) return [];
+
+  return rolesData.map(role => ({
+    type: role.type,
+    name: role.type.replace(/^role_/, '').replace(/_/g, ' '),
+    amount: role.amount || 0,
+    createdAt: role.createdAt,
+    object: {
+      name: role.object?.name,
+      type: role.object?.type,
+    },
+  }));
+};
+
+// Process role statistics
+export const processRoleStatistics = (roleStatsData) => {
+  if (!roleStatsData) return { aggregates: null, roles: [] };
+
+  return {
+    aggregates: roleStatsData.transaction_aggregate?.aggregate || null,
+    roles: Array.isArray(roleStatsData.transaction) ? roleStatsData.transaction.map(role => ({
+      type: role.type,
+      name: role.type.replace(/^role_/, '').replace(/_/g, ' '),
+      amount: role.amount || 0,
+    })) : [],
+  };
+};
+
+// ============================================================================
+// OBJECT DATA PROCESSING
+// ============================================================================
+
+// Process objects data
+export const processObjectsData = (objectsData) => {
+  if (!Array.isArray(objectsData)) return [];
+
+  return objectsData.map(obj => ({
+    id: obj.id,
+    name: obj.name,
+    type: obj.type,
+    attrs: obj.attrs || {},
+    createdAt: obj.createdAt,
+    updatedAt: obj.updatedAt,
+  }));
+};
+
+// ============================================================================
+// ENHANCED PROGRESS DATA PROCESSING
+// ============================================================================
+
+// Process progress data with user information
+export const processProgressWithUsers = (progressData) => {
+  if (!Array.isArray(progressData)) return [];
+
+  return progressData.map(progress => ({
+    id: progress.id,
+    grade: progress.grade,
+    isDone: progress.isDone,
+    path: progress.path,
+    projectName: progress.object?.name || progress.path?.split('/').pop(),
+    projectType: progress.object?.type || 'unknown',
+    user: {
+      id: progress.user?.id,
+      login: progress.user?.login,
+      firstName: progress.user?.firstName,
+      lastName: progress.user?.lastName,
+      fullName: `${progress.user?.firstName || ''} ${progress.user?.lastName || ''}`.trim() || progress.user?.login,
+    },
+    createdAt: progress.createdAt,
+    updatedAt: progress.updatedAt,
+  }));
+};
+
+// ============================================================================
+// ENHANCED RESULT DATA PROCESSING
+// ============================================================================
+
+// Process results data with user information
+export const processResultsWithUsers = (resultsData) => {
+  if (!Array.isArray(resultsData)) return [];
+
+  return resultsData.map(result => ({
+    id: result.id,
+    grade: result.grade || 0,
+    type: result.type,
+    path: result.path,
+    passed: (result.grade || 0) >= 1,
+    projectName: result.object?.name || result.path?.split('/').pop() || 'Unknown',
+    projectType: result.object?.type || result.type,
+    user: {
+      id: result.user?.id,
+      login: result.user?.login,
+      firstName: result.user?.firstName,
+      lastName: result.user?.lastName,
+      fullName: `${result.user?.firstName || ''} ${result.user?.lastName || ''}`.trim() || result.user?.login,
+    },
+    createdAt: result.createdAt,
+    updatedAt: result.updatedAt,
+  }));
 };

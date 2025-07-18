@@ -59,7 +59,7 @@ query GetUserStatsByCampus($campus: String!) {
 }
 
 # Get users with high audit ratios
-query GetUsersWithHighAuditRatio($minRatio: numeric = 1.0, $limit: Int = 50) {
+query GetUsersWithHighAuditRatio($minRatio: float8 = 1.0, $limit: Int = 50) {
   user(
     where: { auditRatio: { _gte: $minRatio } }
     order_by: { auditRatio: desc }
@@ -110,7 +110,7 @@ query GetCampusUserDistribution {
 }
 
 # Get user registration timeline
-query GetUserRegistrationTimeline($startDate: timestamptz, $endDate: timestamptz) {
+query GetUserRegistrationTimeline($startDate: timestamptz = "2020-01-01T00:00:00Z", $endDate: timestamptz = "2030-12-31T23:59:59Z") {
   user_aggregate(
     where: {
       createdAt: { _gte: $startDate, _lte: $endDate }

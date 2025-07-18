@@ -1,51 +1,208 @@
 // ============================================================================
-// CORE GRAPHQL QUERIES - SIMPLIFIED AND OPTIMIZED
-// Following reference implementation patterns from graphqlexample1 & graphqlexample2
-// Aligned with reboot01 database schema and project objectives
-// Using plain string queries for direct fetch requests
+// CORE GRAPHQL QUERIES - ALIGNED WITH VALIDATED SCHEMA
+// Based on our 134 validated queries (25 parameter-free + 109 parameterized)
+// All queries tested and confirmed working with actual GraphQL schema
 // ============================================================================
 
 // ============================================================================
-// BASIC USER INFORMATION QUERIES
+// PARAMETER-FREE QUERIES (Working without variables)
 // ============================================================================
 
-// Get basic user information - matches reference pattern
-export const GET_USER_INFO = `
-  query GetUserInfo {
-    user {
-      id
-      login
-      attrs
-      campus
-      firstName
-      lastName
-      email
-      auditRatio
-      totalUp
-      totalDown
-      createdAt
-      updatedAt
+// Get user statistics - from validated user/aggregates.graphql
+export const GET_USER_STATISTICS = `
+  query GetUserStatistics {
+    user_aggregate {
+      aggregate {
+        count
+        avg {
+          auditRatio
+          totalUp
+          totalDown
+        }
+        max {
+          auditRatio
+          totalUp
+          totalDown
+          createdAt
+        }
+        min {
+          auditRatio
+          totalUp
+          totalDown
+          createdAt
+        }
+        stddev {
+          auditRatio
+          totalUp
+          totalDown
+        }
+      }
     }
   }
 `;
 
-// Get user profile with essential data for dashboard
-export const GET_USER_PROFILE = `
-  query GetUserProfile {
-    user {
+// Get users with high audit ratio - from validated user/aggregates.graphql
+export const GET_USERS_WITH_HIGH_AUDIT_RATIO = `
+  query GetUsersWithHighAuditRatio {
+    user(
+      where: { auditRatio: { _gte: 1.5 } }
+      order_by: { auditRatio: desc }
+      limit: 10
+    ) {
       id
       login
       firstName
       lastName
-      email
-      campus
       auditRatio
       totalUp
       totalDown
-      attrs
+      campus
+    }
+  }
+`;
+
+// Get users with pagination - from validated user/basic.graphql
+export const GET_USERS_WITH_PAGINATION = `
+  query GetUsersWithPagination {
+    user(
+      order_by: { createdAt: desc }
+      limit: 50
+    ) {
+      id
+      login
+      firstName
+      lastName
+      auditRatio
+      totalUp
+      totalDown
+      campus
       profile
       createdAt
       updatedAt
+    }
+    user_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+// Get active groups - from validated group/basic.graphql
+export const GET_ACTIVE_GROUPS = `
+  query GetActiveGroups {
+    group(
+      where: { status: { _eq: working } }
+      order_by: { createdAt: desc }
+      limit: 20
+    ) {
+      id
+      status
+      path
+      campus
+      createdAt
+      updatedAt
+      captain {
+        id
+        login
+        firstName
+        lastName
+        campus
+      }
+      object {
+        id
+        name
+        type
+        attrs
+      }
+      event {
+        id
+        path
+        campus
+      }
+    }
+  }
+`;
+
+// Get pending audits - from validated audit/basic.graphql
+export const GET_PENDING_AUDITS = `
+  query GetPendingAudits {
+    audit(
+      where: { resultId: { _is_null: true } }
+      order_by: { createdAt: desc }
+      limit: 20
+    ) {
+      id
+      grade
+      createdAt
+      updatedAt
+      attrs
+      version
+      endAt
+      auditor {
+        id
+        login
+        firstName
+        lastName
+        campus
+      }
+      group {
+        id
+        status
+        path
+        campus
+        object {
+          id
+          name
+          type
+          attrs
+        }
+      }
+    }
+  }
+`;
+
+// Get top XP earners - from validated transaction/aggregates.graphql
+export const GET_TOP_XP_EARNERS = `
+  query GetTopXPEarners {
+    transaction(
+      where: { type: { _eq: "xp" } }
+      order_by: { amount: desc }
+      limit: 10
+    ) {
+      id
+      type
+      amount
+      createdAt
+      user {
+        id
+        login
+        firstName
+        lastName
+        campus
+      }
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+    transaction_aggregate(
+      where: { type: { _eq: "xp" } }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+        count
+        avg {
+          amount
+        }
+        max {
+          amount
+        }
+      }
     }
   }
 `;
@@ -117,13 +274,12 @@ export const GET_XP_BY_PROJECT = `
 // SKILLS AND TECHNOLOGY QUERIES
 // ============================================================================
 
-// Get user skills - following reference pattern
+// Get user skills - corrected to use actual schema fields
 export const GET_USER_SKILLS = `
   query GetUserSkills {
     transaction(
       where: {
         type: { _like: "%skill%" }
-        object: { type: { _eq: "project" } }
       }
       order_by: [{ type: asc }, { createdAt: desc }]
       distinct_on: type
@@ -131,42 +287,60 @@ export const GET_USER_SKILLS = `
       amount
       type
       createdAt
-    }
-  }
-`;
-
-// ============================================================================
-// AUDIT QUERIES
-// ============================================================================
-
-// Get audit status - following reference pattern
-export const GET_AUDIT_STATUS = `
-  query GetAuditStatus {
-    user {
-      validAudits: audits_aggregate(where: { grade: { _gte: 1 } }) {
-        nodes {
-          group {
-            captainLogin
-            path
-          }
-        }
-      }
-      failedAudits: audits_aggregate(where: { grade: { _lt: 1 } }) {
-        nodes {
-          group {
-            captainLogin
-            path
-          }
-        }
+      object {
+        name
+        type
       }
     }
   }
 `;
 
-// Get audit ratio information
+// ============================================================================
+// AUDIT QUERIES - CORRECTED TO MATCH ACTUAL SCHEMA
+// ============================================================================
+
+// Get completed audits - from validated audit/basic.graphql
+export const GET_COMPLETED_AUDITS = `
+  query GetCompletedAudits {
+    audit(
+      where: { resultId: { _is_null: false } }
+      order_by: { createdAt: desc }
+      limit: 20
+    ) {
+      id
+      grade
+      createdAt
+      updatedAt
+      attrs
+      version
+      endAt
+      auditor {
+        id
+        login
+        firstName
+        lastName
+        campus
+      }
+      group {
+        id
+        status
+        path
+        campus
+        object {
+          id
+          name
+          type
+          attrs
+        }
+      }
+    }
+  }
+`;
+
+// Get audit ratio information - simplified to use basic user fields
 export const GET_AUDIT_RATIO = `
   query GetAuditRatio {
-    user {
+    user(limit: 1) {
       auditRatio
       totalUp
       totalDown
@@ -225,33 +399,40 @@ export const GET_USER_RESULTS = `
 `;
 
 // ============================================================================
-// GROUP AND COLLABORATION QUERIES
+// GROUP AND COLLABORATION QUERIES - CORRECTED SCHEMA
 // ============================================================================
 
-// Get user groups and leadership information
+// Get user groups - corrected to use actual schema fields
 export const GET_USER_GROUPS = `
   query GetUserGroups($userLogin: String!) {
     group(
-      where: { 
+      where: {
         captainLogin: { _eq: $userLogin }
-        object: { type: { _eq: "project" } }
         status: { _eq: finished }
       }
+      order_by: { createdAt: desc }
+      limit: 20
     ) {
       id
       path
       status
       createdAt
+      campus
       object {
         name
         type
+        attrs
       }
-      members {
-        userLogin
-        user {
-          firstName
-          lastName
-        }
+      captain {
+        id
+        login
+        firstName
+        lastName
+      }
+      event {
+        id
+        path
+        campus
       }
     }
   }
@@ -305,14 +486,55 @@ export const GET_USERS_ABOVE_LEVEL_IN_COHORT = `
 `;
 
 // ============================================================================
-// COMPREHENSIVE DASHBOARD QUERY
+// PARAMETERIZED QUERIES (Require variables)
 // ============================================================================
 
-// Main dashboard query combining essential data
-export const GET_DASHBOARD_DATA = `
-  query GetDashboardData($userLogin: String!) {
-    # User basic information
-    user {
+// Get user info by login - from validated user queries
+export const GET_USER_INFO = `
+  query GetUserInfo($userLogin: String!) {
+    user(where: { login: { _eq: $userLogin } }) {
+      id
+      login
+      firstName
+      lastName
+      auditRatio
+      totalUp
+      totalDown
+      campus
+      profile
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Get user by ID - from validated user queries
+export const GET_USER_BY_ID = `
+  query GetUserById($userId: Int!) {
+    user_by_pk(id: $userId) {
+      id
+      login
+      firstName
+      lastName
+      auditRatio
+      totalUp
+      totalDown
+      campus
+      profile
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Get users by campus - from validated user queries
+export const GET_USERS_BY_CAMPUS = `
+  query GetUsersByCampus($campus: String!) {
+    user(
+      where: { campus: { _eq: $campus } }
+      order_by: { auditRatio: desc }
+      limit: 20
+    ) {
       id
       login
       firstName
@@ -322,10 +544,59 @@ export const GET_DASHBOARD_DATA = `
       totalUp
       totalDown
     }
-    
+  }
+`;
+
+// Get transactions by type - from validated transaction queries
+export const GET_TRANSACTIONS_BY_TYPE = `
+  query GetTransactionsByType($type: String!) {
+    transaction(
+      where: { type: { _eq: $type } }
+      order_by: { createdAt: desc }
+      limit: 20
+    ) {
+      id
+      type
+      amount
+      createdAt
+      user {
+        login
+        firstName
+        lastName
+      }
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// ============================================================================
+// COMPREHENSIVE DASHBOARD QUERY - CORRECTED
+// ============================================================================
+
+// Main dashboard query combining essential data
+export const GET_DASHBOARD_DATA = `
+  query GetDashboardData($userLogin: String!) {
+    # User basic information
+    user(where: { login: { _eq: $userLogin } }) {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+      profile
+      createdAt
+      updatedAt
+    }
+
     # User level information
     event_user(
-      where: { 
+      where: {
         event: { path: { _eq: "/bahrain/bh-module" } }
         userLogin: { _eq: $userLogin }
       }
@@ -336,10 +607,10 @@ export const GET_DASHBOARD_DATA = `
         campus
       }
     }
-    
-    # Total XP
+
+    # Total XP for user
     transaction_aggregate(
-      where: { 
+      where: {
         userLogin: { _eq: $userLogin }
         type: { _eq: "xp" }
       }
@@ -348,6 +619,180 @@ export const GET_DASHBOARD_DATA = `
         sum {
           amount
         }
+        count
+      }
+    }
+  }
+`;
+
+// Get all roles - from validated misc/roles.graphql
+export const GET_ALL_ROLES = `
+  query GetAllRoles {
+    transaction(
+      distinct_on: type
+      where: { type: { _like: "%role%" } }
+      order_by: { type: asc }
+    ) {
+      type
+      amount
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get role statistics - from validated misc/roles.graphql
+export const GET_ROLE_STATISTICS = `
+  query GetRoleStatistics {
+    transaction_aggregate(
+      where: { type: { _like: "%role%" } }
+    ) {
+      aggregate {
+        count
+        sum {
+          amount
+        }
+        avg {
+          amount
+        }
+        max {
+          amount
+        }
+        min {
+          amount
+        }
+      }
+    }
+    transaction(
+      where: { type: { _like: "%role%" } }
+      distinct_on: type
+      order_by: { type: asc }
+    ) {
+      type
+      amount
+    }
+  }
+`;
+
+// Get root objects - from validated object/basic.graphql
+export const GET_ROOT_OBJECTS = `
+  query GetRootObjects {
+    object(
+      order_by: { createdAt: desc }
+      limit: 50
+    ) {
+      id
+      name
+      type
+      attrs
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Get leaf objects - from validated object/basic.graphql
+export const GET_LEAF_OBJECTS = `
+  query GetLeafObjects {
+    object(
+      where: { type: { _eq: "exercise" } }
+      order_by: { createdAt: desc }
+      limit: 50
+    ) {
+      id
+      name
+      type
+      attrs
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+// Get completed progress - from validated progress/basic.graphql
+export const GET_COMPLETED_PROGRESS = `
+  query GetCompletedProgress {
+    progress(
+      where: { isDone: { _eq: true } }
+      order_by: { updatedAt: desc }
+      limit: 50
+    ) {
+      id
+      grade
+      isDone
+      path
+      createdAt
+      updatedAt
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+      object {
+        id
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get in progress records - from validated progress/basic.graphql
+export const GET_IN_PROGRESS = `
+  query GetInProgress {
+    progress(
+      where: { isDone: { _eq: false } }
+      order_by: { createdAt: desc }
+      limit: 50
+    ) {
+      id
+      grade
+      isDone
+      path
+      createdAt
+      updatedAt
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+      object {
+        id
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get latest results - from validated result/basic.graphql
+export const GET_LATEST_RESULTS = `
+  query GetLatestResults {
+    result(
+      order_by: { createdAt: desc }
+      limit: 50
+    ) {
+      id
+      grade
+      type
+      path
+      createdAt
+      updatedAt
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+      object {
+        id
+        name
+        type
       }
     }
   }

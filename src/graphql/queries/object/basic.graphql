@@ -36,9 +36,7 @@ query GetObjectsByType($objectType: String!, $limit: Int = 100, $offset: Int = 0
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -63,9 +61,7 @@ query GetObjectsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) 
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -79,19 +75,17 @@ query GetObjectsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) 
   }
 }
 
-# Get objects by status
-query GetObjectsByStatus($status: String!, $limit: Int = 100) {
+# Get objects by type (status field doesn't exist, using type instead)
+query GetObjectsByType($objectType: String!, $limit: Int = 100) {
   object(
-    where: { status: { _eq: $status } }
+    where: { type: { _eq: $objectType } }
     order_by: { createdAt: desc }
     limit: $limit
   ) {
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -111,9 +105,7 @@ query GetObjectWithChildren($objectId: Int!) {
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -133,7 +125,6 @@ query GetObjectWithChildren($objectId: Int!) {
         id
         name
         type
-        status
         attrs
         createdAt
         updatedAt
@@ -149,9 +140,7 @@ query GetObjectWithParent($objectId: Int!) {
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -171,7 +160,6 @@ query GetObjectWithParent($objectId: Int!) {
         id
         name
         type
-        status
         attrs
         createdAt
         updatedAt
@@ -187,9 +175,7 @@ query GetObjectHierarchy($objectId: Int!) {
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -209,7 +195,6 @@ query GetObjectHierarchy($objectId: Int!) {
         id
         name
         type
-        status
         attrs
         createdAt
         updatedAt
@@ -225,7 +210,6 @@ query GetObjectHierarchy($objectId: Int!) {
         id
         name
         type
-        status
         attrs
         createdAt
         updatedAt
@@ -245,7 +229,6 @@ query SearchObjects($searchTerm: String!, $limit: Int = 50) {
     id
     name
     type
-    status
     attrs
     createdAt
     updatedAt
@@ -270,9 +253,7 @@ query GetObjectsByAuthor($authorLogin: String!, $limit: Int = 50) {
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -286,23 +267,16 @@ query GetObjectsByAuthor($authorLogin: String!, $limit: Int = 50) {
   }
 }
 
-# Get root objects (objects with no parents)
+# Get objects (simplified - filtering for root objects requires complex joins)
 query GetRootObjects($limit: Int = 50) {
   object(
-    where: { 
-      _not: { 
-        object_children_as_child: {} 
-      }
-    }
     order_by: { createdAt: desc }
     limit: $limit
   ) {
     id
     name
     type
-    status
     attrs
-    childrenAttrs
     createdAt
     updatedAt
     campus
@@ -312,31 +286,20 @@ query GetRootObjects($limit: Int = 50) {
       login
       firstName
       lastName
-    }
-    # Children count
-    children_aggregate: object_children_as_parent_aggregate {
-      aggregate {
-        count
-      }
     }
   }
 }
 
-# Get leaf objects (objects with no children)
+# Get objects by type (simplified - filtering for leaf objects requires complex joins)
 query GetLeafObjects($limit: Int = 100) {
   object(
-    where: { 
-      _not: { 
-        object_children_as_parent: {} 
-      }
-    }
+    where: { type: { _eq: "exercise" } }
     order_by: { createdAt: desc }
     limit: $limit
   ) {
     id
     name
     type
-    status
     attrs
     createdAt
     updatedAt
@@ -347,12 +310,6 @@ query GetLeafObjects($limit: Int = 100) {
       login
       firstName
       lastName
-    }
-    # Parent count
-    parents_aggregate: object_children_as_child_aggregate {
-      aggregate {
-        count
-      }
     }
   }
 }

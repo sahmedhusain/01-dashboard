@@ -12,53 +12,80 @@ export { GraphQLService, graphqlService } from './dataService.js';
 export { default as client } from './client.js';
 
 // ============================================================================
-// QUERY CATEGORIES FOR EASY REFERENCE
+// QUERY CATEGORIES FOR EASY REFERENCE - UPDATED
 // ============================================================================
 
-// User-related queries
+// User-related queries (corrected to match actual exports)
 export const USER_QUERIES = [
+  'GET_USER_STATISTICS',
+  'GET_USERS_WITH_HIGH_AUDIT_RATIO',
+  'GET_USERS_WITH_PAGINATION',
   'GET_USER_INFO',
-  'GET_USER_PROFILE',
-  'GET_USER_EVENTS_DETAILED',
-  'GET_USER_LABELS',
-  'GET_USER_MATCHES_DETAILED',
-  'GET_USER_OBJECT_AVAILABILITIES',
-  'GET_USER_PROGRESS_BY_PATH',
-  'GET_USER_SESSIONS',
-  'GET_USER_XPS',
-  'GET_USER_CREATED_OBJECTS',
+  'GET_USER_BY_ID',
+  'GET_USERS_BY_CAMPUS',
+  'GET_USER_LEVEL',
+  'GET_USER_PROGRESS',
+  'GET_USER_RESULTS',
+  'GET_USER_GROUPS',
 ];
 
-// Analytics queries
+// Analytics queries (corrected)
 export const ANALYTICS_QUERIES = [
-  'GET_COMPREHENSIVE_USER_ANALYTICS',
-  'GET_BASIC_USER_DASHBOARD',
-  'GET_PERFORMANCE_ANALYTICS',
-  'GET_XP_STATISTICS',
-  'GET_PROJECT_STATISTICS',
+  'GET_DASHBOARD_DATA',
+  'GET_USER_STATISTICS',
+  'GET_TOP_XP_EARNERS',
+  'GET_XP_TIMELINE',
+  'GET_AUDIT_TIMELINE',
+  'GET_PROJECT_RESULTS',
 ];
 
-// Transaction queries
+// Transaction queries (corrected)
 export const TRANSACTION_QUERIES = [
-  'GET_USER_TRANSACTIONS',
-  'GET_TOP_TRANSACTION',
+  'GET_TRANSACTIONS_BY_TYPE',
+  'GET_TOP_XP_EARNERS',
   'GET_TOTAL_XP',
-  'GET_USER_TECHNOLOGIES',
-  'GET_USER_TECHNICAL_SKILLS',
-  'GET_XP_BY_TIME_PERIOD',
-  'GET_XP_BY_PROJECT_TYPE',
-  'GET_SKILL_PROGRESSION',
-  'GET_CAMPUS_TRANSACTION_STATS',
+  'GET_XP_BY_PROJECT',
+  'GET_XP_TIMELINE',
 ];
 
-// Audit queries
+// Audit queries (corrected)
 export const AUDIT_QUERIES = [
-  'GET_AUDIT_STATUS',
+  'GET_PENDING_AUDITS',
+  'GET_COMPLETED_AUDITS',
   'GET_AUDIT_RATIO',
-  'GET_USER_AUDITS',
-  'GET_AUDIT_PERFORMANCE_TIMELINE',
-  'GET_AUDIT_QUALITY_METRICS',
-  'GET_AUDIT_PEER_COMPARISON',
+  'GET_AUDIT_TIMELINE',
+];
+
+// Group queries (new)
+export const GROUP_QUERIES = [
+  'GET_ACTIVE_GROUPS',
+  'GET_USER_GROUPS',
+];
+
+// Role queries (new)
+export const ROLE_QUERIES = [
+  'GET_ALL_ROLES',
+  'GET_ROLE_STATISTICS',
+];
+
+// Object queries (new)
+export const OBJECT_QUERIES = [
+  'GET_ROOT_OBJECTS',
+  'GET_LEAF_OBJECTS',
+];
+
+// Enhanced progress queries (new)
+export const ENHANCED_PROGRESS_QUERIES = [
+  'GET_COMPLETED_PROGRESS',
+  'GET_IN_PROGRESS',
+  'GET_USER_PROGRESS',
+  'GET_USER_RESULTS',
+];
+
+// Enhanced result queries (new)
+export const ENHANCED_RESULT_QUERIES = [
+  'GET_LATEST_RESULTS',
+  'GET_PROJECT_RESULTS',
 ];
 
 // Progress and result queries
@@ -124,87 +151,83 @@ export const OPTIMIZED_QUERIES = [
 ];
 
 // ============================================================================
-// QUERY METADATA FOR OPTIMIZATION
+// QUERY METADATA FOR OPTIMIZATION - UPDATED
 // ============================================================================
 
 export const QUERY_METADATA = {
   // High-priority queries for dashboard
   DASHBOARD_QUERIES: [
-    'GET_BASIC_USER_DASHBOARD',
+    'GET_DASHBOARD_DATA',
     'GET_USER_INFO',
-    'GET_USER_PROFILE',
+    'GET_USER_STATISTICS',
+    'GET_TOTAL_XP',
   ],
-  
+
   // Heavy queries that should be cached aggressively
   HEAVY_QUERIES: [
-    'GET_COMPREHENSIVE_USER_ANALYTICS',
-    'GET_PERFORMANCE_ANALYTICS',
-    'GET_USER_TRANSACTIONS',
-    'GET_USER_AUDITS',
+    'GET_DASHBOARD_DATA',
+    'GET_TOP_XP_EARNERS',
+    'GET_XP_TIMELINE',
+    'GET_AUDIT_TIMELINE',
+    'GET_PROJECT_RESULTS',
   ],
-  
+
   // Real-time queries that need fresh data
   REALTIME_QUERIES: [
-    'GET_AUDIT_STATUS',
-    'GET_USER_SESSIONS',
-    'GET_PROGRESS_TIMELINE',
+    'GET_PENDING_AUDITS',
+    'GET_ACTIVE_GROUPS',
+    'GET_USER_PROGRESS',
   ],
-  
+
   // Queries suitable for background loading
   BACKGROUND_QUERIES: [
-    'GET_USER_MATCHES_DETAILED',
-    'GET_USER_OBJECT_AVAILABILITIES',
-    'GET_CAMPUS_TRANSACTION_STATS',
-    'GET_AUDIT_PEER_COMPARISON',
+    'GET_COMPLETED_AUDITS',
+    'GET_USERS_WITH_HIGH_AUDIT_RATIO',
+    'GET_USERS_WITH_PAGINATION',
+    'GET_USER_RESULTS',
   ],
 };
 
 // ============================================================================
-// QUERY COMPLEXITY RATINGS
+// QUERY COMPLEXITY RATINGS - UPDATED
 // ============================================================================
 
 export const QUERY_COMPLEXITY = {
   LOW: [
-    'GET_MINIMAL_USER_DASHBOARD',
     'GET_USER_INFO',
-    'GET_TOP_TRANSACTION',
+    'GET_USER_BY_ID',
     'GET_TOTAL_XP',
-    'GET_AUDIT_STATUS',
-    'SEARCH_USERS_OPTIMIZED',
-    'GET_BATCH_USER_DATA',
-    'PERFORMANCE_TEST_QUERY',
+    'GET_AUDIT_RATIO',
+    'GET_USER_LEVEL',
+    'GET_USERS_BY_CAMPUS',
   ],
 
   MEDIUM: [
-    'GET_OPTIMIZED_USER_PROFILE',
-    'GET_BASIC_USER_DASHBOARD',
-    'GET_USER_LABELS',
-    'GET_USER_SESSIONS',
-    'GET_XP_BY_TIME_PERIOD',
-    'GET_PROGRESS_BY_PATH',
-    'GET_STREAMLINED_ANALYTICS',
-    'GET_LIGHTWEIGHT_PROGRESS',
-    'GET_EFFICIENT_LEADERBOARD',
+    'GET_USER_STATISTICS',
+    'GET_USERS_WITH_PAGINATION',
+    'GET_ACTIVE_GROUPS',
+    'GET_PENDING_AUDITS',
+    'GET_COMPLETED_AUDITS',
+    'GET_USER_SKILLS',
+    'GET_TRANSACTIONS_BY_TYPE',
   ],
 
   HIGH: [
-    'GET_COMPREHENSIVE_USER_ANALYTICS',
-    'GET_PERFORMANCE_ANALYTICS',
-    'GET_USER_EVENTS_DETAILED',
-    'GET_PAGINATED_TRANSACTIONS_OPTIMIZED',
-    'GET_STREAMLINED_AUDIT_HISTORY',
+    'GET_DASHBOARD_DATA',
+    'GET_TOP_XP_EARNERS',
+    'GET_XP_BY_PROJECT',
     'GET_USER_PROGRESS',
     'GET_USER_RESULTS',
-    'GET_OPTIMIZED_XP_TIMELINE',
+    'GET_USER_GROUPS',
+    'GET_USERS_WITH_HIGH_AUDIT_RATIO',
   ],
 
   VERY_HIGH: [
-    'GET_USER_MATCHES_DETAILED',
-    'GET_SKILL_PROGRESSION',
-    'GET_AUDIT_PERFORMANCE_TIMELINE',
-    'GET_LEARNING_PATH_PROGRESS',
-    'GET_COLLABORATION_ANALYTICS',
-    'GET_TIME_BASED_ANALYTICS',
+    'GET_XP_TIMELINE',
+    'GET_AUDIT_TIMELINE',
+    'GET_PROJECT_RESULTS',
+    'GET_USERS_ABOVE_LEVEL',
+    'GET_USERS_ABOVE_LEVEL_IN_COHORT',
   ],
 };
 
@@ -215,49 +238,50 @@ export const QUERY_COMPLEXITY = {
 export const USAGE_PATTERNS = {
   // For initial page load - optimized for speed
   INITIAL_LOAD: [
-    'GET_MINIMAL_USER_DASHBOARD',
     'GET_USER_INFO',
+    'GET_TOTAL_XP',
+    'GET_USER_STATISTICS',
   ],
 
   // For profile page - comprehensive but cached
   PROFILE_PAGE: [
-    'GET_OPTIMIZED_USER_PROFILE',
-    'GET_STREAMLINED_ANALYTICS',
-    'GET_XP_STATISTICS',
+    'GET_DASHBOARD_DATA',
+    'GET_USER_SKILLS',
+    'GET_AUDIT_RATIO',
   ],
 
   // For analytics dashboard - performance optimized
   ANALYTICS_DASHBOARD: [
-    'GET_STREAMLINED_ANALYTICS',
-    'GET_PROJECT_STATISTICS',
+    'GET_TOP_XP_EARNERS',
+    'GET_USER_STATISTICS',
     'GET_AUDIT_RATIO',
-    'GET_LIGHTWEIGHT_PROGRESS',
+    'GET_ACTIVE_GROUPS',
   ],
 
   // For detailed views - paginated and optimized
   DETAILED_VIEWS: [
-    'GET_PAGINATED_TRANSACTIONS_OPTIMIZED',
-    'GET_STREAMLINED_AUDIT_HISTORY',
-    'GET_LIGHTWEIGHT_PROGRESS',
+    'GET_XP_TIMELINE',
+    'GET_AUDIT_TIMELINE',
+    'GET_PROJECT_RESULTS',
     'GET_USER_RESULTS',
   ],
 
   // For comparison features
   COMPARISON_FEATURES: [
-    'GET_CAMPUS_TRANSACTION_STATS',
-    'GET_AUDIT_PEER_COMPARISON',
-    'GET_SKILL_PROGRESSION',
+    'GET_USERS_WITH_HIGH_AUDIT_RATIO',
+    'GET_USERS_BY_CAMPUS',
+    'GET_TOP_XP_EARNERS',
   ],
 
-  // For real-time features
-  REAL_TIME: [
-    'SUBSCRIBE_USER_PROFILE',
-    'SUBSCRIBE_NEW_XP_TRANSACTIONS',
-    'SUBSCRIBE_USER_NOTIFICATIONS',
-    'SUBSCRIBE_CAMPUS_ACTIVITY',
+  // For administrative views
+  ADMIN_VIEWS: [
+    'GET_USERS_WITH_PAGINATION',
+    'GET_PENDING_AUDITS',
+    'GET_COMPLETED_AUDITS',
+    'GET_ACTIVE_GROUPS',
   ],
 
-  // NOTE: Data modification features removed - read-only implementation
+  // NOTE: Real-time features and data modification removed - read-only implementation
 };
 
 // ============================================================================
@@ -282,10 +306,11 @@ export function getQueriesByCategory(category) {
     analytics: ANALYTICS_QUERIES,
     transaction: TRANSACTION_QUERIES,
     audit: AUDIT_QUERIES,
-    progress: PROGRESS_QUERIES,
-    core: CORE_ENTITY_QUERIES,
-    advanced: ADVANCED_ANALYTICS_QUERIES,
-    optimized: OPTIMIZED_QUERIES,
+    group: GROUP_QUERIES,
+    role: ROLE_QUERIES,
+    object: OBJECT_QUERIES,
+    progress: ENHANCED_PROGRESS_QUERIES,
+    result: ENHANCED_RESULT_QUERIES,
     // NOTE: mutations and subscriptions removed for current read-only implementation
   };
 

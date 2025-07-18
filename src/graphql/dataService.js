@@ -1,11 +1,14 @@
 import {
-  GET_USER_INFO,
-  GET_USER_PROFILE,
+  GET_USER_STATISTICS,
+  GET_USERS_WITH_PAGINATION,
+  GET_ACTIVE_GROUPS,
+  GET_PENDING_AUDITS,
+  GET_COMPLETED_AUDITS,
+  GET_TOP_XP_EARNERS,
   GET_TOTAL_XP,
   GET_USER_LEVEL,
   GET_XP_BY_PROJECT,
   GET_USER_SKILLS,
-  GET_AUDIT_STATUS,
   GET_AUDIT_RATIO,
   GET_USER_PROGRESS,
   GET_USER_RESULTS,
@@ -16,6 +19,17 @@ import {
   GET_XP_TIMELINE,
   GET_AUDIT_TIMELINE,
   GET_PROJECT_RESULTS,
+  GET_USER_INFO,
+  GET_USER_BY_ID,
+  GET_USERS_BY_CAMPUS,
+  GET_TRANSACTIONS_BY_TYPE,
+  GET_ALL_ROLES,
+  GET_ROLE_STATISTICS,
+  GET_ROOT_OBJECTS,
+  GET_LEAF_OBJECTS,
+  GET_COMPLETED_PROGRESS,
+  GET_IN_PROGRESS,
+  GET_LATEST_RESULTS,
 } from './coreQueries.js';
 
 // ============================================================================
@@ -69,11 +83,11 @@ export class GraphQLService {
   }
 
   // ============================================================================
-  // USER INFORMATION METHODS
+  // USER INFORMATION METHODS - UPDATED FOR CORRECTED SCHEMA
   // ============================================================================
 
-  async getUserInfo() {
-    const [data, error] = await this.#fetchData(GET_USER_INFO);
+  async getUserInfo(userLogin) {
+    const [data, error] = await this.#fetchData(GET_USER_INFO, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -83,13 +97,43 @@ export class GraphQLService {
     return [null, new Error("'user' key not in response")];
   }
 
-  async getUserProfile() {
-    const [data, error] = await this.#fetchData(GET_USER_PROFILE);
+  async getUserById(userId) {
+    const [data, error] = await this.#fetchData(GET_USER_BY_ID, { userId });
     if (error !== null) {
       return [null, error];
     }
-    if ('user' in data && Array.isArray(data.user)) {
-      return [data.user[0] || null, null];
+    if ('user_by_pk' in data) {
+      return [data.user_by_pk, null];
+    }
+    return [null, new Error("'user_by_pk' key not in response")];
+  }
+
+  async getUserStatistics() {
+    const [data, error] = await this.#fetchData(GET_USER_STATISTICS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('user_aggregate' in data) {
+      return [data.user_aggregate, null];
+    }
+    return [null, new Error("'user_aggregate' key not in response")];
+  }
+
+  async getUsersWithPagination() {
+    const [data, error] = await this.#fetchData(GET_USERS_WITH_PAGINATION);
+    if (error !== null) {
+      return [null, error];
+    }
+    return [data, null];
+  }
+
+  async getUsersByCampus(campus) {
+    const [data, error] = await this.#fetchData(GET_USERS_BY_CAMPUS, { campus });
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('user' in data) {
+      return [data.user, null];
     }
     return [null, new Error("'user' key not in response")];
   }
@@ -153,18 +197,29 @@ export class GraphQLService {
   }
 
   // ============================================================================
-  // AUDIT METHODS
+  // AUDIT METHODS - UPDATED FOR CORRECTED SCHEMA
   // ============================================================================
 
-  async getAuditStatus() {
-    const [data, error] = await this.#fetchData(GET_AUDIT_STATUS);
+  async getPendingAudits() {
+    const [data, error] = await this.#fetchData(GET_PENDING_AUDITS);
     if (error !== null) {
       return [null, error];
     }
-    if ('user' in data && Array.isArray(data.user)) {
-      return [data.user[0] || null, null];
+    if ('audit' in data) {
+      return [data.audit, null];
     }
-    return [null, new Error("'user' key not in response")];
+    return [null, new Error("'audit' key not in response")];
+  }
+
+  async getCompletedAudits() {
+    const [data, error] = await this.#fetchData(GET_COMPLETED_AUDITS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('audit' in data) {
+      return [data.audit, null];
+    }
+    return [null, new Error("'audit' key not in response")];
   }
 
   async getAuditRatio() {
@@ -211,8 +266,19 @@ export class GraphQLService {
   }
 
   // ============================================================================
-  // GROUP AND COLLABORATION METHODS
+  // GROUP AND COLLABORATION METHODS - UPDATED
   // ============================================================================
+
+  async getActiveGroups() {
+    const [data, error] = await this.#fetchData(GET_ACTIVE_GROUPS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('group' in data) {
+      return [data.group, null];
+    }
+    return [null, new Error("'group' key not in response")];
+  }
 
   async getUserGroups(userLogin) {
     const [data, error] = await this.#fetchData(
@@ -226,6 +292,119 @@ export class GraphQLService {
       return [data.group, null];
     }
     return [null, new Error("'group' key not in response")];
+  }
+
+  // ============================================================================
+  // TRANSACTION METHODS - UPDATED
+  // ============================================================================
+
+  async getTopXPEarners() {
+    const [data, error] = await this.#fetchData(GET_TOP_XP_EARNERS);
+    if (error !== null) {
+      return [null, error];
+    }
+    return [data, null];
+  }
+
+  async getTransactionsByType(type) {
+    const [data, error] = await this.#fetchData(GET_TRANSACTIONS_BY_TYPE, { type });
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('transaction' in data) {
+      return [data.transaction, null];
+    }
+    return [null, new Error("'transaction' key not in response")];
+  }
+
+  // ============================================================================
+  // ROLE METHODS
+  // ============================================================================
+
+  async getAllRoles() {
+    const [data, error] = await this.#fetchData(GET_ALL_ROLES);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('transaction' in data) {
+      return [data.transaction, null];
+    }
+    return [null, new Error("'transaction' key not in response")];
+  }
+
+  async getRoleStatistics() {
+    const [data, error] = await this.#fetchData(GET_ROLE_STATISTICS);
+    if (error !== null) {
+      return [null, error];
+    }
+    return [data, null];
+  }
+
+  // ============================================================================
+  // OBJECT METHODS
+  // ============================================================================
+
+  async getRootObjects() {
+    const [data, error] = await this.#fetchData(GET_ROOT_OBJECTS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('object' in data) {
+      return [data.object, null];
+    }
+    return [null, new Error("'object' key not in response")];
+  }
+
+  async getLeafObjects() {
+    const [data, error] = await this.#fetchData(GET_LEAF_OBJECTS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('object' in data) {
+      return [data.object, null];
+    }
+    return [null, new Error("'object' key not in response")];
+  }
+
+  // ============================================================================
+  // ENHANCED PROGRESS METHODS
+  // ============================================================================
+
+  async getCompletedProgress() {
+    const [data, error] = await this.#fetchData(GET_COMPLETED_PROGRESS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('progress' in data) {
+      return [data.progress, null];
+    }
+    return [null, new Error("'progress' key not in response")];
+  }
+
+  async getInProgress() {
+    const [data, error] = await this.#fetchData(GET_IN_PROGRESS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('progress' in data) {
+      return [data.progress, null];
+    }
+    return [null, new Error("'progress' key not in response")];
+  }
+
+  // ============================================================================
+  // ENHANCED RESULT METHODS
+  // ============================================================================
+
+  async getLatestResults() {
+    const [data, error] = await this.#fetchData(GET_LATEST_RESULTS);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('result' in data) {
+      return [data.result, null];
+    }
+    return [null, new Error("'result' key not in response")];
   }
 
   // ============================================================================

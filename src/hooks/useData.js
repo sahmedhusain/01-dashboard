@@ -1,21 +1,12 @@
 // ============================================================================
-// SIMPLIFIED DATA HOOKS EXPORTS
+// DATA HOOKS - UNIFIED EXPORT
 // ============================================================================
 
-// Export all GraphQL data hooks
+// Export all individual GraphQL data hooks
 export * from './useGraphQLData.js';
 
-// Legacy context hook (if still needed)
-import { useContext } from 'react';
-import { DataContext } from '../contexts/DataContext';
+// Export context hook for dashboard components
+export { useData } from '../contexts/DataContext.jsx';
 
-// Hook to use data context
-export const useData = () => {
-  const context = useContext(DataContext);
-  if (!context) {
-    throw new Error('useData must be used within a DataProvider');
-  }
-  return context;
-};
-
-export default useData;
+// Export DataProvider for convenience
+export { DataProvider } from '../contexts/DataContext.jsx';

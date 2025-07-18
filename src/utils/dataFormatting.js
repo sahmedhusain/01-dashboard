@@ -80,27 +80,38 @@ export const getUserEmail = (user) => {
 };
 
 /**
- * Get avatar URL for user
- * @param {Object} user - User object
- * @returns {string} Avatar URL or default
+ * Get avatar URL for user from GraphQL endpoint
+ * @param {Object} user - User object from GraphQL query
+ * @returns {string} Avatar URL or fallback
  */
 export const getAvatarUrl = (user) => {
-  if (!user) return '/default-avatar.png';
-  
-  // If user has an avatar URL, use it
+  if (!user) return null;
+
+  // Check for avatar in user.profile object (primary source from GraphQL)
+  if (user.profile && typeof user.profile === 'object') {
+    // Common avatar field names in profile
+    if (user.profile.avatar) return user.profile.avatar;
+    if (user.profile.avatarUrl) return user.profile.avatarUrl;
+    if (user.profile.picture) return user.profile.picture;
+    if (user.profile.image) return user.profile.image;
+    if (user.profile.photo) return user.profile.photo;
+  }
+
+  // Check for direct avatar field on user object
   if (user.avatar) return user.avatar;
-  
-  // Generate a simple avatar based on user initials
-  const displayName = getUserDisplayName(user);
-  const initials = displayName
-    .split(' ')
-    .map(name => name.charAt(0))
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-  
-  // Return a placeholder URL with initials
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=6366f1&color=fff&size=128`;
+  if (user.avatarUrl) return user.avatarUrl;
+  if (user.picture) return user.picture;
+  if (user.image) return user.image;
+
+  // Try platform-specific avatar endpoints
+  if (user.login) {
+    // Try GitHub avatar pattern (common fallback for reboot01 users)
+    // The Avatar component will handle 404s gracefully and fall back to initials
+    return `https://github.com/${user.login}.png?size=128`;
+  }
+
+  // No avatar found - return null to trigger fallback in Avatar component
+  return null;
 };
 
 // ============================================================================

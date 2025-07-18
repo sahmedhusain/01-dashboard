@@ -57,7 +57,6 @@ query GetResultById($resultId: Int!) {
       id
       name
       type
-      status
       attrs
       campus
     }
@@ -111,8 +110,8 @@ query GetUserResults($userLogin: String!, $limit: Int = 100, $offset: Int = 0) {
       id
       name
       type
-      status
       attrs
+      campus
     }
     # Event context
     event {
@@ -212,8 +211,8 @@ query GetResultsByType($resultType: String!, $limit: Int = 100, $offset: Int = 0
       id
       name
       type
-      status
       attrs
+      campus
     }
     # Event context
     event {
@@ -261,8 +260,8 @@ query GetResultsByEvent($eventId: Int!, $limit: Int = 100) {
       id
       name
       type
-      status
       attrs
+      campus
     }
   }
 }
@@ -305,8 +304,8 @@ query GetLatestResults($limit: Int = 100, $offset: Int = 0) {
       id
       name
       type
-      status
       attrs
+      campus
     }
     # Event context
     event {
@@ -349,8 +348,8 @@ query GetResultsByGradeRange($minGrade: numeric!, $maxGrade: numeric!, $limit: I
       id
       name
       type
-      status
       attrs
+      campus
     }
     # Event context
     event {
@@ -399,8 +398,8 @@ query GetResultsByCampus($campus: String!, $limit: Int = 100, $offset: Int = 0) 
       id
       name
       type
-      status
       attrs
+      campus
     }
     # Event context
     event {
@@ -443,8 +442,8 @@ query GetResultsByDateRange($startDate: timestamptz!, $endDate: timestamptz!, $l
       id
       name
       type
-      status
       attrs
+      campus
     }
     # Event context
     event {

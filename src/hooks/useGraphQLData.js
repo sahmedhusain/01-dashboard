@@ -46,17 +46,41 @@ export const useGraphQLData = (fetchFunction, dependencies = []) => {
 };
 
 // ============================================================================
-// SPECIFIC DATA HOOKS
+// SPECIFIC DATA HOOKS - UPDATED FOR CORRECTED SCHEMA
 // ============================================================================
 
-// Hook for user basic information
-export const useUserInfo = () => {
-  return useGraphQLData(() => graphqlService.getUserInfo());
+// Hook for user basic information (requires userLogin parameter)
+export const useUserInfo = (userLogin) => {
+  return useGraphQLData(
+    () => graphqlService.getUserInfo(userLogin),
+    [userLogin]
+  );
 };
 
-// Hook for user profile data
-export const useUserProfile = () => {
-  return useGraphQLData(() => graphqlService.getUserProfile());
+// Hook for user by ID
+export const useUserById = (userId) => {
+  return useGraphQLData(
+    () => graphqlService.getUserById(userId),
+    [userId]
+  );
+};
+
+// Hook for user statistics (parameter-free)
+export const useUserStatistics = () => {
+  return useGraphQLData(() => graphqlService.getUserStatistics());
+};
+
+// Hook for users with pagination (parameter-free)
+export const useUsersWithPagination = () => {
+  return useGraphQLData(() => graphqlService.getUsersWithPagination());
+};
+
+// Hook for users by campus
+export const useUsersByCampus = (campus) => {
+  return useGraphQLData(
+    () => graphqlService.getUsersByCampus(campus),
+    [campus]
+  );
 };
 
 // Hook for total XP
@@ -85,14 +109,88 @@ export const useUserSkills = () => {
   return useGraphQLData(() => graphqlService.getUserSkills());
 };
 
-// Hook for audit status
-export const useAuditStatus = () => {
-  return useGraphQLData(() => graphqlService.getAuditStatus());
+// Hook for pending audits (parameter-free)
+export const usePendingAudits = () => {
+  return useGraphQLData(() => graphqlService.getPendingAudits());
+};
+
+// Hook for completed audits (parameter-free)
+export const useCompletedAudits = () => {
+  return useGraphQLData(() => graphqlService.getCompletedAudits());
 };
 
 // Hook for audit ratio
 export const useAuditRatio = () => {
   return useGraphQLData(() => graphqlService.getAuditRatio());
+};
+
+// Hook for active groups (parameter-free)
+export const useActiveGroups = () => {
+  return useGraphQLData(() => graphqlService.getActiveGroups());
+};
+
+// Hook for top XP earners (parameter-free)
+export const useTopXPEarners = () => {
+  return useGraphQLData(() => graphqlService.getTopXPEarners());
+};
+
+// Hook for transactions by type
+export const useTransactionsByType = (type) => {
+  return useGraphQLData(
+    () => graphqlService.getTransactionsByType(type),
+    [type]
+  );
+};
+
+// ============================================================================
+// ROLE HOOKS
+// ============================================================================
+
+// Hook for all roles (parameter-free)
+export const useAllRoles = () => {
+  return useGraphQLData(() => graphqlService.getAllRoles());
+};
+
+// Hook for role statistics (parameter-free)
+export const useRoleStatistics = () => {
+  return useGraphQLData(() => graphqlService.getRoleStatistics());
+};
+
+// ============================================================================
+// OBJECT HOOKS
+// ============================================================================
+
+// Hook for root objects (parameter-free)
+export const useRootObjects = () => {
+  return useGraphQLData(() => graphqlService.getRootObjects());
+};
+
+// Hook for leaf objects (parameter-free)
+export const useLeafObjects = () => {
+  return useGraphQLData(() => graphqlService.getLeafObjects());
+};
+
+// ============================================================================
+// ENHANCED PROGRESS HOOKS
+// ============================================================================
+
+// Hook for completed progress (parameter-free)
+export const useCompletedProgress = () => {
+  return useGraphQLData(() => graphqlService.getCompletedProgress());
+};
+
+// Hook for in progress records (parameter-free)
+export const useInProgress = () => {
+  return useGraphQLData(() => graphqlService.getInProgress());
+};
+
+// ============================================================================
+// ENHANCED RESULT HOOKS
+// ============================================================================
+
+// Hook for latest results (parameter-free)
+export const useLatestResults = () => {
+  return useGraphQLData(() => graphqlService.getLatestResults());
 };
 
 // Hook for user progress with userId parameter
@@ -206,7 +304,7 @@ export const useDashboardData = (userLogin) => {
         [auditTimelineInfo, auditTimelineError],
         [projectResultsInfo, projectResultsError],
       ] = await Promise.all([
-        graphqlService.getUserInfo(),
+        graphqlService.getUserInfo(userLogin),
         graphqlService.getUserLevel(userLogin),
         graphqlService.getTotalXP(),
         graphqlService.getUserSkills(),

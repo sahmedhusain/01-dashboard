@@ -140,8 +140,8 @@ query GetUserCountByCampus {
 }
 
 # Get users with pagination
-query GetUsersWithPagination($limit: Int = 50, $offset: Int = 0, $orderBy: user_order_by = { login: asc }) {
-  user(limit: $limit, offset: $offset, order_by: [$orderBy]) {
+query GetUsersWithPagination($limit: Int = 50, $offset: Int = 0) {
+  user(limit: $limit, offset: $offset, order_by: { login: asc }) {
     id
     login
     firstName

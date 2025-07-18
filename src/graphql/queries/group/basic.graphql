@@ -345,7 +345,7 @@ query GetGroupsByCaptain($captainLogin: String!, $limit: Int = 50) {
 # Get active groups (working status)
 query GetActiveGroups($limit: Int = 100, $offset: Int = 0) {
   group(
-    where: { status: { _eq: "working" } }
+    where: { status: { _eq: working } }
     order_by: { createdAt: desc }
     limit: $limit
     offset: $offset
@@ -364,18 +364,11 @@ query GetActiveGroups($limit: Int = 100, $offset: Int = 0) {
       lastName
       campus
     }
-    # Group member count
-    group_users_aggregate {
-      aggregate {
-        count
-      }
-    }
     # Object/project the group is working on
     object {
       id
       name
       type
-      status
       attrs
     }
     # Event context
@@ -387,15 +380,10 @@ query GetActiveGroups($limit: Int = 100, $offset: Int = 0) {
   }
 }
 
-# Get groups with unconfirmed members
-query GetGroupsWithUnconfirmedMembers($limit: Int = 50) {
+# Get groups with recent member activity (simplified - no confirmed field available)
+query GetGroupsWithRecentActivity($limit: Int = 50) {
   group(
-    where: { 
-      group_users: { 
-        confirmed: { _eq: false } 
-      }
-    }
-    order_by: { createdAt: desc }
+    order_by: { updatedAt: desc }
     limit: $limit
   ) {
     id
@@ -412,24 +400,11 @@ query GetGroupsWithUnconfirmedMembers($limit: Int = 50) {
       lastName
       campus
     }
-    # Group members (including unconfirmed)
-    group_users {
-      confirmed
-      createdAt
-      user {
-        id
-        login
-        firstName
-        lastName
-        campus
-      }
-    }
     # Object/project the group is working on
     object {
       id
       name
       type
-      status
       attrs
     }
     # Event context

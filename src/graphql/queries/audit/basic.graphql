@@ -11,7 +11,6 @@ query GetAuditById($auditId: Int!) {
     createdAt
     updatedAt
     attrs
-    code
     version
     endAt
     private
@@ -22,7 +21,6 @@ query GetAuditById($auditId: Int!) {
       firstName
       lastName
       campus
-      auditRatio
       totalUp
       totalDown
     }
@@ -42,7 +40,7 @@ query GetAuditById($auditId: Int!) {
         lastName
       }
       # Group members
-      group_users {
+      users {
         confirmed
         createdAt
         user {
@@ -93,7 +91,6 @@ query GetAuditsByAuditor($auditorLogin: String!, $limit: Int = 50, $offset: Int 
     createdAt
     updatedAt
     attrs
-    code
     version
     endAt
     private
@@ -103,15 +100,6 @@ query GetAuditsByAuditor($auditorLogin: String!, $limit: Int = 50, $offset: Int 
       status
       path
       campus
-      # Group members
-      group_users {
-        user {
-          id
-          login
-          firstName
-          lastName
-        }
-      }
       # Object/project the group is working on
       object {
         id
@@ -142,7 +130,6 @@ query GetAuditsForGroup($groupId: Int!, $limit: Int = 20) {
     createdAt
     updatedAt
     attrs
-    code
     version
     endAt
     private
@@ -153,7 +140,6 @@ query GetAuditsForGroup($groupId: Int!, $limit: Int = 20) {
       firstName
       lastName
       campus
-      auditRatio
     }
     # Result of the audit
     result {
@@ -178,10 +164,8 @@ query GetPendingAudits($limit: Int = 50) {
     createdAt
     updatedAt
     attrs
-    code
     version
     endAt
-    private
     # Auditor information
     auditor {
       id
@@ -196,15 +180,7 @@ query GetPendingAudits($limit: Int = 50) {
       status
       path
       campus
-      # Group members
-      group_users {
-        user {
-          id
-          login
-          firstName
-          lastName
-        }
-      }
+
       # Object/project the group is working on
       object {
         id
@@ -237,7 +213,6 @@ query GetCompletedAudits($limit: Int = 50, $offset: Int = 0) {
       firstName
       lastName
       campus
-      auditRatio
     }
     # Group being audited
     group {
@@ -245,15 +220,7 @@ query GetCompletedAudits($limit: Int = 50, $offset: Int = 0) {
       status
       path
       campus
-      # Group members
-      group_users {
-        user {
-          id
-          login
-          firstName
-          lastName
-        }
-      }
+
       # Object/project the group is working on
       object {
         id
@@ -437,7 +404,6 @@ query GetExpiredAudits($currentTime: timestamptz!, $limit: Int = 50) {
     updatedAt
     endAt
     attrs
-    code
     version
     # Auditor information
     auditor {

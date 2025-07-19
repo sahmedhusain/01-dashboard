@@ -3,6 +3,8 @@
 // Following reference patterns for data transformation and formatting
 // ============================================================================
 
+import { getXPProgress } from './dataFormatting.js';
+
 // ============================================================================
 // USER DATA PROCESSING
 // ============================================================================
@@ -118,6 +120,63 @@ export const processAuditRatio = (auditData) => {
 // Format audit ratio for display
 export const formatAuditRatio = (ratio) => {
   return typeof ratio === 'number' ? ratio.toFixed(2) : "0.00";
+};
+
+// Process audit statistics for display (moved from JSX)
+export const processAuditStatistics = (auditRatio, totalUp, totalDown) => {
+  return {
+    auditsGiven: Math.round((totalUp || 0) / 1000) || 0, // Convert from micro-units
+    auditsReceived: totalDown || 0,
+    auditRatioValue: auditRatio?.auditRatio || auditRatio || 0,
+    auditRatioFormatted: formatAuditRatio(auditRatio?.auditRatio || auditRatio || 0)
+  };
+};
+
+// Process profile display data (moved from JSX)
+export const processProfileDisplayData = (user, totalXP, level, passRate) => {
+  return {
+    userLevel: level || 0,
+    projectPassRate: passRate || 0,
+    levelProgress: getXPProgress(totalXP, level || 0),
+    campus: user?.campus || 'Unknown Campus',
+    registrationDate: user?.createdAt,
+  };
+};
+
+// Process audit list with statistics (moved from JSX)
+export const processAuditListWithStats = (pendingAudits, completedAudits, auditRatio, totalUp, totalDown) => {
+  const processedPending = processAuditList(pendingAudits || []);
+  const processedCompleted = processAuditList(completedAudits || []);
+
+  // Combine all audits for filtering and searching
+  const allAudits = [
+    ...processedPending.map(audit => ({ ...audit, status: 'pending' })),
+    ...processedCompleted.map(audit => ({ ...audit, status: 'completed' }))
+  ];
+
+  // Calculate statistics
+  const totalAudits = allAudits.length;
+  const pendingCount = processedPending.length;
+  const completedCount = processedCompleted.length;
+  const passedCount = processedCompleted.filter(audit => (audit.grade || 0) >= 1).length;
+  const failedCount = completedCount - passedCount;
+
+  return {
+    allAudits,
+    processedPending,
+    processedCompleted,
+    stats: {
+      total: totalAudits,
+      pending: pendingCount,
+      completed: completedCount,
+      passed: passedCount,
+      failed: failedCount,
+      passRate: completedCount > 0 ? (passedCount / completedCount) * 100 : 0,
+      auditRatio: auditRatio || 0,
+      auditsGiven: Math.round((totalUp || 0) / 1000) || 0,
+      auditsReceived: totalDown || 0
+    }
+  };
 };
 
 // Process audit list data (pending/completed)
@@ -378,6 +437,94 @@ export const formatNumber = (num) => {
 export const truncateText = (text, maxLength = 50) => {
   if (!text || text.length <= maxLength) return text;
   return text.substring(0, maxLength) + '...';
+};
+
+// ============================================================================
+// SEARCH AND FILTER PROCESSING (moved from JSX)
+// ============================================================================
+
+// Process search data for SearchSection
+export const processSearchData = (activeGroups, pendingAudits, completedAudits, usersData) => {
+  const projectResults = activeGroups || [];
+  const auditResults = [...(pendingAudits || []), ...(completedAudits || [])];
+  const userResults = usersData?.user || [];
+
+  // Calculate status counts
+  const projectStatusCounts = projectResults.reduce((acc, project) => {
+    acc[project.status] = (acc[project.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const auditStatusCounts = auditResults.reduce((acc, audit) => {
+    const status = audit.resultId ? 'completed' : 'pending';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const userStatusCounts = { active: userResults.length };
+
+  // Extract unique campuses
+  const campuses = [...new Set([
+    ...projectResults.map(p => p.campus).filter(Boolean),
+    ...userResults.map(u => u.campus).filter(Boolean)
+  ])];
+
+  return {
+    projectResults,
+    auditResults,
+    userResults,
+    projectStatusCounts,
+    auditStatusCounts,
+    userStatusCounts,
+    campuses
+  };
+};
+
+// Search functions (moved from JSX)
+export const searchProjects = (projects, searchTerm) => {
+  if (!searchTerm) return projects;
+  return projects.filter(project =>
+    project.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.object?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.captain?.login?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+};
+
+export const searchAudits = (audits, searchTerm) => {
+  if (!searchTerm) return audits;
+  return audits.filter(audit =>
+    audit.group?.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    audit.auditor?.login?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    audit.group?.object?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+};
+
+export const searchUsers = (users, searchTerm) => {
+  if (!searchTerm) return users;
+  return users.filter(user =>
+    user.login?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+};
+
+// Filter functions (moved from JSX)
+export const filterProjectsByStatus = (projects, selectedStatus) => {
+  if (selectedStatus === 'all') return projects;
+  return projects.filter(project => project.status === selectedStatus);
+};
+
+export const filterAuditsByStatus = (audits, selectedStatus) => {
+  if (selectedStatus === 'all') return audits;
+  const status = selectedStatus === 'completed' ? 'completed' : 'pending';
+  return audits.filter(audit =>
+    status === 'completed' ? audit.resultId : !audit.resultId
+  );
+};
+
+export const filterUsersByCampus = (users, selectedCampus) => {
+  if (selectedCampus === '') return users;
+  return users.filter(user => user.campus === selectedCampus);
 };
 
 // ============================================================================

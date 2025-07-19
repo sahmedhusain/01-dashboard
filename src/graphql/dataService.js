@@ -66,12 +66,13 @@ export class GraphQLService {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch data.");
+        throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
       }
 
       const result = await response.json();
 
       if (result.errors) {
+        console.error("GraphQL Errors:", result.errors);
         throw new Error("GraphQL Errors: " + result.errors.map((error) => error.message).join(", "));
       }
 
@@ -98,6 +99,9 @@ export class GraphQLService {
   }
 
   async getUserById(userId) {
+    if (import.meta.env.DEV) {
+      console.log('getUserById called with userId:', userId, typeof userId);
+    }
     const [data, error] = await this.#fetchData(GET_USER_BY_ID, { userId });
     if (error !== null) {
       return [null, error];
@@ -498,6 +502,53 @@ export class GraphQLService {
       return [data.result, null];
     }
     return [null, new Error("'result' key not in response")];
+  }
+
+  // ============================================================================
+  // SEARCH METHODS
+  // ============================================================================
+
+  async searchGroups(eventId, pathSearch, status) {
+    const query = `
+      query GroupSearch($eventId: Int!, $pathSearch: String!, $status: group_status_enum!) {
+        group(
+          where: {
+            eventId: { _eq: $eventId },
+            path: { _like: $pathSearch },
+            status: { _eq: $status }
+          },
+          order_by: [
+            { status: asc },
+            { updatedAt: desc }
+          ]
+        ) {
+          status
+          path
+          members {
+            userLogin
+            user {
+              firstName
+              lastName
+            }
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      eventId,
+      pathSearch,
+      status
+    };
+
+    const [data, error] = await this.#fetchData(query, variables);
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('group' in data) {
+      return [data.group, null];
+    }
+    return [null, new Error("'group' key not in response")];
   }
 }
 

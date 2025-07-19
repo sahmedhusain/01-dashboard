@@ -81,9 +81,10 @@ export const authenticateUser = async (identifier, password) => {
     // Decode JWT to get user information
     const decodedToken = jwtDecode(cleanToken);
     const user = {
-      id: decodedToken.sub,
-      username: decodedToken.username || identifier,
-      email: decodedToken.email,
+      id: parseInt(decodedToken.sub, 10), // Convert string to integer for GraphQL
+      // Note: JWT doesn't contain username/login - will be fetched via GraphQL
+      username: null, // Will be populated after GraphQL fetch
+      email: null, // Not available in JWT
       exp: decodedToken.exp,
       iat: decodedToken.iat,
     };

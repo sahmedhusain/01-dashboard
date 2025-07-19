@@ -266,7 +266,7 @@ export const useProjectResults = (userLogin) => {
 // ============================================================================
 
 // Hook for dashboard data - combines multiple queries like reference examples
-export const useDashboardData = (userLogin) => {
+export const useDashboardData = (userId) => {
   const [dashboardData, setDashboardData] = useState({
     user: null,
     level: null,
@@ -283,7 +283,12 @@ export const useDashboardData = (userLogin) => {
   const [error, setError] = useState(null);
 
   const fetchDashboardData = useCallback(async () => {
-    if (!userLogin) {
+    if (import.meta.env.DEV) {
+      console.log('fetchDashboardData called with userId:', userId);
+    }
+    if (!userId) {
+      setLoading(false);
+      setError(null);
       return;
     }
 
@@ -291,9 +296,22 @@ export const useDashboardData = (userLogin) => {
     setError(null);
 
     try {
-      // Fetch all dashboard data in parallel
+      // First get user info by ID to get the login
+      const [userInfo, userError] = await graphqlService.getUserById(userId);
+      if (userError) {
+        setError(userError);
+        return;
+      }
+
+      if (!userInfo || !userInfo.login) {
+        setError(new Error('User not found or missing login'));
+        return;
+      }
+
+      const userLogin = userInfo.login;
+
+      // Now fetch all other dashboard data using the userLogin
       const [
-        [userInfo, userError],
         [levelInfo, levelError],
         [xpInfo, xpError],
         [skillsInfo, skillsError],
@@ -304,7 +322,6 @@ export const useDashboardData = (userLogin) => {
         [auditTimelineInfo, auditTimelineError],
         [projectResultsInfo, projectResultsError],
       ] = await Promise.all([
-        graphqlService.getUserInfo(userLogin),
         graphqlService.getUserLevel(userLogin),
         graphqlService.getTotalXP(),
         graphqlService.getUserSkills(),
@@ -318,12 +335,12 @@ export const useDashboardData = (userLogin) => {
 
       // Check for any errors
       const errors = [
-        userError, levelError, xpError, skillsError, auditError,
+        levelError, xpError, skillsError, auditError,
         xpProjectsError, groupsError, xpTimelineError, auditTimelineError, projectResultsError
       ].filter(Boolean);
       if (errors.length > 0) {
-        setError(errors[0]); // Show first error
-        return;
+        console.warn('Some dashboard queries failed:', errors);
+        // Don't fail completely, just log warnings
       }
 
       // Set combined data
@@ -346,7 +363,7 @@ export const useDashboardData = (userLogin) => {
     } finally {
       setLoading(false);
     }
-  }, [userLogin]);
+  }, [userId]);
 
   useEffect(() => {
     fetchDashboardData();

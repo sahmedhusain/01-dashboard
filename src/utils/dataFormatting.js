@@ -13,15 +13,11 @@
  * @returns {string} Formatted XP string
  */
 export const formatXP = (xp) => {
-  if (!xp || isNaN(xp)) return '0 XP';
-  
-  if (xp >= 1000000) {
-    return `${(xp / 1000000).toFixed(1)}M XP`;
-  }
-  if (xp >= 1000) {
-    return `${(xp / 1000).toFixed(1)}K XP`;
-  }
-  return `${xp} XP`;
+  if (!xp || isNaN(xp)) return '0 KB XP';
+
+  // XP is already in the correct unit, just divide by 1000 to get KB
+  const kbValue = Math.round(xp / 1000);
+  return `${kbValue} KB XP`;
 };
 
 /**
@@ -76,7 +72,24 @@ export const getUserDisplayName = (user) => {
  */
 export const getUserEmail = (user) => {
   if (!user) return '';
+
+  // Check attrs.email first (primary source from GraphQL)
+  if (user.attrs && user.attrs.email) {
+    return user.attrs.email;
+  }
+
+  // Fallback to direct email field or login
   return user.email || user.login || '';
+};
+
+/**
+ * Format campus name with proper capitalization
+ * @param {string} campus - Campus name to format
+ * @returns {string} Formatted campus name
+ */
+export const formatCampusName = (campus) => {
+  if (!campus) return 'Unknown Campus';
+  return campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase();
 };
 
 /**
@@ -249,8 +262,30 @@ export const formatProjectName = (path) => {
  * @returns {string} Formatted audit ratio
  */
 export const formatAuditRatio = (ratio) => {
-  if (ratio == null || isNaN(ratio)) return '0.00';
-  return ratio.toFixed(2);
+  if (ratio == null || isNaN(ratio)) return '0.0 MB';
+  return `${ratio.toFixed(1)} MB`;
+};
+
+/**
+ * Format audit amounts (received/done) for display
+ * @param {number} amount - Audit amount value
+ * @returns {string} Formatted audit amount
+ */
+export const formatAuditAmount = (amount) => {
+  if (amount == null || isNaN(amount)) return '0.00 MB';
+  return `${(amount / 1000000).toFixed(2)} MB`;
+};
+
+/**
+ * Format skill XP as percentage for display
+ * @param {number} skillXP - Skill XP value
+ * @param {number} totalXP - Total XP for percentage calculation
+ * @returns {string} Formatted skill percentage
+ */
+export const formatSkillPercentage = (skillXP, totalXP) => {
+  if (!skillXP || !totalXP || totalXP === 0) return '0%';
+  const percentage = (skillXP / totalXP) * 100;
+  return `${Math.round(percentage)}%`;
 };
 
 // ============================================================================
@@ -290,13 +325,13 @@ export const formatNumber = (num) => {
  */
 export const getRelativeTime = (dateInput) => {
   if (!dateInput) return '';
-  
+
   try {
     const date = new Date(dateInput);
     const now = new Date();
     const diffMs = now - date;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -306,4 +341,64 @@ export const getRelativeTime = (dateInput) => {
   } catch {
     return '';
   }
+};
+
+// ============================================================================
+// ENHANCED UTILITY FUNCTIONS FOR COMPONENT PROCESSORS
+// ============================================================================
+
+/**
+ * Enhanced XP progress calculation with detailed information
+ * @param {number} currentXP - Current XP amount
+ * @param {number} level - Current level
+ * @returns {Object} Detailed progress information
+ */
+export const getXPProgressDetailed = (currentXP, level) => {
+  if (!currentXP || !level) {
+    return {
+      percentage: 0,
+      current: 0,
+      required: 1000,
+      remaining: 1000
+    };
+  }
+
+  const currentLevelXP = level * 1000;
+  const nextLevelXP = (level + 1) * 1000;
+  const progressXP = currentXP - currentLevelXP;
+  const requiredXP = nextLevelXP - currentLevelXP;
+  const remainingXP = requiredXP - progressXP;
+
+  return {
+    percentage: Math.min(100, Math.max(0, (progressXP / requiredXP) * 100)),
+    current: Math.max(0, progressXP),
+    required: requiredXP,
+    remaining: Math.max(0, remainingXP)
+  };
+};
+
+
+
+/**
+ * Format skill name for display (replace underscores with spaces)
+ * @param {string} skillName - Raw skill name
+ * @returns {string} Formatted skill name
+ */
+export const formatSkillName = (skillName) => {
+  if (!skillName) return 'Unknown Skill';
+  return skillName.replace(/_/g, ' ');
+};
+
+/**
+ * Get badge variant based on numeric value and thresholds
+ * @param {number} value - Numeric value to evaluate
+ * @param {Object} thresholds - Threshold configuration
+ * @returns {string} Badge variant
+ */
+export const getBadgeVariant = (value, thresholds = {}) => {
+  const { high = 70, medium = 40 } = thresholds;
+
+  if (value >= high) return 'success';
+  if (value >= medium) return 'primary';
+  return 'warning';
 };

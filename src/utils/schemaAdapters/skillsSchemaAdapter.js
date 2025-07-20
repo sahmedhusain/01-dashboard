@@ -2,7 +2,10 @@
  * Skills Schema Adapter
  * Normalizes skills/technology data from GraphQL to consistent internal format
  * Handles different skill data structures and provides categorization
+ * Enhanced with validation, analytics, and reference pattern alignment
  */
+
+import { validateDataWithErrors } from '../dataProcessing.js';
 
 /**
  * Normalize single skill data from GraphQL response
@@ -369,4 +372,222 @@ export const getCategoryDisplayInfo = (category) => {
   };
 
   return categoryInfo[category] || categoryInfo.other;
+};
+
+/**
+ * Validate skills data structure
+ * @param {Array} skillsData - Skills data to validate
+ * @returns {Object} Validation result with errors and warnings
+ */
+export const validateSkillsData = (skillsData) => {
+  const schema = {
+    type: 'array',
+    minLength: 0,
+    maxLength: 1000
+  };
+
+  const validation = validateDataWithErrors(skillsData, schema);
+
+  if (Array.isArray(skillsData)) {
+    skillsData.forEach((skill, index) => {
+      if (!skill.name) {
+        validation.warnings.push(`Skill at index ${index} has no name`);
+      }
+      if (typeof skill.amount !== 'number' || skill.amount < 0) {
+        validation.warnings.push(`Skill "${skill.name || 'unknown'}" has invalid amount`);
+      }
+    });
+  }
+
+  return validation;
+};
+
+/**
+ * Calculate skill mastery analytics
+ * @param {Array} skills - Array of normalized skills
+ * @returns {Object} Skill mastery analytics
+ */
+export const calculateSkillMastery = (skills) => {
+  if (!Array.isArray(skills) || skills.length === 0) {
+    return {
+      masteryScore: 0,
+      expertSkills: 0,
+      advancedSkills: 0,
+      intermediateSkills: 0,
+      beginnerSkills: 0,
+      diversityScore: 0,
+      recommendations: ['Start learning new technologies to build your skill set']
+    };
+  }
+
+  // Count skills by level
+  const expertSkills = skills.filter(s => s.level >= 8).length;
+  const advancedSkills = skills.filter(s => s.level >= 5 && s.level < 8).length;
+  const intermediateSkills = skills.filter(s => s.level >= 3 && s.level < 5).length;
+  const beginnerSkills = skills.filter(s => s.level < 3).length;
+
+  // Calculate mastery score (weighted by skill level)
+  const totalWeightedXP = skills.reduce((sum, skill) => {
+    const weight = skill.level >= 5 ? 2 : 1; // Give more weight to advanced skills
+    return sum + (skill.totalXP * weight);
+  }, 0);
+  const masteryScore = Math.min(100, totalWeightedXP / 1000); // Scale to 0-100
+
+  // Calculate diversity score (number of different categories)
+  const categories = new Set(skills.map(s => s.category));
+  const diversityScore = Math.min(100, (categories.size / 8) * 100); // 8 main categories
+
+  // Generate recommendations
+  const recommendations = [];
+  if (expertSkills === 0) {
+    recommendations.push('Focus on mastering at least one technology to expert level');
+  }
+  if (diversityScore < 50) {
+    recommendations.push('Explore different technology categories to broaden your skill set');
+  }
+  if (skills.length < 10) {
+    recommendations.push('Learn more technologies to expand your expertise');
+  }
+  if (recommendations.length === 0) {
+    recommendations.push('Excellent skill diversity! Consider mentoring others or contributing to open source');
+  }
+
+  return {
+    masteryScore: Math.round(masteryScore),
+    expertSkills,
+    advancedSkills,
+    intermediateSkills,
+    beginnerSkills,
+    diversityScore: Math.round(diversityScore),
+    totalSkills: skills.length,
+    recommendations
+  };
+};
+
+/**
+ * Calculate skill learning efficiency
+ * @param {Array} skills - Array of skills with timestamps
+ * @returns {Object} Learning efficiency metrics
+ */
+export const calculateSkillLearningEfficiency = (skills) => {
+  if (!Array.isArray(skills) || skills.length === 0) {
+    return {
+      efficiencyScore: 0,
+      averageTimeToMaster: 0,
+      fastestSkill: null,
+      slowestSkill: null,
+      learningVelocity: 0
+    };
+  }
+
+  // Calculate time to reach different skill levels
+  const skillsWithTime = skills.filter(skill => skill.createdAt).map(skill => {
+    const startDate = new Date(skill.createdAt);
+    const now = new Date();
+    const daysLearning = Math.max(1, (now - startDate) / (1000 * 60 * 60 * 24));
+    const xpPerDay = skill.totalXP / daysLearning;
+
+    return {
+      ...skill,
+      daysLearning,
+      xpPerDay,
+      efficiency: skill.level / daysLearning // Level achieved per day
+    };
+  });
+
+  if (skillsWithTime.length === 0) {
+    return {
+      efficiencyScore: 0,
+      averageTimeToMaster: 0,
+      fastestSkill: null,
+      slowestSkill: null,
+      learningVelocity: 0
+    };
+  }
+
+  const averageEfficiency = skillsWithTime.reduce((sum, s) => sum + s.efficiency, 0) / skillsWithTime.length;
+  const efficiencyScore = Math.min(100, averageEfficiency * 100);
+
+  const fastestSkill = skillsWithTime.reduce((fastest, current) =>
+    current.efficiency > fastest.efficiency ? current : fastest
+  );
+
+  const slowestSkill = skillsWithTime.reduce((slowest, current) =>
+    current.efficiency < slowest.efficiency ? current : slowest
+  );
+
+  const averageTimeToMaster = skillsWithTime
+    .filter(s => s.level >= 5)
+    .reduce((sum, s) => sum + s.daysLearning, 0) / Math.max(1, skillsWithTime.filter(s => s.level >= 5).length);
+
+  const learningVelocity = skillsWithTime.reduce((sum, s) => sum + s.xpPerDay, 0) / skillsWithTime.length;
+
+  return {
+    efficiencyScore: Math.round(efficiencyScore),
+    averageTimeToMaster: Math.round(averageTimeToMaster),
+    fastestSkill: {
+      name: fastestSkill.name,
+      efficiency: fastestSkill.efficiency.toFixed(2),
+      daysLearning: Math.round(fastestSkill.daysLearning)
+    },
+    slowestSkill: {
+      name: slowestSkill.name,
+      efficiency: slowestSkill.efficiency.toFixed(2),
+      daysLearning: Math.round(slowestSkill.daysLearning)
+    },
+    learningVelocity: Math.round(learningVelocity),
+    totalSkillsTracked: skillsWithTime.length
+  };
+};
+
+/**
+ * Generate skill learning path recommendations
+ * @param {Array} currentSkills - Current skills array
+ * @param {string} targetRole - Target role (e.g., 'fullstack', 'backend', 'frontend')
+ * @returns {Object} Learning path recommendations
+ */
+export const generateSkillLearningPath = (currentSkills, targetRole = 'fullstack') => {
+  const skillsByCategory = groupSkillsByCategory(currentSkills);
+
+  const rolePaths = {
+    fullstack: {
+      required: ['javascript', 'react', 'node.js', 'database', 'git'],
+      recommended: ['typescript', 'docker', 'testing', 'api-design'],
+      advanced: ['microservices', 'cloud', 'devops', 'security']
+    },
+    backend: {
+      required: ['programming-language', 'database', 'api-design', 'git'],
+      recommended: ['docker', 'testing', 'security', 'performance'],
+      advanced: ['microservices', 'cloud', 'distributed-systems', 'monitoring']
+    },
+    frontend: {
+      required: ['javascript', 'html', 'css', 'react', 'git'],
+      recommended: ['typescript', 'testing', 'responsive-design', 'accessibility'],
+      advanced: ['performance', 'pwa', 'animation', 'state-management']
+    }
+  };
+
+  const path = rolePaths[targetRole] || rolePaths.fullstack;
+  const currentSkillNames = currentSkills.map(s => s.name.toLowerCase());
+
+  const missing = {
+    required: path.required.filter(skill => !currentSkillNames.some(cs => cs.includes(skill))),
+    recommended: path.recommended.filter(skill => !currentSkillNames.some(cs => cs.includes(skill))),
+    advanced: path.advanced.filter(skill => !currentSkillNames.some(cs => cs.includes(skill)))
+  };
+
+  const completionPercentage = Math.round(
+    ((path.required.length - missing.required.length) / path.required.length) * 100
+  );
+
+  return {
+    targetRole,
+    completionPercentage,
+    nextSteps: missing.required.slice(0, 3), // Top 3 next steps
+    missing,
+    strengths: Object.keys(skillsByCategory).filter(cat => skillsByCategory[cat].length > 0),
+    recommendations: missing.required.length > 0
+      ? [`Focus on learning ${missing.required[0]} to advance toward ${targetRole} role`]
+      : [`Great progress! Consider exploring ${missing.recommended[0] || missing.advanced[0]} for advanced skills`]
+  };
 };

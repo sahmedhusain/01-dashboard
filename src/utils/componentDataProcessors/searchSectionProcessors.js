@@ -346,6 +346,107 @@ query GetUserStats {
 };
 
 /**
+ * Process search results with enhanced filtering and sorting
+ * @param {Array} results - Raw search results
+ * @param {Object} searchParams - Search parameters
+ * @returns {Object} Processed search results
+ */
+export const processSearchResults = (results, searchParams = {}) => {
+  const {
+    searchTerm = '',
+    sortBy = 'relevance',
+    sortOrder = 'desc',
+    filters = {},
+    page = 1,
+    pageSize = 20
+  } = searchParams;
+
+  if (!Array.isArray(results)) {
+    return {
+      items: [],
+      totalItems: 0,
+      totalPages: 0,
+      currentPage: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+      searchTerm,
+      appliedFilters: filters
+    };
+  }
+
+  // Apply search term filtering
+  let filteredResults = results;
+  if (searchTerm) {
+    filteredResults = results.filter(item => {
+      const searchableFields = [
+        item.name, item.login, item.path, item.description,
+        item.firstName, item.lastName, item.email,
+        item.object?.name, item.group?.path
+      ].filter(Boolean);
+
+      return searchableFields.some(field =>
+        String(field).toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }
+
+  // Apply additional filters
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value && value !== 'all') {
+      filteredResults = filteredResults.filter(item => {
+        const itemValue = key.includes('.')
+          ? key.split('.').reduce((obj, k) => obj?.[k], item)
+          : item[key];
+        return itemValue === value;
+      });
+    }
+  });
+
+  // Apply sorting
+  if (sortBy !== 'relevance') {
+    filteredResults.sort((a, b) => {
+      let aVal = sortBy.includes('.')
+        ? sortBy.split('.').reduce((obj, k) => obj?.[k], a)
+        : a[sortBy];
+      let bVal = sortBy.includes('.')
+        ? sortBy.split('.').reduce((obj, k) => obj?.[k], b)
+        : b[sortBy];
+
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return sortOrder === 'asc' ? -1 : 1;
+      if (bVal == null) return sortOrder === 'asc' ? 1 : -1;
+
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+        return sortOrder === 'asc' ? comparison : -comparison;
+      }
+
+      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+    });
+  }
+
+  // Apply pagination
+  const totalItems = filteredResults.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const currentPage = Math.max(1, Math.min(page, totalPages));
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+
+  return {
+    items: filteredResults.slice(startIndex, endIndex),
+    totalItems,
+    totalPages,
+    currentPage,
+    hasNextPage: currentPage < totalPages,
+    hasPrevPage: currentPage > 1,
+    searchTerm,
+    appliedFilters: filters,
+    startIndex: startIndex + 1,
+    endIndex: Math.min(endIndex, totalItems)
+  };
+};
+
+/**
  * Process available filters based on data
  * @param {Object} rawData - Raw data from GraphQL queries
  * @returns {Array} Available filters for search
@@ -362,7 +463,10 @@ const processAvailableFilters = (rawData) => {
       name: 'Campus',
       field: 'campus',
       type: 'select',
-      options: campuses.map(campus => ({ value: campus, label: campus }))
+      options: [
+        { value: 'all', label: 'All Campuses' },
+        ...campuses.map(campus => ({ value: campus, label: campus }))
+      ]
     });
   }
 

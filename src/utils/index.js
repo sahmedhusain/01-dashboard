@@ -10,3 +10,7 @@ export * from './errorHandling.js';
 
 // Export utility functions that are still needed
 export * from './cn.js';
+
+// Routing utilities
+export * from './routing.js';
+export * from './routeAnalytics.js';

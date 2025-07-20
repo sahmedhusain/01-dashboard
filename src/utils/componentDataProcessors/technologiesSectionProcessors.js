@@ -6,6 +6,7 @@
 
 import { getTopSkills, groupSkillsByCategory, getSkillProgress } from '../schemaAdapters/skillsSchemaAdapter.js';
 import { normalizeUserData } from '../schemaAdapters/userSchemaAdapter.js';
+import { sortData, filterData } from '../dataProcessing.js';
 
 /**
  * Process all data for the TechnologiesSection component
@@ -273,23 +274,7 @@ const calculateSkillProgressPercentage = (level) => {
   return (level / 10) * 100;
 };
 
-/**
- * Categorize skill by name patterns
- * @param {string} skillName - Name of the skill
- * @returns {string} Skill category
- */
-const categorizeSkill = (skillName) => {
-  const name = skillName.toLowerCase();
-  
-  if (name.includes('go') || name.includes('golang')) return 'Backend';
-  if (name.includes('js') || name.includes('javascript') || name.includes('react') || name.includes('html') || name.includes('css')) return 'Frontend';
-  if (name.includes('sql') || name.includes('database') || name.includes('db')) return 'Database';
-  if (name.includes('docker') || name.includes('kubernetes') || name.includes('aws') || name.includes('cloud')) return 'DevOps';
-  if (name.includes('git') || name.includes('linux') || name.includes('bash')) return 'Tools';
-  if (name.includes('algorithm') || name.includes('data-structure')) return 'Computer Science';
-  
-  return 'General';
-};
+// Note: categorizeSkill function moved to exported version below to avoid duplication
 
 /**
  * Format XP value for display
@@ -300,4 +285,167 @@ const formatXP = (xp) => {
   if (xp >= 1000000) return `${(xp / 1000000).toFixed(1)}M XP`;
   if (xp >= 1000) return `${(xp / 1000).toFixed(1)}k XP`;
   return `${xp} XP`;
+};
+
+/**
+ * Categorize skill by type for filtering and display
+ * @param {string} skillName - Name of the skill
+ * @returns {string} Skill category type
+ */
+export const categorizeSkill = (skillName) => {
+  if (!skillName || typeof skillName !== 'string') {
+    return 'other';
+  }
+  const name = skillName.toLowerCase();
+
+  if (name.includes('javascript') || name.includes('go') || name.includes('python') ||
+      name.includes('java') || name.includes('c++') || name.includes('rust')) {
+    return 'language';
+  } else if (name.includes('react') || name.includes('vue') || name.includes('angular') ||
+             name.includes('express') || name.includes('django')) {
+    return 'framework';
+  } else if (name.includes('sql') || name.includes('database') || name.includes('mongodb') ||
+             name.includes('postgres')) {
+    return 'database';
+  } else if (name.includes('docker') || name.includes('git') || name.includes('linux') ||
+             name.includes('bash')) {
+    return 'tool';
+  } else if (name.includes('graphql') || name.includes('rest') || name.includes('api')) {
+    return 'api';
+  }
+  return 'general';
+};
+
+/**
+ * Get appropriate icon name for skill type
+ * @param {string} type - Skill type
+ * @returns {string} Icon name
+ */
+export const getSkillIconName = (type) => {
+  switch (type) {
+    case 'language':
+      return 'Code';
+    case 'database':
+      return 'Database';
+    case 'framework':
+    case 'api':
+      return 'Globe';
+    default:
+      return 'Server';
+  }
+};
+
+/**
+ * Get badge color variant for skill level
+ * @param {string} level - Skill level
+ * @returns {string} Badge variant
+ */
+export const getSkillColorVariant = (level) => {
+  switch (level) {
+    case 'Advanced':
+      return 'success';
+    case 'Intermediate':
+      return 'primary';
+    case 'Beginner':
+      return 'warning';
+    default:
+      return 'secondary';
+  }
+};
+
+/**
+ * Process filtered and sorted skills
+ * @param {Object} processedData - Processed technologies data
+ * @param {string} searchTerm - Search term for filtering
+ * @param {string} filterType - Type filter
+ * @param {string} sortBy - Sort criteria
+ * @returns {Array} Filtered and sorted skills
+ */
+export const processFilteredSkills = (processedData, searchTerm, filterType, sortBy) => {
+  if (processedData.isLoading || processedData.error) {
+    return [];
+  }
+
+  let filtered = processedData.skillCategories.flatMap(category =>
+    category.skills.map(skill => ({
+      ...skill,
+      category: category.name,
+      type: categorizeSkill(skill.name)
+    }))
+  );
+
+  // Apply search filter
+  if (searchTerm) {
+    filtered = filterData(filtered, { name: searchTerm });
+  }
+
+  // Apply type filter
+  if (filterType !== 'all') {
+    filtered = filterData(filtered, { type: filterType });
+  }
+
+  // Apply sorting
+  return sortData(filtered, sortBy, 'desc');
+};
+
+/**
+ * Calculate technology summary statistics for display
+ * @param {Object} processedData - Processed technologies data
+ * @param {Array} filteredSkills - Filtered skills array
+ * @returns {Object} Technology statistics
+ */
+export const calculateTechnologySummaryStats = (processedData, filteredSkills) => {
+  if (processedData.isLoading || !processedData.technologyStats) {
+    return {
+      totalTechnologies: 0,
+      advancedSkills: 0,
+      totalXP: 0,
+      averageProficiency: 0
+    };
+  }
+
+  const stats = processedData.technologyStats;
+  const advancedSkills = filteredSkills.filter(skill =>
+    (skill.level || 0) >= 5
+  ).length;
+
+  return {
+    totalTechnologies: stats.totalSkills,
+    advancedSkills,
+    totalXP: stats.totalXP,
+    averageProficiency: stats.averageLevel
+  };
+};
+
+/**
+ * Calculate maximum XP for progress bars
+ * @param {Array} skills - Skills array
+ * @returns {number} Maximum XP value
+ */
+export const calculateMaxXP = (skills) => {
+  return skills.length > 0
+    ? Math.max(...skills.map(s => s.totalXP || 0))
+    : 1;
+};
+
+/**
+ * Get filter options for technologies filtering
+ * @returns {Object} Filter options
+ */
+export const getTechnologyFilterOptions = () => {
+  return {
+    typeOptions: [
+      { value: 'all', label: 'All Types' },
+      { value: 'language', label: 'Programming Languages' },
+      { value: 'framework', label: 'Frameworks' },
+      { value: 'database', label: 'Databases' },
+      { value: 'tool', label: 'Tools' },
+      { value: 'api', label: 'APIs' }
+    ],
+    sortOptions: [
+      { value: 'totalXP', label: 'Sort by XP' },
+      { value: 'completedProjects', label: 'Sort by Projects' },
+      { value: 'name', label: 'Sort by Name' }
+    ]
+  };
 };

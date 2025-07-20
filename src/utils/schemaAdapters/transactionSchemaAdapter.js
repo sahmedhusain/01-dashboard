@@ -2,7 +2,11 @@
  * Transaction Schema Adapter
  * Normalizes transaction/XP data from GraphQL to consistent internal format
  * Handles different transaction data structures and provides calculations
+ * Enhanced with analytics, validation, and performance tracking
  */
+
+import { validateDataWithErrors } from '../dataProcessing.js';
+import { calculateXPVelocity, predictFutureXP } from '../calculations/xpCalculations.js';
 
 /**
  * Normalize single transaction data from GraphQL response
@@ -356,10 +360,210 @@ export const extractTransactionObjectInfo = (transaction) => {
  */
 export const isRecentTransaction = (transaction, days = 7) => {
   if (!transaction || !transaction.createdAt) return false;
-  
+
   const transactionDate = new Date(transaction.createdAt);
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
-  
+
   return transactionDate >= cutoffDate;
+};
+
+/**
+ * Validate transaction data structure
+ * @param {Array} transactionData - Transaction data to validate
+ * @returns {Object} Validation result with errors and warnings
+ */
+export const validateTransactionData = (transactionData) => {
+  const schema = {
+    type: 'array',
+    minLength: 0,
+    maxLength: 10000
+  };
+
+  const validation = validateDataWithErrors(transactionData, schema);
+
+  if (Array.isArray(transactionData)) {
+    transactionData.forEach((transaction, index) => {
+      if (!transaction.id) {
+        validation.warnings.push(`Transaction at index ${index} has no ID`);
+      }
+      if (typeof transaction.amount !== 'number') {
+        validation.warnings.push(`Transaction at index ${index} has invalid amount`);
+      }
+      if (!transaction.createdAt) {
+        validation.warnings.push(`Transaction at index ${index} has no creation date`);
+      }
+    });
+  }
+
+  return validation;
+};
+
+/**
+ * Calculate advanced transaction analytics
+ * @param {Array} transactions - Array of normalized transactions
+ * @returns {Object} Advanced transaction analytics
+ */
+export const calculateAdvancedTransactionAnalytics = (transactions) => {
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    return {
+      totalTransactions: 0,
+      xpTransactions: 0,
+      skillTransactions: 0,
+      auditTransactions: 0,
+      averageXPPerTransaction: 0,
+      transactionFrequency: 0,
+      mostActiveDay: null,
+      longestGap: 0,
+      consistency: 0,
+      velocity: calculateXPVelocity([]),
+      prediction: predictFutureXP([])
+    };
+  }
+
+  const xpTransactions = transactions.filter(t => t.isXP);
+  const skillTransactions = transactions.filter(t => t.isSkill);
+  const auditTransactions = transactions.filter(t => t.isUp || t.isDown);
+
+  // Calculate average XP per transaction
+  const totalXP = xpTransactions.reduce((sum, t) => sum + t.amount, 0);
+  const averageXPPerTransaction = xpTransactions.length > 0 ? totalXP / xpTransactions.length : 0;
+
+  // Calculate transaction frequency (transactions per day)
+  const sortedTransactions = transactions
+    .filter(t => t.createdAt)
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  let transactionFrequency = 0;
+  let longestGap = 0;
+  let mostActiveDay = null;
+
+  if (sortedTransactions.length > 1) {
+    const firstDate = new Date(sortedTransactions[0].createdAt);
+    const lastDate = new Date(sortedTransactions[sortedTransactions.length - 1].createdAt);
+    const daysDiff = Math.max(1, (lastDate - firstDate) / (1000 * 60 * 60 * 24));
+    transactionFrequency = transactions.length / daysDiff;
+
+    // Find longest gap between transactions
+    for (let i = 1; i < sortedTransactions.length; i++) {
+      const gap = (new Date(sortedTransactions[i].createdAt) - new Date(sortedTransactions[i-1].createdAt)) / (1000 * 60 * 60 * 24);
+      longestGap = Math.max(longestGap, gap);
+    }
+
+    // Find most active day of week
+    const dayCount = {};
+    sortedTransactions.forEach(t => {
+      const day = new Date(t.createdAt).getDay();
+      dayCount[day] = (dayCount[day] || 0) + 1;
+    });
+    const mostActiveIndex = Object.keys(dayCount).reduce((a, b) => dayCount[a] > dayCount[b] ? a : b);
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    mostActiveDay = dayNames[mostActiveIndex];
+  }
+
+  // Calculate consistency score (0-100)
+  const consistency = calculateTransactionConsistency(sortedTransactions);
+
+  // Calculate velocity and prediction
+  const xpData = xpTransactions.map(t => ({ date: t.createdAt, amount: t.amount }));
+  const velocity = calculateXPVelocity(xpData);
+  const prediction = predictFutureXP(xpData);
+
+  return {
+    totalTransactions: transactions.length,
+    xpTransactions: xpTransactions.length,
+    skillTransactions: skillTransactions.length,
+    auditTransactions: auditTransactions.length,
+    averageXPPerTransaction: Math.round(averageXPPerTransaction),
+    transactionFrequency: transactionFrequency.toFixed(2),
+    mostActiveDay,
+    longestGap: Math.round(longestGap),
+    consistency: Math.round(consistency),
+    velocity,
+    prediction
+  };
+};
+
+/**
+ * Calculate transaction consistency score
+ * @param {Array} sortedTransactions - Sorted transactions by date
+ * @returns {number} Consistency score (0-100)
+ */
+const calculateTransactionConsistency = (sortedTransactions) => {
+  if (sortedTransactions.length < 7) return 0;
+
+  // Calculate gaps between transactions
+  const gaps = [];
+  for (let i = 1; i < sortedTransactions.length; i++) {
+    const gap = (new Date(sortedTransactions[i].createdAt) - new Date(sortedTransactions[i-1].createdAt)) / (1000 * 60 * 60 * 24);
+    gaps.push(gap);
+  }
+
+  // Calculate standard deviation of gaps
+  const avgGap = gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length;
+  const variance = gaps.reduce((sum, gap) => sum + Math.pow(gap - avgGap, 2), 0) / gaps.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Lower standard deviation = higher consistency
+  // Scale to 0-100 where 100 is perfect consistency (same gap every time)
+  const consistencyScore = Math.max(0, 100 - (stdDev / avgGap) * 100);
+  return Math.min(100, consistencyScore);
+};
+
+/**
+ * Generate transaction insights and recommendations
+ * @param {Object} analytics - Transaction analytics data
+ * @returns {Object} Insights and recommendations
+ */
+export const generateTransactionInsights = (analytics) => {
+  const insights = [];
+  const recommendations = [];
+
+  if (analytics.totalTransactions === 0) {
+    insights.push('No transaction data available');
+    recommendations.push('Start completing projects to generate transaction data');
+    return { insights, recommendations };
+  }
+
+  // Frequency insights
+  if (analytics.transactionFrequency < 0.5) {
+    insights.push('Low transaction frequency detected');
+    recommendations.push('Try to maintain more consistent activity');
+  } else if (analytics.transactionFrequency > 2) {
+    insights.push('High transaction frequency - excellent activity level!');
+  }
+
+  // Consistency insights
+  if (analytics.consistency < 30) {
+    insights.push('Irregular activity pattern detected');
+    recommendations.push('Try to establish a more consistent learning schedule');
+  } else if (analytics.consistency > 70) {
+    insights.push('Excellent consistency in your learning pattern!');
+  }
+
+  // XP insights
+  if (analytics.averageXPPerTransaction < 100) {
+    insights.push('Lower XP per transaction - focus on larger projects');
+    recommendations.push('Consider tackling more challenging projects for higher XP gains');
+  } else if (analytics.averageXPPerTransaction > 500) {
+    insights.push('High XP per transaction - great project selection!');
+  }
+
+  // Gap insights
+  if (analytics.longestGap > 30) {
+    insights.push(`Longest gap between activities: ${analytics.longestGap} days`);
+    recommendations.push('Try to avoid long breaks to maintain momentum');
+  }
+
+  // Activity pattern insights
+  if (analytics.mostActiveDay) {
+    insights.push(`Most active on ${analytics.mostActiveDay}s`);
+  }
+
+  // Prediction insights
+  if (analytics.prediction.confidence > 70) {
+    insights.push(`Predicted to gain ${analytics.prediction.predictedGain} XP in the next 30 days`);
+  }
+
+  return { insights, recommendations };
 };

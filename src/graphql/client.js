@@ -62,7 +62,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// Simple cache configuration
+// Enhanced cache configuration aligned with reference patterns
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
@@ -77,8 +77,45 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
+        audit: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        progress: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        result: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
       },
     },
+    User: {
+      fields: {
+        // Cache user data by login for efficient lookups
+        login: {
+          read(login) {
+            return login;
+          },
+        },
+      },
+    },
+  },
+  // Enable result caching for better performance
+  resultCaching: true,
+  // Add data ID from object for better normalization
+  dataIdFromObject: (object) => {
+    if (object.__typename && object.id) {
+      return `${object.__typename}:${object.id}`;
+    }
+    if (object.__typename && object.login) {
+      return `${object.__typename}:${object.login}`;
+    }
+    return null;
   },
 });
 

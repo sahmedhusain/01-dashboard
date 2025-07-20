@@ -2,7 +2,10 @@
  * User Schema Adapter
  * Normalizes user data from GraphQL to consistent internal format
  * Handles different user data structures and provides fallbacks
+ * Aligned with reference example patterns for robust data handling
  */
+
+import { validateDataWithErrors } from '../dataProcessing.js';
 
 /**
  * Normalize user data from GraphQL response
@@ -260,4 +263,139 @@ export const filterUsersBySearch = (users, searchTerm) => {
       email.includes(term)
     );
   });
+};
+
+/**
+ * Validate user data structure according to GraphQL schema
+ * @param {Object} userData - User data to validate
+ * @returns {Object} Validation result with errors and warnings
+ */
+export const validateUserData = (userData) => {
+  const schema = {
+    type: 'object',
+    required: ['id', 'login'],
+    optional: ['firstName', 'lastName', 'email', 'campus', 'createdAt']
+  };
+
+  const validation = validateDataWithErrors(userData, schema);
+
+  // Additional user-specific validations
+  if (userData) {
+    if (userData.email && !isValidEmail(userData.email)) {
+      validation.warnings.push('Invalid email format');
+    }
+
+    if (userData.auditRatio && (userData.auditRatio < 0 || userData.auditRatio > 10)) {
+      validation.warnings.push('Audit ratio seems out of normal range');
+    }
+
+    if (userData.createdAt && new Date(userData.createdAt) > new Date()) {
+      validation.warnings.push('Creation date is in the future');
+    }
+  }
+
+  return validation;
+};
+
+/**
+ * Validate email format
+ * @param {string} email - Email to validate
+ * @returns {boolean} True if valid email format
+ */
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+/**
+ * Sanitize user data for safe display
+ * @param {Object} userData - User data to sanitize
+ * @returns {Object} Sanitized user data
+ */
+export const sanitizeUserData = (userData) => {
+  if (!userData) return null;
+
+  const sanitized = { ...userData };
+
+  // Remove potentially sensitive fields
+  delete sanitized.password;
+  delete sanitized.token;
+  delete sanitized.privateKey;
+
+  // Sanitize strings
+  if (sanitized.firstName) {
+    sanitized.firstName = sanitized.firstName.trim().slice(0, 50);
+  }
+  if (sanitized.lastName) {
+    sanitized.lastName = sanitized.lastName.trim().slice(0, 50);
+  }
+  if (sanitized.email) {
+    sanitized.email = sanitized.email.trim().toLowerCase();
+  }
+
+  return sanitized;
+};
+
+/**
+ * Transform user data for GraphQL mutations
+ * @param {Object} userData - User data to transform
+ * @returns {Object} GraphQL-ready user data
+ */
+export const transformUserForGraphQL = (userData) => {
+  if (!userData) return null;
+
+  const validation = validateUserData(userData);
+  if (!validation.isValid) {
+    throw new Error(`Invalid user data: ${validation.errors.join(', ')}`);
+  }
+
+  return {
+    id: userData.id,
+    login: userData.login,
+    firstName: userData.firstName || null,
+    lastName: userData.lastName || null,
+    email: userData.email || null,
+    campus: userData.campus || null,
+    profile: userData.profile ? {
+      ...userData.profile,
+      updatedAt: new Date().toISOString()
+    } : null
+  };
+};
+
+/**
+ * Calculate user activity score based on various metrics
+ * @param {Object} userData - User data with activity metrics
+ * @returns {Object} Activity score and breakdown
+ */
+export const calculateUserActivityScore = (userData) => {
+  if (!userData) {
+    return {
+      score: 0,
+      breakdown: { projects: 0, audits: 0, collaboration: 0 },
+      grade: 'F'
+    };
+  }
+
+  const projectScore = Math.min(100, (userData.totalProjects || 0) * 5);
+  const auditScore = Math.min(100, ((userData.totalUp || 0) + (userData.totalDown || 0)) * 2);
+  const collaborationScore = Math.min(100, (userData.auditRatio || 0) * 20);
+
+  const overallScore = Math.round((projectScore + auditScore + collaborationScore) / 3);
+
+  let grade = 'F';
+  if (overallScore >= 90) grade = 'A';
+  else if (overallScore >= 80) grade = 'B';
+  else if (overallScore >= 70) grade = 'C';
+  else if (overallScore >= 60) grade = 'D';
+
+  return {
+    score: overallScore,
+    breakdown: {
+      projects: Math.round(projectScore),
+      audits: Math.round(auditScore),
+      collaboration: Math.round(collaborationScore)
+    },
+    grade
+  };
 };

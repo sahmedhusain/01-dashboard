@@ -411,3 +411,167 @@ export const calculateResponsiveDimensions = (containerWidth, containerHeight, a
     aspectRatio
   };
 };
+
+/**
+ * Calculate optimal chart layout for multiple charts
+ * @param {number} chartCount - Number of charts to layout
+ * @param {Object} containerDimensions - Container dimensions
+ * @param {Object} options - Layout options
+ * @returns {Object} Layout configuration
+ */
+export const calculateChartLayout = (chartCount, containerDimensions, options = {}) => {
+  const {
+    minChartWidth = 300,
+    minChartHeight = 200,
+    gap = 20,
+    aspectRatio = 1.5
+  } = options;
+
+  const { width: containerWidth, height: containerHeight } = containerDimensions;
+
+  // Calculate optimal grid layout
+  const cols = Math.ceil(Math.sqrt(chartCount));
+  const rows = Math.ceil(chartCount / cols);
+
+  // Calculate available space per chart
+  const availableWidth = (containerWidth - (gap * (cols - 1))) / cols;
+  const availableHeight = (containerHeight - (gap * (rows - 1))) / rows;
+
+  // Determine chart size based on constraints
+  let chartWidth = Math.max(minChartWidth, availableWidth);
+  let chartHeight = Math.max(minChartHeight, availableHeight);
+
+  // Maintain aspect ratio if possible
+  if (chartWidth / chartHeight > aspectRatio) {
+    chartWidth = chartHeight * aspectRatio;
+  } else {
+    chartHeight = chartWidth / aspectRatio;
+  }
+
+  return {
+    cols,
+    rows,
+    chartWidth: Math.floor(chartWidth),
+    chartHeight: Math.floor(chartHeight),
+    gap,
+    totalWidth: cols * chartWidth + (cols - 1) * gap,
+    totalHeight: rows * chartHeight + (rows - 1) * gap
+  };
+};
+
+/**
+ * Calculate data smoothing using moving average
+ * @param {Array} data - Array of data points
+ * @param {number} windowSize - Size of moving average window
+ * @param {string} valueKey - Key to extract values from data points
+ * @returns {Array} Smoothed data
+ */
+export const calculateMovingAverage = (data, windowSize = 5, valueKey = 'value') => {
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  const smoothedData = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const start = Math.max(0, i - Math.floor(windowSize / 2));
+    const end = Math.min(data.length, start + windowSize);
+
+    const window = data.slice(start, end);
+    const average = window.reduce((sum, point) => {
+      const value = typeof point === 'object' ? point[valueKey] : point;
+      return sum + (typeof value === 'number' ? value : 0);
+    }, 0) / window.length;
+
+    smoothedData.push({
+      ...data[i],
+      [valueKey]: average,
+      originalValue: typeof data[i] === 'object' ? data[i][valueKey] : data[i]
+    });
+  }
+
+  return smoothedData;
+};
+
+/**
+ * Calculate trend line using linear regression
+ * @param {Array} data - Array of data points
+ * @param {string} xKey - Key for x values
+ * @param {string} yKey - Key for y values
+ * @returns {Object} Trend line data
+ */
+export const calculateTrendLine = (data, xKey = 'x', yKey = 'y') => {
+  if (!Array.isArray(data) || data.length < 2) {
+    return {
+      slope: 0,
+      intercept: 0,
+      correlation: 0,
+      points: []
+    };
+  }
+
+  // Convert data to numeric arrays
+  const points = data.map(point => ({
+    x: typeof point[xKey] === 'number' ? point[xKey] : new Date(point[xKey]).getTime(),
+    y: typeof point[yKey] === 'number' ? point[yKey] : 0
+  })).filter(point => !isNaN(point.x) && !isNaN(point.y));
+
+  if (points.length < 2) {
+    return { slope: 0, intercept: 0, correlation: 0, points: [] };
+  }
+
+  const n = points.length;
+  const sumX = points.reduce((sum, p) => sum + p.x, 0);
+  const sumY = points.reduce((sum, p) => sum + p.y, 0);
+  const sumXY = points.reduce((sum, p) => sum + p.x * p.y, 0);
+  const sumXX = points.reduce((sum, p) => sum + p.x * p.x, 0);
+  const sumYY = points.reduce((sum, p) => sum + p.y * p.y, 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  // Calculate correlation coefficient
+  const numerator = n * sumXY - sumX * sumY;
+  const denominator = Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
+  const correlation = denominator !== 0 ? numerator / denominator : 0;
+
+  // Generate trend line points
+  const minX = Math.min(...points.map(p => p.x));
+  const maxX = Math.max(...points.map(p => p.x));
+  const trendPoints = [
+    { x: minX, y: slope * minX + intercept },
+    { x: maxX, y: slope * maxX + intercept }
+  ];
+
+  return {
+    slope,
+    intercept,
+    correlation,
+    points: trendPoints,
+    equation: `y = ${slope.toFixed(2)}x + ${intercept.toFixed(2)}`
+  };
+};
+
+/**
+ * Calculate chart animation timing
+ * @param {number} dataLength - Number of data points
+ * @param {Object} options - Animation options
+ * @returns {Object} Animation configuration
+ */
+export const calculateAnimationTiming = (dataLength, options = {}) => {
+  const {
+    baseDuration = 1000,
+    maxDuration = 3000,
+    delayPerItem = 50,
+    easing = 'ease-out'
+  } = options;
+
+  const totalDelay = Math.min(dataLength * delayPerItem, maxDuration - baseDuration);
+  const duration = Math.min(baseDuration + totalDelay, maxDuration);
+
+  return {
+    duration,
+    delayPerItem,
+    totalDelay,
+    easing,
+    staggered: dataLength > 1
+  };
+};

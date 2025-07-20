@@ -361,3 +361,150 @@ export const calculateXPStreaks = (xpData) => {
     lastActivityDate: lastActivityDate.toDateString()
   };
 };
+
+/**
+ * Calculate XP velocity (XP gained per day/week/month)
+ * @param {Array} xpData - Array of XP data points with dates
+ * @param {string} period - Period to calculate ('day', 'week', 'month')
+ * @returns {Object} XP velocity statistics
+ */
+export const calculateXPVelocity = (xpData, period = 'week') => {
+  if (!Array.isArray(xpData) || xpData.length === 0) {
+    return {
+      averageVelocity: 0,
+      currentVelocity: 0,
+      trend: 'stable',
+      periodLabel: period
+    };
+  }
+
+  const sortedData = xpData.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const now = new Date();
+
+  // Calculate period in milliseconds
+  const periodMs = {
+    day: 24 * 60 * 60 * 1000,
+    week: 7 * 24 * 60 * 60 * 1000,
+    month: 30 * 24 * 60 * 60 * 1000
+  }[period] || 7 * 24 * 60 * 60 * 1000;
+
+  // Group data by periods
+  const periods = {};
+  sortedData.forEach(point => {
+    const date = new Date(point.date);
+    const periodKey = Math.floor(date.getTime() / periodMs);
+
+    if (!periods[periodKey]) {
+      periods[periodKey] = { xp: 0, count: 0 };
+    }
+    periods[periodKey].xp += point.amount || 0;
+    periods[periodKey].count++;
+  });
+
+  const velocities = Object.values(periods).map(p => p.xp);
+  const averageVelocity = velocities.length > 0
+    ? velocities.reduce((sum, v) => sum + v, 0) / velocities.length
+    : 0;
+
+  // Current period velocity
+  const currentPeriodKey = Math.floor(now.getTime() / periodMs);
+  const currentVelocity = periods[currentPeriodKey]?.xp || 0;
+
+  // Determine trend
+  let trend = 'stable';
+  if (velocities.length >= 2) {
+    const recentVelocity = velocities.slice(-2).reduce((sum, v) => sum + v, 0) / 2;
+    const olderVelocity = velocities.slice(0, -2).reduce((sum, v) => sum + v, 0) / Math.max(1, velocities.length - 2);
+
+    if (recentVelocity > olderVelocity * 1.1) trend = 'increasing';
+    else if (recentVelocity < olderVelocity * 0.9) trend = 'decreasing';
+  }
+
+  return {
+    averageVelocity: Math.round(averageVelocity),
+    currentVelocity: Math.round(currentVelocity),
+    trend,
+    periodLabel: period,
+    totalPeriods: velocities.length
+  };
+};
+
+/**
+ * Calculate XP efficiency score based on time spent vs XP gained
+ * @param {Array} xpData - Array of XP data points
+ * @param {Array} timeData - Array of time spent data (optional)
+ * @returns {Object} Efficiency metrics
+ */
+export const calculateAdvancedXPEfficiency = (xpData, timeData = []) => {
+  if (!Array.isArray(xpData) || xpData.length === 0) {
+    return {
+      efficiencyScore: 0,
+      xpPerHour: 0,
+      totalHours: 0,
+      grade: 'F'
+    };
+  }
+
+  const totalXP = xpData.reduce((sum, point) => sum + (point.amount || 0), 0);
+  const totalHours = timeData.length > 0
+    ? timeData.reduce((sum, point) => sum + (point.hours || 0), 0)
+    : xpData.length * 2; // Estimate 2 hours per XP entry if no time data
+
+  const xpPerHour = totalHours > 0 ? totalXP / totalHours : 0;
+
+  // Calculate efficiency score (0-100)
+  // Assume 500 XP/hour is excellent (100%), scale accordingly
+  const efficiencyScore = Math.min(100, (xpPerHour / 500) * 100);
+
+  // Determine grade
+  let grade = 'F';
+  if (efficiencyScore >= 90) grade = 'A';
+  else if (efficiencyScore >= 80) grade = 'B';
+  else if (efficiencyScore >= 70) grade = 'C';
+  else if (efficiencyScore >= 60) grade = 'D';
+
+  return {
+    efficiencyScore: Math.round(efficiencyScore),
+    xpPerHour: Math.round(xpPerHour),
+    totalHours: Math.round(totalHours),
+    totalXP,
+    grade
+  };
+};
+
+/**
+ * Predict future XP based on current trends
+ * @param {Array} xpData - Historical XP data
+ * @param {number} daysAhead - Days to predict ahead
+ * @returns {Object} XP prediction
+ */
+export const predictFutureXP = (xpData, daysAhead = 30) => {
+  if (!Array.isArray(xpData) || xpData.length < 2) {
+    return {
+      predictedXP: 0,
+      confidence: 0,
+      trend: 'insufficient_data'
+    };
+  }
+
+  const velocity = calculateXPVelocity(xpData, 'day');
+  const currentTotal = xpData.reduce((sum, point) => sum + (point.amount || 0), 0);
+
+  // Simple linear prediction based on average daily velocity
+  const predictedGain = velocity.averageVelocity * daysAhead;
+  const predictedXP = currentTotal + predictedGain;
+
+  // Calculate confidence based on data consistency
+  const velocities = xpData.map(point => point.amount || 0);
+  const variance = velocities.reduce((sum, v) => sum + Math.pow(v - velocity.averageVelocity, 2), 0) / velocities.length;
+  const standardDeviation = Math.sqrt(variance);
+  const confidence = Math.max(0, Math.min(100, 100 - (standardDeviation / velocity.averageVelocity) * 100));
+
+  return {
+    predictedXP: Math.round(predictedXP),
+    predictedGain: Math.round(predictedGain),
+    confidence: Math.round(confidence),
+    trend: velocity.trend,
+    daysAhead
+  };
+};

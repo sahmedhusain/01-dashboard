@@ -80,6 +80,9 @@ export const processXPTimelineChartData = (transactions, options = {}) => {
     return {
       isValid: false,
       data: [],
+      points: [],
+      dateRange: null,
+      maxXP: 0,
       chartDimensions: calculateChartDimensions(width, height, margins),
       error: 'No transaction data available'
     };
@@ -92,6 +95,9 @@ export const processXPTimelineChartData = (transactions, options = {}) => {
     return {
       isValid: false,
       data: [],
+      points: [],
+      dateRange: null,
+      maxXP: 0,
       chartDimensions: calculateChartDimensions(width, height, margins),
       error: 'No XP transactions available'
     };
@@ -460,11 +466,11 @@ const formatChartDate = (date) => {
 };
 
 /**
- * Format tick value for display
+ * Format tick value for display (uses shared formatNumber from dataFormatting)
  */
 const formatTickValue = (value) => {
   if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`; // Standardized to uppercase K
   return Math.round(value).toString();
 };
 

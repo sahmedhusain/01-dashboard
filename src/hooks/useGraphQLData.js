@@ -6,32 +6,59 @@ import { graphqlService } from '../graphql/dataService.js';
 // Based on graphqlexample1 and graphqlexample2 patterns
 // ============================================================================
 
-// Generic hook for GraphQL data fetching with error handling
-export const useGraphQLData = (fetchFunction, dependencies = []) => {
+// Enhanced generic hook for GraphQL data fetching (aligned with reference patterns)
+export const useGraphQLData = (fetchFunction, dependencies = [], options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastFetch, setLastFetch] = useState(null);
 
-  const fetchData = useCallback(async () => {
+  const {
+    cacheTime = 5 * 60 * 1000, // 5 minutes default cache
+    retryOnError = true,
+    maxRetries = 3,
+    retryDelay = 1000,
+  } = options;
+
+  const fetchData = useCallback(async (forceRefresh = false) => {
+    // Check cache validity
+    if (!forceRefresh && lastFetch && data && (Date.now() - lastFetch < cacheTime)) {
+      return; // Use cached data
+    }
+
     setLoading(true);
     setError(null);
-    
-    try {
-      const [result, err] = await fetchFunction();
-      if (err) {
+
+    let retryCount = 0;
+
+    const attemptFetch = async () => {
+      try {
+        const [result, err] = await fetchFunction();
+        if (err) {
+          // Retry logic for retryable errors
+          if (retryOnError && retryCount < maxRetries && isRetryableError(err)) {
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, retryDelay * retryCount));
+            return attemptFetch();
+          }
+
+          setError(err);
+          setData(null);
+        } else {
+          setData(result);
+          setError(null);
+          setLastFetch(Date.now());
+        }
+      } catch (err) {
         setError(err);
         setData(null);
-      } else {
-        setData(result);
-        setError(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err);
-      setData(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchFunction, ...dependencies]);
+    };
+
+    await attemptFetch();
+  }, [fetchFunction, cacheTime, retryOnError, maxRetries, retryDelay, lastFetch, data, ...dependencies]);
 
   useEffect(() => {
     fetchData();
@@ -41,8 +68,23 @@ export const useGraphQLData = (fetchFunction, dependencies = []) => {
     data,
     loading,
     error,
-    refetch: fetchData,
+    refetch: () => fetchData(true), // Force refresh
+    lastFetch,
+    isCached: lastFetch && data && (Date.now() - lastFetch < cacheTime),
   };
+};
+
+// Helper function to determine if an error is retryable
+const isRetryableError = (error) => {
+  const message = error.message?.toLowerCase() || '';
+  return (
+    message.includes('network') ||
+    message.includes('timeout') ||
+    message.includes('server error') ||
+    message.includes('503') ||
+    message.includes('502') ||
+    message.includes('500')
+  );
 };
 
 // ============================================================================
@@ -323,9 +365,9 @@ export const useDashboardData = (userId) => {
         [projectResultsInfo, projectResultsError],
       ] = await Promise.all([
         graphqlService.getUserLevel(userLogin),
-        graphqlService.getTotalXP(),
-        graphqlService.getUserSkills(),
-        graphqlService.getAuditRatio(),
+        graphqlService.getTotalXP(userLogin),
+        graphqlService.getUserSkills(userLogin),
+        graphqlService.getAuditRatio(userLogin),
         graphqlService.getXPByProject(userLogin),
         graphqlService.getUserGroups(userLogin),
         graphqlService.getXPTimeline(userLogin),

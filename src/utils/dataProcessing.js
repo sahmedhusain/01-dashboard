@@ -86,20 +86,21 @@ export const processSkillsData = (skillsData) => {
 
   // Create skills map with highest amount for each skill
   const skillsMap = skillsData.reduce((acc, item) => {
-    const skill = item.type.replace(/^skill_/, '');
+    const skillName = item.type?.replace(/^skill_/, '') || item.name || 'Unknown';
+    const amount = item.amount || item.totalXP || 0;
     // Use Math.max to keep the highest amount for each skill
-    acc[skill] = Math.max(acc[skill] || 0, item.amount);
+    acc[skillName] = Math.max(acc[skillName] || 0, amount);
     return acc;
   }, {});
 
-  // Convert to array and sort by amount
+  // Convert to array and sort by amount (consistent with component processors)
   return Object.entries(skillsMap)
-    .map(([skill, amount]) => ({
-      name: skill,  // Use 'name' property for consistency with components
-      skill,        // Keep 'skill' for backward compatibility
-      amount
+    .map(([name, totalXP]) => ({
+      name,           // Primary property name for consistency
+      totalXP,        // Use totalXP for consistency with schema adapters
+      amount: totalXP // Keep amount for backward compatibility
     }))
-    .sort((a, b) => b.amount - a.amount);
+    .sort((a, b) => b.totalXP - a.totalXP);
 };
 
 // ============================================================================
@@ -125,20 +126,23 @@ export const formatAuditRatio = (ratio) => {
 // Process audit statistics for display (moved from JSX)
 export const processAuditStatistics = (auditRatio, totalUp, totalDown) => {
   return {
-    auditsGiven: Math.round((totalUp || 0) / 1000) || 0, // Convert from micro-units
-    auditsReceived: totalDown || 0,
+    auditsGiven: Math.round((totalUp || 0) / 1000000) || 0, // Convert from micro-units to MB
+    auditsReceived: Math.round((totalDown || 0) / 1000000) || 0, // Convert to MB
     auditRatioValue: auditRatio?.auditRatio || auditRatio || 0,
-    auditRatioFormatted: formatAuditRatio(auditRatio?.auditRatio || auditRatio || 0)
+    auditRatioFormatted: `${(auditRatio?.auditRatio || auditRatio || 0).toFixed(1)} MB`
   };
 };
 
 // Process profile display data (moved from JSX)
 export const processProfileDisplayData = (user, totalXP, level, passRate) => {
+  const campus = user?.campus || 'Unknown Campus';
+  const formattedCampus = campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase();
+
   return {
     userLevel: level || 0,
     projectPassRate: passRate || 0,
     levelProgress: getXPProgress(totalXP, level || 0),
-    campus: user?.campus || 'Unknown Campus',
+    campus: formattedCampus,
     registrationDate: user?.createdAt,
   };
 };
@@ -233,21 +237,7 @@ export const processXPByProject = (xpProjectsData) => {
 // PROGRESS DATA PROCESSING
 // ============================================================================
 
-// Process progress data
-export const processProgressData = (progressData) => {
-  if (!Array.isArray(progressData)) return [];
-
-  return progressData.map(progress => ({
-    id: progress.id,
-    grade: progress.grade,
-    isDone: progress.isDone,
-    path: progress.path,
-    projectName: progress.object?.name || progress.path.split('/').pop(),
-    projectType: progress.object?.type || 'unknown',
-    createdAt: progress.createdAt,
-    updatedAt: progress.updatedAt,
-  }));
-};
+// Note: processProgressData functionality merged into processProgressWithUsers
 
 // Calculate completion rate from progress data
 export const calculateCompletionRate = (progressData) => {
@@ -394,27 +384,7 @@ export const safeJsonParse = (jsonString, defaultValue = {}) => {
   }
 };
 
-// Format date for display
-export const formatDate = (dateString) => {
-  if (!dateString) return '';
-  
-  try {
-    return new Date(dateString).toLocaleDateString();
-  } catch {
-    return dateString;
-  }
-};
-
-// Format date and time for display
-export const formatDateTime = (dateString) => {
-  if (!dateString) return '';
-  
-  try {
-    return new Date(dateString).toLocaleString();
-  } catch {
-    return dateString;
-  }
-};
+// Note: formatDate and formatDateTime moved to dataFormatting.js to avoid duplication
 
 // Calculate percentage
 export const calculatePercentage = (value, total) => {
@@ -422,16 +392,7 @@ export const calculatePercentage = (value, total) => {
   return Math.round((value / total) * 100);
 };
 
-// Format large numbers
-export const formatNumber = (num) => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
-  }
-  return num.toString();
-};
+// Note: formatNumber moved to dataFormatting.js to avoid duplication
 
 // Truncate text
 export const truncateText = (text, maxLength = 50) => {
@@ -480,32 +441,264 @@ export const processSearchData = (activeGroups, pendingAudits, completedAudits, 
   };
 };
 
-// Search functions (moved from JSX)
-export const searchProjects = (projects, searchTerm) => {
-  if (!searchTerm) return projects;
-  return projects.filter(project =>
-    project.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.object?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.captain?.login?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+// ============================================================================
+// ENHANCED SEARCH FUNCTIONS (extracted from JSX components)
+// ============================================================================
+
+/**
+ * Enhanced project search with multiple criteria
+ * @param {Array} projects - Array of project objects
+ * @param {string} searchTerm - Search term
+ * @param {Array} statusFilter - Array of status filters
+ * @param {string} campusFilter - Campus filter
+ * @returns {Array} Filtered projects
+ */
+export const searchProjects = (projects, searchTerm = '', statusFilter = [], campusFilter = '') => {
+  if (!Array.isArray(projects)) return [];
+
+  let filtered = projects;
+
+  // Apply search term filter
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter(project =>
+      project.path?.toLowerCase().includes(term) ||
+      project.object?.name?.toLowerCase().includes(term) ||
+      project.captain?.login?.toLowerCase().includes(term) ||
+      project.description?.toLowerCase().includes(term)
+    );
+  }
+
+  // Apply status filter
+  if (statusFilter.length > 0) {
+    filtered = filtered.filter(project =>
+      statusFilter.includes(project.status)
+    );
+  }
+
+  // Apply campus filter
+  if (campusFilter && campusFilter !== 'all') {
+    filtered = filtered.filter(project =>
+      project.campus?.toLowerCase() === campusFilter.toLowerCase()
+    );
+  }
+
+  return filtered;
 };
 
-export const searchAudits = (audits, searchTerm) => {
-  if (!searchTerm) return audits;
-  return audits.filter(audit =>
-    audit.group?.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    audit.auditor?.login?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    audit.group?.object?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+/**
+ * Enhanced audit search with multiple criteria
+ * @param {Array} audits - Array of audit objects
+ * @param {string} searchTerm - Search term
+ * @param {Array} statusFilter - Array of status filters
+ * @param {string} gradeFilter - Grade filter (pass/fail/all)
+ * @returns {Array} Filtered audits
+ */
+export const searchAudits = (audits, searchTerm = '', statusFilter = [], gradeFilter = 'all') => {
+  if (!Array.isArray(audits)) return [];
+
+  let filtered = audits;
+
+  // Apply search term filter
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter(audit =>
+      audit.group?.path?.toLowerCase().includes(term) ||
+      audit.auditor?.login?.toLowerCase().includes(term) ||
+      audit.auditee?.login?.toLowerCase().includes(term) ||
+      audit.group?.object?.name?.toLowerCase().includes(term)
+    );
+  }
+
+  // Apply status filter
+  if (statusFilter.length > 0) {
+    filtered = filtered.filter(audit =>
+      statusFilter.includes(audit.status || (audit.grade !== null ? 'completed' : 'pending'))
+    );
+  }
+
+  // Apply grade filter
+  if (gradeFilter !== 'all') {
+    filtered = filtered.filter(audit => {
+      const grade = audit.grade || 0;
+      if (gradeFilter === 'pass') return grade >= 1;
+      if (gradeFilter === 'fail') return grade < 1;
+      return true;
+    });
+  }
+
+  return filtered;
 };
 
-export const searchUsers = (users, searchTerm) => {
-  if (!searchTerm) return users;
-  return users.filter(user =>
-    user.login?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+/**
+ * Enhanced user search with multiple criteria
+ * @param {Array} users - Array of user objects
+ * @param {string} searchTerm - Search term
+ * @param {string} campusFilter - Campus filter
+ * @param {string} levelFilter - Level filter
+ * @returns {Array} Filtered users
+ */
+export const searchUsers = (users, searchTerm = '', campusFilter = '', levelFilter = '') => {
+  if (!Array.isArray(users)) return [];
+
+  let filtered = users;
+
+  // Apply search term filter
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter(user =>
+      user.login?.toLowerCase().includes(term) ||
+      user.firstName?.toLowerCase().includes(term) ||
+      user.lastName?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term)
+    );
+  }
+
+  // Apply campus filter
+  if (campusFilter && campusFilter !== 'all') {
+    filtered = filtered.filter(user =>
+      user.campus?.toLowerCase() === campusFilter.toLowerCase()
+    );
+  }
+
+  // Apply level filter
+  if (levelFilter && levelFilter !== 'all') {
+    const minLevel = parseInt(levelFilter);
+    if (!isNaN(minLevel)) {
+      filtered = filtered.filter(user => (user.level || 0) >= minLevel);
+    }
+  }
+
+  return filtered;
+};
+
+// ============================================================================
+// SORTING AND FILTERING UTILITIES (extracted from components)
+// ============================================================================
+
+/**
+ * Sort data by multiple criteria
+ * @param {Array} data - Array to sort
+ * @param {string} sortBy - Sort field
+ * @param {string} sortOrder - Sort order (asc/desc)
+ * @returns {Array} Sorted array
+ */
+export const sortData = (data, sortBy, sortOrder = 'desc') => {
+  if (!Array.isArray(data) || !sortBy) return data;
+
+  return [...data].sort((a, b) => {
+    let aVal = a[sortBy];
+    let bVal = b[sortBy];
+
+    // Handle nested properties (e.g., 'user.name')
+    if (sortBy.includes('.')) {
+      const keys = sortBy.split('.');
+      aVal = keys.reduce((obj, key) => obj?.[key], a);
+      bVal = keys.reduce((obj, key) => obj?.[key], b);
+    }
+
+    // Handle null/undefined values
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return sortOrder === 'asc' ? -1 : 1;
+    if (bVal == null) return sortOrder === 'asc' ? 1 : -1;
+
+    // Handle different data types
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      const comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+      return sortOrder === 'asc' ? comparison : -comparison;
+    }
+
+    if (typeof aVal === 'number' && typeof bVal === 'number') {
+      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+
+    // Handle dates
+    if (aVal instanceof Date && bVal instanceof Date) {
+      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+
+    // Default string comparison
+    const comparison = String(aVal).localeCompare(String(bVal));
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
+};
+
+/**
+ * Filter data by multiple criteria
+ * @param {Array} data - Array to filter
+ * @param {Object} filters - Filter criteria object
+ * @returns {Array} Filtered array
+ */
+export const filterData = (data, filters = {}) => {
+  if (!Array.isArray(data) || !filters || Object.keys(filters).length === 0) {
+    return data;
+  }
+
+  return data.filter(item => {
+    return Object.entries(filters).every(([key, value]) => {
+      if (value === null || value === undefined || value === '' || value === 'all') {
+        return true;
+      }
+
+      let itemValue = item[key];
+
+      // Handle nested properties
+      if (key.includes('.')) {
+        const keys = key.split('.');
+        itemValue = keys.reduce((obj, k) => obj?.[k], item);
+      }
+
+      // Handle array filters
+      if (Array.isArray(value)) {
+        return value.includes(itemValue);
+      }
+
+      // Handle string filters (case-insensitive)
+      if (typeof value === 'string' && typeof itemValue === 'string') {
+        return itemValue.toLowerCase().includes(value.toLowerCase());
+      }
+
+      // Handle exact matches
+      return itemValue === value;
+    });
+  });
+};
+
+/**
+ * Paginate data array
+ * @param {Array} data - Array to paginate
+ * @param {number} page - Current page (1-based)
+ * @param {number} pageSize - Items per page
+ * @returns {Object} Pagination result
+ */
+export const paginateData = (data, page = 1, pageSize = 10) => {
+  if (!Array.isArray(data)) {
+    return {
+      items: [],
+      totalItems: 0,
+      totalPages: 0,
+      currentPage: 1,
+      hasNextPage: false,
+      hasPrevPage: false
+    };
+  }
+
+  const totalItems = data.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const currentPage = Math.max(1, Math.min(page, totalPages));
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+
+  return {
+    items: data.slice(startIndex, endIndex),
+    totalItems,
+    totalPages,
+    currentPage,
+    hasNextPage: currentPage < totalPages,
+    hasPrevPage: currentPage > 1,
+    startIndex: startIndex + 1,
+    endIndex: Math.min(endIndex, totalItems)
+  };
 };
 
 // Filter functions (moved from JSX)
@@ -650,7 +843,7 @@ export const processObjectsData = (objectsData) => {
 // ENHANCED PROGRESS DATA PROCESSING
 // ============================================================================
 
-// Process progress data with user information
+// Process progress data with user information (enhanced version)
 export const processProgressWithUsers = (progressData) => {
   if (!Array.isArray(progressData)) return [];
 
@@ -699,4 +892,187 @@ export const processResultsWithUsers = (resultsData) => {
     createdAt: result.createdAt,
     updatedAt: result.updatedAt,
   }));
+};
+
+// ============================================================================
+// ENHANCED UTILITY FUNCTIONS FOR COMPONENT PROCESSORS
+// ============================================================================
+
+/**
+ * Enhanced data validation with detailed error reporting
+ * @param {any} data - Data to validate
+ * @param {Object} schema - Validation schema
+ * @returns {Object} Validation result with errors
+ */
+export const validateDataWithErrors = (data, schema) => {
+  const errors = [];
+  const warnings = [];
+
+  if (!data) {
+    errors.push('Data is null or undefined');
+    return { isValid: false, errors, warnings, data: null };
+  }
+
+  // Type validation
+  if (schema.type && typeof data !== schema.type) {
+    errors.push(`Expected type ${schema.type}, got ${typeof data}`);
+  }
+
+  // Required fields validation
+  if (schema.required && Array.isArray(schema.required)) {
+    schema.required.forEach(field => {
+      if (!(field in data) || data[field] == null) {
+        errors.push(`Required field '${field}' is missing`);
+      }
+    });
+  }
+
+  // Array validation
+  if (schema.type === 'array' && Array.isArray(data)) {
+    if (schema.minLength && data.length < schema.minLength) {
+      warnings.push(`Array length ${data.length} is below minimum ${schema.minLength}`);
+    }
+    if (schema.maxLength && data.length > schema.maxLength) {
+      warnings.push(`Array length ${data.length} exceeds maximum ${schema.maxLength}`);
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    data: errors.length === 0 ? data : null
+  };
+};
+
+/**
+ * Deep merge objects with array handling
+ * @param {Object} target - Target object
+ * @param {Object} source - Source object
+ * @returns {Object} Merged object
+ */
+export const deepMerge = (target, source) => {
+  if (!target || !source) return target || source || {};
+
+  const result = { ...target };
+
+  Object.keys(source).forEach(key => {
+    if (Array.isArray(source[key])) {
+      result[key] = [...(source[key] || [])];
+    } else if (source[key] && typeof source[key] === 'object') {
+      result[key] = deepMerge(target[key] || {}, source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  });
+
+  return result;
+};
+
+/**
+ * Batch process data with progress tracking
+ * @param {Array} data - Data array to process
+ * @param {Function} processor - Processing function
+ * @param {Object} options - Processing options
+ * @returns {Promise<Object>} Processing result with progress
+ */
+export const batchProcess = async (data, processor, options = {}) => {
+  const { batchSize = 100, onProgress } = options;
+
+  if (!Array.isArray(data)) {
+    throw new Error('Data must be an array');
+  }
+
+  const results = [];
+  const errors = [];
+  const total = data.length;
+
+  for (let i = 0; i < data.length; i += batchSize) {
+    const batch = data.slice(i, i + batchSize);
+
+    try {
+      const batchResults = await Promise.all(
+        batch.map(async (item, index) => {
+          try {
+            return await processor(item, i + index);
+          } catch (error) {
+            errors.push({ index: i + index, error: error.message });
+            return null;
+          }
+        })
+      );
+
+      results.push(...batchResults.filter(result => result !== null));
+
+      if (onProgress) {
+        onProgress({
+          processed: Math.min(i + batchSize, total),
+          total,
+          percentage: Math.round((Math.min(i + batchSize, total) / total) * 100)
+        });
+      }
+    } catch (error) {
+      errors.push({ batch: i / batchSize, error: error.message });
+    }
+  }
+
+  return {
+    results,
+    errors,
+    total,
+    processed: results.length,
+    success: errors.length === 0
+  };
+};
+
+/**
+ * Create data transformation pipeline
+ * @param {Array} transformers - Array of transformation functions
+ * @returns {Function} Pipeline function
+ */
+export const createPipeline = (transformers) => {
+  return (data) => {
+    return transformers.reduce((result, transformer) => {
+      try {
+        return transformer(result);
+      } catch (error) {
+        console.error('Pipeline transformation error:', error);
+        return result;
+      }
+    }, data);
+  };
+};
+
+/**
+ * Memoize function results with TTL support
+ * @param {Function} fn - Function to memoize
+ * @param {number} ttl - Time to live in milliseconds
+ * @returns {Function} Memoized function
+ */
+export const memoizeWithTTL = (fn, ttl = 60000) => {
+  const cache = new Map();
+
+  return (...args) => {
+    const key = JSON.stringify(args);
+    const cached = cache.get(key);
+
+    if (cached && Date.now() - cached.timestamp < ttl) {
+      return cached.value;
+    }
+
+    const result = fn(...args);
+    cache.set(key, { value: result, timestamp: Date.now() });
+
+    // Clean up expired entries
+    if (cache.size > 100) {
+      const now = Date.now();
+      for (const [k, v] of cache.entries()) {
+        if (now - v.timestamp >= ttl) {
+          cache.delete(k);
+        }
+      }
+    }
+
+    return result;
+  };
 };

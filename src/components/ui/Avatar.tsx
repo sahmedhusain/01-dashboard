@@ -4,14 +4,28 @@ import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { getAvatarUrl, getUserDisplayName } from '../../utils/dataFormatting';
 
+interface User {
+  id?: number;
+  login?: string;
+  firstName?: string;
+  lastName?: string;
+  profile?: {
+    avatar?: string;
+    avatarUrl?: string;
+    picture?: string;
+  };
+  avatar?: string;
+}
+
 interface AvatarProps {
-  user: any;
+  user: User | null;
   size?: string;
   className?: string;
   showBorder?: boolean;
   animate?: boolean;
   onClick?: () => void;
-  [key: string]: any;
+  style?: React.CSSProperties;
+  key?: React.Key;
 }
 
 /**

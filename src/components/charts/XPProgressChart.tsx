@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { processXPProgressChartData } from '../../utils/componentDataProcessors/chartProcessors';
-import { createXPProgressChart, calculateChartDimensions, generateChartAnimations } from '../../utils/calculations/chartCalculations';
 
 const XPProgressChart = ({ 
   data = [], 

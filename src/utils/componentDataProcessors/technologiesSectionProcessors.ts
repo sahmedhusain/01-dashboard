@@ -7,6 +7,7 @@
 import { getTopSkills, groupSkillsByCategory, getSkillProgress } from '../schemaAdapters/skillsSchemaAdapter';
 import { normalizeUserData } from '../schemaAdapters/userSchemaAdapter';
 import { sortData, filterData } from '../dataProcessing';
+import { formatXP } from '../dataFormatting';
 
 /**
  * Process all data for the TechnologiesSection component
@@ -276,16 +277,7 @@ const calculateSkillProgressPercentage = (level) => {
 
 // Note: categorizeSkill function moved to exported version below to avoid duplication
 
-/**
- * Format XP value for display
- * @param {number} xp - XP value
- * @returns {string} Formatted XP string
- */
-const formatXP = (xp) => {
-  if (xp >= 1000000) return `${(xp / 1000000).toFixed(1)}M XP`;
-  if (xp >= 1000) return `${(xp / 1000).toFixed(1)}k XP`;
-  return `${xp} XP`;
-};
+
 
 /**
  * Categorize skill by type for filtering and display

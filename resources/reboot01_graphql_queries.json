@@ -1,0 +1,191 @@
+{
+  "introspection_query": {
+    "description": "Get the complete GraphQL schema",
+    "query": "query IntrospectionQuery {\n  __schema {\n    queryType { name }\n    mutationType { name }\n    subscriptionType { name }\n    types {\n      ...FullType\n    }\n    directives {\n      name\n      description\n      locations\n      args {\n        ...InputValue\n      }\n    }\n  }\n}\n\nfragment FullType on __Type {\n  kind\n  name\n  description\n  fields(includeDeprecated: true) {\n    name\n    description\n    args {\n      ...InputValue\n    }\n    type {\n      ...TypeRef\n    }\n    isDeprecated\n    deprecationReason\n  }\n  inputFields {\n    ...InputValue\n  }\n  interfaces {\n    ...TypeRef\n  }\n  enumValues(includeDeprecated: true) {\n    name\n    description\n    isDeprecated\n    deprecationReason\n  }\n  possibleTypes {\n    ...TypeRef\n  }\n}\n\nfragment InputValue on __InputValue {\n  name\n  description\n  type { ...TypeRef }\n  defaultValue\n}\n\nfragment TypeRef on __Type {\n  kind\n  name\n  ofType {\n    kind\n    name\n    ofType {\n      kind\n      name\n      ofType {\n        kind\n        name\n        ofType {\n          kind\n          name\n          ofType {\n            kind\n            name\n            ofType {\n              kind\n              name\n              ofType {\n                kind\n                name\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+  },
+  "user_queries": {
+    "description": "User management related queries",
+    "get_all_users": {
+      "query": "query GetAllUsers {\n  user {\n    id\n    githubLogin\n    profile\n    attrs\n    createdAt\n    updatedAt\n    campus\n  }\n}"
+    },
+    "get_user_by_id": {
+      "query": "query GetUserById($id: Int!) {\n  user(where: {id: {_eq: $id}}) {\n    id\n    githubLogin\n    profile\n    attrs\n    createdAt\n    updatedAt\n    campus\n    user_roles {\n      role {\n        id\n        slug\n        name\n        description\n      }\n    }\n    transactions {\n      id\n      type\n      amount\n      createdAt\n      path\n      objectId\n    }\n    progresses {\n      id\n      grade\n      isDone\n      path\n      createdAt\n    }\n  }\n}",
+      "variables": {"id": 1}
+    },
+    "get_users_by_campus": {
+      "query": "query GetUsersByCampus($campus: String!) {\n  user(where: {campus: {_eq: $campus}}) {\n    id\n    githubLogin\n    profile\n    createdAt\n    campus\n  }\n}",
+      "variables": {"campus": "madeira"}
+    }
+  },
+  "role_queries": {
+    "description": "Role and permission related queries",
+    "get_all_roles": {
+      "query": "query GetAllRoles {\n  role {\n    id\n    slug\n    name\n    description\n    createdAt\n    updatedAt\n    user_roles {\n      user {\n        id\n        githubLogin\n      }\n    }\n  }\n}"
+    },
+    "get_user_roles": {
+      "query": "query GetUserRoles {\n  user_role {\n    id\n    user {\n      id\n      githubLogin\n      profile\n    }\n    role {\n      id\n      slug\n      name\n      description\n    }\n  }\n}"
+    }
+  },
+  "object_queries": {
+    "description": "Object structure and curriculum related queries",
+    "get_all_objects": {
+      "query": "query GetAllObjects {\n  object {\n    id\n    name\n    type\n    status\n    attrs\n    childrenAttrs\n    createdAt\n    updatedAt\n    campus\n    referenceId\n    referencedAt\n    authorId\n  }\n}"
+    },
+    "get_object_hierarchy": {
+      "query": "query GetObjectHierarchy {\n  object {\n    id\n    name\n    type\n    attrs\n    campus\n    children: object_children {\n      id\n      key\n      index\n      attrs\n      child: childByChildid {\n        id\n        name\n        type\n        attrs\n      }\n    }\n    parents: object_children_by_childid {\n      id\n      key\n      index\n      parent: objectByParentid {\n        id\n        name\n        type\n      }\n    }\n  }\n}"
+    },
+    "get_objects_by_type": {
+      "query": "query GetObjectsByType($type: String!) {\n  object(where: {type: {_eq: $type}}) {\n    id\n    name\n    type\n    attrs\n    campus\n    createdAt\n  }\n}",
+      "variables": {"type": "project"}
+    },
+    "get_object_children": {
+      "query": "query GetObjectChildren {\n  object_child {\n    id\n    parentId\n    childId\n    attrs\n    key\n    index\n    parent: objectByParentid {\n      id\n      name\n      type\n    }\n    child: childByChildid {\n      id\n      name\n      type\n    }\n  }\n}"
+    }
+  },
+  "event_queries": {
+    "description": "Event and registration related queries",
+    "get_all_events": {
+      "query": "query GetAllEvents {\n  event {\n    id\n    createdAt\n    endAt\n    registrationId\n    objectId\n    parentId\n    status\n    path\n    campus\n    code\n    object {\n      id\n      name\n      type\n    }\n    registration {\n      id\n      startAt\n      endAt\n      eventStartAt\n    }\n    event_users {\n      user {\n        id\n        githubLogin\n      }\n    }\n  }\n}"
+    },
+    "get_event_with_users": {
+      "query": "query GetEventWithUsers($id: Int!) {\n  event(where: {id: {_eq: $id}}) {\n    id\n    path\n    campus\n    status\n    createdAt\n    endAt\n    object {\n      name\n      type\n    }\n    event_users {\n      id\n      createdAt\n      user {\n        id\n        githubLogin\n        profile\n      }\n    }\n    groups {\n      id\n      status\n      captainId\n      group_users {\n        user {\n          id\n          githubLogin\n        }\n      }\n    }\n  }\n}",
+      "variables": {"id": 1}
+    },
+    "get_registrations": {
+      "query": "query GetRegistrations {\n  registration {\n    id\n    createdAt\n    startAt\n    endAt\n    eventStartAt\n    objectId\n    parentId\n    attrs\n    path\n    campus\n    object {\n      id\n      name\n      type\n    }\n    registration_users {\n      id\n      createdAt\n      user {\n        id\n        githubLogin\n      }\n    }\n    events {\n      id\n      status\n      path\n    }\n  }\n}"
+    },
+    "get_event_users": {
+      "query": "query GetEventUsers {\n  event_user {\n    id\n    createdAt\n    userId\n    eventId\n    user {\n      id\n      githubLogin\n      profile\n    }\n    event {\n      id\n      path\n      campus\n      object {\n        name\n        type\n      }\n    }\n  }\n}"
+    },
+    "get_registration_users": {
+      "query": "query GetRegistrationUsers {\n  registration_user {\n    id\n    createdAt\n    registrationId\n    userId\n    registration {\n      id\n      path\n      object {\n        name\n        type\n      }\n    }\n    user {\n      id\n      githubLogin\n      profile\n    }\n  }\n}"
+    }
+  },
+  "group_queries": {
+    "description": "Group and collaboration related queries",
+    "get_all_groups": {
+      "query": "query GetAllGroups {\n  group {\n    id\n    objectId\n    eventId\n    captainId\n    createdAt\n    updatedAt\n    status\n    path\n    campus\n    object {\n      id\n      name\n      type\n    }\n    event {\n      id\n      path\n    }\n    captain: userByCaptainid {\n      id\n      githubLogin\n      profile\n    }\n    group_users {\n      id\n      confirmed\n      createdAt\n      user {\n        id\n        githubLogin\n      }\n    }\n  }\n}"
+    },
+    "get_group_by_id": {
+      "query": "query GetGroupById($id: Int!) {\n  group(where: {id: {_eq: $id}}) {\n    id\n    status\n    path\n    campus\n    createdAt\n    object {\n      name\n      type\n      attrs\n    }\n    captain: userByCaptainid {\n      id\n      githubLogin\n      profile\n    }\n    group_users {\n      id\n      confirmed\n      createdAt\n      updatedAt\n      user {\n        id\n        githubLogin\n        profile\n      }\n    }\n    audits {\n      id\n      grade\n      createdAt\n      auditor: userByAuditorid {\n        id\n        githubLogin\n      }\n    }\n    progresses {\n      id\n      grade\n      isDone\n      userId\n    }\n  }\n}",\n      "variables": {"id": 1}
+    },
+    "get_group_users": {
+      "query": "query GetGroupUsers {\n  group_user {\n    id\n    userId\n    groupId\n    confirmed\n    createdAt\n    updatedAt\n    user {\n      id\n      githubLogin\n      profile\n    }\n    group {\n      id\n      status\n      path\n      object {\n        name\n        type\n      }\n    }\n  }\n}"
+    },
+    "get_group_status": {
+      "query": "query GetGroupStatus {\n  group_status {\n    status\n  }\n}"
+    }
+  },
+  "audit_queries": {
+    "description": "Audit and review related queries",
+    "get_all_audits": {
+      "query": "query GetAllAudits {\n  audit {\n    id\n    groupId\n    auditorId\n    attrs\n    grade\n    createdAt\n    updatedAt\n    code\n    resultId\n    version\n    endAt\n    private\n    group {\n      id\n      path\n      object {\n        name\n        type\n      }\n    }\n    auditor: userByAuditorid {\n      id\n      githubLogin\n      profile\n    }\n    result {\n      id\n      grade\n      type\n      status\n    }\n  }\n}"
+    },
+    "get_audits_by_auditor": {
+      "query": "query GetAuditsByAuditor($auditorId: Int!) {\n  audit(where: {auditorId: {_eq: $auditorId}}) {\n    id\n    grade\n    createdAt\n    attrs\n    version\n    group {\n      id\n      path\n      captain: userByCaptainid {\n        githubLogin\n      }\n      group_users {\n        user {\n          githubLogin\n        }\n      }\n    }\n    result {\n      id\n      grade\n      status\n    }\n  }\n}",
+      "variables": {"auditorId": 1}
+    },
+    "get_pending_audits": {
+      "query": "query GetPendingAudits {\n  audit(where: {resultId: {_is_null: true}, endAt: {_gt: \"now()\"}}) {\n    id\n    groupId\n    auditorId\n    endAt\n    code\n    group {\n      id\n      path\n      object {\n        name\n        type\n      }\n    }\n    auditor: userByAuditorid {\n      id\n      githubLogin\n    }\n  }\n}"
+    }
+  },
+  "result_queries": {
+    "description": "Result and assessment related queries",
+    "get_all_results": {
+      "query": "query GetAllResults {\n  result {\n    id\n    createdAt\n    updatedAt\n    grade\n    attrs\n    type\n    status\n    userId\n    groupId\n    objectId\n    path\n    version\n    eventId\n    isLast\n    campus\n    user {\n      id\n      githubLogin\n    }\n    group {\n      id\n      status\n    }\n    object {\n      id\n      name\n      type\n    }\n    event {\n      id\n      path\n    }\n  }\n}"
+    },
+    "get_results_by_user": {
+      "query": "query GetResultsByUser($userId: Int!) {\n  result(where: {userId: {_eq: $userId}}) {\n    id\n    grade\n    type\n    status\n    createdAt\n    isLast\n    path\n    object {\n      name\n      type\n    }\n    event {\n      path\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    },
+    "get_results_by_object": {
+      "query": "query GetResultsByObject($objectId: Int!) {\n  result(where: {objectId: {_eq: $objectId}}) {\n    id\n    grade\n    type\n    status\n    createdAt\n    user {\n      id\n      githubLogin\n    }\n    group {\n      id\n      captain: userByCaptainid {\n        githubLogin\n      }\n    }\n  }\n}",
+      "variables": {"objectId": 1}
+    }
+  },
+  "progress_queries": {
+    "description": "Progress tracking related queries",
+    "get_all_progress": {
+      "query": "query GetAllProgress {\n  progress {\n    id\n    createdAt\n    updatedAt\n    userId\n    groupId\n    eventId\n    version\n    grade\n    isDone\n    path\n    campus\n    objectId\n    user {\n      id\n      githubLogin\n    }\n    group {\n      id\n      status\n    }\n    event {\n      id\n      path\n    }\n    object {\n      id\n      name\n      type\n    }\n  }\n}"
+    },
+    "get_progress_by_user": {
+      "query": "query GetProgressByUser($userId: Int!) {\n  progress(where: {userId: {_eq: $userId}}, order_by: {createdAt: desc}) {\n    id\n    grade\n    isDone\n    path\n    createdAt\n    updatedAt\n    object {\n      name\n      type\n    }\n    event {\n      path\n    }\n    group {\n      id\n      status\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    },
+    "get_progress_by_event": {
+      "query": "query GetProgressByEvent($eventId: Int!) {\n  progress(where: {eventId: {_eq: $eventId}}) {\n    id\n    grade\n    isDone\n    path\n    user {\n      id\n      githubLogin\n    }\n    object {\n      name\n      type\n    }\n  }\n}",
+      "variables": {"eventId": 1}
+    }
+  },
+  "transaction_queries": {
+    "description": "Transaction and reward related queries",
+    "get_all_transactions": {
+      "query": "query GetAllTransactions {\n  transaction {\n    id\n    type\n    amount\n    userId\n    attrs\n    createdAt\n    path\n    objectId\n    eventId\n    campus\n    user {\n      id\n      githubLogin\n    }\n    object {\n      id\n      name\n      type\n    }\n    event {\n      id\n      path\n    }\n  }\n}"
+    },
+    "get_transactions_by_user": {
+      "query": "query GetTransactionsByUser($userId: Int!) {\n  transaction(where: {userId: {_eq: $userId}}, order_by: {createdAt: desc}) {\n    id\n    type\n    amount\n    createdAt\n    path\n    object {\n      name\n      type\n    }\n    event {\n      path\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    },
+    "get_xp_transactions": {
+      "query": "query GetXPTransactions {\n  transaction(where: {type: {_eq: \"xp\"}}) {\n    id\n    amount\n    createdAt\n    path\n    user {\n      id\n      githubLogin\n    }\n    object {\n      name\n      type\n    }\n  }\n}"
+    },
+    "get_user_total_xp": {
+      "query": "query GetUserTotalXP($userId: Int!) {\n  transaction_aggregate(where: {userId: {_eq: $userId}, type: {_eq: \"xp\"}}) {\n    aggregate {\n      sum {\n        amount\n      }\n      count\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    }
+  },
+  "match_queries": {
+    "description": "Match and betting related queries",
+    "get_all_matches": {
+      "query": "query GetAllMatches {\n  match {\n    id\n    createdAt\n    updatedAt\n    objectId\n    userId\n    matchId\n    confirmed\n    bet\n    result\n    path\n    campus\n    eventId\n    user {\n      id\n      githubLogin\n    }\n    matched_user: userByMatchid {\n      id\n      githubLogin\n    }\n    object {\n      id\n      name\n      type\n    }\n    event {\n      id\n      path\n    }\n  }\n}"
+    },
+    "get_matches_by_user": {
+      "query": "query GetMatchesByUser($userId: Int!) {\n  match(where: {userId: {_eq: $userId}}) {\n    id\n    confirmed\n    bet\n    result\n    createdAt\n    matched_user: userByMatchid {\n      id\n      githubLogin\n    }\n    object {\n      name\n      type\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    },
+    "get_pending_matches": {
+      "query": "query GetPendingMatches {\n  match(where: {confirmed: {_eq: false}}) {\n    id\n    createdAt\n    user {\n      id\n      githubLogin\n    }\n    object {\n      name\n      type\n    }\n    path\n  }\n}"
+    }
+  },
+  "record_queries": {
+    "description": "Record and ban related queries",
+    "get_all_records": {
+      "query": "query GetAllRecords {\n  record {\n    id\n    userId\n    authorId\n    message\n    banEndAt\n    createdAt\n    user {\n      id\n      githubLogin\n    }\n    author: userByAuthorid {\n      id\n      githubLogin\n    }\n  }\n}"
+    },
+    "get_active_bans": {
+      "query": "query GetActiveBans {\n  record(where: {banEndAt: {_gt: \"now()\"}}) {\n    id\n    userId\n    message\n    banEndAt\n    createdAt\n    user {\n      id\n      githubLogin\n    }\n    author: userByAuthorid {\n      id\n      githubLogin\n    }\n  }\n}"
+    },
+    "get_records_by_user": {
+      "query": "query GetRecordsByUser($userId: Int!) {\n  record(where: {userId: {_eq: $userId}}) {\n    id\n    message\n    banEndAt\n    createdAt\n    author: userByAuthorid {\n      id\n      githubLogin\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    }
+  },
+  "token_queries": {
+    "description": "Token related queries",
+    "get_all_tokens": {
+      "query": "query GetAllTokens {\n  token {\n    id\n    status\n    createdAt\n    updatedAt\n  }\n}"
+    }
+  },
+  "complex_analytical_queries": {
+    "description": "Complex queries for analytics and reporting",
+    "get_campus_statistics": {
+      "query": "query GetCampusStatistics($campus: String!) {\n  user_aggregate(where: {campus: {_eq: $campus}}) {\n    aggregate {\n      count\n    }\n  }\n  event_aggregate(where: {campus: {_eq: $campus}}) {\n    aggregate {\n      count\n    }\n  }\n  group_aggregate(where: {campus: {_eq: $campus}}) {\n    aggregate {\n      count\n    }\n  }\n  result_aggregate(where: {campus: {_eq: $campus}}) {\n    aggregate {\n      count\n      avg {\n        grade\n      }\n    }\n  }\n}",
+      "variables": {"campus": "madeira"}
+    },
+    "get_user_complete_profile": {
+      "query": "query GetUserCompleteProfile($userId: Int!) {\n  user(where: {id: {_eq: $userId}}) {\n    id\n    githubLogin\n    profile\n    attrs\n    createdAt\n    campus\n    user_roles {\n      role {\n        slug\n        name\n      }\n    }\n    transactions_aggregate {\n      aggregate {\n        sum {\n          amount\n        }\n        count\n      }\n    }\n    transactions(where: {type: {_eq: \"xp\"}}, limit: 10, order_by: {createdAt: desc}) {\n      id\n      amount\n      createdAt\n      object {\n        name\n        type\n      }\n    }\n    progresses(limit: 20, order_by: {createdAt: desc}) {\n      id\n      grade\n      isDone\n      path\n      createdAt\n      object {\n        name\n        type\n      }\n    }\n    results(limit: 10, order_by: {createdAt: desc}) {\n      id\n      grade\n      type\n      status\n      createdAt\n      object {\n        name\n        type\n      }\n    }\n    group_users {\n      group {\n        id\n        status\n        path\n        object {\n          name\n          type\n        }\n      }\n    }\n    audits {\n      id\n      grade\n      createdAt\n      group {\n        path\n        object {\n          name\n        }\n      }\n    }\n  }\n}",
+      "variables": {"userId": 1}
+    },
+    "get_event_detailed_info": {
+      "query": "query GetEventDetailedInfo($eventId: Int!) {\n  event(where: {id: {_eq: $eventId}}) {\n    id\n    path\n    campus\n    status\n    createdAt\n    endAt\n    object {\n      id\n      name\n      type\n      attrs\n    }\n    registration {\n      id\n      startAt\n      endAt\n      eventStartAt\n      registration_users_aggregate {\n        aggregate {\n          count\n        }\n      }\n    }\n    event_users_aggregate {\n      aggregate {\n        count\n      }\n    }\n    groups_aggregate {\n      aggregate {\n        count\n      }\n    }\n    progresses {\n      id\n      grade\n      isDone\n      user {\n        githubLogin\n      }\n    }\n    results_aggregate {\n      aggregate {\n        count\n        avg {\n          grade\n        }\n      }\n    }\n  }\n}",
+      "variables": {"eventId": 1}
+    },
+    "get_leaderboard": {
+      "query": "query GetLeaderboard($campus: String!, $limit: Int = 50) {\n  user(where: {campus: {_eq: $campus}}, limit: $limit) {\n    id\n    githubLogin\n    profile\n    transactions_aggregate(where: {type: {_eq: \"xp\"}}) {\n      aggregate {\n        sum {\n          amount\n        }\n      }\n    }\n    results_aggregate(where: {type: {_eq: \"tester\"}, grade: {_gte: 1}}) {\n      aggregate {\n        count\n      }\n    }\n    progresses_aggregate(where: {isDone: {_eq: true}}) {\n      aggregate {\n        count\n      }\n    }\n  }\n}",
+      "variables": {"campus": "madeira", "limit": 50}
+    },
+    "get_project_statistics": {
+      "query": "query GetProjectStatistics($objectId: Int!) {\n  object(where: {id: {_eq: $objectId}}) {\n    id\n    name\n    type\n    attrs\n    results_aggregate {\n      aggregate {\n        count\n        avg {\n          grade\n        }\n      }\n    }\n    results(where: {grade: {_gte: 1}}) {\n      id\n      grade\n      user {\n        githubLogin\n      }\n      group {\n        id\n        group_users {\n          user {\n            githubLogin\n          }\n        }\n      }\n    }\n    progresses_aggregate {\n      aggregate {\n        count\n      }\n    }\n    groups_aggregate {\n      aggregate {\n        count\n      }\n    }\n    audits_aggregate {\n      aggregate {\n        count\n        avg {\n          grade\n        }\n      }\n    }\n  }\n}",
+      "variables": {"objectId": 1}
+    }
+  }\n}

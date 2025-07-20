@@ -7,6 +7,7 @@
 import {
   formatDate,
   formatXP,
+  formatXPForQuickStats,
   getXPProgress,
   getUserDisplayName,
   getUserEmail,
@@ -89,6 +90,7 @@ export const processUserLevelInfo = (totalXP: any, level: any) => {
     level: userLevel,
     totalXP: totalXP || 0,
     formattedXP: formatXP(totalXP || 0),
+    formattedXPForQuickStats: formatXPForQuickStats(totalXP || 0),
     progress: {
       percentage: levelProgress.percentage || 0,
       current: levelProgress.current || 0,
@@ -148,6 +150,7 @@ export const processUserAuditStats = (auditRatio: any, totalUp: any, totalDown: 
 /**
  * Process user skills for display (profile-specific version)
  * @param {Array} skills - User skills array
+ * @param {number} totalXP - Total XP for percentage calculation
  * @param {number} maxSkills - Maximum number of skills to show
  * @returns {Object} Processed skills data
  */
@@ -162,13 +165,19 @@ export const processUserSkills = (skills: any, totalXP: any, maxSkills = 5) => {
 
   const topSkills = skills
     .slice(0, maxSkills)
-    .map(skill => ({
-      name: skill.name || 'Unknown Skill',
-      displayName: (skill.name || 'Unknown Skill').replace(/_/g, ' '),
-      totalXP: skill.totalXP || 0,
-      formattedXP: formatXP(skill.totalXP || 0),
-      formattedPercentage: formatSkillPercentage(skill.totalXP || 0, totalXP)
-    }));
+    .map(skill => {
+      // Skills from transaction data have 'amount' field, not 'totalXP'
+      const skillAmount = skill.amount || skill.totalXP || 0;
+      const skillName = skill.name || skill.type?.replace(/^skill_/, '') || 'Unknown Skill';
+
+      return {
+        name: skillName,
+        displayName: skillName.replace(/_/g, ' '),
+        totalXP: skillAmount,
+        formattedXP: formatXP(skillAmount),
+        formattedPercentage: formatSkillPercentage(skillAmount, totalXP)
+      };
+    });
 
   return {
     topSkills,
@@ -189,7 +198,7 @@ export const processProfileSectionData = (data: any) => {
       levelInfo: processUserLevelInfo(0, 0),
       projectStats: processUserProjectStats(0, 0, 0),
       auditStats: processUserAuditStats(0, 0, 0),
-      skillsData: processUserSkills([]),
+      skillsData: processUserSkills([], 0),
       loading: true,
       hasData: false
     };
@@ -276,7 +285,7 @@ export const processQuickStats = (profileData: any) => {
   return [
     {
       label: 'Total XP',
-      value: profileData.levelInfo?.formattedXP || '0 KB XP',
+      value: profileData.levelInfo?.formattedXPForQuickStats || '0',
       color: 'white'
     },
     {
@@ -290,8 +299,8 @@ export const processQuickStats = (profileData: any) => {
       color: 'primary-300'
     },
     {
-      label: 'Audits Given',
-      value: profileData.auditStats?.formattedGiven || '0.00 MB',
+      label: 'Audit Ratio',
+      value: profileData.auditStats?.formattedRatio || '0.0',
       color: 'accent-300'
     },
 

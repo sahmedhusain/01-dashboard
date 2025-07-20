@@ -17,7 +17,7 @@ import {
   getRankTitle,
   getCohortNumber
 } from '../utils/dataProcessing';
-import { formatNumber } from '../utils/dataFormatting';
+import { formatNumber, formatXP, formatAuditRatio } from '../utils/dataFormatting';
 
 // Types for the data context
 interface ProcessedUser {
@@ -280,8 +280,8 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     isEmpty: !loading && !error && !processedData,
 
     // Helper functions
-    getFormattedXP: () => formatNumber(processedData?.totalXP || 0),
-    getFormattedAuditRatio: () => processedData?.auditRatio?.toFixed(2) || '0.00',
+    getFormattedXP: () => formatXP(processedData?.totalXP || 0),
+    getFormattedAuditRatio: () => formatAuditRatio(processedData?.auditRatio || 0),
     getRankInfo: () => ({
       level: processedData?.level || 0,
       title: processedData?.rankTitle || 'Aspiring developer',

@@ -1,0 +1,187 @@
+{
+  "getUserInfo": {
+    "success": {
+      "data": {
+        "user": [
+          {
+            "id": 1,
+            "login": "sayehusain",
+            "firstName": "Sayed",
+            "lastName": "Ahmed Husain",
+            "auditRatio": 1.2,
+            "totalUp": 5000,
+            "totalDown": 4167,
+            "attrs": {
+              "email": "sayed@example.com"
+            },
+            "campus": "bahrain",
+            "profile": {},
+            "createdAt": "2023-05-07T10:30:00Z",
+            "updatedAt": "2024-04-29T15:45:00Z"
+          }
+        ]
+      }
+    },
+    "error": {
+      "errors": [
+        {
+          "message": "User not found",
+          "extensions": {
+            "code": "USER_NOT_FOUND"
+          }
+        }
+      ]
+    }
+  },
+  "getTotalXP": {
+    "success": {
+      "data": {
+        "transaction_aggregate": {
+          "aggregate": {
+            "sum": {
+              "amount": 1300000
+            },
+            "count": 25
+          }
+        }
+      }
+    },
+    "empty": {
+      "data": {
+        "transaction_aggregate": {
+          "aggregate": {
+            "sum": {
+              "amount": null
+            },
+            "count": 0
+          }
+        }
+      }
+    }
+  },
+  "getUserSkills": {
+    "success": {
+      "data": {
+        "transaction": [
+          {
+            "type": "skill_js",
+            "amount": 50000,
+            "createdAt": "2024-01-15T10:00:00Z",
+            "object": {
+              "name": "ascii-art",
+              "type": "project"
+            }
+          },
+          {
+            "type": "skill_go",
+            "amount": 30000,
+            "createdAt": "2024-02-01T14:30:00Z",
+            "object": {
+              "name": "make-your-game",
+              "type": "project"
+            }
+          },
+          {
+            "type": "skill_html",
+            "amount": 25000,
+            "createdAt": "2024-03-10T09:15:00Z",
+            "object": {
+              "name": "forum",
+              "type": "project"
+            }
+          }
+        ]
+      }
+    },
+    "empty": {
+      "data": {
+        "transaction": []
+      }
+    }
+  },
+  "getUserLevel": {
+    "success": {
+      "data": {
+        "event_user": [
+          {
+            "level": 15,
+            "event": {
+              "id": 1,
+              "campus": "bahrain"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "getXPByProject": {
+    "success": {
+      "data": {
+        "transaction": [
+          {
+            "id": 1,
+            "amount": 100000,
+            "createdAt": "2024-03-10T09:15:00Z",
+            "path": "/bahrain/bh-module/forum",
+            "object": {
+              "id": 103,
+              "name": "forum",
+              "type": "project"
+            },
+            "event": {
+              "id": 1,
+              "path": "/bahrain/bh-module",
+              "campus": "bahrain"
+            }
+          },
+          {
+            "id": 2,
+            "amount": 75000,
+            "createdAt": "2024-02-01T14:30:00Z",
+            "path": "/bahrain/bh-module/make-your-game",
+            "object": {
+              "id": 102,
+              "name": "make-your-game",
+              "type": "project"
+            },
+            "event": {
+              "id": 1,
+              "path": "/bahrain/bh-module",
+              "campus": "bahrain"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "authenticationError": {
+    "errors": [
+      {
+        "message": "Authentication required",
+        "extensions": {
+          "code": "UNAUTHENTICATED"
+        }
+      }
+    ]
+  },
+  "permissionError": {
+    "errors": [
+      {
+        "message": "Insufficient permissions",
+        "extensions": {
+          "code": "FORBIDDEN"
+        }
+      }
+    ]
+  },
+  "networkError": {
+    "errors": [
+      {
+        "message": "Network error",
+        "extensions": {
+          "code": "NETWORK_ERROR"
+        }
+      }
+    ]
+  }
+}

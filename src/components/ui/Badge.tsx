@@ -40,7 +40,7 @@ const Badge = ({
   const animationProps = animate ? {
     initial: { scale: 0, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    transition: { type: 'spring', stiffness: 500, damping: 30 } as any,
+    transition: { type: 'spring', stiffness: 500, damping: 30 },
   } : {};
 
   return (

@@ -150,4 +150,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-resources/
+resources/exampleshoots/
+resources/shoots/

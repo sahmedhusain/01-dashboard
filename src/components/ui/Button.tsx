@@ -60,15 +60,15 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       whileHover={{
         scale: disabled || loading ? 1 : 1.02,
-        transition: { type: "spring", stiffness: 400, damping: 10 } as any
+        transition: { type: "spring", stiffness: 400, damping: 10 }
       }}
       whileTap={{
         scale: disabled || loading ? 1 : 0.98,
-        transition: { type: "spring", stiffness: 400, damping: 10 } as any
+        transition: { type: "spring", stiffness: 400, damping: 10 }
       }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 } as any}
+      transition={{ duration: 0.2 }}
       {...props}
     >
       {loading && (

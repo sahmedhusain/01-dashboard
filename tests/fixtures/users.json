@@ -1,0 +1,75 @@
+{
+  "sampleUser": {
+    "id": 1,
+    "login": "sayehusain",
+    "firstName": "Sayed",
+    "lastName": "Ahmed Husain",
+    "email": "sayed@example.com",
+    "campus": "bahrain",
+    "auditRatio": 1.2,
+    "totalUp": 5000,
+    "totalDown": 4167,
+    "attrs": {
+      "email": "sayed@example.com",
+      "phone": "+973-12345678",
+      "country": "Bahrain",
+      "degree": "Computer Science"
+    },
+    "profile": {
+      "avatar": null,
+      "bio": "Software developer passionate about technology"
+    },
+    "createdAt": "2023-05-07T10:30:00Z",
+    "updatedAt": "2024-04-29T15:45:00Z"
+  },
+  "sampleUsers": [
+    {
+      "id": 1,
+      "login": "sayehusain",
+      "firstName": "Sayed",
+      "lastName": "Ahmed Husain",
+      "email": "sayed@example.com",
+      "campus": "bahrain",
+      "auditRatio": 1.2
+    },
+    {
+      "id": 2,
+      "login": "johndoe",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com",
+      "campus": "london",
+      "auditRatio": 0.8
+    },
+    {
+      "id": 3,
+      "login": "janedoe",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane@example.com",
+      "campus": "paris",
+      "auditRatio": 1.5
+    }
+  ],
+  "userWithoutEmail": {
+    "id": 4,
+    "login": "nomail",
+    "firstName": "No",
+    "lastName": "Email",
+    "campus": "bahrain",
+    "auditRatio": 1.0,
+    "attrs": {},
+    "profile": {}
+  },
+  "userWithAvatar": {
+    "id": 5,
+    "login": "avatar_user",
+    "firstName": "Avatar",
+    "lastName": "User",
+    "email": "avatar@example.com",
+    "campus": "bahrain",
+    "profile": {
+      "avatar": "https://github.com/avatar_user.png"
+    }
+  }
+}

@@ -218,7 +218,6 @@ export const GET_TOTAL_XP = `
       where: {
         type: { _eq: "xp" }
         user: { login: { _eq: $userLogin } }
-        event: { path: { _like: "%/bh-module%" } }
       }
     ) {
       aggregate {
@@ -601,21 +600,21 @@ export const GET_DASHBOARD_DATA = `
     # User level information
     event_user(
       where: {
-        event: { path: { _eq: "/bahrain/bh-module" } }
-        userLogin: { _eq: $userLogin }
+        user: { login: { _eq: $userLogin } }
       }
     ) {
       level
       event {
         id
         campus
+        path
       }
     }
 
     # Total XP for user
     transaction_aggregate(
       where: {
-        userLogin: { _eq: $userLogin }
+        user: { login: { _eq: $userLogin } }
         type: { _eq: "xp" }
       }
     ) {

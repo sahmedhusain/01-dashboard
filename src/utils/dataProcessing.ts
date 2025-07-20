@@ -124,18 +124,15 @@ export const processAuditRatio = (auditData: any) => {
   };
 };
 
-// Format audit ratio for display
-export const formatAuditRatio = (ratio: any) => {
-  return typeof ratio === 'number' ? ratio.toFixed(2) : "0.00";
-};
+// Note: formatAuditRatio moved to dataFormatting.ts for consistency
 
 // Process audit statistics for display (moved from JSX)
 export const processAuditStatistics = (auditRatio: any, totalUp: any, totalDown: any) => {
   return {
-    auditsGiven: Math.round((totalUp || 0) / 1000000) || 0, // Convert from micro-units to MB
-    auditsReceived: Math.round((totalDown || 0) / 1000000) || 0, // Convert to MB
+    auditsGiven: Math.round(totalUp || 0), // Keep original values
+    auditsReceived: Math.round(totalDown || 0), // Keep original values
     auditRatioValue: auditRatio?.auditRatio || auditRatio || 0,
-    auditRatioFormatted: `${(auditRatio?.auditRatio || auditRatio || 0).toFixed(1)} MB`
+    auditRatioFormatted: (auditRatio?.auditRatio || auditRatio || 0).toFixed(1)
   };
 };
 

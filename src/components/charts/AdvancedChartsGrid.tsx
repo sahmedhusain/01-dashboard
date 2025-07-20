@@ -1,36 +1,37 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  createDashboardCharts, 
-  generateChartAnimations,
-  calculateChartDimensions 
+import {
+  createDashboardCharts,
+  generateChartAnimations
 } from '../../utils/calculations/chartCalculations';
+
+interface ChartData {
+  title: string;
+  data?: unknown[];
+  config?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+interface AnimationConfig {
+  duration?: number;
+  delay?: number;
+  ease?: string;
+  [key: string]: unknown;
+}
 
 interface AdvancedChartsGridProps {
   charts: {
-    xpProgress?: {
-      title: string;
-      [key: string]: any;
-    };
-    projectSuccess?: {
-      title: string;
-      [key: string]: any;
-    };
-    skillsRadar?: {
-      title: string;
-      [key: string]: any;
-    };
-    auditPerformance?: {
-      title: string;
-      [key: string]: any;
-    };
+    xpProgress?: ChartData;
+    projectSuccess?: ChartData;
+    skillsRadar?: ChartData;
+    auditPerformance?: ChartData;
   };
   animations: {
-    pathAnimation?: any;
-    pointsAnimation?: any;
-    slicesAnimation?: any[];
-    radarAnimation?: any;
-    barsAnimation?: any[];
+    pathAnimation?: AnimationConfig;
+    pointsAnimation?: AnimationConfig;
+    slicesAnimation?: AnimationConfig[];
+    radarAnimation?: AnimationConfig;
+    barsAnimation?: AnimationConfig[];
   };
 }
 

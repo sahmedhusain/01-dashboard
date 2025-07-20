@@ -1,0 +1,1324 @@
+# =============================================
+# REBOOT01 GRAPHQL COMPLETE QUERY COLLECTION
+# =============================================
+
+# =============================================
+# USER QUERIES
+# =============================================
+
+# Basic user information
+query GetUserBasicInfo($userLogin: String!) {
+  user(where: { login: { _eq: $userLogin } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    campus
+    profile
+    attrs
+    createdAt
+    updatedAt
+  }
+}
+
+# Get user with all relationships
+query GetUserComplete($userLogin: String!) {
+  user(where: { login: { _eq: $userLogin } }) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    totalUp
+    totalDown
+    campus
+    profile
+    attrs
+    createdAt
+    updatedAt
+    transactions(order_by: { createdAt: desc }) {
+      id
+      type
+      amount
+      path
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+    progresses(order_by: { createdAt: desc }) {
+      id
+      grade
+      isDone
+      path
+      version
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+    results(order_by: { createdAt: desc }) {
+      id
+      grade
+      type
+      isLast
+      path
+      version
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+    group_users {
+      group {
+        id
+        status
+        path
+        captain {
+          login
+          firstName
+          lastName
+        }
+        object {
+          name
+          type
+        }
+        event {
+          id
+          path
+        }
+      }
+    }
+    event_users {
+      event {
+        id
+        path
+        createdAt
+        endAt
+        object {
+          name
+          type
+        }
+      }
+    }
+  }
+}
+
+# Get users list with pagination
+query GetUsersList($limit: Int = 20, $offset: Int = 0, $campus: String = null) {
+  user(
+    limit: $limit
+    offset: $offset
+    where: { campus: { _eq: $campus } }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    login
+    firstName
+    lastName
+    auditRatio
+    campus
+    createdAt
+  }
+}
+
+# User aggregated stats
+query GetUserStats($userLogin: String!) {
+  user(where: { login: { _eq: $userLogin } }) {
+    id
+    login
+    auditRatio
+    totalUp
+    totalDown
+    xp_total: transactions_aggregate(where: { type: { _eq: "xp" } }) {
+      aggregate {
+        sum {
+          amount
+        }
+        count
+      }
+    }
+    completed_projects: progresses_aggregate(
+      where: { isDone: { _eq: true }, object: { type: { _eq: "project" } } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    total_audits: audits_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# =============================================
+# TRANSACTION QUERIES
+# =============================================
+
+# Get user transactions
+query GetUserTransactions(
+  $userLogin: String!
+  $limit: Int = 50
+  $offset: Int = 0
+  $type: String = null
+) {
+  transaction(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: $type }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+    offset: $offset
+  ) {
+    id
+    type
+    amount
+    path
+    campus
+    attrs
+    createdAt
+    user {
+      login
+      firstName
+      lastName
+    }
+    object {
+      id
+      name
+      type
+    }
+    event {
+      id
+      path
+    }
+  }
+}
+
+# Get XP transactions only
+query GetUserXPTransactions($userLogin: String!) {
+  transaction(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: "xp" }
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    amount
+    path
+    createdAt
+    object {
+      name
+      type
+    }
+  }
+}
+
+# Get audit transactions (up/down)
+query GetUserAuditTransactions($userLogin: String!) {
+  transaction(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _in: ["up", "down"] }
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    type
+    amount
+    path
+    createdAt
+    object {
+      name
+      type
+    }
+  }
+}
+
+# Transaction aggregates
+query GetTransactionAggregates($userLogin: String!) {
+  xp_total: transaction_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: "xp" }
+    }
+  ) {
+    aggregate {
+      sum {
+        amount
+      }
+      count
+    }
+  }
+  up_total: transaction_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: "up" }
+    }
+  ) {
+    aggregate {
+      sum {
+        amount
+      }
+      count
+    }
+  }
+  down_total: transaction_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: "down" }
+    }
+  ) {
+    aggregate {
+      sum {
+        amount
+      }
+      count
+    }
+  }
+}
+
+# =============================================
+# PROGRESS QUERIES
+# =============================================
+
+# Get user progress
+query GetUserProgress(
+  $userLogin: String!
+  $limit: Int = 50
+  $isDone: Boolean = null
+) {
+  progress(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      isDone: { _eq: $isDone }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    grade
+    isDone
+    path
+    version
+    createdAt
+    updatedAt
+    user {
+      login
+      firstName
+      lastName
+    }
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    group {
+      id
+      status
+      captain {
+        login
+        firstName
+        lastName
+      }
+    }
+    event {
+      id
+      path
+    }
+  }
+}
+
+# Get project progress specifically
+query GetUserProjectProgress($userLogin: String!) {
+  progress(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      object: { type: { _eq: "project" } }
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    grade
+    isDone
+    path
+    version
+    createdAt
+    object {
+      name
+      type
+      attrs
+    }
+    group {
+      id
+      status
+    }
+  }
+}
+
+# Progress statistics
+query GetProgressStats($userLogin: String!) {
+  total_progress: progress_aggregate(
+    where: { user: { login: { _eq: $userLogin } } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  completed_progress: progress_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      isDone: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+  project_progress: progress_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      object: { type: { _eq: "project" } }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# =============================================
+# RESULT QUERIES
+# =============================================
+
+# Get user results
+query GetUserResults(
+  $userLogin: String!
+  $limit: Int = 50
+  $type: String = null
+) {
+  result(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: $type }
+    }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    grade
+    type
+    isLast
+    version
+    attrs
+    path
+    createdAt
+    updatedAt
+    user {
+      login
+      firstName
+      lastName
+    }
+    object {
+      id
+      name
+      type
+    }
+    group {
+      id
+      status
+      captain {
+        login
+      }
+    }
+    event {
+      id
+      path
+    }
+  }
+}
+
+# Get audit results only
+query GetUserAuditResults($userLogin: String!) {
+  result(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _in: ["user_audit", "admit_audit"] }
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    grade
+    type
+    isLast
+    version
+    attrs
+    createdAt
+    object {
+      name
+      type
+    }
+    group {
+      id
+      status
+    }
+  }
+}
+
+# Result statistics
+query GetResultStats($userLogin: String!) {
+  total_results: result_aggregate(
+    where: { user: { login: { _eq: $userLogin } } }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+  audit_results: result_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _in: ["user_audit", "admit_audit"] }
+    }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+  tester_results: result_aggregate(
+    where: {
+      user: { login: { _eq: $userLogin } }
+      type: { _eq: "tester" }
+    }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+}
+
+# =============================================
+# AUDIT QUERIES
+# =============================================
+
+# Get audits performed by user
+query GetUserAudits($userLogin: String!, $limit: Int = 50) {
+  audit(
+    where: { auditor: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    grade
+    version
+    attrs
+    endAt
+    createdAt
+    updatedAt
+    auditor {
+      login
+      firstName
+      lastName
+    }
+    group {
+      id
+      status
+      path
+      object {
+        name
+        type
+      }
+      group_users {
+        user {
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    result {
+      id
+      grade
+      type
+    }
+  }
+}
+
+# Get audits received by user (through groups)
+query GetUserReceivedAudits($userLogin: String!, $limit: Int = 50) {
+  audit(
+    where: { group: { group_users: { user: { login: { _eq: $userLogin } } } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    grade
+    version
+    attrs
+    endAt
+    createdAt
+    auditor {
+      login
+      firstName
+      lastName
+    }
+    group {
+      id
+      status
+      path
+      object {
+        name
+        type
+      }
+    }
+  }
+}
+
+# Audit statistics
+query GetAuditStats($userLogin: String!) {
+  audits_given: audit_aggregate(
+    where: { auditor: { login: { _eq: $userLogin } } }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+  audits_received: audit_aggregate(
+    where: { group: { group_users: { user: { login: { _eq: $userLogin } } } } }
+  ) {
+    aggregate {
+      count
+      avg {
+        grade
+      }
+    }
+  }
+}
+
+# =============================================
+# GROUP QUERIES
+# =============================================
+
+# Get user groups
+query GetUserGroups($userLogin: String!) {
+  group(
+    where: { group_users: { user: { login: { _eq: $userLogin } } } }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    status
+    path
+    campus
+    createdAt
+    updatedAt
+    captain {
+      id
+      login
+      firstName
+      lastName
+    }
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    event {
+      id
+      path
+      createdAt
+      endAt
+    }
+    group_users {
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+    }
+    progresses {
+      id
+      grade
+      isDone
+      version
+      user {
+        login
+      }
+    }
+    results {
+      id
+      grade
+      type
+      isLast
+      user {
+        login
+      }
+    }
+    audits {
+      id
+      grade
+      auditor {
+        login
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
+# Get group details
+query GetGroupDetails($groupId: Int!) {
+  group_by_pk(id: $groupId) {
+    id
+    status
+    path
+    campus
+    createdAt
+    updatedAt
+    captain {
+      id
+      login
+      firstName
+      lastName
+      auditRatio
+    }
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    event {
+      id
+      path
+      createdAt
+      endAt
+      object {
+        name
+        type
+      }
+    }
+    group_users {
+      user {
+        id
+        login
+        firstName
+        lastName
+        auditRatio
+      }
+    }
+    progresses {
+      id
+      grade
+      isDone
+      version
+      createdAt
+      user {
+        login
+        firstName
+        lastName
+      }
+    }
+    results {
+      id
+      grade
+      type
+      isLast
+      version
+      createdAt
+      user {
+        login
+      }
+    }
+    audits {
+      id
+      grade
+      version
+      endAt
+      createdAt
+      auditor {
+        login
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
+# Group statistics
+query GetGroupStats($groupId: Int!) {
+  group_by_pk(id: $groupId) {
+    id
+    member_count: group_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+    progress_stats: progresses_aggregate {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+    audit_count: audits_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# =============================================
+# EVENT QUERIES
+# =============================================
+
+# Get user events
+query GetUserEvents($userLogin: String!, $limit: Int = 50) {
+  event(
+    where: { event_users: { user: { login: { _eq: $userLogin } } } }
+    order_by: { createdAt: desc }
+    limit: $limit
+  ) {
+    id
+    path
+    campus
+    createdAt
+    endAt
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    parent {
+      id
+      path
+      object {
+        name
+        type
+      }
+    }
+    children {
+      id
+      path
+      object {
+        name
+        type
+      }
+    }
+    event_users {
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+    }
+    groups {
+      id
+      status
+      captain {
+        login
+      }
+      group_users_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+}
+
+# Get event details
+query GetEventDetails($eventId: Int!) {
+  event_by_pk(id: $eventId) {
+    id
+    path
+    campus
+    createdAt
+    endAt
+    object {
+      id
+      name
+      type
+      attrs
+    }
+    parent {
+      id
+      path
+      object {
+        name
+        type
+      }
+    }
+    children {
+      id
+      path
+      object {
+        name
+        type
+      }
+    }
+    event_users {
+      user {
+        id
+        login
+        firstName
+        lastName
+        auditRatio
+      }
+    }
+    groups {
+      id
+      status
+      path
+      captain {
+        login
+        firstName
+        lastName
+      }
+      group_users {
+        user {
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+    progresses {
+      id
+      grade
+      isDone
+      user {
+        login
+      }
+      object {
+        name
+        type
+      }
+    }
+  }
+}
+
+# Event statistics
+query GetEventStats($eventId: Int!) {
+  event_by_pk(id: $eventId) {
+    id
+    participant_count: event_users_aggregate {
+      aggregate {
+        count
+      }
+    }
+    group_count: groups_aggregate {
+      aggregate {
+        count
+      }
+    }
+    progress_count: progresses_aggregate {
+      aggregate {
+        count
+      }
+    }
+    completion_rate: progresses_aggregate(where: { isDone: { _eq: true } }) {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# =============================================
+# OBJECT QUERIES
+# =============================================
+
+# Get objects hierarchy
+query GetObjectsHierarchy($campus: String = null, $type: String = null) {
+  object(
+    where: { 
+      campus: { _eq: $campus }
+      type: { _eq: $type }
+    }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    name
+    type
+    campus
+    attrs
+    createdAt
+    updatedAt
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    children {
+      id
+      name
+      type
+      attrs
+    }
+    parents {
+      id
+      name
+      type
+    }
+  }
+}
+
+# Get object details
+query GetObjectDetails($objectId: Int!) {
+  object_by_pk(id: $objectId) {
+    id
+    name
+    type
+    campus
+    attrs
+    createdAt
+    updatedAt
+    author {
+      id
+      login
+      firstName
+      lastName
+    }
+    children {
+      id
+      name
+      type
+      attrs
+      author {
+        login
+      }
+    }
+    parents {
+      id
+      name
+      type
+    }
+    events {
+      id
+      path
+      createdAt
+      endAt
+    }
+    groups {
+      id
+      status
+      captain {
+        login
+      }
+      group_users_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+    progresses_aggregate {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+    results_aggregate {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+    transactions_aggregate(where: { type: { _eq: "xp" } }) {
+      aggregate {
+        sum {
+          amount
+        }
+        count
+      }
+    }
+  }
+}
+
+# Object statistics
+query GetObjectStats($objectId: Int!) {
+  object_by_pk(id: $objectId) {
+    id
+    name
+    type
+    attempts: progresses_aggregate {
+      aggregate {
+        count
+      }
+    }
+    completions: progresses_aggregate(where: { isDone: { _eq: true } }) {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+    active_groups: groups_aggregate(where: { status: { _in: ["working", "audit"] } }) {
+      aggregate {
+        count
+      }
+    }
+    total_xp_awarded: transactions_aggregate(where: { type: { _eq: "xp" } }) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
+  }
+}
+
+# =============================================
+# REGISTRATION QUERIES
+# =============================================
+
+# Get user registrations
+query GetUserRegistrations($userLogin: String!) {
+  registration(
+    where: { registration_users: { user: { login: { _eq: $userLogin } } } }
+    order_by: { createdAt: desc }
+  ) {
+    id
+    createdAt
+    updatedAt
+    object {
+      id
+      name
+      type
+    }
+    registration_users {
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+    }
+  }
+}
+
+# =============================================
+# MISCELLANEOUS QUERIES
+# =============================================
+
+# Get user roles
+query GetUserRoles($userLogin: String!) {
+  user_role(where: { user: { login: { _eq: $userLogin } } }) {
+    role {
+      id
+      name
+    }
+  }
+}
+
+# Get campus statistics
+query GetCampusStats($campus: String!) {
+  user_stats: user_aggregate(where: { campus: { _eq: $campus } }) {
+    aggregate {
+      count
+    }
+  }
+  event_stats: event_aggregate(where: { campus: { _eq: $campus } }) {
+    aggregate {
+      count
+    }
+  }
+  group_stats: group_aggregate(where: { campus: { _eq: $campus } }) {
+    aggregate {
+      count
+    }
+  }
+  progress_stats: progress_aggregate(where: { campus: { _eq: $campus } }) {
+    aggregate {
+      count
+    }
+  }
+  xp_stats: transaction_aggregate(
+    where: { 
+      campus: { _eq: $campus }
+      type: { _eq: "xp" }
+    }
+  ) {
+    aggregate {
+      sum {
+        amount
+      }
+    }
+  }
+}
+
+# Search users
+query SearchUsers($searchTerm: String!, $campus: String = null, $limit: Int = 20) {
+  user(
+    where: {
+      _and: [
+        {
+          _or: [
+            { login: { _ilike: $searchTerm } }
+            { firstName: { _ilike: $searchTerm } }
+            { lastName: { _ilike: $searchTerm } }
+          ]
+        }
+        { campus: { _eq: $campus } }
+      ]
+    }
+    limit: $limit
+    order_by: { login: asc }
+  ) {
+    id
+    login
+    firstName
+    lastName
+    campus
+    auditRatio
+    createdAt
+  }
+}
+
+# Get leaderboard
+query GetLeaderboard($campus: String = null, $limit: Int = 100) {
+  user(
+    where: { campus: { _eq: $campus } }
+    order_by: { 
+      transactions_aggregate: { 
+        sum: { amount: desc }
+      }
+    }
+    limit: $limit
+  ) {
+    id
+    login
+    firstName
+    lastName
+    campus
+    auditRatio
+    totalUp
+    totalDown
+    xp_total: transactions_aggregate(where: { type: { _eq: "xp" } }) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
+  }
+}
+
+# Get audit ratio leaderboard
+query GetAuditRatioLeaderboard($campus: String = null, $limit: Int = 100) {
+  user(
+    where: { 
+      campus: { _eq: $campus }
+      auditRatio: { _is_null: false }
+    }
+    order_by: { auditRatio: desc }
+    limit: $limit
+  ) {
+    id
+    login
+    firstName
+    lastName
+    campus
+    auditRatio
+    totalUp
+    totalDown
+  }
+}
+
+# =============================================
+# SUBSCRIPTION QUERIES (Real-time updates)
+# =============================================
+
+# Subscribe to user progress updates
+subscription SubscribeUserProgress($userLogin: String!) {
+  progress(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { updatedAt: desc }
+    limit: 1
+  ) {
+    id
+    grade
+    isDone
+    path
+    version
+    updatedAt
+    object {
+      name
+      type
+    }
+  }
+}
+
+# Subscribe to user transaction updates
+subscription SubscribeUserTransactions($userLogin: String!) {
+  transaction(
+    where: { user: { login: { _eq: $userLogin } } }
+    order_by: { createdAt: desc }
+    limit: 1
+  ) {
+    id
+    type
+    amount
+    path
+    createdAt
+    object {
+      name
+      type
+    }
+  }
+}
+
+# Subscribe to audit updates
+subscription SubscribeAuditUpdates($userLogin: String!) {
+  audit(
+    where: { auditor: { login: { _eq: $userLogin } } }
+    order_by: { updatedAt: desc }
+    limit: 1
+  ) {
+    id
+    grade
+    version
+    updatedAt
+    group {
+      id
+      object {
+        name
+      }
+    }
+  }
+}

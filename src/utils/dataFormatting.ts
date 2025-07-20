@@ -9,24 +9,47 @@
 
 /**
  * Format XP values for display
- * @param {number} xp - XP value to format
- * @returns {string} Formatted XP string
+ * @param xp - XP value to format
+ * @returns Formatted XP string
  */
-export const formatXP = (xp) => {
-  if (!xp || isNaN(xp)) return '0 KB XP';
+export const formatXP = (xp: number | null | undefined): string => {
+  if (!xp || isNaN(xp)) return '0 XP';
 
-  // XP is already in the correct unit, just divide by 1000 to get KB
-  const kbValue = Math.round(xp / 1000);
-  return `${kbValue} KB XP`;
+  // XP values are already in bytes, format appropriately
+  if (xp >= 1000000) {
+    return `${(xp / 1000000).toFixed(1)}M XP`;
+  } else if (xp >= 1000) {
+    return `${Math.round(xp / 1000)}k XP`;
+  } else {
+    return `${Math.round(xp)} XP`;
+  }
+};
+
+/**
+ * Format XP values for quick stats (KB format, no decimals, no "XP" word)
+ * @param xp - XP value to format
+ * @returns Formatted XP string for quick stats
+ */
+export const formatXPForQuickStats = (xp: number | null | undefined): string => {
+  if (!xp || isNaN(xp)) return '0';
+
+  // XP values are already in bytes, format as KB (rounded integer)
+  if (xp >= 1000000) {
+    return `${Math.round(xp / 1000000)}M`;
+  } else if (xp >= 1000) {
+    return `${Math.round(xp / 1000)}K`;
+  } else {
+    return `${Math.round(xp)}`;
+  }
 };
 
 /**
  * Get XP progress percentage for level progression
- * @param {number} currentXP - Current XP amount
- * @param {number} level - Current level
- * @returns {number} Progress percentage (0-100)
+ * @param currentXP - Current XP amount
+ * @param level - Current level
+ * @returns Progress percentage (0-100)
  */
-export const getXPProgress = (currentXP, level) => {
+export const getXPProgress = (currentXP: number | null | undefined, level: number | null | undefined): number => {
   if (!currentXP || !level) return 0;
   
   // Simple calculation - each level requires 1000 XP more than the previous
@@ -42,12 +65,18 @@ export const getXPProgress = (currentXP, level) => {
 // USER DATA FORMATTING
 // ============================================================================
 
+interface User {
+  firstName?: string;
+  lastName?: string;
+  login?: string;
+}
+
 /**
  * Get user display name from user data
- * @param {Object} user - User object
- * @returns {string} Formatted display name
+ * @param user - User object
+ * @returns Formatted display name
  */
-export const getUserDisplayName = (user) => {
+export const getUserDisplayName = (user: User | null | undefined): string => {
   if (!user) return 'Unknown User';
   
   if (user.firstName && user.lastName) {
@@ -258,12 +287,12 @@ export const formatProjectName = (path) => {
 
 /**
  * Format audit ratio for display
- * @param {number} ratio - Audit ratio value
- * @returns {string} Formatted audit ratio
+ * @param ratio - Audit ratio value
+ * @returns Formatted audit ratio
  */
-export const formatAuditRatio = (ratio) => {
-  if (ratio == null || isNaN(ratio)) return '0.0 MB';
-  return `${ratio.toFixed(1)} MB`;
+export const formatAuditRatio = (ratio: number | null | undefined): string => {
+  if (ratio == null || isNaN(ratio)) return '0.0';
+  return ratio.toFixed(1);
 };
 
 /**
@@ -272,17 +301,18 @@ export const formatAuditRatio = (ratio) => {
  * @returns {string} Formatted audit amount
  */
 export const formatAuditAmount = (amount) => {
-  if (amount == null || isNaN(amount)) return '0.00 MB';
-  return `${(amount / 1000000).toFixed(2)} MB`;
+  if (amount == null || isNaN(amount)) return '0';
+  // Audit amounts are already in correct units, no need to divide
+  return Math.round(amount).toString();
 };
 
 /**
  * Format skill XP as percentage for display
- * @param {number} skillXP - Skill XP value
- * @param {number} totalXP - Total XP for percentage calculation
- * @returns {string} Formatted skill percentage
+ * @param skillXP - Skill XP value
+ * @param totalXP - Total XP for percentage calculation
+ * @returns Formatted skill percentage
  */
-export const formatSkillPercentage = (skillXP, totalXP) => {
+export const formatSkillPercentage = (skillXP: number | null | undefined, totalXP: number | null | undefined): string => {
   if (!skillXP || !totalXP || totalXP === 0) return '0%';
   const percentage = (skillXP / totalXP) * 100;
   return `${Math.round(percentage)}%`;
@@ -329,7 +359,7 @@ export const getRelativeTime = (dateInput) => {
   try {
     const date = new Date(dateInput);
     const now = new Date();
-    const diffMs = now - date;
+    const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) return 'Today';
@@ -389,13 +419,18 @@ export const formatSkillName = (skillName) => {
   return skillName.replace(/_/g, ' ');
 };
 
+interface Thresholds {
+  high?: number;
+  medium?: number;
+}
+
 /**
  * Get badge variant based on numeric value and thresholds
- * @param {number} value - Numeric value to evaluate
- * @param {Object} thresholds - Threshold configuration
- * @returns {string} Badge variant
+ * @param value - Numeric value to evaluate
+ * @param thresholds - Threshold configuration
+ * @returns Badge variant
  */
-export const getBadgeVariant = (value, thresholds = {}) => {
+export const getBadgeVariant = (value: number, thresholds: Thresholds = {}): string => {
   const { high = 70, medium = 40 } = thresholds;
 
   if (value >= high) return 'success';

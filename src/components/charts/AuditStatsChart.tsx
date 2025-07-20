@@ -39,7 +39,7 @@ const AuditStatsChart = ({
     return ticks;
   }, [maxValue, yScale]);
 
-  const auditRatio = auditsReceived > 0 ? `${(auditsGiven / auditsReceived).toFixed(1)} MB` : '∞';
+  const auditRatio = auditsReceived > 0 ? (auditsGiven / auditsReceived).toFixed(1) : '∞';
 
   return (
     <div className={`w-full ${className}`}>

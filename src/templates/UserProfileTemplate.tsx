@@ -11,7 +11,7 @@ import {
   processLevelData,
   getRankTitle
 } from '../utils/dataProcessing';
-import { formatDate } from '../utils/dataFormatting';
+import { formatDate, formatXP, formatAuditRatio } from '../utils/dataFormatting';
 
 // ============================================================================
 // LOADING COMPONENT
@@ -58,7 +58,7 @@ const EmptyState = () => (
 const UserStats = ({ totalXP, level, rankTitle, auditRatio }) => (
   <div className="user-stats">
     <div className="stat-item">
-      <div className="stat-value">{Math.round(totalXP / 1000)} KB</div>
+      <div className="stat-value">{formatXP(totalXP || 0)}</div>
       <div className="stat-label">Total XP</div>
     </div>
 
@@ -68,7 +68,7 @@ const UserStats = ({ totalXP, level, rankTitle, auditRatio }) => (
     </div>
 
     <div className="stat-item">
-      <div className="stat-value">{auditRatio?.toFixed(1) || '0.0'}</div>
+      <div className="stat-value">{formatAuditRatio(auditRatio || 0)}</div>
       <div className="stat-label">Audit Ratio</div>
     </div>
   </div>

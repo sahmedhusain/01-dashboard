@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { formatXP, formatDate } from '../../utils/dataFormatting';
+import { formatXP } from '../../utils/dataFormatting';
 import { processXPTimelineChartData } from '../../utils/componentDataProcessors/chartProcessors';
 
 const XPTimelineChart = ({ 

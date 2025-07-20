@@ -7,6 +7,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import process from 'process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,16 +28,22 @@ function checkDistDirectory() {
   console.log('✅ Dist directory found');
 }
 
+interface FileInfo {
+  name: string;
+  size: number;
+  path: string;
+}
+
 /**
  * Analyze bundle sizes
  */
 function analyzeBundleSizes() {
   console.log('\n📊 Analyzing bundle sizes...');
-  
-  const jsFiles = [];
-  const cssFiles = [];
-  
-  function scanDirectory(dir) {
+
+  const jsFiles: FileInfo[] = [];
+  const cssFiles: FileInfo[] = [];
+
+  function scanDirectory(dir: string): void {
     const files = fs.readdirSync(dir);
     
     files.forEach(file => {
@@ -50,9 +57,9 @@ function analyzeBundleSizes() {
         const relativePath = path.relative(distDir, filePath);
         
         if (file.endsWith('.js')) {
-          jsFiles.push({ path: relativePath, size });
+          jsFiles.push({ name: file, path: relativePath, size });
         } else if (file.endsWith('.css')) {
-          cssFiles.push({ path: relativePath, size });
+          cssFiles.push({ name: file, path: relativePath, size });
         }
       }
     });
@@ -204,10 +211,10 @@ Canonical: https://your-domain.com/.well-known/security.txt
  */
 function optimizeHtml() {
   console.log('\n🔧 Optimizing HTML files...');
-  
-  const htmlFiles = [];
-  
-  function findHtmlFiles(dir) {
+
+  const htmlFiles: string[] = [];
+
+  function findHtmlFiles(dir: string): void {
     const files = fs.readdirSync(dir);
     
     files.forEach(file => {
@@ -290,7 +297,7 @@ function generateDeploymentReport() {
   };
   
   // Calculate build size
-  function calculateSize(dir) {
+  function calculateSize(dir: string): number {
     let totalSize = 0;
     const files = fs.readdirSync(dir);
     

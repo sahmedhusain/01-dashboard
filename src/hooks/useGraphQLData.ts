@@ -326,34 +326,48 @@ export const useDashboardData = (userId) => {
   const [error, setError] = useState(null);
 
   const fetchDashboardData = useCallback(async () => {
-    if (import.meta.env.DEV) {
-      console.log('fetchDashboardData called with userId:', userId);
-    }
+    // 🐛 DEBUG: Dashboard data fetching
+    console.group('🔍 useDashboardData Debug - Fetch Start');
+    console.log('📊 Fetch called with userId:', userId, typeof userId);
+
     if (!userId) {
+      console.log('❌ No userId provided, skipping fetch');
+      console.groupEnd();
       setLoading(false);
       setError(null);
       return;
     }
 
+    console.log('✅ Starting dashboard data fetch...');
     setLoading(true);
     setError(null);
 
     try {
       // First get user info by ID to get the login
+      console.log('🔍 Fetching user by ID:', userId);
       const [userInfo, userError] = await graphqlService.getUserById(userId);
+
+      console.log('👤 User fetch result:', { userInfo, userError });
+
       if (userError) {
+        console.log('❌ User fetch error:', userError);
+        console.groupEnd();
         setError(userError);
         return;
       }
 
       if (!userInfo || !userInfo.login) {
+        console.log('❌ User not found or missing login:', userInfo);
+        console.groupEnd();
         setError(new Error('User not found or missing login'));
         return;
       }
 
       const userLogin = userInfo.login;
+      console.log('✅ User login found:', userLogin);
 
       // Use the new comprehensive analytics method for enhanced data
+      console.log('🔍 Fetching comprehensive analytics for:', userLogin);
       const [
         [levelInfo, levelError],
         [analyticsData, analyticsError],
@@ -366,12 +380,19 @@ export const useDashboardData = (userId) => {
         graphqlService.getAuditTimeline(userLogin),
       ]);
 
+      // 🐛 DEBUG: Log all fetched data
+      console.log('📊 GraphQL Results:');
+      console.log('  - levelInfo:', levelInfo, 'error:', levelError);
+      console.log('  - analyticsData:', analyticsData, 'error:', analyticsError);
+      console.log('  - groupsInfo:', groupsInfo, 'error:', groupsError);
+      console.log('  - auditTimelineInfo:', auditTimelineInfo, 'error:', auditTimelineError);
+
       // Check for any errors
       const errors = [
         levelError, analyticsError, groupsError, auditTimelineError
       ].filter(Boolean);
       if (errors.length > 0) {
-        console.warn('Some dashboard queries failed:', errors);
+        console.warn('⚠️ Some dashboard queries failed:', errors);
         // Don't fail completely, just log warnings
       }
 
@@ -392,7 +413,7 @@ export const useDashboardData = (userId) => {
       }) : null;
 
       // Set enhanced dashboard data
-      setDashboardData({
+      const finalDashboardData = {
         user: userInfo,
         level: levelInfo?.level || 0,
         eventId: levelInfo?.event?.id,
@@ -408,9 +429,16 @@ export const useDashboardData = (userId) => {
         techSkills: analyticsData?.techSkills || [],
         analytics: processedAnalytics,
         rawAnalytics: analyticsData
-      });
+      };
+
+      console.log('📊 Final Dashboard Data:', finalDashboardData);
+      console.groupEnd();
+
+      setDashboardData(finalDashboardData);
 
     } catch (err) {
+      console.log('❌ Dashboard fetch error:', err);
+      console.groupEnd();
       setError(err);
     } finally {
       setLoading(false);

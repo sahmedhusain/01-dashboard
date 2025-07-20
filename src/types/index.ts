@@ -5,7 +5,7 @@ import { ReactNode, ComponentType } from 'react';
 export * from './graphql';
 
 export interface User {
-  id: string;
+  id: number; // Updated to match new GraphQL schema
   login: string;
   firstName?: string;
   lastName?: string;
@@ -14,7 +14,7 @@ export interface User {
   phone?: string;
   createdAt?: string;
   updatedAt?: string;
-  campus?: Campus[];
+  campus?: string; // Updated to match new GraphQL schema (string instead of Campus[])
   auditRatio?: number;
   totalUp?: number;
   totalDown?: number;
@@ -28,21 +28,21 @@ export interface Campus {
 }
 
 export interface Transaction {
-  id: string;
+  id: number; // Updated to match new GraphQL schema
   type: string;
   amount: number;
   createdAt: string;
-  path: string;
-  user: User;
+  path?: string; // Made optional to match new GraphQL schema
+  user?: User; // Made optional to match new GraphQL schema
   object?: {
-    id: string;
+    id: number; // Updated to match new GraphQL schema
     name: string;
     type: string;
   };
 }
 
 export interface Project {
-  id: string;
+  id: number; // Updated to match new GraphQL schema
   name: string;
   createdAt: string;
   updatedAt?: string;
@@ -52,26 +52,26 @@ export interface Project {
 }
 
 export interface Skill {
-  id: string;
+  id: number; // Updated to match new GraphQL schema
   name: string;
   type: string;
   amount: number;
 }
 
 export interface Audit {
-  id: string;
+  id: number; // Updated to match new GraphQL schema
   grade: number;
   createdAt: string;
-  auditor: User;
-  group: {
-    id: string;
+  auditor?: User; // Made optional to match new GraphQL schema
+  group?: {
+    id: number; // Updated to match new GraphQL schema
     path: string;
     captainLogin: string;
     status: string;
     createdAt: string;
     updatedAt: string;
     object: {
-      id: string;
+      id: number; // Updated to match new GraphQL schema
       name: string;
       type: string;
     };

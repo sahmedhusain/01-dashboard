@@ -80,15 +80,20 @@ export const LevelBadge = ({ level, className = '' }) => (
   </Badge>
 );
 
-// XP badge
-export const XPBadge = ({ xp, className = '' }) => (
-  <Badge
-    variant="accent"
-    className={className}
-    animate
-  >
-    {xp.toLocaleString()} XP
-  </Badge>
-);
+// XP badge - displays XP as rounded KB integers without 'XP' suffix per user preference
+export const XPBadge = ({ xp, className = '' }) => {
+  // Convert XP to KB and round to integer
+  const xpInKB = Math.round((xp || 0) / 1000);
+
+  return (
+    <Badge
+      variant="accent"
+      className={className}
+      animate
+    >
+      {xpInKB.toLocaleString()}
+    </Badge>
+  );
+};
 
 export default Badge;

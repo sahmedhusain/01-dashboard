@@ -1,204 +1,298 @@
 // GraphQL type definitions for the application
 
-// Base GraphQL types
+// Base GraphQL types - Updated for new schema
 export interface GraphQLUser {
-  id: string;
+  id: number; // Changed from string to number to match schema
   login: string;
   firstName?: string;
   lastName?: string;
-  displayName?: string;
-  email?: string;
-  phone?: string;
-  createdAt: string;
-  updatedAt?: string;
-  campus?: GraphQLCampus[];
   auditRatio?: number;
   totalUp?: number;
   totalDown?: number;
-}
+  campus?: string; // Changed from array to string to match schema
+  profile?: string;
+  attrs?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt?: string;
 
-export interface GraphQLCampus {
-  id: string;
-  name: string;
-  country?: string;
-  city?: string;
+  // Relationships - Updated for new schema
+  transactions?: GraphQLTransaction[];
+  progresses?: GraphQLProgress[];
+  results?: GraphQLResult[];
+  group_users?: GraphQLGroupUser[];
+  event_users?: GraphQLEventUser[];
+  audits?: GraphQLAudit[];
 }
 
 export interface GraphQLTransaction {
-  id: string;
+  id: number; // Changed from string to number
   type: string;
   amount: number;
+  path?: string; // Made optional to match schema
+  campus?: string;
+  attrs?: Record<string, unknown>;
   createdAt: string;
-  path: string;
-  user: GraphQLUser;
-  object?: {
-    id: string;
-    name: string;
-    type: string;
-  };
+
+  // Relationships - Updated for new schema
+  user?: GraphQLUser;
+  object?: GraphQLObject;
+  event?: GraphQLEvent;
 }
 
-export interface GraphQLProject {
-  id: string;
-  name: string;
+export interface GraphQLProgress {
+  id: number;
+  grade?: number;
+  isDone: boolean;
+  path?: string;
+  version?: string;
   createdAt: string;
   updatedAt?: string;
-  status?: string;
-  grade?: number;
-  path?: string;
-  object?: {
-    id: string;
-    name: string;
-    type: string;
-  };
+
+  // Relationships
+  user?: GraphQLUser;
+  object?: GraphQLObject;
+  group?: GraphQLGroup;
+  event?: GraphQLEvent;
 }
 
-export interface GraphQLSkill {
-  id: string;
+export interface GraphQLResult {
+  id: number;
+  grade?: number;
   type: string;
-  amount: number;
-  transaction?: {
-    id: string;
-    type: string;
-    createdAt: string;
-    object?: {
-      id: string;
-      name: string;
-      type: string;
-    };
-  };
+  isLast: boolean;
+  path?: string;
+  version?: string;
+  createdAt: string;
+
+  // Relationships
+  user?: GraphQLUser;
+  object?: GraphQLObject;
+  group?: GraphQLGroup;
+  event?: GraphQLEvent;
 }
 
 export interface GraphQLAudit {
-  id: string;
-  grade: number;
+  id: number; // Changed from string to number
+  grade?: number; // Made optional to match schema
+  version?: string;
+  attrs?: Record<string, unknown>;
+  endAt?: string;
   createdAt: string;
-  auditor: GraphQLUser;
-  group: {
-    id: string;
-    path: string;
-    captainLogin: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-    object: {
-      id: string;
-      name: string;
-      type: string;
-    };
-  };
+  updatedAt?: string;
+
+  // Relationships - Updated for new schema
+  auditor?: GraphQLUser;
+  group?: GraphQLGroup;
+  result?: GraphQLResult;
 }
 
 export interface GraphQLGroup {
-  id: string;
-  path: string;
-  captainLogin: string;
+  id: number; // Changed from string to number
   status: string;
+  path?: string;
+  campus?: string;
   createdAt: string;
-  updatedAt: string;
-  members: GraphQLUser[];
-  object: {
-    id: string;
-    name: string;
-    type: string;
-  };
+  updatedAt?: string;
+
+  // Relationships - Updated for new schema
+  captain?: GraphQLUser;
+  object?: GraphQLObject;
+  event?: GraphQLEvent;
+  group_users?: GraphQLGroupUser[];
+  progresses?: GraphQLProgress[];
+  results?: GraphQLResult[];
+  audits?: GraphQLAudit[];
 }
 
-// Dashboard data structure
+export interface GraphQLEvent {
+  id: number; // Changed from string to number
+  path?: string;
+  campus?: string;
+  createdAt: string;
+  endAt?: string;
+
+  // Relationships
+  object?: GraphQLObject;
+  event_users?: GraphQLEventUser[];
+  groups?: GraphQLGroup[];
+  transactions?: GraphQLTransaction[];
+  progresses?: GraphQLProgress[];
+  results?: GraphQLResult[];
+}
+
+export interface GraphQLObject {
+  id: number; // Changed from string to number
+  name: string;
+  type: string;
+  attrs?: Record<string, unknown>;
+
+  // Relationships
+  parent?: GraphQLObject;
+  children?: GraphQLObject[];
+  transactions?: GraphQLTransaction[];
+  progresses?: GraphQLProgress[];
+  results?: GraphQLResult[];
+  groups?: GraphQLGroup[];
+  events?: GraphQLEvent[];
+}
+
+// Junction table interfaces - New for schema
+export interface GraphQLGroupUser {
+  user?: GraphQLUser;
+  group?: GraphQLGroup;
+}
+
+export interface GraphQLEventUser {
+  user?: GraphQLUser;
+  event?: GraphQLEvent;
+}
+
+// Aggregate interfaces - New for schema
+export interface GraphQLAggregateResult {
+  count?: number;
+  sum?: Record<string, number>;
+  avg?: Record<string, number>;
+  max?: Record<string, number>;
+  min?: Record<string, number>;
+}
+
+export interface GraphQLTransactionAggregate {
+  aggregate?: GraphQLAggregateResult;
+}
+
+export interface GraphQLProgressAggregate {
+  aggregate?: GraphQLAggregateResult;
+}
+
+export interface GraphQLAuditAggregate {
+  aggregate?: GraphQLAggregateResult;
+}
+
+// Dashboard data structure - Updated for new schema
 export interface GraphQLDashboardData {
-  user: GraphQLUser;
+  user: GraphQLUser[];  // Changed to array to match schema
+  event_user?: Array<{
+    level: number;
+    event: {
+      id: number;
+      campus: string;
+    };
+  }>;
+  transaction_aggregate?: GraphQLTransactionAggregate;
   totalXP: number;
   level: number;
-  eventId?: string;
   auditRatio: {
     totalUp: number;
     totalDown: number;
     ratio: number;
   };
-  skills: GraphQLSkill[];
-  xpProjects: GraphQLTransaction[];
-  xpTimeline: Array<{
-    date: string;
-    amount: number;
-  }>;
-  auditTimeline: Array<{
-    date: string;
-    amount: number;
-  }>;
-  projectResults: GraphQLProject[];
-  groups: GraphQLGroup[];
-}
-
-// Query response types
-export interface UserProfileResponse {
-  user: GraphQLUser[];
-}
-
-export interface TransactionsResponse {
-  transaction: GraphQLTransaction[];
-}
-
-export interface ProjectsResponse {
-  progress: GraphQLProject[];
-}
-
-export interface SkillsResponse {
-  transaction: GraphQLSkill[];
-}
-
-export interface AuditsResponse {
-  audit: GraphQLAudit[];
-}
-
-export interface GroupsResponse {
-  group: GraphQLGroup[];
-}
-
-// Combined dashboard response
-export interface DashboardResponse {
-  user: GraphQLUser[];
-  xpTransactions: GraphQLTransaction[];
-  auditTransactions: GraphQLTransaction[];
-  skills: GraphQLTransaction[];
-  projects: GraphQLProject[];
+  transactions: GraphQLTransaction[];
+  progresses: GraphQLProgress[];
+  results: GraphQLResult[];
   audits: GraphQLAudit[];
   groups: GraphQLGroup[];
 }
 
-// GraphQL query variables
+// Query response types - Updated for new schema
+export interface UserResponse {
+  user: GraphQLUser[];
+}
+
+export interface UserByPkResponse {
+  user_by_pk: GraphQLUser;
+}
+
+export interface TransactionResponse {
+  transaction: GraphQLTransaction[];
+}
+
+export interface ProgressResponse {
+  progress: GraphQLProgress[];
+}
+
+export interface ResultResponse {
+  result: GraphQLResult[];
+}
+
+export interface AuditResponse {
+  audit: GraphQLAudit[];
+}
+
+export interface GroupResponse {
+  group: GraphQLGroup[];
+}
+
+export interface EventResponse {
+  event: GraphQLEvent[];
+}
+
+export interface ObjectResponse {
+  object: GraphQLObject[];
+}
+
+// Combined dashboard response - Updated for new schema
+export interface DashboardResponse {
+  user: GraphQLUser[];
+  event_user?: Array<{
+    level: number;
+    event: {
+      id: number;
+      campus: string;
+    };
+  }>;
+  transaction_aggregate?: GraphQLTransactionAggregate;
+  transactions?: GraphQLTransaction[];
+  progresses?: GraphQLProgress[];
+  results?: GraphQLResult[];
+  audits?: GraphQLAudit[];
+  groups?: GraphQLGroup[];
+}
+
+// GraphQL query variables - Updated for new schema
 export interface UserQueryVariables {
-  userId: string;
+  userLogin?: string;
+  userId?: number; // Changed from string to number
+  limit?: number;
+  offset?: number;
+  campus?: string;
 }
 
 export interface TransactionQueryVariables {
-  userId: string;
-  limit?: number;
-  offset?: number;
+  userLogin?: string;
   type?: string;
-}
-
-export interface ProjectQueryVariables {
-  userId: string;
   limit?: number;
   offset?: number;
 }
 
-export interface SkillQueryVariables {
-  userId: string;
+export interface ProgressQueryVariables {
+  userLogin?: string;
+  userId?: number;
+  isDone?: boolean;
   limit?: number;
-  offset?: number;
 }
 
 export interface AuditQueryVariables {
-  userId: string;
+  userLogin?: string;
   limit?: number;
   offset?: number;
 }
 
 export interface GroupQueryVariables {
-  userId: string;
+  userLogin?: string;
+  eventId?: number;
   limit?: number;
   offset?: number;
+}
+
+export interface SearchVariables {
+  searchTerm?: string;
+  campus?: string;
+  limit?: number;
+}
+
+export interface LeaderboardVariables {
+  campus?: string;
+  limit?: number;
 }
 
 // Error types
@@ -233,42 +327,61 @@ export interface UseGraphQLDataResult<T> {
   refetch: () => Promise<void>;
 }
 
-// Processed data types (after transformation)
+// Processed data types (after transformation) - Updated for new schema
 export interface ProcessedUser {
-  id: string;
+  id: number; // Changed from string to number
   login: string;
   firstName?: string;
   lastName?: string;
   displayName: string;
-  email?: string;
-  phone?: string;
+  auditRatio?: number;
+  totalUp?: number;
+  totalDown?: number;
+  campus?: string; // Changed from array to string
+  profile?: string;
+  attrs?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
-  campus?: ProcessedCampus[];
 }
 
-export interface ProcessedCampus {
-  id: string;
-  name: string;
-  country?: string;
-  city?: string;
-}
-
-export interface ProcessedSkill {
-  id: string;
-  name: string;
+export interface ProcessedTransaction {
+  id: number; // Changed from string to number
   type: string;
   amount: number;
-  category?: string;
+  path?: string;
+  createdAt: string;
+  object?: {
+    id: number;
+    name: string;
+    type: string;
+  };
 }
 
-export interface ProcessedProject {
-  id: string;
-  name: string;
-  amount: number;
-  createdAt: string;
-  status?: string;
+export interface ProcessedProgress {
+  id: number; // Changed from string to number
   grade?: number;
+  isDone: boolean;
+  path?: string;
+  createdAt: string;
+  object?: {
+    id: number;
+    name: string;
+    type: string;
+  };
+}
+
+export interface ProcessedResult {
+  id: number; // Changed from string to number
+  grade?: number;
+  type: string;
+  isLast: boolean;
+  path?: string;
+  createdAt: string;
+  object?: {
+    id: number;
+    name: string;
+    type: string;
+  };
 }
 
 export interface ProcessedTimeline {
@@ -277,13 +390,16 @@ export interface ProcessedTimeline {
   cumulative: number;
 }
 
-export interface ProcessedProjectResult {
-  id: string;
-  name: string;
-  grade: number;
-  status: 'passed' | 'failed' | 'in-progress';
+export interface ProcessedAudit {
+  id: number; // Changed from string to number
+  grade?: number;
   createdAt: string;
-  path?: string;
+  auditor?: ProcessedUser;
+  group?: {
+    id: number;
+    path?: string;
+    status: string;
+  };
 }
 
 export interface ProcessedAuditRatio {
@@ -311,14 +427,47 @@ export interface ProcessedChartData {
   }>;
 }
 
-// Statistics types
+// Statistics types - Updated for new schema
 export interface UserStatistics {
-  totalXP: string;
+  totalXP: number; // Changed from string to number for better processing
   level: number;
-  auditRatio: string;
-  skillsCount: number;
-  projectsCount: number;
-  passRate: string;
+  auditRatio: number; // Changed from string to number
+  totalUp: number;
+  totalDown: number;
+  transactionsCount: number;
+  progressCount: number;
+  resultsCount: number;
+  auditsCount: number;
+  campus: string;
   rankTitle: string;
   cohortNumber: string;
+}
+
+// Leaderboard entry - Updated for new schema
+export interface LeaderboardEntry {
+  id: number;
+  login: string;
+  firstName?: string;
+  lastName?: string;
+  campus?: string;
+  auditRatio?: number;
+  totalUp?: number;
+  totalDown?: number;
+  xp_total?: GraphQLTransactionAggregate;
+}
+
+// Campus statistics - New for schema
+export interface CampusStats {
+  user_stats?: {
+    aggregate?: GraphQLAggregateResult;
+    nodes?: GraphQLUser[];
+  };
+  event_stats?: {
+    aggregate?: GraphQLAggregateResult;
+  };
+  group_stats?: {
+    aggregate?: GraphQLAggregateResult;
+  };
+  progress_stats?: GraphQLProgressAggregate;
+  xp_stats?: GraphQLTransactionAggregate;
 }

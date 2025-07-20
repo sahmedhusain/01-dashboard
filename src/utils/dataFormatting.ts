@@ -8,20 +8,20 @@
 // ============================================================================
 
 /**
- * Format XP values for display
+ * Format XP values for display (rounded KB integers without 'XP' suffix per user preference)
  * @param xp - XP value to format
  * @returns Formatted XP string
  */
 export const formatXP = (xp: number | null | undefined): string => {
-  if (!xp || isNaN(xp)) return '0 XP';
+  if (!xp || isNaN(xp)) return '0';
 
-  // XP values are already in bytes, format appropriately
+  // XP values are already in bytes, format as KB (rounded integer) per user preference
   if (xp >= 1000000) {
-    return `${(xp / 1000000).toFixed(1)}M XP`;
+    return `${Math.round(xp / 1000000)}M`;
   } else if (xp >= 1000) {
-    return `${Math.round(xp / 1000)}k XP`;
+    return `${Math.round(xp / 1000)}K`;
   } else {
-    return `${Math.round(xp)} XP`;
+    return `${Math.round(xp)}`;
   }
 };
 
@@ -33,10 +33,9 @@ export const formatXP = (xp: number | null | undefined): string => {
 export const formatXPForQuickStats = (xp: number | null | undefined): string => {
   if (!xp || isNaN(xp)) return '0';
 
-  // XP values are already in bytes, format as KB (rounded integer)
-  if (xp >= 1000000) {
-    return `${Math.round(xp / 1000000)}M`;
-  } else if (xp >= 1000) {
+  // Always format as KB (never show M) - user preference
+  // Convert to KB and round to integer
+  if (xp >= 1000) {
     return `${Math.round(xp / 1000)}K`;
   } else {
     return `${Math.round(xp)}`;
@@ -149,32 +148,97 @@ interface UserWithAvatar extends User {
  * @returns Avatar URL or fallback
  */
 export const getAvatarUrl = (user: UserWithAvatar | null | undefined): string | null => {
-  if (!user) return null;
+  // 🐛 DEBUG: Comprehensive avatar URL debugging
+  console.group('🎨 getAvatarUrl Debug');
+  console.log('👤 Input User:', user);
+
+  if (!user) {
+    console.log('❌ No user provided');
+    console.groupEnd();
+    return null;
+  }
+
+  console.log('🔍 Avatar Field Analysis:');
+  console.log('  - user.profile:', user.profile);
+  console.log('  - user.avatar:', user.avatar);
+  console.log('  - user.avatarUrl:', user.avatarUrl);
+  console.log('  - user.picture:', user.picture);
+  console.log('  - user.image:', user.image);
+  console.log('  - user.login:', user.login);
 
   // Check for avatar in user.profile object (primary source from GraphQL)
   if (user.profile && typeof user.profile === 'object') {
+    console.log('✅ Profile object found, checking fields...');
+    console.log('  - profile.avatar:', user.profile.avatar);
+    console.log('  - profile.avatarUrl:', user.profile.avatarUrl);
+    console.log('  - profile.picture:', user.profile.picture);
+    console.log('  - profile.image:', user.profile.image);
+    console.log('  - profile.photo:', user.profile.photo);
+
     // Common avatar field names in profile
-    if (user.profile.avatar) return user.profile.avatar;
-    if (user.profile.avatarUrl) return user.profile.avatarUrl;
-    if (user.profile.picture) return user.profile.picture;
-    if (user.profile.image) return user.profile.image;
-    if (user.profile.photo) return user.profile.photo;
+    if (user.profile.avatar) {
+      console.log('🎯 Found avatar in profile.avatar:', user.profile.avatar);
+      console.groupEnd();
+      return user.profile.avatar;
+    }
+    if (user.profile.avatarUrl) {
+      console.log('🎯 Found avatar in profile.avatarUrl:', user.profile.avatarUrl);
+      console.groupEnd();
+      return user.profile.avatarUrl;
+    }
+    if (user.profile.picture) {
+      console.log('🎯 Found avatar in profile.picture:', user.profile.picture);
+      console.groupEnd();
+      return user.profile.picture;
+    }
+    if (user.profile.image) {
+      console.log('🎯 Found avatar in profile.image:', user.profile.image);
+      console.groupEnd();
+      return user.profile.image;
+    }
+    if (user.profile.photo) {
+      console.log('🎯 Found avatar in profile.photo:', user.profile.photo);
+      console.groupEnd();
+      return user.profile.photo;
+    }
   }
 
   // Check for direct avatar field on user object
-  if (user.avatar) return user.avatar;
-  if (user.avatarUrl) return user.avatarUrl;
-  if (user.picture) return user.picture;
-  if (user.image) return user.image;
+  console.log('🔍 Checking direct user fields...');
+  if (user.avatar) {
+    console.log('🎯 Found avatar in user.avatar:', user.avatar);
+    console.groupEnd();
+    return user.avatar;
+  }
+  if (user.avatarUrl) {
+    console.log('🎯 Found avatar in user.avatarUrl:', user.avatarUrl);
+    console.groupEnd();
+    return user.avatarUrl;
+  }
+  if (user.picture) {
+    console.log('🎯 Found avatar in user.picture:', user.picture);
+    console.groupEnd();
+    return user.picture;
+  }
+  if (user.image) {
+    console.log('🎯 Found avatar in user.image:', user.image);
+    console.groupEnd();
+    return user.image;
+  }
 
   // Try platform-specific avatar endpoints
   if (user.login) {
+    const githubAvatar = `https://github.com/${user.login}.png?size=128`;
+    console.log('🔄 Using GitHub fallback avatar:', githubAvatar);
+    console.groupEnd();
     // Try GitHub avatar pattern (common fallback for reboot01 users)
     // The Avatar component will handle 404s gracefully and fall back to initials
-    return `https://github.com/${user.login}.png?size=128`;
+    return githubAvatar;
   }
 
   // No avatar found - return null to trigger fallback in Avatar component
+  console.log('❌ No avatar found, returning null');
+  console.groupEnd();
   return null;
 };
 

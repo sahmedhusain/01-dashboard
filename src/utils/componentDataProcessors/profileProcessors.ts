@@ -125,7 +125,13 @@ import {
  * @returns Processed user profile info
  */
 export const processUserProfileInfo = (user: User | null | undefined): ProcessedUserInfo => {
+  // 🐛 DEBUG: Comprehensive logging for user profile info processing
+  console.group('🔍 processUserProfileInfo Debug');
+  console.log('👤 Input User:', user);
+
   if (!user) {
+    console.log('❌ No user data provided');
+    console.groupEnd();
     return {
       displayName: 'Unknown User',
       email: 'No email provided',
@@ -140,6 +146,13 @@ export const processUserProfileInfo = (user: User | null | undefined): Processed
     };
   }
 
+  // 🐛 DEBUG: Log avatar-related data
+  console.log('🎨 Avatar Debug:');
+  console.log('  - user.profile:', user.profile);
+  console.log('  - user.profile?.avatar:', user.profile?.avatar);
+  console.log('  - user.profile?.avatarUrl:', user.profile?.avatarUrl);
+  console.log('  - user.profile?.picture:', user.profile?.picture);
+
   // Extract email from attrs.email if available, fallback to getUserEmail
   const attrsEmail = user.attrs && typeof user.attrs === 'object' ? user.attrs.email : null;
   const email = attrsEmail || getUserEmail(user) || 'No email provided';
@@ -147,13 +160,25 @@ export const processUserProfileInfo = (user: User | null | undefined): Processed
   // Extract additional attrs information
   const attrs = user.attrs && typeof user.attrs === 'object' ? user.attrs : {};
 
-  return {
+  // 🐛 DEBUG: Log email and attrs processing
+  console.log('📧 Email Processing:');
+  console.log('  - attrsEmail:', attrsEmail);
+  console.log('  - getUserEmail result:', getUserEmail(user));
+  console.log('  - final email:', email);
+  console.log('📋 Attrs:', attrs);
+
+  const avatarUrl = getAvatarUrl(user);
+
+  // 🐛 DEBUG: Log final avatar URL result
+  console.log('🎨 Final Avatar URL:', avatarUrl);
+
+  const result = {
     displayName: getUserDisplayName(user) || 'Unknown User',
     email: email,
     campus: formatCampusName(user.campus),
     login: user.login || 'unknown',
     registrationDate: user.createdAt,
-    avatarUrl: getAvatarUrl(user),
+    avatarUrl: avatarUrl,
     joinedDate: formatDate(user.createdAt),
     startedDate: formatDate(user.updatedAt),
     // Additional attrs information from raw data structure
@@ -178,6 +203,11 @@ export const processUserProfileInfo = (user: User | null | undefined): Processed
     joinDate: formatDate(user.createdAt),
     lastActivity: formatDate(user.updatedAt)
   };
+
+  console.log('👤 Final User Profile Info Result:', result);
+  console.groupEnd();
+
+  return result;
 };
 
 /**
@@ -289,7 +319,13 @@ export const processUserSkills = (skills: Skill[] | null | undefined, totalXP: n
  * @returns {Object} Processed profile section data
  */
 export const processProfileSectionData = (data: any) => {
+  // 🐛 DEBUG: Comprehensive logging for profile section data processing
+  console.group('🔍 processProfileSectionData Debug');
+  console.log('📊 Raw Input Data:', data);
+
   if (!data) {
+    console.log('❌ No data provided to processProfileSectionData');
+    console.groupEnd();
     return {
       userInfo: processUserProfileInfo(null),
       levelInfo: processUserLevelInfo(0, 0),
@@ -315,7 +351,21 @@ export const processProfileSectionData = (data: any) => {
     loading
   } = data;
 
-  return {
+  // 🐛 DEBUG: Log extracted values
+  console.log('📈 Extracted Values:');
+  console.log('  - user:', user);
+  console.log('  - totalXP:', totalXP);
+  console.log('  - level:', level);
+  console.log('  - auditRatio:', auditRatio);
+  console.log('  - totalUp:', totalUp);
+  console.log('  - totalDown:', totalDown);
+  console.log('  - skills:', skills);
+  console.log('  - passedProjects:', passedProjects);
+  console.log('  - failedProjects:', failedProjects);
+  console.log('  - passRate:', passRate);
+  console.log('  - loading:', loading);
+
+  const result = {
     userInfo: processUserProfileInfo(user),
     levelInfo: processUserLevelInfo(totalXP, level),
     projectStats: processUserProjectStats(passedProjects, failedProjects, passRate),
@@ -324,6 +374,11 @@ export const processProfileSectionData = (data: any) => {
     loading: loading || false,
     hasData: Boolean(user)
   };
+
+  console.log('📊 Final Processed Result:', result);
+  console.groupEnd();
+
+  return result;
 };
 
 /**
@@ -377,16 +432,30 @@ export const processProfileBadges = (profileData: any) => {
  * @returns {Array} Array of quick stat items
  */
 export const processQuickStats = (profileData: any) => {
-  if (!profileData) return [];
+  // 🐛 DEBUG: Comprehensive logging for quick stats processing
+  console.group('🔍 processQuickStats Debug');
+  console.log('📊 Input profileData:', profileData);
 
-  return [
+  if (!profileData) {
+    console.log('❌ No profile data provided to processQuickStats');
+    console.groupEnd();
+    return [];
+  }
+
+  // 🐛 DEBUG: Log individual sections
+  console.log('⚡ Level Info:', profileData.levelInfo);
+  console.log('🎯 Project Stats:', profileData.projectStats);
+  console.log('🔍 Audit Stats:', profileData.auditStats);
+  console.log('👤 User Info:', profileData.userInfo);
+
+  const result = [
     {
       label: 'Total XP',
       value: profileData.levelInfo?.formattedXPForQuickStats || '0',
       color: 'white'
     },
     {
-      label: 'Projects Passed',
+      label: 'Projects Completed',
       value: profileData.projectStats?.passed || 0,
       color: 'green-400'
     },
@@ -400,13 +469,17 @@ export const processQuickStats = (profileData: any) => {
       value: profileData.auditStats?.formattedRatio || '0.0',
       color: 'accent-300'
     },
-
     {
       label: 'Campus',
       value: profileData.userInfo?.campus || 'Unknown',
       color: 'surface-200'
     }
   ];
+
+  console.log('📊 Final Quick Stats Result:', result);
+  console.groupEnd();
+
+  return result;
 };
 
 /**

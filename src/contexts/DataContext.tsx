@@ -19,47 +19,85 @@ import {
 } from '../utils/dataProcessing';
 import { formatNumber, formatXP, formatAuditRatio } from '../utils/dataFormatting';
 
-// Types for the data context
+// Types for the data context - Updated for new schema
 interface ProcessedUser {
-  id: string;
+  id: number; // Changed from string to number
   login: string;
   firstName?: string;
   lastName?: string;
   displayName?: string;
-  email?: string;
-  phone?: string;
+  auditRatio?: number;
+  totalUp?: number;
+  totalDown?: number;
+  campus?: string; // Changed from array to string
+  profile?: string;
+  attrs?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
-  campus?: Array<{
-    id: string;
+}
+
+interface ProcessedTransaction {
+  id: number; // Changed from string to number
+  type: string;
+  amount: number;
+  path?: string;
+  createdAt: string;
+  object?: {
+    id: number;
     name: string;
-    country?: string;
-    city?: string;
-  }>;
+    type: string;
+  };
+}
+
+interface ProcessedProgress {
+  id: number; // Changed from string to number
+  grade?: number;
+  isDone: boolean;
+  path?: string;
+  amount: number;
+  createdAt: string;
 }
 
 interface ProcessedSkill {
-  id: string;
+  id: number;
   name: string;
   type: string;
   amount: number;
+  displayName?: string;
+  formattedPercentage?: string;
 }
 
 interface ProcessedProject {
-  id: string;
+  id: number;
   name: string;
+  totalXP: number;
+  transactionCount: number;
+  averageXP: number;
+  lastActivity: number;
+}
+
+interface ProcessedTimeline {
+  date: string;
   amount: number;
+  type: string;
+}
+
+interface ProcessedProjectResult {
+  id: number;
+  name: string;
+  grade: number;
+  status: string;
   createdAt: string;
 }
 
 interface ProcessedTimeline {
   date: string;
   amount: number;
-  cumulative: number;
+  type: string;
 }
 
 interface ProcessedProjectResult {
-  id: string;
+  id: number; // Updated to match new schema
   name: string;
   grade: number;
   status: string;
@@ -173,44 +211,73 @@ export const useData = (): DataContextType => {
 // Data provider using new GraphQL hooks
 export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   // Get user ID from auth context (JWT contains user.id)
-  const { user } = useAuth();
+  const { user, isAuthenticated, isInitialized } = useAuth();
   const userId = user?.id;
+
+
 
   // Use the new dashboard hook for combined data
   const { data: dashboardData, loading, error, refetch } = useDashboardData(userId);
   
   // Process the data using new utility functions
   const processedData = useMemo(() => {
-    if (!dashboardData) return null;
-    
+    // 🐛 DEBUG: Comprehensive logging for DataContext processing
+    console.group('🔍 DataContext Debug - Dashboard Data Processing');
+    console.log('📊 Raw Dashboard Data:', dashboardData);
+
+    if (!dashboardData) {
+      console.log('❌ No dashboard data available');
+      console.groupEnd();
+      return null;
+    }
+
+
+
+    // Fix data mapping - the dashboard data structure doesn't match what the processors expect
     const user = processUserProfile(dashboardData.user);
-    const auditRatio = processAuditRatio(dashboardData.auditRatio);
+
+    // Extract audit data from the user object itself (not from audit performance query)
+    const userAuditData = {
+      auditRatio: dashboardData.user?.auditRatio || 0,
+      totalUp: dashboardData.user?.totalUp || 0,
+      totalDown: dashboardData.user?.totalDown || 0
+    };
+    const auditRatio = processAuditRatio(userAuditData);
+
+
+
     const skills = processSkillsData(dashboardData.skills || []);
     const xpProjects = processXPByProject(dashboardData.xpProjects || []);
     const xpTimeline = processXPTimeline(dashboardData.xpTimeline || []);
     const auditTimeline = processAuditTimeline(dashboardData.auditTimeline || []);
-    const projectResults = processProjectResults(dashboardData.projectResults || []);
+
+    // Extract project results from analytics data (since user query doesn't include results)
+    const analyticsProjectResults = dashboardData.projectResults || [];
+    const projectResults = processProjectResults(analyticsProjectResults);
+
+
+    console.log('  - skills:', skills);
     
-    return {
+    const result = {
       // User information
       user,
-      
+
       // XP and level data
       totalXP: dashboardData.totalXP || 0,
       level: dashboardData.level || 0,
       rankTitle: getRankTitle(dashboardData.level || 0),
       cohortNumber: getCohortNumber(dashboardData.user?.eventId || '').toString(),
-      
+
       // Audit data
       auditRatio: auditRatio.ratio,
       totalUp: auditRatio.totalUp,
       totalDown: auditRatio.totalDown,
-      
+
       // Skills data
       skills,
       skillsCount: skills.length,
       topSkills: skills.slice(0, 5),
-      
+
       // Projects data
       xpProjects,
       projectsCount: xpProjects.length,
@@ -230,7 +297,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       // Groups data
       groups: dashboardData.groups || [],
       groupsCount: (dashboardData.groups || []).length,
-      
+
       // Computed statistics
       statistics: {
         totalXP: formatNumber(dashboardData.totalXP || 0),
@@ -240,11 +307,16 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         projectsCount: xpProjects.length,
         groupsCount: (dashboardData.groups || []).length,
       },
-      
+
       // Metadata
       lastUpdated: new Date().toISOString(),
       isStale: false,
     };
+
+    console.log('📊 Final DataContext Result:', result);
+    console.groupEnd();
+
+    return result;
   }, [dashboardData]);
   
   // Context value with proper structure for dashboard components

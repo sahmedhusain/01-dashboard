@@ -715,6 +715,8 @@ export class GraphQLService {
         xpBreakdown: xpBreakdown || []
       };
 
+
+
       // Cache the result if successful - temporarily disabled
       /* if (errors.length === 0) {
         cacheManager.set(

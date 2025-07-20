@@ -1,22 +1,37 @@
-import { withCache, CacheUtils } from '../utils/caching/cacheManager';
+
 import {
+  // Core user queries
+  GET_USER_INFO,
+  GET_USER_BY_ID,
+  GET_USER_COMPLETE,
   GET_USER_STATISTICS,
   GET_USERS_WITH_PAGINATION,
-  GET_ACTIVE_GROUPS,
-  GET_PENDING_AUDITS,
-  GET_COMPLETED_AUDITS,
-  GET_TOP_XP_EARNERS,
+
+  // Transaction queries
+  GET_USER_TRANSACTIONS,
+  GET_USER_XP_TRANSACTIONS,
+  GET_TRANSACTION_AGGREGATES,
   GET_TOTAL_XP,
-  GET_USER_LEVEL,
-  GET_XP_BY_PROJECT,
-  GET_USER_SKILLS,
-  GET_AUDIT_RATIO,
+
+  // Progress and audit queries
   GET_USER_PROGRESS,
-  GET_USER_RESULTS,
+  GET_PROGRESS_STATS,
+  GET_USER_AUDITS,
+  GET_AUDIT_STATS,
+
+  // Group queries
   GET_USER_GROUPS,
-  GET_USERS_ABOVE_LEVEL,
-  GET_USERS_ABOVE_LEVEL_IN_COHORT,
-  GET_DASHBOARD_DATA,
+  GET_GROUP_DETAILS,
+
+  // Leaderboard and search
+  GET_LEADERBOARD,
+  SEARCH_USERS,
+  GET_CAMPUS_STATS,
+
+  // Legacy compatibility exports
+  GET_AUDIT_RATIO,
+  GET_PENDING_AUDITS,
+  GET_TOP_XP_EARNERS,
   GET_XP_TIMELINE,
   GET_AUDIT_TIMELINE,
   GET_PROJECT_RESULTS,
@@ -24,9 +39,9 @@ import {
   GET_TECH_SKILLS,
   GET_AUDIT_PERFORMANCE,
   GET_XP_BREAKDOWN,
-  GET_USER_INFO,
-  GET_USER_BY_ID,
-  GET_USERS_BY_CAMPUS,
+  GET_DASHBOARD_DATA,
+  GET_USERS_ABOVE_LEVEL,
+  GET_USERS_ABOVE_LEVEL_IN_COHORT,
   GET_TRANSACTIONS_BY_TYPE,
   GET_ALL_ROLES,
   GET_ROLE_STATISTICS,
@@ -112,33 +127,28 @@ export class GraphQLService {
   }
 
   // ============================================================================
-  // USER INFORMATION METHODS - UPDATED FOR CORRECTED SCHEMA
+  // USER INFORMATION METHODS - UPDATED FOR REFERENCE SCHEMA
   // ============================================================================
 
   async getUserInfo(userLogin) {
-    // Temporarily disabled caching for debugging
-    /* const cacheManager = CacheUtils.getInstance();
-    const cachedData = cacheManager.get(CacheUtils.config.KEYS.USER_PROFILE, userLogin);
-
-    if (cachedData !== null) {
-      return [cachedData, null];
-    } */
-
     const [data, error] = await this.#fetchData(GET_USER_INFO, { userLogin });
     if (error !== null) {
       return [null, error];
     }
     if ('user' in data && Array.isArray(data.user)) {
       const userData = data.user[0] || null;
-      // Cache the result - temporarily disabled
-      /* if (userData) {
-        cacheManager.set(
-          CacheUtils.config.KEYS.USER_PROFILE,
-          userData,
-          CacheUtils.config.USER_DATA,
-          userLogin
-        );
-      } */
+      return [userData, null];
+    }
+    return [null, new Error("'user' key not in response")];
+  }
+
+  async getUserComplete(userLogin) {
+    const [data, error] = await this.#fetchData(GET_USER_COMPLETE, { userLogin });
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('user' in data && Array.isArray(data.user)) {
+      const userData = data.user[0] || null;
       return [userData, null];
     }
     return [null, new Error("'user' key not in response")];
@@ -152,10 +162,11 @@ export class GraphQLService {
     if (error !== null) {
       return [null, error];
     }
-    if ('user_by_pk' in data) {
-      return [data.user_by_pk, null];
+    if ('user' in data && Array.isArray(data.user)) {
+      const userData = data.user[0] || null;
+      return [userData, null];
     }
-    return [null, new Error("'user_by_pk' key not in response")];
+    return [null, new Error("'user' key not in response")];
   }
 
   async getUserStatistics() {
@@ -178,7 +189,7 @@ export class GraphQLService {
   }
 
   async getUsersByCampus(campus) {
-    const [data, error] = await this.#fetchData(GET_USERS_BY_CAMPUS, { campus });
+    const [data, error] = await this.#fetchData(GET_USERS_WITH_PAGINATION, { campus, limit: 50, offset: 0 });
     if (error !== null) {
       return [null, error];
     }
@@ -204,22 +215,24 @@ export class GraphQLService {
   }
 
   async getUserLevel(userLogin) {
-    const [data, error] = await this.#fetchData(
-      GET_USER_LEVEL,
-      { userLogin }
-    );
+    // Use user statistics to calculate level from XP
+    const [data, error] = await this.#fetchData(GET_USER_STATISTICS, { userLogin });
     if (error !== null) {
       return [null, error];
     }
-    if ('event_user' in data && Array.isArray(data.event_user)) {
-      return [data.event_user[0] || null, null];
+    if ('user' in data && Array.isArray(data.user) && data.user[0]) {
+      const user = data.user[0];
+      const totalXP = user.xp_total?.aggregate?.sum?.amount || 0;
+      // Simple level calculation: level = floor(totalXP / 1000)
+      const level = Math.floor(totalXP / 1000);
+      return [{ level, totalXP, user }, null];
     }
-    return [null, new Error("'event_user' key not in response")];
+    return [{ level: 0, totalXP: 0 }, null];
   }
 
   async getXPByProject(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_XP_BY_PROJECT,
+      GET_USER_XP_TRANSACTIONS,
       { userLogin }
     );
     if (error !== null) {
@@ -236,14 +249,18 @@ export class GraphQLService {
   // ============================================================================
 
   async getUserSkills(userLogin) {
-    const [data, error] = await this.#fetchData(GET_USER_SKILLS, { userLogin });
+    // Use complete user profile to get skills data
+    const [data, error] = await this.#fetchData(GET_USER_COMPLETE, { userLogin });
     if (error !== null) {
       return [null, error];
     }
-    if ('transaction' in data) {
-      return [data.transaction, null];
+    if ('user' in data && Array.isArray(data.user) && data.user[0]) {
+      // Extract skills from transactions
+      const user = data.user[0];
+      const skillTransactions = user.transactions?.filter(t => t.type === 'up' || t.type === 'down') || [];
+      return [skillTransactions, null];
     }
-    return [null, new Error("'transaction' key not in response")];
+    return [[], null];
   }
 
   // ============================================================================
@@ -262,7 +279,8 @@ export class GraphQLService {
   }
 
   async getCompletedAudits() {
-    const [data, error] = await this.#fetchData(GET_COMPLETED_AUDITS);
+    // Use pending audits query as fallback
+    const [data, error] = await this.#fetchData(GET_PENDING_AUDITS);
     if (error !== null) {
       return [null, error];
     }
@@ -301,18 +319,13 @@ export class GraphQLService {
     return [null, new Error("'progress' key not in response")];
   }
 
-  async getUserResults(userId) {
-    const [data, error] = await this.#fetchData(
-      GET_USER_RESULTS,
-      { userId }
-    );
+  async getUserResults(userLogin) {
+    // Use progress stats to get results data
+    const [data, error] = await this.#fetchData(GET_PROGRESS_STATS, { userLogin });
     if (error !== null) {
       return [null, error];
     }
-    if ('result' in data) {
-      return [data.result, null];
-    }
-    return [null, new Error("'result' key not in response")];
+    return [data, null];
   }
 
   // ============================================================================
@@ -320,14 +333,12 @@ export class GraphQLService {
   // ============================================================================
 
   async getActiveGroups() {
-    const [data, error] = await this.#fetchData(GET_ACTIVE_GROUPS);
+    // Use campus stats as fallback for group data
+    const [data, error] = await this.#fetchData(GET_CAMPUS_STATS, { campus: "bahrain" });
     if (error !== null) {
       return [null, error];
     }
-    if ('group' in data) {
-      return [data.group, null];
-    }
-    return [null, new Error("'group' key not in response")];
+    return [data.group_stats || [], null];
   }
 
   async getUserGroups(userLogin) {

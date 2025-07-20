@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { formatXP, formatDate } from '../../utils/dataFormatting';
+import { processXPTimelineChartData } from '../../utils/componentDataProcessors/chartProcessors';
 
 const XPTimelineChart = ({ 
   data = [], 
@@ -8,42 +9,11 @@ const XPTimelineChart = ({
   height = 400,
   className = ""
 }) => {
+  // Process chart data using utility function
   const chartData = useMemo(() => {
-    if (!data || data.length === 0) return { points: [], maxXP: 0, dateRange: null };
-
-    try {
-      // Filter out invalid data points with enhanced validation
-      const validData = data.filter(d => {
-        if (!d) return false;
-
-        // Validate date
-        if (!d.date) return false;
-        const dateObj = new Date(d.date);
-        if (isNaN(dateObj.getTime())) return false;
-
-        // Validate XP value
-        if (d.cumulativeXP == null || isNaN(d.cumulativeXP) || d.cumulativeXP < 0) return false;
-
-        return true;
-      });
-
-      if (validData.length === 0) return { points: [], maxXP: 0, dateRange: null };
-
-      const sortedData = [...validData].sort((a, b) => new Date(a.date) - new Date(b.date));
-      const maxXP = Math.max(...sortedData.map(d => d.cumulativeXP));
-      const minDate = new Date(sortedData[0].date);
-      const maxDate = new Date(sortedData[sortedData.length - 1].date);
-
-      return {
-        points: sortedData,
-        maxXP: isNaN(maxXP) || maxXP < 0 ? 0 : maxXP,
-        dateRange: { min: minDate, max: maxDate },
-      };
-    } catch (error) {
-      console.error('Error processing XP timeline data:', error);
-      return { points: [], maxXP: 0, dateRange: null };
-    }
-  }, [data]);
+    const margins = { top: 30, right: 60, bottom: 60, left: 80 };
+    return processXPTimelineChartData(data, { width, height, margins });
+  }, [data, width, height]);
 
   const margin = { top: 30, right: 60, bottom: 60, left: 80 };
   const chartWidth = width - margin.left - margin.right;
@@ -60,7 +30,7 @@ const XPTimelineChart = ({
 
   // Generate path for the line
   const generatePath = (points) => {
-    if (points.length === 0 || !chartData.dateRange || chartData.maxXP === 0) return '';
+    if (!points || points.length === 0 || !chartData?.dateRange || !chartData?.maxXP) return '';
 
     const pathCommands = points.map((point, index) => {
       const dateRange = chartData.dateRange.max - chartData.dateRange.min;
@@ -81,7 +51,7 @@ const XPTimelineChart = ({
 
   // Generate area path for gradient fill
   const generateAreaPath = (points) => {
-    if (points.length === 0 || !chartData.dateRange) return '';
+    if (!points || points.length === 0 || !chartData?.dateRange) return '';
 
     const linePath = generatePath(points);
     if (!linePath) return '';
@@ -96,7 +66,7 @@ const XPTimelineChart = ({
     return `${linePath} L ${safeLastX} ${chartHeight} L 0 ${chartHeight} Z`;
   };
 
-  if (!chartData.points.length) {
+  if (!chartData?.points || !chartData.points.length) {
     return (
       <div className={`flex items-center justify-center ${className}`} style={{ width, height }}>
         <div className="text-center text-surface-400">
@@ -149,7 +119,7 @@ const XPTimelineChart = ({
           {/* Grid Lines - Y axis */}
           {[0, 0.25, 0.5, 0.75, 1].map(ratio => {
             const y = chartHeight - (ratio * chartHeight);
-            const xpValue = ratio * chartData.maxXP;
+            const xpValue = ratio * (chartData?.maxXP || 0);
             
             return (
               <g key={ratio}>
@@ -176,10 +146,10 @@ const XPTimelineChart = ({
           })}
 
           {/* Grid Lines - X axis (dates) */}
-          {chartData.dateRange && [0, 0.25, 0.5, 0.75, 1].map(ratio => {
+          {chartData?.dateRange && [0, 0.25, 0.5, 0.75, 1].map(ratio => {
             const x = ratio * chartWidth;
             const date = new Date(
-              chartData.dateRange.min.getTime() + 
+              chartData.dateRange.min.getTime() +
               ratio * (chartData.dateRange.max.getTime() - chartData.dateRange.min.getTime())
             );
             
@@ -228,8 +198,8 @@ const XPTimelineChart = ({
           />
 
           {/* Data Points */}
-          {chartData.points.map((point, index) => {
-            const x = ((new Date(point.date) - chartData.dateRange.min) / 
+          {chartData?.points?.map((point, index) => {
+            const x = ((new Date(point.date) - chartData.dateRange.min) /
                        (chartData.dateRange.max - chartData.dateRange.min)) * chartWidth;
             const y = chartHeight - (point.cumulativeXP / chartData.maxXP) * chartHeight;
 
@@ -246,9 +216,9 @@ const XPTimelineChart = ({
                   className="cursor-pointer"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ 
-                    duration: 0.3, 
-                    delay: (index / chartData.points.length) * 2 + 0.5 
+                  transition={{
+                    duration: 0.3,
+                    delay: (index / (chartData?.points?.length || 1)) * 2 + 0.5
                   }}
                   whileHover={{ scale: 1.5 }}
                 />
@@ -325,13 +295,13 @@ const XPTimelineChart = ({
             rx="6"
           />
           <text x={10} y={18} className="fill-surface-200 text-xs font-medium">
-            Total XP: {formatXP(chartData.maxXP)}
+            Total XP: {formatXP(chartData?.maxXP || 0)}
           </text>
           <text x={10} y={32} className="fill-surface-400 text-xs">
-            Projects: {chartData.points.length}
+            Projects: {chartData?.points?.length || 0}
           </text>
           <text x={10} y={46} className="fill-surface-400 text-xs">
-            Duration: {Math.ceil((chartData.dateRange.max - chartData.dateRange.min) / (1000 * 60 * 60 * 24))} days
+            Duration: {chartData?.dateRange ? Math.ceil((chartData.dateRange.max - chartData.dateRange.min) / (1000 * 60 * 60 * 24)) : 0} days
           </text>
         </g>
       </svg>

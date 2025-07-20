@@ -1,54 +1,25 @@
-import { Mail, Calendar, Award, TrendingUp, Target, MapPin, Clock } from 'lucide-react';
+import { Mail, Calendar, Target, MapPin, Clock } from 'lucide-react';
 import { useData } from '../../hooks/useData';
 import Card from '../ui/Card';
-import { CircularProgress } from '../ui/Progress';
-import Badge, { XPBadge, LevelBadge } from '../ui/Badge';
+import Badge, { XPBadge } from '../ui/Badge';
 import { CardSkeleton } from '../ui/Loading';
 import Avatar from '../ui/Avatar';
+import { formatDate } from '../../utils/dataFormatting';
 import {
-  formatDate,
-  formatXP,
-  getXPProgress,
-  getUserDisplayName,
-  getUserEmail,
-  getAvatarUrl,
-  formatPercentage
-} from '../../utils/dataFormatting';
+  processProfileSectionData,
+  processProfileBadges,
+  processQuickStats
+} from '../../utils/componentDataProcessors/profileProcessors';
 
 const ProfileSection = () => {
-  const {
-    user,
-    totalXP,
-    level,
-    auditRatio,
-    totalUp,
-    totalDown,
-    skills,
-    passedProjects,
-    failedProjects,
-    passRate,
-    loading
-  } = useData();
+  const rawData = useData();
 
-  // Extract user info using enhanced utility functions
-  const displayName = getUserDisplayName(user) || 'Unknown User';
-  const email = getUserEmail(user) || 'No email provided';
-  const campus = user?.campus || 'Unknown Campus';
-  const registrationDate = user?.createdAt;
-  const avatarUrl = getAvatarUrl(user);
+  // Process all profile data using utility functions
+  const profileData = processProfileSectionData(rawData);
+  const _badges = processProfileBadges(profileData); // Badges for future use
+  const quickStats = processQuickStats(profileData);
 
-  // XP and level data (now provided directly by DataContext)
-  const userLevel = level || 0;
-  const levelProgress = getXPProgress(totalXP, userLevel);
-
-  // Project statistics (now provided directly by DataContext)
-  const projectPassRate = passRate || 0;
-
-  // Audit statistics (now provided directly by DataContext)
-  const auditsGiven = totalUp/1000000 || 0;
-  const auditsReceived = totalDown || 0;
-
-  if (loading) {
+  if (profileData.loading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -70,10 +41,7 @@ const ProfileSection = () => {
       <div className="lg:col-span-2">
         <Card className="h-full">
           <Card.Header>
-            <div className="flex items-center justify-between">
-              <Card.Title>User Profile</Card.Title>
-              <LevelBadge level={userLevel} />
-            </div>
+            <Card.Title>Profile</Card.Title>
           </Card.Header>
           
           <Card.Content>
@@ -82,9 +50,9 @@ const ProfileSection = () => {
               <div className="flex-shrink-0">
                 <Avatar
                   user={{
-                    ...user,
-                    avatarUrl: avatarUrl,
-                    displayName: displayName
+                    ...rawData.user,
+                    avatarUrl: profileData.userInfo.avatarUrl,
+                    displayName: profileData.userInfo.displayName
                   }}
                   size="xl"
                   showBorder
@@ -96,55 +64,156 @@ const ProfileSection = () => {
               <div className="flex-1 space-y-4">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-1">
-                    {displayName}
+                    {profileData.userInfo.displayName}
                   </h2>
                   <p className="text-surface-300">
-                    @{user?.login || 'unknown'}
+                    @{profileData.userInfo.login}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Mail className="w-4 h-4" />
-                    <span className="text-sm">{email}</span>
+                    <span className="text-sm">{profileData.userInfo.email}</span>
                   </div>
 
                   <div className="flex items-center space-x-2 text-surface-300">
                     <MapPin className="w-4 h-4" />
                     <span className="text-sm">
-                      {campus}
+                      {profileData.userInfo.campus}
                     </span>
                   </div>
 
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Calendar className="w-4 h-4" />
                     <span className="text-sm">
-                      Joined {formatDate(user?.createdAt)}
+                      Account Created At {profileData.userInfo.joinedDate}
                     </span>
                   </div>
 
                   <div className="flex items-center space-x-2 text-surface-300">
                     <Clock className="w-4 h-4" />
                     <span className="text-sm">
-                      Started {formatDate(registrationDate)}
+                      Started {profileData.userInfo.startedDate}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <XPBadge xp={totalXP} />
+                  <XPBadge xp={profileData.levelInfo.totalXP} />
                   <Badge variant="primary">
-                    {passedProjects} / {(passedProjects + failedProjects)} Projects
+                    {profileData.projectStats.passed} Projects Completed
                   </Badge>
-                  <Badge variant="accent">
-                    Audit Ratio: {auditRatio?.toFixed(2) || '0.00'}
-                  </Badge>
-                  {projectPassRate > 0 && (
+                  {profileData.projectStats.passRate > 0 && (
                     <Badge variant="success">
-                      {formatPercentage(projectPassRate)} Success Rate
+                      {profileData.projectStats.formattedPassRate} Success Rate
                     </Badge>
                   )}
                 </div>
+
+                {/* Additional Profile Information */}
+                {(profileData.userInfo.phone || profileData.userInfo.degree || profileData.userInfo.gender ||
+                  profileData.userInfo.country || profileData.userInfo.jobTitle || profileData.userInfo.address ||
+                  profileData.userInfo.emergencyContact || profileData.userInfo.dateOfBirth ||
+                  profileData.userInfo.nationality || profileData.userInfo.languages || profileData.userInfo.cprNumber ||
+                  profileData.userInfo.placeOfBirth || profileData.userInfo.qualification || profileData.userInfo.employment ||
+                  profileData.userInfo.gradDate) && (
+                  <div className="mt-6 pt-6 border-t border-surface-700">
+                    <h3 className="text-lg font-semibold text-white mb-4">Additional Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {profileData.userInfo.phone && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Phone:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.phone}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.degree && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Degree:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.degree}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.gender && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Gender:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.gender}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.country && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Country:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.country}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.jobTitle && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Job Title:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.jobTitle}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.nationality && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Nationality:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.nationality}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.dateOfBirth && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Date of Birth:</span>
+                          <span className="text-white ml-2">{formatDate(profileData.userInfo.dateOfBirth)}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.address && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Address:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.address}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.emergencyContact && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Emergency Contact:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.emergencyContact}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.languages && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Languages:</span>
+                          <span className="text-white ml-2">{Array.isArray(profileData.userInfo.languages) ? profileData.userInfo.languages.join(', ') : profileData.userInfo.languages}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.cprNumber && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">CPR Number:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.cprNumber}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.placeOfBirth && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Place of Birth:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.placeOfBirth}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.qualification && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Qualification:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.qualification}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.employment && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Employment:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.employment}</span>
+                        </div>
+                      )}
+                      {profileData.userInfo.gradDate && (
+                        <div className="text-sm">
+                          <span className="text-surface-400">Graduation Date:</span>
+                          <span className="text-white ml-2">{profileData.userInfo.gradDate}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card.Content>
@@ -153,71 +222,6 @@ const ProfileSection = () => {
 
       {/* Stats Sidebar */}
       <div className="space-y-6">
-        {/* Level Progress */}
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <TrendingUp className="w-5 h-5 mr-2" />
-              User Level
-            </Card.Title>
-            <Card.Description>
-              Apprentice developer
-            </Card.Description>
-          </Card.Header>
-          
-          <Card.Content className="flex flex-col items-center">
-            <CircularProgress
-              value={levelProgress.percentage || 0}
-              max={100}
-              size={120}
-              color="primary"
-              label={`Level ${userLevel}`}
-            />
-            <div className="text-center mt-4 space-y-1">
-              <p className="text-sm text-surface-300">
-                {formatXP(levelProgress.required - levelProgress.current)} XP to next level
-              </p>
-              <p className="text-xs text-surface-400">
-                {formatXP(levelProgress.current)} / {formatXP(levelProgress.required)} XP
-              </p>
-            </div>
-          </Card.Content>
-        </Card>
-
-        {/* Audit Ratio */}
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <Award className="w-5 h-5 mr-2" />
-              Audits Ratio
-            </Card.Title>
-          </Card.Header>
-          
-          <Card.Content>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Done</span>
-                <span className="text-primary-300 font-semibold">
-                  {auditsGiven}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Received</span>
-                <span className="text-primary-300 font-semibold">
-                  {auditsReceived}
-                </span>
-              </div>
-              
-              <div className="text-center pt-4 border-t border-white/10">
-                <div className="text-3xl font-bold text-primary-300">
-                  {auditRatio.toFixed(1)}
-                </div>
-                <p className="text-sm text-surface-400">Best ratio ever!</p>
-              </div>
-            </div>
-          </Card.Content>
-        </Card>
 
         {/* Quick Stats */}
         <Card>
@@ -230,53 +234,20 @@ const ProfileSection = () => {
           
           <Card.Content>
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Total XP</span>
-                <span className="text-white font-semibold">
-                  {formatXP(totalXP)}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Projects Passed</span>
-                <span className="text-green-400 font-semibold">
-                  {passedProjects}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Success Rate</span>
-                <span className="text-primary-300 font-semibold">
-                  {formatPercentage(passRate)}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Audits Given</span>
-                <span className="text-accent-300 font-semibold">
-                  {auditsGiven} MB
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Current Level</span>
-                <span className="text-primary-300 font-semibold">
-                  Level {userLevel}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-surface-300">Campus</span>
-                <span className="text-surface-200 font-medium">
-                  {campus}
-                </span>
-              </div>
+              {quickStats.map((stat, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span className="text-surface-300">{stat.label}</span>
+                  <span className={`text-${stat.color} font-semibold`}>
+                    {stat.value}
+                  </span>
+                </div>
+              ))}
             </div>
           </Card.Content>
         </Card>
 
         {/* Skills Overview */}
-        {skills && skills.length > 0 && (
+        {profileData.skillsData.hasSkills && (
           <Card>
             <Card.Header>
               <Card.Title className="flex items-center">
@@ -287,11 +258,11 @@ const ProfileSection = () => {
 
             <Card.Content>
               <div className="space-y-2">
-                {skills.slice(0, 5).map((skill, index) => (
+                {profileData.skillsData.topSkills.map((skill, index) => (
                   <div key={skill.name || index} className="flex justify-between items-center">
-                    <span className="text-surface-300 text-sm">{skill.name}</span>
+                    <span className="text-surface-300 text-sm">{skill.displayName}</span>
                     <span className="text-primary-300 font-medium text-sm">
-                      {formatXP(skill.totalXP)}
+                      {skill.formattedPercentage}
                     </span>
                   </div>
                 ))}

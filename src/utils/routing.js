@@ -14,6 +14,9 @@ export const TAB_CONFIG = [
   { id: 'profile', label: 'Profile', path: '/', icon: 'User' },
   { id: 'search', label: 'Search Queries', path: '/search', icon: 'Search' },
   { id: 'stats', label: 'Statistics', path: '/stats', icon: 'BarChart3' },
+  { id: 'progress', label: 'Progress', path: '/progress', icon: 'TrendingUp' },
+  { id: 'analytics', label: 'Analytics', path: '/analytics', icon: 'Users' },
+  { id: 'achievements', label: 'Achievements', path: '/achievements', icon: 'Award' },
   { id: 'audits', label: 'Audits', path: '/audits', icon: 'Trophy' },
   { id: 'technologies', label: 'Technologies', path: '/technologies', icon: 'Users' },
 ];

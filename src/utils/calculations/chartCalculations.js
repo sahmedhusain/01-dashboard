@@ -575,3 +575,430 @@ export const calculateAnimationTiming = (dataLength, options = {}) => {
     staggered: dataLength > 1
   };
 };
+
+// ============================================================================
+// ADVANCED SVG CHART CREATION FUNCTIONS
+// Professional dashboard charts as required by GraphQL objectives
+// ============================================================================
+
+/**
+ * Create XP Progress Over Time Line Chart (SVG)
+ * @param {Array} xpTimeline - XP timeline data
+ * @param {Object} dimensions - Chart dimensions
+ * @returns {Object} SVG chart configuration
+ */
+export const createXPProgressChart = (xpTimeline, dimensions) => {
+  if (!xpTimeline || xpTimeline.length === 0) {
+    return { error: 'No XP timeline data available' };
+  }
+
+  const { chartWidth, chartHeight, margin } = dimensions;
+
+  // Calculate cumulative XP over time
+  let cumulativeXP = 0;
+  const processedData = xpTimeline.map((entry, index) => {
+    cumulativeXP += entry.amount;
+    return {
+      ...entry,
+      cumulativeXP,
+      index,
+      date: new Date(entry.createdAt)
+    };
+  });
+
+  // Create scales
+  const xScale = createLinearScale(
+    [0, processedData.length - 1],
+    [0, chartWidth]
+  );
+
+  const yScale = createLinearScale(
+    [0, Math.max(...processedData.map(d => d.cumulativeXP))],
+    [chartHeight, 0]
+  );
+
+  // Generate SVG path for line chart
+  const pathData = processedData.map((d, i) => {
+    const x = xScale(i);
+    const y = yScale(d.cumulativeXP);
+    return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
+  }).join(' ');
+
+  // Generate data points for interactive circles
+  const dataPoints = processedData.map((d, i) => ({
+    x: xScale(i),
+    y: yScale(d.cumulativeXP),
+    value: d.cumulativeXP,
+    date: d.date,
+    amount: d.amount,
+    project: d.object?.name || 'Unknown'
+  }));
+
+  return {
+    type: 'line-chart',
+    pathData,
+    dataPoints,
+    scales: { xScale, yScale },
+    processedData,
+    dimensions,
+    title: 'XP Progress Over Time',
+    xAxisLabel: 'Timeline',
+    yAxisLabel: 'Cumulative XP'
+  };
+};
+
+/**
+ * Create Project Success Rate Pie Chart (SVG)
+ * @param {Array} projectResults - Project results data
+ * @param {Object} dimensions - Chart dimensions
+ * @returns {Object} SVG pie chart configuration
+ */
+export const createProjectSuccessChart = (projectResults, dimensions) => {
+  if (!projectResults || projectResults.length === 0) {
+    return { error: 'No project results data available' };
+  }
+
+  const { chartWidth, chartHeight } = dimensions;
+  const radius = Math.min(chartWidth, chartHeight) / 2 * 0.8;
+  const centerX = chartWidth / 2;
+  const centerY = chartHeight / 2;
+
+  // Calculate success/failure statistics
+  const passed = projectResults.filter(p => p.grade >= 1).length;
+  const failed = projectResults.filter(p => p.grade < 1).length;
+  const total = projectResults.length;
+
+  const data = [
+    { label: 'Passed', value: passed, percentage: (passed / total) * 100, color: '#4CAF50' },
+    { label: 'Failed', value: failed, percentage: (failed / total) * 100, color: '#F44336' }
+  ];
+
+  // Calculate pie slices
+  let currentAngle = -Math.PI / 2; // Start at top
+  const slices = data.map(item => {
+    const sliceAngle = (item.percentage / 100) * 2 * Math.PI;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + sliceAngle;
+
+    // Calculate arc path
+    const x1 = centerX + radius * Math.cos(startAngle);
+    const y1 = centerY + radius * Math.sin(startAngle);
+    const x2 = centerX + radius * Math.cos(endAngle);
+    const y2 = centerY + radius * Math.sin(endAngle);
+
+    const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+
+    const pathData = [
+      `M ${centerX} ${centerY}`,
+      `L ${x1} ${y1}`,
+      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+      'Z'
+    ].join(' ');
+
+    currentAngle = endAngle;
+
+    return {
+      ...item,
+      pathData,
+      startAngle,
+      endAngle,
+      sliceAngle
+    };
+  });
+
+  return {
+    type: 'pie-chart',
+    slices,
+    centerX,
+    centerY,
+    radius,
+    dimensions,
+    title: 'Project Success Rate',
+    totalProjects: total,
+    successRate: Math.round((passed / total) * 100)
+  };
+};
+
+/**
+ * Create Skills Radar Chart (SVG)
+ * @param {Array} skills - Skills data
+ * @param {Object} dimensions - Chart dimensions
+ * @returns {Object} SVG radar chart configuration
+ */
+export const createSkillsRadarChart = (skills, dimensions) => {
+  if (!skills || skills.length === 0) {
+    return { error: 'No skills data available' };
+  }
+
+  const { chartWidth, chartHeight } = dimensions;
+  const radius = Math.min(chartWidth, chartHeight) / 2 * 0.8;
+  const centerX = chartWidth / 2;
+  const centerY = chartHeight / 2;
+
+  // Take top 8 skills for better visualization
+  const topSkills = skills
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 8);
+
+  const maxValue = Math.max(...topSkills.map(s => s.amount));
+  const angleStep = (2 * Math.PI) / topSkills.length;
+
+  // Generate radar chart points
+  const radarPoints = topSkills.map((skill, index) => {
+    const angle = index * angleStep - Math.PI / 2; // Start at top
+    const value = skill.amount;
+    const normalizedValue = value / maxValue;
+    const x = centerX + (radius * normalizedValue) * Math.cos(angle);
+    const y = centerY + (radius * normalizedValue) * Math.sin(angle);
+
+    return {
+      x,
+      y,
+      angle,
+      value,
+      normalizedValue,
+      skill: skill.type.replace('skill_', ''),
+      originalSkill: skill
+    };
+  });
+
+  // Generate radar area path
+  const radarPath = radarPoints.map((point, index) => {
+    return index === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`;
+  }).join(' ') + ' Z';
+
+  // Generate grid circles
+  const gridLevels = 5;
+  const gridCircles = Array.from({ length: gridLevels }, (_, i) => {
+    const levelRadius = radius * ((i + 1) / gridLevels);
+    return {
+      radius: levelRadius,
+      level: i + 1,
+      percentage: ((i + 1) / gridLevels) * 100
+    };
+  });
+
+  // Generate axis lines
+  const axisLines = topSkills.map((skill, index) => {
+    const angle = index * angleStep - Math.PI / 2;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+
+    return {
+      x1: centerX,
+      y1: centerY,
+      x2: x,
+      y2: y,
+      skill: skill.type.replace('skill_', ''),
+      labelX: centerX + (radius * 1.15) * Math.cos(angle),
+      labelY: centerY + (radius * 1.15) * Math.sin(angle)
+    };
+  });
+
+  return {
+    type: 'radar-chart',
+    radarPath,
+    radarPoints,
+    gridCircles,
+    axisLines,
+    centerX,
+    centerY,
+    radius,
+    dimensions,
+    title: 'Skills Proficiency',
+    maxValue,
+    skillsCount: topSkills.length
+  };
+};
+
+/**
+ * Create Audit Performance Bar Chart (SVG)
+ * @param {Object} auditData - Audit performance data
+ * @param {Object} dimensions - Chart dimensions
+ * @returns {Object} SVG bar chart configuration
+ */
+export const createAuditPerformanceChart = (auditData, dimensions) => {
+  if (!auditData) {
+    return { error: 'No audit data available' };
+  }
+
+  const { chartWidth, chartHeight } = dimensions;
+  const { auditRatio = 0, totalUp = 0, totalDown = 0 } = auditData;
+
+  // Prepare data for visualization
+  const data = [
+    {
+      label: 'Audits Given',
+      value: totalUp,
+      color: '#4CAF50',
+      type: 'positive'
+    },
+    {
+      label: 'Audits Received',
+      value: totalDown,
+      color: '#2196F3',
+      type: 'neutral'
+    },
+    {
+      label: 'Audit Ratio',
+      value: auditRatio * 100, // Convert to percentage for visualization
+      color: auditRatio >= 1 ? '#4CAF50' : '#FF9800',
+      type: auditRatio >= 1 ? 'positive' : 'warning'
+    }
+  ];
+
+  const maxValue = Math.max(...data.map(d => d.value), 100); // Ensure minimum scale
+  const barHeight = chartHeight / data.length * 0.6;
+  const barSpacing = chartHeight / data.length * 0.4;
+
+  // Generate bars
+  const bars = data.map((item, index) => {
+    const barWidth = (item.value / maxValue) * chartWidth;
+    const y = index * (barHeight + barSpacing) + barSpacing / 2;
+
+    return {
+      ...item,
+      x: 0,
+      y,
+      width: barWidth,
+      height: barHeight,
+      percentage: (item.value / maxValue) * 100
+    };
+  });
+
+  // Calculate performance metrics
+  const auditBalance = totalUp - totalDown;
+  const auditActivity = totalUp + totalDown;
+  const performanceStatus = auditRatio >= 1.2 ? 'excellent' :
+                           auditRatio >= 1.0 ? 'good' :
+                           auditRatio >= 0.8 ? 'needs-improvement' : 'critical';
+
+  return {
+    type: 'bar-chart',
+    bars,
+    dimensions,
+    title: 'Audit Performance',
+    maxValue,
+    auditRatio,
+    auditBalance,
+    auditActivity,
+    performanceStatus,
+    metrics: {
+      ratio: auditRatio.toFixed(2),
+      balance: auditBalance,
+      activity: auditActivity,
+      efficiency: auditActivity > 0 ? ((totalUp / auditActivity) * 100).toFixed(1) : 0
+    }
+  };
+};
+
+/**
+ * Create comprehensive chart configuration for dashboard
+ * @param {Object} analyticsData - Complete analytics data
+ * @param {Object} containerDimensions - Container dimensions
+ * @returns {Object} All chart configurations
+ */
+export const createDashboardCharts = (analyticsData, containerDimensions = {}) => {
+  const defaultDimensions = calculateChartDimensions(
+    containerDimensions.width || 400,
+    containerDimensions.height || 300,
+    { top: 20, right: 30, bottom: 40, left: 60 }
+  );
+
+  const charts = {};
+
+  // XP Progress Chart
+  if (analyticsData.xpTimeline) {
+    charts.xpProgress = createXPProgressChart(analyticsData.xpTimeline, defaultDimensions);
+  }
+
+  // Project Success Chart
+  if (analyticsData.projectAnalytics) {
+    charts.projectSuccess = createProjectSuccessChart(analyticsData.projectAnalytics, defaultDimensions);
+  }
+
+  // Skills Radar Chart
+  if (analyticsData.skills || analyticsData.techSkills) {
+    const skillsData = analyticsData.techSkills || analyticsData.skills;
+    charts.skillsRadar = createSkillsRadarChart(skillsData, defaultDimensions);
+  }
+
+  // Audit Performance Chart
+  if (analyticsData.auditData) {
+    charts.auditPerformance = createAuditPerformanceChart(analyticsData.auditData, defaultDimensions);
+  }
+
+  return {
+    charts,
+    dimensions: defaultDimensions,
+    hasData: Object.keys(charts).length > 0,
+    chartTypes: Object.keys(charts)
+  };
+};
+
+/**
+ * Generate SVG chart animations
+ * @param {string} chartType - Type of chart
+ * @param {Object} chartConfig - Chart configuration
+ * @returns {Object} Animation configuration
+ */
+export const generateChartAnimations = (chartType, chartConfig) => {
+  const baseAnimation = {
+    duration: 1000,
+    easing: 'ease-in-out',
+    delay: 0
+  };
+
+  switch (chartType) {
+    case 'line-chart':
+      return {
+        ...baseAnimation,
+        pathAnimation: {
+          strokeDasharray: '1000',
+          strokeDashoffset: '1000',
+          animation: 'drawLine 2s ease-in-out forwards'
+        },
+        pointsAnimation: {
+          opacity: 0,
+          animation: 'fadeInPoints 1s ease-in-out 1s forwards'
+        }
+      };
+
+    case 'pie-chart':
+      return {
+        ...baseAnimation,
+        slicesAnimation: chartConfig.slices?.map((_, index) => ({
+          transform: 'scale(0)',
+          transformOrigin: `${chartConfig.centerX}px ${chartConfig.centerY}px`,
+          animation: `scaleIn 0.5s ease-out ${index * 0.1}s forwards`
+        })) || []
+      };
+
+    case 'radar-chart':
+      return {
+        ...baseAnimation,
+        radarAnimation: {
+          opacity: 0,
+          transform: 'scale(0)',
+          transformOrigin: `${chartConfig.centerX}px ${chartConfig.centerY}px`,
+          animation: 'radarGrow 1.5s ease-out forwards'
+        },
+        pointsAnimation: {
+          opacity: 0,
+          animation: 'fadeInPoints 1s ease-in-out 1s forwards'
+        }
+      };
+
+    case 'bar-chart':
+      return {
+        ...baseAnimation,
+        barsAnimation: chartConfig.bars?.map((_, index) => ({
+          width: 0,
+          animation: `growBar 1s ease-out ${index * 0.2}s forwards`
+        })) || []
+      };
+
+    default:
+      return baseAnimation;
+  }
+};

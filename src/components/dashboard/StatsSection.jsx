@@ -8,35 +8,34 @@ import ProjectSuccessChart from '../charts/ProjectSuccessChart';
 import AuditStatsChart from '../charts/AuditStatsChart';
 import XPByProjectChart from '../charts/XPByProjectChart';
 import XPTimelineChart from '../charts/XPTimelineChart';
-import { formatXP, formatPercentage } from '../../utils/dataFormatting';
+import AdvancedChartsGrid from '../charts/AdvancedChartsGrid';
+import {
+  processStatsSectionData,
+  processStatsOverviewCards,
+  processChartConfigurations
+} from '../../utils/componentDataProcessors/statsProcessors';
 
 const StatsSection = () => {
-  const {
-    totalXP,
-    level,
-    xpTimeline,
-    xpProjects,
-    totalProjects,
-    passedProjects,
-    failedProjects,
-    passRate,
-    auditRatio,
-    totalUp,
-    totalDown,
-    skills,
-    loading
-  } = useData();
+  const rawData = useData();
 
-  // Extract chart data from the new data structure
-  const timelineData = xpTimeline || [];
-  const xpByProject = xpProjects || [];
-  const userLevel = level || 0;
+  // Process all stats data using utility functions
+  const statsData = processStatsSectionData(rawData);
+  const overviewCards = processStatsOverviewCards(statsData);
+  const chartConfigs = processChartConfigurations(statsData);
 
-  // Audit statistics (now provided directly by DataContext)
-  const auditsGiven = totalUp || 0;
-  const auditsReceived = totalDown || 0;
+  // Icon mapping for dynamic icon rendering
+  const iconMap = {
+    TrendingUp,
+    Target,
+    Award,
+    BarChart3,
+    PieChart,
+    Activity,
+    Clock,
+    Zap
+  };
 
-  if (loading) {
+  if (statsData.loading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <CardSkeleton />
@@ -56,80 +55,30 @@ const StatsSection = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {/* Statistics Overview Cards */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2" />
-            XP Statistics
-          </Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Total XP</span>
-              <Badge variant="primary">{formatXP(totalXP)}</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Current Level</span>
-              <Badge variant="accent">Level {userLevel}</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Projects Completed</span>
-              <Badge variant="success">{passedProjects}</Badge>
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
+      {overviewCards.map((card, index) => {
+        const Icon = iconMap[card.icon] || TrendingUp;
 
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center">
-            <Target className="w-5 h-5 mr-2" />
-            Performance Metrics
-          </Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Success Rate</span>
-              <Badge variant="primary">{formatPercentage(passRate)}</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Audit Ratio</span>
-              <Badge variant="accent">{auditRatio.toFixed(2)}</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Audits Given</span>
-              <Badge variant="success">{auditsGiven}</Badge>
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
-
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center">
-            <Award className="w-5 h-5 mr-2" />
-            Achievement Summary
-          </Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Total Projects</span>
-              <Badge variant="primary">{totalProjects}</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Failed Projects</span>
-              <Badge variant="error">{failedProjects}</Badge>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-surface-300">Audits Received</span>
-              <Badge variant="accent">{auditsReceived}</Badge>
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
+        return (
+          <Card key={index}>
+            <Card.Header>
+              <Card.Title className="flex items-center">
+                <Icon className="w-5 h-5 mr-2" />
+                {card.title}
+              </Card.Title>
+            </Card.Header>
+            <Card.Content>
+              <div className="space-y-4">
+                {card.items.map((item, itemIndex) => (
+                  <div key={itemIndex} className="flex justify-between items-center">
+                    <span className="text-surface-300">{item.label}</span>
+                    <Badge variant={item.variant}>{item.value}</Badge>
+                  </div>
+                ))}
+              </div>
+            </Card.Content>
+          </Card>
+        );
+      })}
 
       {/* XP Timeline Chart - Full width */}
       <div className="lg:col-span-2 xl:col-span-3">
@@ -146,9 +95,9 @@ const StatsSection = () => {
           <Card.Content>
             <div className="flex justify-center">
               <XPTimelineChart
-                data={timelineData}
-                width={900}
-                height={400}
+                data={chartConfigs.xpTimeline.data}
+                width={chartConfigs.xpTimeline.width}
+                height={chartConfigs.xpTimeline.height}
               />
             </div>
           </Card.Content>
@@ -170,10 +119,10 @@ const StatsSection = () => {
           <Card.Content>
             <div className="flex justify-center">
               <XPByProjectChart
-                data={xpByProject}
-                width={700}
-                height={500}
-                maxBars={15}
+                data={chartConfigs.xpByProject.data}
+                width={chartConfigs.xpByProject.width}
+                height={chartConfigs.xpByProject.height}
+                maxBars={chartConfigs.xpByProject.maxBars}
               />
             </div>
           </Card.Content>
@@ -183,7 +132,7 @@ const StatsSection = () => {
       {/* TODO: Implement Piscine Performance section with piscine-specific queries */}
 
       {/* Skills Development Tracking */}
-      {skills && skills.length > 0 && (
+      {statsData.skillsData.hasSkills && (
         <Card>
           <Card.Header>
             <Card.Title className="flex items-center">
@@ -196,20 +145,20 @@ const StatsSection = () => {
           </Card.Header>
           <Card.Content>
             <div className="space-y-3">
-              {skills.slice(0, 6).map((skill, index) => (
+              {statsData.skillsData.topSkills.map((skill, index) => (
                 <div key={skill.name || index} className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 rounded-full bg-primary-400"></div>
                     <span className="text-surface-200 text-sm capitalize">
-                      {skill.name?.replace(/_/g, ' ') || 'Unknown Skill'}
+                      {skill.displayName}
                     </span>
                   </div>
                   <Badge variant="primary" size="sm">
-                    {formatXP(skill.totalXP)}
+                    {skill.formattedPercentage}
                   </Badge>
                 </div>
               ))}
-              {skills.length === 0 && (
+              {!statsData.skillsData.hasSkills && (
                 <div className="text-center text-surface-400 py-4">
                   <Zap className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>No skill data available yet</p>
@@ -234,9 +183,9 @@ const StatsSection = () => {
         <Card.Content>
           <div className="flex justify-center">
             <XPProgressChart
-              data={timelineData || []} // Use timeline data for progression
-              width={400}
-              height={300}
+              data={chartConfigs.xpProgress.data}
+              width={chartConfigs.xpProgress.width}
+              height={chartConfigs.xpProgress.height}
             />
           </div>
         </Card.Content>
@@ -256,9 +205,9 @@ const StatsSection = () => {
         <Card.Content>
           <div className="flex justify-center py-8">
             <ProjectSuccessChart
-              passedProjects={passedProjects}
-              failedProjects={failedProjects}
-              size={250}
+              passedProjects={chartConfigs.projectSuccess.passedProjects}
+              failedProjects={chartConfigs.projectSuccess.failedProjects}
+              size={chartConfigs.projectSuccess.size}
             />
           </div>
         </Card.Content>
@@ -279,12 +228,34 @@ const StatsSection = () => {
           <Card.Content>
             <div className="flex justify-center">
               <AuditStatsChart
-                auditsGiven={auditsGiven}
-                auditsReceived={auditsReceived}
-                width={900}
-                height={400}
+                auditsGiven={chartConfigs.auditStats.auditsGiven}
+                auditsReceived={chartConfigs.auditStats.auditsReceived}
+                width={chartConfigs.auditStats.width}
+                height={chartConfigs.auditStats.height}
               />
             </div>
+          </Card.Content>
+        </Card>
+      </div>
+
+      {/* Advanced SVG Charts Grid - Professional Dashboard */}
+      <div className="lg:col-span-2 xl:col-span-3">
+        <Card>
+          <Card.Header>
+            <Card.Title className="flex items-center">
+              <BarChart3 className="w-5 h-5 mr-2" />
+              Advanced Analytics Dashboard
+            </Card.Title>
+            <Card.Description>
+              Comprehensive SVG-based statistical visualizations including XP progress, project success rates, skills radar, and audit performance
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <AdvancedChartsGrid
+              analyticsData={statsData}
+              className="mt-4"
+              chartSize={{ width: 350, height: 250 }}
+            />
           </Card.Content>
         </Card>
       </div>

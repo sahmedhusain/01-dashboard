@@ -1,6 +1,7 @@
 // ============================================================================
-// DATA PROCESSING UTILITIES - SIMPLIFIED
-// Following reference patterns for data transformation and formatting
+// DATA PROCESSING UTILITIES - PROFESSIONAL DASHBOARD
+// Comprehensive data transformation and analytics processing
+// Following GraphQL objectives and reference patterns
 // ============================================================================
 
 import { getXPProgress } from './dataFormatting.js';
@@ -1075,4 +1076,575 @@ export const memoizeWithTTL = (fn, ttl = 60000) => {
 
     return result;
   };
+};
+
+// ============================================================================
+// ADVANCED ANALYTICS AND STATISTICS PROCESSING
+// ============================================================================
+
+/**
+ * Calculate comprehensive user statistics for professional dashboard
+ * @param {Object} userData - Complete user data from GraphQL
+ * @returns {Object} Processed analytics data
+ */
+export const processUserAnalytics = (userData) => {
+  if (!userData) return null;
+
+  const {
+    user,
+    totalXP = 0,
+    level = 0,
+    skills = [],
+    projectResults = [],
+    auditData = {},
+    xpTimeline = [],
+    progressData = []
+  } = userData;
+
+  // Calculate project success metrics
+  const projectStats = calculateProjectStatistics(projectResults);
+
+  // Calculate skill proficiency metrics
+  const skillMetrics = calculateSkillMetrics(skills, totalXP);
+
+  // Calculate learning velocity and progress trends
+  const progressMetrics = calculateProgressMetrics(xpTimeline, progressData);
+
+  // Calculate peer comparison metrics
+  const comparisonMetrics = calculateComparisonMetrics(level, totalXP, auditData);
+
+  return {
+    overview: {
+      totalXP,
+      level,
+      rank: getRankTitle(level),
+      cohort: getCohortNumber(userData.eventId),
+      campus: user?.campus || 'Unknown'
+    },
+    projectStats,
+    skillMetrics,
+    progressMetrics,
+    comparisonMetrics,
+    auditPerformance: processAuditPerformance(auditData),
+    learningPath: calculateLearningPath(skills, projectResults)
+  };
+};
+
+/**
+ * Calculate detailed project statistics
+ * @param {Array} projectResults - Array of project results
+ * @returns {Object} Project statistics
+ */
+export const calculateProjectStatistics = (projectResults = []) => {
+  const passed = projectResults.filter(p => p.grade >= 1).length;
+  const failed = projectResults.filter(p => p.grade < 1).length;
+  const total = projectResults.length;
+  const successRate = total > 0 ? (passed / total) * 100 : 0;
+
+  // Calculate difficulty distribution
+  const difficultyStats = projectResults.reduce((acc, project) => {
+    const difficulty = project.object?.attrs?.difficulty || 'unknown';
+    acc[difficulty] = (acc[difficulty] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Calculate recent performance (last 10 projects)
+  const recentProjects = projectResults.slice(-10);
+  const recentSuccessRate = recentProjects.length > 0
+    ? (recentProjects.filter(p => p.grade >= 1).length / recentProjects.length) * 100
+    : 0;
+
+  return {
+    total,
+    passed,
+    failed,
+    successRate: Math.round(successRate),
+    recentSuccessRate: Math.round(recentSuccessRate),
+    difficultyStats,
+    averageGrade: total > 0 ? projectResults.reduce((sum, p) => sum + p.grade, 0) / total : 0,
+    streak: calculateProjectStreak(projectResults)
+  };
+};
+
+/**
+ * Calculate skill proficiency metrics
+ * @param {Array} skills - Array of skill data
+ * @param {number} totalXP - Total XP for percentage calculations
+ * @returns {Object} Skill metrics
+ */
+export const calculateSkillMetrics = (skills = [], totalXP = 0) => {
+  if (skills.length === 0) return { topSkills: [], distribution: {}, proficiencyLevel: 'Beginner' };
+
+  // Sort skills by amount and get top skills
+  const sortedSkills = skills
+    .map(skill => ({
+      ...skill,
+      percentage: totalXP > 0 ? Math.round((skill.amount / totalXP) * 100) : 0,
+      proficiency: calculateProficiencyLevel(skill.amount)
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  const topSkills = sortedSkills.slice(0, 10);
+
+  // Calculate skill distribution by category
+  const distribution = categorizeSkills(skills);
+
+  // Calculate overall proficiency level
+  const averageSkillLevel = skills.reduce((sum, skill) => sum + skill.amount, 0) / skills.length;
+  const overallProficiency = calculateProficiencyLevel(averageSkillLevel);
+
+  return {
+    topSkills,
+    distribution,
+    proficiencyLevel: overallProficiency,
+    totalSkills: skills.length,
+    averageSkillLevel: Math.round(averageSkillLevel),
+    skillGrowth: calculateSkillGrowth(skills)
+  };
+};
+
+/**
+ * Calculate learning progress and velocity metrics
+ * @param {Array} xpTimeline - XP timeline data
+ * @param {Array} progressData - Progress tracking data
+ * @returns {Object} Progress metrics
+ */
+export const calculateProgressMetrics = (xpTimeline = [], progressData = []) => {
+  if (xpTimeline.length === 0) return { velocity: 0, trend: 'stable', milestones: [] };
+
+  // Calculate learning velocity (XP per week)
+  const velocity = calculateLearningVelocity(xpTimeline);
+
+  // Calculate progress trend
+  const trend = calculateProgressTrend(xpTimeline);
+
+  // Identify learning milestones
+  const milestones = identifyMilestones(xpTimeline, progressData);
+
+  // Calculate consistency score
+  const consistency = calculateConsistencyScore(xpTimeline);
+
+  return {
+    velocity,
+    trend,
+    milestones,
+    consistency,
+    totalDays: calculateActiveDays(xpTimeline),
+    averageDaily: velocity / 7,
+    peakPerformance: findPeakPerformancePeriod(xpTimeline)
+  };
+};
+
+/**
+ * Calculate comparison metrics with peers
+ * @param {number} level - User level
+ * @param {number} totalXP - User total XP
+ * @param {Object} auditData - Audit performance data
+ * @returns {Object} Comparison metrics
+ */
+export const calculateComparisonMetrics = (level = 0, totalXP = 0, auditData = {}) => {
+  // These would typically come from additional GraphQL queries
+  // For now, we'll calculate relative performance indicators
+
+  const levelPercentile = calculateLevelPercentile(level);
+  const xpPercentile = calculateXPPercentile(totalXP);
+  const auditPercentile = calculateAuditPercentile(auditData.auditRatio || 0);
+
+  return {
+    levelRank: levelPercentile,
+    xpRank: xpPercentile,
+    auditRank: auditPercentile,
+    overallRank: Math.round((levelPercentile + xpPercentile + auditPercentile) / 3),
+    strengths: identifyStrengths(level, totalXP, auditData),
+    improvementAreas: identifyImprovementAreas(level, totalXP, auditData)
+  };
+};
+
+/**
+ * Process audit performance data
+ * @param {Object} auditData - Raw audit data
+ * @returns {Object} Processed audit performance
+ */
+export const processAuditPerformance = (auditData = {}) => {
+  const { auditRatio = 0, totalUp = 0, totalDown = 0 } = auditData;
+
+  const auditBalance = totalUp - totalDown;
+  const auditActivity = totalUp + totalDown;
+  const auditEfficiency = auditActivity > 0 ? (totalUp / auditActivity) * 100 : 0;
+
+  return {
+    ratio: auditRatio,
+    balance: auditBalance,
+    activity: auditActivity,
+    efficiency: Math.round(auditEfficiency),
+    given: totalUp,
+    received: totalDown,
+    status: getAuditStatus(auditRatio),
+    recommendation: getAuditRecommendation(auditRatio, auditBalance)
+  };
+};
+
+/**
+ * Calculate learning path and recommendations
+ * @param {Array} skills - User skills
+ * @param {Array} projectResults - Project results
+ * @returns {Object} Learning path data
+ */
+export const calculateLearningPath = (skills = [], projectResults = []) => {
+  const skillGaps = identifySkillGaps(skills);
+  const nextProjects = recommendNextProjects(skills, projectResults);
+  const learningGoals = generateLearningGoals(skills, projectResults);
+
+  return {
+    skillGaps,
+    nextProjects,
+    learningGoals,
+    focusAreas: identifyFocusAreas(skills, projectResults),
+    estimatedCompletion: estimateCompletionTime(skills, projectResults)
+  };
+};
+
+// ============================================================================
+// HELPER FUNCTIONS FOR ANALYTICS
+// ============================================================================
+
+/**
+ * Calculate project success streak
+ * @param {Array} projectResults - Project results
+ * @returns {number} Current success streak
+ */
+export const calculateProjectStreak = (projectResults = []) => {
+  let streak = 0;
+  for (let i = projectResults.length - 1; i >= 0; i--) {
+    if (projectResults[i].grade >= 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+};
+
+/**
+ * Categorize skills by type
+ * @param {Array} skills - Skills array
+ * @returns {Object} Categorized skills
+ */
+export const categorizeSkills = (skills = []) => {
+  const categories = {
+    programming: [],
+    frontend: [],
+    backend: [],
+    tools: [],
+    other: []
+  };
+
+  skills.forEach(skill => {
+    const skillType = skill.type.toLowerCase();
+    if (skillType.includes('prog') || skillType.includes('algo')) {
+      categories.programming.push(skill);
+    } else if (skillType.includes('front') || skillType.includes('html') || skillType.includes('css') || skillType.includes('js')) {
+      categories.frontend.push(skill);
+    } else if (skillType.includes('back') || skillType.includes('sql') || skillType.includes('tcp')) {
+      categories.backend.push(skill);
+    } else if (skillType.includes('git') || skillType.includes('unix') || skillType.includes('docker')) {
+      categories.tools.push(skill);
+    } else {
+      categories.other.push(skill);
+    }
+  });
+
+  return categories;
+};
+
+/**
+ * Calculate skill growth rate
+ * @param {Array} skills - Skills array
+ * @returns {number} Growth rate percentage
+ */
+export const calculateSkillGrowth = (skills = []) => {
+  if (skills.length === 0) return 0;
+
+  // This would ideally compare with historical data
+  // For now, we'll calculate based on skill diversity and levels
+  const averageSkillLevel = skills.reduce((sum, skill) => sum + skill.amount, 0) / skills.length;
+  const skillDiversity = skills.length;
+
+  // Simple growth calculation based on diversity and average level
+  return Math.min(100, Math.round((skillDiversity * 2) + (averageSkillLevel / 100)));
+};
+
+/**
+ * Calculate learning velocity (XP per week)
+ * @param {Array} xpTimeline - XP timeline data
+ * @returns {number} XP per week
+ */
+export const calculateLearningVelocity = (xpTimeline = []) => {
+  if (xpTimeline.length < 2) return 0;
+
+  const firstEntry = new Date(xpTimeline[0].createdAt);
+  const lastEntry = new Date(xpTimeline[xpTimeline.length - 1].createdAt);
+  const totalDays = (lastEntry - firstEntry) / (1000 * 60 * 60 * 24);
+  const totalXP = xpTimeline.reduce((sum, entry) => sum + entry.amount, 0);
+
+  if (totalDays === 0) return 0;
+  return Math.round((totalXP / totalDays) * 7); // XP per week
+};
+
+/**
+ * Calculate progress trend
+ * @param {Array} xpTimeline - XP timeline data
+ * @returns {string} Trend direction
+ */
+export const calculateProgressTrend = (xpTimeline = []) => {
+  if (xpTimeline.length < 3) return 'stable';
+
+  const recent = xpTimeline.slice(-7); // Last 7 entries
+  const earlier = xpTimeline.slice(-14, -7); // Previous 7 entries
+
+  if (recent.length === 0 || earlier.length === 0) return 'stable';
+
+  const recentAvg = recent.reduce((sum, entry) => sum + entry.amount, 0) / recent.length;
+  const earlierAvg = earlier.reduce((sum, entry) => sum + entry.amount, 0) / earlier.length;
+
+  const change = ((recentAvg - earlierAvg) / earlierAvg) * 100;
+
+  if (change > 10) return 'improving';
+  if (change < -10) return 'declining';
+  return 'stable';
+};
+
+/**
+ * Identify learning milestones
+ * @param {Array} xpTimeline - XP timeline data
+ * @param {Array} progressData - Progress data
+ * @returns {Array} Milestone events
+ */
+export const identifyMilestones = (xpTimeline = [], progressData = []) => {
+  const milestones = [];
+
+  // XP milestones (every 10,000 XP)
+  let cumulativeXP = 0;
+  let lastMilestone = 0;
+
+  xpTimeline.forEach(entry => {
+    cumulativeXP += entry.amount;
+    const currentMilestone = Math.floor(cumulativeXP / 10000) * 10000;
+
+    if (currentMilestone > lastMilestone) {
+      milestones.push({
+        type: 'xp',
+        value: currentMilestone,
+        date: entry.createdAt,
+        description: `Reached ${currentMilestone / 1000}K XP`
+      });
+      lastMilestone = currentMilestone;
+    }
+  });
+
+  return milestones.slice(-5); // Return last 5 milestones
+};
+
+/**
+ * Calculate consistency score
+ * @param {Array} xpTimeline - XP timeline data
+ * @returns {number} Consistency score (0-100)
+ */
+export const calculateConsistencyScore = (xpTimeline = []) => {
+  if (xpTimeline.length < 7) return 0;
+
+  // Group by day and calculate daily XP
+  const dailyXP = {};
+  xpTimeline.forEach(entry => {
+    const date = new Date(entry.createdAt).toDateString();
+    dailyXP[date] = (dailyXP[date] || 0) + entry.amount;
+  });
+
+  const dailyValues = Object.values(dailyXP);
+  const average = dailyValues.reduce((sum, val) => sum + val, 0) / dailyValues.length;
+
+  // Calculate standard deviation
+  const variance = dailyValues.reduce((sum, val) => sum + Math.pow(val - average, 2), 0) / dailyValues.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Convert to consistency score (lower deviation = higher consistency)
+  const consistencyScore = Math.max(0, 100 - (stdDev / average) * 100);
+  return Math.round(consistencyScore);
+};
+
+/**
+ * Calculate active learning days
+ * @param {Array} xpTimeline - XP timeline data
+ * @returns {number} Number of active days
+ */
+export const calculateActiveDays = (xpTimeline = []) => {
+  const uniqueDays = new Set();
+  xpTimeline.forEach(entry => {
+    uniqueDays.add(new Date(entry.createdAt).toDateString());
+  });
+  return uniqueDays.size;
+};
+
+/**
+ * Find peak performance period
+ * @param {Array} xpTimeline - XP timeline data
+ * @returns {Object} Peak performance data
+ */
+export const findPeakPerformancePeriod = (xpTimeline = []) => {
+  if (xpTimeline.length < 7) return null;
+
+  let maxXP = 0;
+  let peakPeriod = null;
+
+  // Check 7-day windows
+  for (let i = 0; i <= xpTimeline.length - 7; i++) {
+    const window = xpTimeline.slice(i, i + 7);
+    const windowXP = window.reduce((sum, entry) => sum + entry.amount, 0);
+
+    if (windowXP > maxXP) {
+      maxXP = windowXP;
+      peakPeriod = {
+        startDate: window[0].createdAt,
+        endDate: window[6].createdAt,
+        totalXP: windowXP,
+        averageDaily: Math.round(windowXP / 7)
+      };
+    }
+  }
+
+  return peakPeriod;
+};
+
+// Percentile calculation helpers
+export const calculateLevelPercentile = (level) => {
+  // Rough percentile based on typical level distribution
+  if (level >= 20) return 95;
+  if (level >= 15) return 85;
+  if (level >= 10) return 70;
+  if (level >= 5) return 50;
+  if (level >= 2) return 30;
+  return 15;
+};
+
+export const calculateXPPercentile = (totalXP) => {
+  // Rough percentile based on typical XP distribution
+  if (totalXP >= 500000) return 95;
+  if (totalXP >= 300000) return 85;
+  if (totalXP >= 150000) return 70;
+  if (totalXP >= 75000) return 50;
+  if (totalXP >= 25000) return 30;
+  return 15;
+};
+
+export const calculateAuditPercentile = (auditRatio) => {
+  // Percentile based on audit ratio
+  if (auditRatio >= 2.0) return 95;
+  if (auditRatio >= 1.5) return 80;
+  if (auditRatio >= 1.2) return 65;
+  if (auditRatio >= 1.0) return 50;
+  if (auditRatio >= 0.8) return 35;
+  return 20;
+};
+
+// Additional helper functions for comprehensive analytics
+export const calculateProficiencyLevel = (amount) => {
+  if (amount >= 80) return 'Expert';
+  if (amount >= 60) return 'Advanced';
+  if (amount >= 40) return 'Intermediate';
+  if (amount >= 20) return 'Beginner';
+  return 'Novice';
+};
+
+// getRankTitle and getCohortNumber already defined above - removed duplicates
+
+export const getAuditStatus = (auditRatio) => {
+  if (auditRatio >= 1.5) return 'Excellent';
+  if (auditRatio >= 1.2) return 'Good';
+  if (auditRatio >= 1.0) return 'Balanced';
+  if (auditRatio >= 0.8) return 'Needs Improvement';
+  return 'Critical';
+};
+
+export const getAuditRecommendation = (auditRatio, auditBalance) => {
+  if (auditRatio < 1.0) {
+    return 'Focus on giving more audits to improve your ratio';
+  }
+  if (auditBalance < 0) {
+    return 'You need more audit points - participate in more peer reviews';
+  }
+  return 'Great audit performance! Keep up the good work';
+};
+
+export const identifyStrengths = (level, totalXP, auditData) => {
+  const strengths = [];
+  if (level >= 10) strengths.push('High Level Achievement');
+  if (totalXP >= 100000) strengths.push('Strong XP Accumulation');
+  if (auditData.auditRatio >= 1.2) strengths.push('Excellent Peer Review Skills');
+  return strengths.length > 0 ? strengths : ['Consistent Learning Progress'];
+};
+
+export const identifyImprovementAreas = (level, totalXP, auditData) => {
+  const areas = [];
+  if (level < 5) areas.push('Level Progression');
+  if (totalXP < 50000) areas.push('XP Accumulation');
+  if (auditData.auditRatio < 1.0) areas.push('Audit Participation');
+  return areas.length > 0 ? areas : ['Continue Current Progress'];
+};
+
+export const identifySkillGaps = (skills) => {
+  const requiredSkills = ['skill_js', 'skill_go', 'skill_git', 'skill_unix', 'skill_sql'];
+  const userSkills = skills.map(s => s.type);
+  return requiredSkills.filter(skill => !userSkills.includes(skill));
+};
+
+export const recommendNextProjects = (skills, projectResults) => {
+  // This would typically be based on curriculum data
+  // For now, return generic recommendations
+  const completedProjects = projectResults.filter(p => p.grade >= 1).length;
+
+  if (completedProjects < 5) {
+    return ['Focus on foundational projects', 'Complete basic algorithms', 'Practice Git workflows'];
+  }
+  if (completedProjects < 10) {
+    return ['Advanced programming concepts', 'Database projects', 'Web development'];
+  }
+  return ['Specialized projects', 'System administration', 'Advanced algorithms'];
+};
+
+export const generateLearningGoals = (skills, projectResults) => {
+  const goals = [];
+  const skillCount = skills.length;
+  const projectCount = projectResults.filter(p => p.grade >= 1).length;
+
+  if (skillCount < 10) goals.push(`Develop ${10 - skillCount} more skills`);
+  if (projectCount < 20) goals.push(`Complete ${20 - projectCount} more projects`);
+
+  goals.push('Maintain consistent learning pace');
+  goals.push('Improve peer review participation');
+
+  return goals;
+};
+
+export const identifyFocusAreas = (skills, projectResults) => {
+  const categories = categorizeSkills(skills);
+  const focusAreas = [];
+
+  if (categories.programming.length < 3) focusAreas.push('Programming Fundamentals');
+  if (categories.frontend.length < 2) focusAreas.push('Frontend Development');
+  if (categories.backend.length < 2) focusAreas.push('Backend Development');
+  if (categories.tools.length < 3) focusAreas.push('Development Tools');
+
+  return focusAreas.length > 0 ? focusAreas : ['Advanced Specialization'];
+};
+
+export const estimateCompletionTime = (skills, projectResults) => {
+  const currentProgress = projectResults.filter(p => p.grade >= 1).length;
+  const totalRequired = 42; // Typical curriculum requirement
+  const remaining = Math.max(0, totalRequired - currentProgress);
+
+  if (remaining === 0) return 'Curriculum Complete!';
+
+  // Estimate based on current pace (rough calculation)
+  const weeksRemaining = Math.ceil(remaining * 2); // Assume 2 weeks per project
+  return `Estimated ${weeksRemaining} weeks remaining`;
 };

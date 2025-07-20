@@ -8,6 +8,12 @@ import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
 import Loading from './components/ui/Loading';
 import ErrorBoundary from './components/ui/ErrorBoundary';
+import ErrorFeedback from './components/feedback/ErrorFeedback';
+
+// Import debug utilities in development
+if (import.meta.env.DEV) {
+  import('./utils/debugAuth.js');
+}
 
 // Main app component that handles authentication state
 const AppContent = () => {
@@ -35,6 +41,7 @@ function App() {
         <AuthProvider>
           <DataProvider>
             <AppContent />
+            <ErrorFeedback />
           </DataProvider>
         </AuthProvider>
       </ApolloProvider>

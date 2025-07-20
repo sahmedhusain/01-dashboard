@@ -5,13 +5,12 @@
 
 import { useMemo } from 'react';
 import { useUserInfo, useTotalXP, useUserLevel } from '../hooks/useGraphQLData.js';
-import { 
-  processUserProfile, 
-  processXPData, 
+import {
+  processUserProfile,
+  processXPData,
   processLevelData,
   getRankTitle,
-  formatNumber,
-  formatDate 
+  formatDate
 } from '../utils/dataProcessing.js';
 
 // ============================================================================
@@ -59,7 +58,7 @@ const EmptyState = () => (
 const UserStats = ({ totalXP, level, rankTitle, auditRatio }) => (
   <div className="user-stats">
     <div className="stat-item">
-      <div className="stat-value">{formatNumber(totalXP)}</div>
+      <div className="stat-value">{Math.round(totalXP / 1000)} KB XP</div>
       <div className="stat-label">Total XP</div>
     </div>
 
@@ -69,7 +68,7 @@ const UserStats = ({ totalXP, level, rankTitle, auditRatio }) => (
     </div>
 
     <div className="stat-item">
-      <div className="stat-value">{auditRatio?.toFixed(2) || '0.00'}</div>
+      <div className="stat-value">{auditRatio?.toFixed(1) || '0.0'} MB</div>
       <div className="stat-label">Audit Ratio</div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { graphqlService } from '../graphql/dataService.js';
+import { processUserAnalytics } from '../utils/dataProcessing.js';
 
 // ============================================================================
 // SIMPLIFIED GRAPHQL HOOKS - FOLLOWING REFERENCE PATTERNS
@@ -352,52 +353,61 @@ export const useDashboardData = (userId) => {
 
       const userLogin = userInfo.login;
 
-      // Now fetch all other dashboard data using the userLogin
+      // Use the new comprehensive analytics method for enhanced data
       const [
         [levelInfo, levelError],
-        [xpInfo, xpError],
-        [skillsInfo, skillsError],
-        [auditInfo, auditError],
-        [xpProjectsInfo, xpProjectsError],
+        [analyticsData, analyticsError],
         [groupsInfo, groupsError],
-        [xpTimelineInfo, xpTimelineError],
         [auditTimelineInfo, auditTimelineError],
-        [projectResultsInfo, projectResultsError],
       ] = await Promise.all([
         graphqlService.getUserLevel(userLogin),
-        graphqlService.getTotalXP(userLogin),
-        graphqlService.getUserSkills(userLogin),
-        graphqlService.getAuditRatio(userLogin),
-        graphqlService.getXPByProject(userLogin),
+        graphqlService.getComprehensiveAnalytics(userLogin),
         graphqlService.getUserGroups(userLogin),
-        graphqlService.getXPTimeline(userLogin),
         graphqlService.getAuditTimeline(userLogin),
-        graphqlService.getProjectResults(userLogin),
       ]);
 
       // Check for any errors
       const errors = [
-        levelError, xpError, skillsError, auditError,
-        xpProjectsError, groupsError, xpTimelineError, auditTimelineError, projectResultsError
+        levelError, analyticsError, groupsError, auditTimelineError
       ].filter(Boolean);
       if (errors.length > 0) {
         console.warn('Some dashboard queries failed:', errors);
         // Don't fail completely, just log warnings
       }
 
-      // Set combined data
+      // Process analytics data using the new data processing functions
+      const processedAnalytics = analyticsData ? processUserAnalytics({
+        user: analyticsData.user,
+        totalXP: analyticsData.totalXP,
+        level: levelInfo?.level || 0,
+        skills: analyticsData.skills,
+        projectResults: analyticsData.projectAnalytics,
+        auditData: {
+          auditRatio: analyticsData.user?.auditRatio || 0,
+          totalUp: analyticsData.user?.totalUp || 0,
+          totalDown: analyticsData.user?.totalDown || 0
+        },
+        xpTimeline: analyticsData.xpTimeline,
+        progressData: []
+      }) : null;
+
+      // Set enhanced dashboard data
       setDashboardData({
         user: userInfo,
         level: levelInfo?.level || 0,
         eventId: levelInfo?.event?.id,
-        totalXP: xpInfo?.aggregate?.sum?.amount || 0,
-        skills: skillsInfo || [],
-        auditRatio: auditInfo,
-        xpProjects: xpProjectsInfo || [],
+        totalXP: analyticsData?.totalXP || 0,
+        skills: analyticsData?.skills || [],
+        auditRatio: analyticsData?.auditPerformance || {},
+        xpProjects: analyticsData?.xpBreakdown || [],
         groups: groupsInfo || [],
-        xpTimeline: xpTimelineInfo || [],
+        xpTimeline: analyticsData?.xpTimeline || [],
         auditTimeline: auditTimelineInfo || [],
-        projectResults: projectResultsInfo || [],
+        projectResults: analyticsData?.projectAnalytics || [],
+        // Enhanced analytics data
+        techSkills: analyticsData?.techSkills || [],
+        analytics: processedAnalytics,
+        rawAnalytics: analyticsData
       });
 
     } catch (err) {

@@ -213,10 +213,12 @@ export const GET_TOP_XP_EARNERS = `
 
 // Get total XP for user - following reference pattern
 export const GET_TOTAL_XP = `
-  query GetTotalXP {
+  query GetTotalXP($userLogin: String!) {
     transaction_aggregate(
       where: {
         type: { _eq: "xp" }
+        user: { login: { _eq: $userLogin } }
+        event: { path: { _like: "%/bh-module%" } }
       }
     ) {
       aggregate {
@@ -276,10 +278,12 @@ export const GET_XP_BY_PROJECT = `
 
 // Get user skills - corrected to use actual schema fields
 export const GET_USER_SKILLS = `
-  query GetUserSkills {
+  query GetUserSkills($userLogin: String!) {
     transaction(
       where: {
+        user: { login: { _eq: $userLogin } }
         type: { _like: "%skill%" }
+        object: { type: { _eq: "project" } }
       }
       order_by: [{ type: asc }, { createdAt: desc }]
       distinct_on: type
@@ -339,8 +343,8 @@ export const GET_COMPLETED_AUDITS = `
 
 // Get audit ratio information - simplified to use basic user fields
 export const GET_AUDIT_RATIO = `
-  query GetAuditRatio {
-    user(limit: 1) {
+  query GetAuditRatio($userLogin: String!) {
+    user(where: { login: { _eq: $userLogin } }) {
       auditRatio
       totalUp
       totalDown
@@ -857,6 +861,137 @@ export const GET_PROJECT_RESULTS = `
       object {
         name
         type
+      }
+    }
+  }
+`;
+
+// ============================================================================
+// ENHANCED ANALYTICS QUERIES FOR PROFESSIONAL DASHBOARD
+// ============================================================================
+
+// Get comprehensive project results with detailed analytics
+export const GET_PROJECT_ANALYTICS = `
+  query GetProjectAnalytics($userLogin: String!) {
+    result(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        object: { type: { _eq: "project" } }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      type
+      createdAt
+      updatedAt
+      path
+      object {
+        id
+        name
+        type
+        attrs
+      }
+    }
+  }
+`;
+
+// Get technology distribution for radar charts
+export const GET_TECH_SKILLS = `
+  query GetTechSkills($userLogin: String!) {
+    transaction(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _in: [
+          "skill_git", "skill_go", "skill_js",
+          "skill_html", "skill_css", "skill_unix",
+          "skill_docker", "skill_sql", "skill_prog",
+          "skill_algo", "skill_sys-admin", "skill_front-end",
+          "skill_back-end", "skill_stats", "skill_ai",
+          "skill_game", "skill_tcp"
+        ] }
+      }
+      order_by: [{ type: asc }, { createdAt: desc }]
+      distinct_on: type
+    ) {
+      type
+      amount
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get comprehensive audit data for performance analysis
+export const GET_AUDIT_PERFORMANCE = `
+  query GetAuditPerformance($userLogin: String!) {
+    # Up transactions (audit points given)
+    up_transactions: transaction_aggregate(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _eq: "up" }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+        count
+        avg {
+          amount
+        }
+      }
+    }
+
+    # Down transactions (audit points received)
+    down_transactions: transaction_aggregate(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _eq: "down" }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+        count
+        avg {
+          amount
+        }
+      }
+    }
+  }
+`;
+
+// Get XP breakdown by project type for detailed analysis
+export const GET_XP_BREAKDOWN = `
+  query GetXPBreakdown($userLogin: String!) {
+    transaction(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _eq: "xp" }
+        object: { type: { _eq: "project" } }
+        path: { _regex: "^(?!.*(piscine|checkpoint|check-in|bh-onboarding)).*$" }
+      }
+      order_by: { amount: desc }
+    ) {
+      id
+      amount
+      createdAt
+      path
+      object {
+        id
+        name
+        type
+        attrs
+      }
+      event {
+        id
+        path
+        campus
       }
     }
   }

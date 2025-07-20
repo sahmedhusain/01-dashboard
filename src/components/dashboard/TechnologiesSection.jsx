@@ -1,130 +1,94 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Code, Database, Globe, Server, Filter, Search, Award, Zap, Target } from 'lucide-react';
 import { useData } from '../../hooks/useData';
+import {
+  processTechnologiesSectionData,
+  processFilteredSkills,
+  calculateTechnologySummaryStats,
+  calculateMaxXP,
+  getSkillIconName,
+  getSkillColorVariant,
+  getTechnologyFilterOptions
+} from '../../utils/componentDataProcessors/technologiesSectionProcessors';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Progress from '../ui/Progress';
 import { CardSkeleton } from '../ui/Loading';
-import { formatXP, calculateProficiencyLevel } from '../../utils/dataFormatting';
+import { formatXP } from '../../utils/dataFormatting';
 
-// Helper functions for skill categorization
-const categorizeSkill = (skillName) => {
-  if (!skillName || typeof skillName !== 'string') {
-    return 'other';
-  }
-  const name = skillName.toLowerCase();
 
-  if (name.includes('javascript') || name.includes('go') || name.includes('python') ||
-      name.includes('java') || name.includes('c++') || name.includes('rust')) {
-    return 'language';
-  } else if (name.includes('react') || name.includes('vue') || name.includes('angular') ||
-             name.includes('express') || name.includes('django')) {
-    return 'framework';
-  } else if (name.includes('sql') || name.includes('database') || name.includes('mongodb') ||
-             name.includes('postgres')) {
-    return 'database';
-  } else if (name.includes('docker') || name.includes('git') || name.includes('linux') ||
-             name.includes('bash')) {
-    return 'tool';
-  } else if (name.includes('graphql') || name.includes('rest') || name.includes('api')) {
-    return 'api';
-  }
-  return 'general';
-};
 
 
 
 const TechnologiesSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('xp'); // 'xp', 'projects', 'name'
-  const [filterType, setFilterType] = useState('all'); // 'all', 'language', 'framework', 'tool', 'database'
-  const { skills, loading } = useData();
+  const [sortBy, setSortBy] = useState('totalXP'); // 'totalXP', 'completedProjects', 'name'
+  const [filterType, setFilterType] = useState('all'); // 'all', 'programming', 'web', 'database', 'devops'
 
-  // Use real skills data from DataContext with enhanced processing
-  const rawSkills = skills || [];
+  // Get data from DataContext
+  const { skills, transactions, loading, error } = useData();
 
-  // Enhanced technology categorization and proficiency analysis
-  const enhancedSkills = rawSkills.map(skill => {
-    const proficiency = calculateProficiencyLevel(
-      skill.totalXP || 0,
-      skill.completedProjects || 0,
-      skill.averageGrade || 0
-    );
-
-    const skillType = categorizeSkill(skill.name);
-    return {
-      ...skill,
-      proficiency,
-      type: skillType,
-      icon: getSkillIcon(skillType)
-    };
-  });
-
-  // Calculate technology statistics
-  const totalTechnologies = enhancedSkills.length;
-  const advancedSkills = enhancedSkills.filter(s => s.proficiency.level === 'Advanced' || s.proficiency.level === 'Expert').length;
-  const totalXP = enhancedSkills.reduce((sum, skill) => sum + (skill.totalXP || 0), 0);
-  const averageProficiency = enhancedSkills.length > 0
-    ? enhancedSkills.reduce((sum, skill) => sum + skill.proficiency.score, 0) / enhancedSkills.length
-    : 0;
-
-  // Filter and sort enhanced skills
-  const filteredSkills = enhancedSkills
-    .filter(skill => {
-      const matchesSearch = skill.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = filterType === 'all' || skill.type === filterType;
-      return matchesSearch && matchesType;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'xp':
-          return (b.totalXP || 0) - (a.totalXP || 0);
-        case 'projects':
-          return (b.completedProjects || 0) - (a.completedProjects || 0);
-        case 'name':
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
-      }
+  // Process technologies data using enhanced utilities
+  const processedData = useMemo(() => {
+    return processTechnologiesSectionData({
+      skills,
+      transactions,
+      loading,
+      error
     });
+  }, [skills, transactions, loading, error]);
+
+  // Apply client-side filtering and sorting using enhanced utilities
+  const filteredAndSortedSkills = useMemo(() => {
+    return processFilteredSkills(processedData, searchTerm, filterType, sortBy);
+  }, [processedData, searchTerm, filterType, sortBy]);
+
+  // Calculate summary statistics
+  const technologyStats = useMemo(() => {
+    return calculateTechnologySummaryStats(processedData, filteredAndSortedSkills);
+  }, [processedData, filteredAndSortedSkills]);
+
+  // Get filter options and utility data
+  const filterOptions = getTechnologyFilterOptions();
+  const maxXP = calculateMaxXP(filteredAndSortedSkills);
+
+  // Icon mapping for dynamic icon rendering
+  const iconMap = {
+    Code,
+    Database,
+    Globe,
+    Server,
+    Filter,
+    Search,
+    Award,
+    Zap,
+    Target
+  };
 
   const getSkillIcon = (type) => {
-    switch (type) {
-      case 'language':
-        return <Code className="w-4 h-4" />;
-      case 'database':
-        return <Database className="w-4 h-4" />;
-      case 'framework':
-      case 'api':
-        return <Globe className="w-4 h-4" />;
-      default:
-        return <Server className="w-4 h-4" />;
-    }
+    const iconName = getSkillIconName(type);
+    const Icon = iconMap[iconName] || Server;
+    return <Icon className="w-4 h-4" />;
   };
 
-  const getSkillColor = (level) => {
-    switch (level) {
-      case 'Advanced':
-        return 'success';
-      case 'Intermediate':
-        return 'primary';
-      case 'Beginner':
-        return 'warning';
-      default:
-        return 'secondary';
-    }
-  };
-
-  const maxXP = enhancedSkills.length > 0
-    ? Math.max(...enhancedSkills.map(s => s.totalXP || 0))
-    : 1;
-
-  if (loading) {
+  if (processedData.isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CardSkeleton />
         <CardSkeleton />
+      </div>
+    );
+  }
+
+  if (processedData.error) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Card>
+          <Card.Content>
+            <p className="text-red-400">Error loading technologies: {processedData.error}</p>
+          </Card.Content>
+        </Card>
       </div>
     );
   }
@@ -139,7 +103,7 @@ const TechnologiesSection = () => {
               <Code className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{totalTechnologies}</p>
+              <p className="text-2xl font-bold text-white">{technologyStats.totalTechnologies}</p>
               <p className="text-surface-300 text-sm">Technologies</p>
               <Badge variant="primary" size="sm" className="mt-1">
                 Total Skills
@@ -154,7 +118,7 @@ const TechnologiesSection = () => {
               <Award className="w-6 h-6 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{advancedSkills}</p>
+              <p className="text-2xl font-bold text-white">{technologyStats.advancedSkills}</p>
               <p className="text-surface-300 text-sm">Advanced Skills</p>
               <Badge variant="success" size="sm" className="mt-1">
                 Expert Level
@@ -169,7 +133,7 @@ const TechnologiesSection = () => {
               <Zap className="w-6 h-6 text-purple-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{formatXP(totalXP)}</p>
+              <p className="text-2xl font-bold text-white">{formatXP(technologyStats.totalXP)}</p>
               <p className="text-surface-300 text-sm">Total Tech XP</p>
               <Badge variant="accent" size="sm" className="mt-1">
                 Experience
@@ -184,14 +148,14 @@ const TechnologiesSection = () => {
               <Target className="w-6 h-6 text-orange-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{averageProficiency.toFixed(0)}</p>
-              <p className="text-surface-300 text-sm">Avg Proficiency</p>
+              <p className="text-2xl font-bold text-white">{technologyStats.averageProficiency.toFixed(1)}</p>
+              <p className="text-surface-300 text-sm">Avg Level</p>
               <Badge
-                variant={averageProficiency >= 70 ? 'success' : averageProficiency >= 40 ? 'primary' : 'warning'}
+                variant={technologyStats.averageProficiency >= 7 ? 'success' : technologyStats.averageProficiency >= 4 ? 'primary' : 'warning'}
                 size="sm"
                 className="mt-1"
               >
-                {averageProficiency >= 70 ? 'High' : averageProficiency >= 40 ? 'Medium' : 'Low'}
+                Level {Math.ceil(technologyStats.averageProficiency)}
               </Badge>
             </div>
           </Card.Content>
@@ -222,12 +186,11 @@ const TechnologiesSection = () => {
                 onChange={(e) => setFilterType(e.target.value)}
                 className="material-input"
               >
-                <option value="all">All Types</option>
-                <option value="language">Languages</option>
-                <option value="framework">Frameworks</option>
-                <option value="database">Databases</option>
-                <option value="tool">Tools</option>
-                <option value="api">APIs</option>
+                {filterOptions.typeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -238,9 +201,11 @@ const TechnologiesSection = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="material-input"
               >
-                <option value="xp">Sort by XP</option>
-                <option value="projects">Sort by Projects</option>
-                <option value="name">Sort by Name</option>
+                {filterOptions.sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -249,7 +214,7 @@ const TechnologiesSection = () => {
 
       {/* Skills Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredSkills.map((skill, index) => (
+        {filteredAndSortedSkills.filter(skill => skill && skill.name).map((skill, index) => (
           <motion.div
             key={skill.name}
             initial={{ opacity: 0, y: 20 }}
@@ -261,7 +226,7 @@ const TechnologiesSection = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <div className="p-2 bg-primary-500/20 rounded-lg text-primary-400">
-                      <skill.icon className="w-4 h-4" />
+                      {getSkillIcon(skill.type)}
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">{skill.name}</h3>
@@ -269,10 +234,10 @@ const TechnologiesSection = () => {
                     </div>
                   </div>
                   <Badge
-                    variant={getSkillColor(skill.proficiency.level)}
+                    variant={getSkillColorVariant(`Level ${skill.level || 0}`)}
                     size="sm"
                   >
-                    {skill.proficiency.level}
+                    Level {skill.level || 0}
                   </Badge>
                 </div>
 
@@ -292,14 +257,14 @@ const TechnologiesSection = () => {
                     />
                   </div>
 
-                  {/* Proficiency Progress */}
+                  {/* Level Progress */}
                   <div>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-surface-300">Proficiency</span>
-                      <span className="text-accent-300">{skill.proficiency.score}/100</span>
+                      <span className="text-surface-300">Progress</span>
+                      <span className="text-accent-300">{skill.progressPercentage || 0}%</span>
                     </div>
                     <Progress
-                      value={skill.proficiency.score}
+                      value={skill.progressPercentage || 0}
                       max={100}
                       size="sm"
                       color="accent"
@@ -307,18 +272,11 @@ const TechnologiesSection = () => {
                     />
                   </div>
 
-                  {/* Projects Count */}
+                  {/* Level Info */}
                   <div className="flex justify-between text-sm">
-                    <span className="text-surface-300">Projects</span>
-                    <span className="text-white font-medium">{skill.completedProjects || 0}</span>
+                    <span className="text-surface-300">Current Level</span>
+                    <span className="text-white font-medium">{skill.level || 0}</span>
                   </div>
-
-                  {/* Next Level Progress */}
-                  {skill.proficiency.pointsToNext > 0 && (
-                    <div className="text-xs text-surface-400">
-                      {skill.proficiency.pointsToNext} points to next level
-                    </div>
-                  )}
                 </div>
               </Card.Content>
             </Card>
@@ -327,7 +285,7 @@ const TechnologiesSection = () => {
       </div>
 
       {/* No results message */}
-      {filteredSkills.length === 0 && (
+      {filteredAndSortedSkills.length === 0 && (
         <Card>
           <Card.Content>
             <div className="text-center py-8 text-surface-400">

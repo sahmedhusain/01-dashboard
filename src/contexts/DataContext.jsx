@@ -15,9 +15,9 @@ import {
   processAuditTimeline,
   processProjectResults,
   getRankTitle,
-  getCohortNumber,
-  formatNumber
+  getCohortNumber
 } from '../utils/dataProcessing.js';
+import { formatNumber } from '../utils/dataFormatting.js';
 
 // Create context
 export const DataContext = createContext();
@@ -33,12 +33,12 @@ export const useData = () => {
 
 // Data provider using new GraphQL hooks
 export const DataProvider = ({ children }) => {
-  // Get user login from auth context
+  // Get user ID from auth context (JWT contains user.id)
   const { user } = useAuth();
-  const userLogin = user?.username || user?.login;
+  const userId = user?.id;
 
   // Use the new dashboard hook for combined data
-  const { data: dashboardData, loading, error, refetch } = useDashboardData(userLogin);
+  const { data: dashboardData, loading, error, refetch } = useDashboardData(userId);
   
   // Process the data using new utility functions
   const processedData = useMemo(() => {
@@ -122,7 +122,7 @@ export const DataProvider = ({ children }) => {
     refresh: refetch,
     
     // Computed values
-    isAuthenticated: !!userLogin,
+    isAuthenticated: !!userId,
     hasData: !!processedData,
     isEmpty: !loading && !error && !processedData,
     

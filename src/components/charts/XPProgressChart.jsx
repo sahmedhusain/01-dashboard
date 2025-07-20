@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { processXPProgressChartData } from '../../utils/componentDataProcessors/chartProcessors';
+import { createXPProgressChart, calculateChartDimensions, generateChartAnimations } from '../../utils/calculations/chartCalculations';
 
 const XPProgressChart = ({ 
   data = [], 
@@ -7,89 +9,34 @@ const XPProgressChart = ({
   height = 300, 
   className = '' 
 }) => {
-  const margin = { top: 20, right: 30, bottom: 40, left: 60 };
-  const chartWidth = width - margin.left - margin.right;
-  const chartHeight = height - margin.top - margin.bottom;
+  // Process chart data using utility function
+  const chartData = useMemo(() => {
+    const margins = { top: 20, right: 30, bottom: 40, left: 60 };
+    return processXPProgressChartData(data, { width, height, margins });
+  }, [data, width, height]);
 
-  const processedData = useMemo(() => {
-    // Use only real data - no sample data generation
-    return data || [];
-  }, [data]);
+  // Extract processed data for easier access
+  const {
+    isValid,
+    data: processedData,
+    chartDimensions,
+    scales,
+    paths,
+    ticks,
+    domain: _domain,
+    error
+  } = chartData;
 
-  const { xScale, yScale, maxY } = useMemo(() => {
-    if (processedData.length === 0) return { xScale: () => 0, yScale: () => 0, maxY: 0 };
-
-    const maxY = Math.max(...processedData.map(d => d.cumulative));
-    const minDate = new Date(Math.min(...processedData.map(d => new Date(d.date))));
-    const maxDate = new Date(Math.max(...processedData.map(d => new Date(d.date))));
-
-    const xScale = (date) => {
-      const dateObj = new Date(date);
-      const ratio = (dateObj - minDate) / (maxDate - minDate);
-      return ratio * chartWidth;
-    };
-
-    const yScale = (value) => {
-      return chartHeight - (value / maxY) * chartHeight;
-    };
-
-    return { xScale, yScale, maxY };
-  }, [processedData, chartWidth, chartHeight]);
-
-  const pathData = useMemo(() => {
-    if (processedData.length === 0) return '';
-    
-    return processedData
-      .map((d, i) => {
-        const x = xScale(d.date);
-        const y = yScale(d.cumulative);
-        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-      })
-      .join(' ');
-  }, [processedData, xScale, yScale]);
-
-  const areaData = useMemo(() => {
-    if (processedData.length === 0) return '';
-    
-    const linePath = pathData;
-    const firstPoint = processedData[0];
-    const lastPoint = processedData[processedData.length - 1];
-    
-    return `${linePath} L ${xScale(lastPoint.date)} ${chartHeight} L ${xScale(firstPoint.date)} ${chartHeight} Z`;
-  }, [pathData, processedData, xScale, chartHeight]);
-
-  // Generate Y-axis ticks
-  const yTicks = useMemo(() => {
-    const tickCount = 5;
-    const ticks = [];
-    for (let i = 0; i <= tickCount; i++) {
-      const value = (maxY / tickCount) * i;
-      ticks.push({
-        value: Math.round(value),
-        y: yScale(value),
-      });
-    }
-    return ticks;
-  }, [maxY, yScale]);
-
-  // Generate X-axis ticks
-  const xTicks = useMemo(() => {
-    if (processedData.length === 0) return [];
-    
-    const tickCount = Math.min(6, processedData.length);
-    const step = Math.floor(processedData.length / tickCount);
-    const ticks = [];
-    
-    for (let i = 0; i < processedData.length; i += step) {
-      const d = processedData[i];
-      ticks.push({
-        label: new Date(d.date).toLocaleDateString('en-US', { month: 'short' }),
-        x: xScale(d.date),
-      });
-    }
-    
-    return ticks;
-  }, [processedData, xScale]);
+  // Handle error or no data states
+  if (!isValid) {
+    return (
+      <div className={`w-full flex items-center justify-center ${className}`} style={{ width, height }}>
+        <div className="text-center text-surface-400">
+          <p className="text-sm">{error || 'No data available'}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`w-full ${className}`}>
@@ -108,14 +55,14 @@ const XPProgressChart = ({
           </filter>
         </defs>
 
-        <g transform={`translate(${margin.left}, ${margin.top})`}>
+        <g transform={`translate(${chartDimensions.margins.left}, ${chartDimensions.margins.top})`}>
           {/* Grid lines */}
-          {yTicks.map((tick, i) => (
+          {ticks.yTicks.map((tick, i) => (
             <line
               key={i}
               x1={0}
               y1={tick.y}
-              x2={chartWidth}
+              x2={chartDimensions.chartWidth}
               y2={tick.y}
               stroke="rgba(255, 255, 255, 0.1)"
               strokeWidth="1"
@@ -124,7 +71,7 @@ const XPProgressChart = ({
 
           {/* Area fill */}
           <motion.path
-            d={areaData}
+            d={paths.areaPath}
             fill="url(#xpGradient)"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -133,7 +80,7 @@ const XPProgressChart = ({
 
           {/* Main line */}
           <motion.path
-            d={pathData}
+            d={paths.linePath}
             fill="none"
             stroke="#14b8a6"
             strokeWidth="3"
@@ -147,8 +94,8 @@ const XPProgressChart = ({
           {processedData.map((d, i) => (
             <motion.circle
               key={i}
-              cx={xScale(d.date)}
-              cy={yScale(d.cumulative)}
+              cx={scales.xScale(i)}
+              cy={scales.yScale(d.cumulativeXP)}
               r="4"
               fill="#14b8a6"
               stroke="#ffffff"
@@ -158,7 +105,7 @@ const XPProgressChart = ({
               transition={{ duration: 0.3, delay: 0.1 * i }}
               className="cursor-pointer hover:r-6 transition-all"
             >
-              <title>{`${new Date(d.date).toLocaleDateString()}: ${(d.cumulative || 0).toLocaleString()} XP`}</title>
+              <title>{`${new Date(d.date).toLocaleDateString()}: ${(d.cumulativeXP || 0).toLocaleString()} XP`}</title>
             </motion.circle>
           ))}
 
@@ -167,7 +114,7 @@ const XPProgressChart = ({
             x1={0}
             y1={0}
             x2={0}
-            y2={chartHeight}
+            y2={chartDimensions.chartHeight}
             stroke="rgba(255, 255, 255, 0.3)"
             strokeWidth="2"
           />
@@ -175,15 +122,15 @@ const XPProgressChart = ({
           {/* X-axis */}
           <line
             x1={0}
-            y1={chartHeight}
-            x2={chartWidth}
-            y2={chartHeight}
+            y1={chartDimensions.chartHeight}
+            x2={chartDimensions.chartWidth}
+            y2={chartDimensions.chartHeight}
             stroke="rgba(255, 255, 255, 0.3)"
             strokeWidth="2"
           />
 
           {/* Y-axis labels */}
-          {yTicks.map((tick, i) => (
+          {ticks.yTicks.map((tick, i) => (
             <text
               key={i}
               x={-10}
@@ -198,11 +145,11 @@ const XPProgressChart = ({
           ))}
 
           {/* X-axis labels */}
-          {xTicks.map((tick, i) => (
+          {ticks.xTicks.map((tick, i) => (
             <text
               key={i}
               x={tick.x}
-              y={chartHeight + 20}
+              y={chartDimensions.chartHeight + 20}
               textAnchor="middle"
               fill="rgba(255, 255, 255, 0.7)"
               fontSize="12"
@@ -214,7 +161,7 @@ const XPProgressChart = ({
 
           {/* Chart title */}
           <text
-            x={chartWidth / 2}
+            x={chartDimensions.chartWidth / 2}
             y={-5}
             textAnchor="middle"
             fill="rgba(255, 255, 255, 0.9)"
@@ -228,12 +175,12 @@ const XPProgressChart = ({
           {/* Y-axis title */}
           <text
             x={-40}
-            y={chartHeight / 2}
+            y={chartDimensions.chartHeight / 2}
             textAnchor="middle"
             fill="rgba(255, 255, 255, 0.7)"
             fontSize="12"
             fontFamily="Inter, sans-serif"
-            transform={`rotate(-90, -40, ${chartHeight / 2})`}
+            transform={`rotate(-90, -40, ${chartDimensions.chartHeight / 2})`}
           >
             Experience Points
           </text>

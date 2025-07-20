@@ -294,11 +294,7 @@ export const processQuickStats = (profileData) => {
       value: profileData.auditStats?.formattedGiven || '0.00 MB',
       color: 'accent-300'
     },
-    {
-      label: 'Current Level',
-      value: `Level ${profileData.levelInfo?.level || 0}`,
-      color: 'primary-300'
-    },
+
     {
       label: 'Campus',
       value: profileData.userInfo?.campus || 'Unknown',

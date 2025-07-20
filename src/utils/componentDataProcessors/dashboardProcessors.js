@@ -189,6 +189,8 @@ export const processDashboardTabs = () => {
     'User': 'User',
     'Search': 'Search',
     'BarChart3': 'BarChart3',
+    'TrendingUp': 'TrendingUp',
+    'Award': 'Award',
     'Trophy': 'Trophy',
     'Users': 'Users'
   };

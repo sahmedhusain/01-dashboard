@@ -172,7 +172,7 @@ const XPByProjectChart = ({
                     delay: index * 0.1 + 0.3 
                   }}
                 >
-                  {formatXP(project.totalXP)} XP
+                  {formatXP(project.totalXP)}
                 </motion.text>
 
                 {/* Hover Effect */}

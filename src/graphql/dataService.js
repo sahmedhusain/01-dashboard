@@ -1,3 +1,4 @@
+import { withCache, CacheUtils } from '../utils/caching/cacheManager.js';
 import {
   GET_USER_STATISTICS,
   GET_USERS_WITH_PAGINATION,
@@ -19,6 +20,10 @@ import {
   GET_XP_TIMELINE,
   GET_AUDIT_TIMELINE,
   GET_PROJECT_RESULTS,
+  GET_PROJECT_ANALYTICS,
+  GET_TECH_SKILLS,
+  GET_AUDIT_PERFORMANCE,
+  GET_XP_BREAKDOWN,
   GET_USER_INFO,
   GET_USER_BY_ID,
   GET_USERS_BY_CAMPUS,
@@ -48,11 +53,11 @@ export class GraphQLService {
     return localStorage.getItem("reboot01_jwt_token");
   }
 
-  // Generic fetch method with error handling
+  // Generic fetch method with enhanced error handling (aligned with reference patterns)
   async #fetchData(query, variables = {}) {
     const jwt = this.#getJWT();
     if (!jwt || jwt.split(".").length !== 3) {
-      return [null, new Error('Invalid Token')];
+      return [null, new Error('Authentication required: Invalid or missing JWT token')];
     }
 
     try {
@@ -61,25 +66,45 @@ export class GraphQLService {
         headers: {
           Authorization: `Bearer ${jwt}`,
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
-        body: JSON.stringify({ query, variables }),
+        body: JSON.stringify({
+          query: query.trim(),
+          variables
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+        // Enhanced error handling for different HTTP status codes
+        const errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        if (response.status === 401 || response.status === 403) {
+          return [null, new Error(`Authentication failed: ${errorMessage}`)];
+        }
+        if (response.status >= 500) {
+          return [null, new Error(`Server error: ${errorMessage}`)];
+        }
+        return [null, new Error(`Request failed: ${errorMessage}`)];
       }
 
       const result = await response.json();
 
-      if (result.errors) {
+      // Enhanced GraphQL error handling
+      if (result.errors && result.errors.length > 0) {
+        const errorMessages = result.errors.map(error => {
+          const message = error.message || 'Unknown GraphQL error';
+          const path = error.path ? ` at ${error.path.join('.')}` : '';
+          return `${message}${path}`;
+        });
+
         console.error("GraphQL Errors:", result.errors);
-        throw new Error("GraphQL Errors: " + result.errors.map((error) => error.message).join(", "));
+        return [null, new Error(`GraphQL Error: ${errorMessages.join('; ')}`)];
       }
 
+      // Return data even if partial errors exist (following reference pattern)
       return [result.data, null];
     } catch (error) {
-      console.error("Error fetching data:", error.message);
-      return [null, error];
+      console.error("Network/Parse Error:", error.message);
+      return [null, new Error(`Network error: ${error.message}`)];
     }
   }
 
@@ -88,12 +113,30 @@ export class GraphQLService {
   // ============================================================================
 
   async getUserInfo(userLogin) {
+    // Temporarily disabled caching for debugging
+    /* const cacheManager = CacheUtils.getInstance();
+    const cachedData = cacheManager.get(CacheUtils.config.KEYS.USER_PROFILE, userLogin);
+
+    if (cachedData !== null) {
+      return [cachedData, null];
+    } */
+
     const [data, error] = await this.#fetchData(GET_USER_INFO, { userLogin });
     if (error !== null) {
       return [null, error];
     }
     if ('user' in data && Array.isArray(data.user)) {
-      return [data.user[0] || null, null];
+      const userData = data.user[0] || null;
+      // Cache the result - temporarily disabled
+      /* if (userData) {
+        cacheManager.set(
+          CacheUtils.config.KEYS.USER_PROFILE,
+          userData,
+          CacheUtils.config.USER_DATA,
+          userLogin
+        );
+      } */
+      return [userData, null];
     }
     return [null, new Error("'user' key not in response")];
   }
@@ -146,8 +189,8 @@ export class GraphQLService {
   // XP AND LEVEL METHODS
   // ============================================================================
 
-  async getTotalXP() {
-    const [data, error] = await this.#fetchData(GET_TOTAL_XP);
+  async getTotalXP(userLogin) {
+    const [data, error] = await this.#fetchData(GET_TOTAL_XP, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -189,8 +232,8 @@ export class GraphQLService {
   // SKILLS METHODS
   // ============================================================================
 
-  async getUserSkills() {
-    const [data, error] = await this.#fetchData(GET_USER_SKILLS);
+  async getUserSkills(userLogin) {
+    const [data, error] = await this.#fetchData(GET_USER_SKILLS, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -226,8 +269,8 @@ export class GraphQLService {
     return [null, new Error("'audit' key not in response")];
   }
 
-  async getAuditRatio() {
-    const [data, error] = await this.#fetchData(GET_AUDIT_RATIO);
+  async getAuditRatio(userLogin) {
+    const [data, error] = await this.#fetchData(GET_AUDIT_RATIO, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -549,6 +592,130 @@ export class GraphQLService {
       return [data.group, null];
     }
     return [null, new Error("'group' key not in response")];
+  }
+
+  // ============================================================================
+  // ENHANCED ANALYTICS METHODS FOR PROFESSIONAL DASHBOARD
+  // ============================================================================
+
+  async getProjectAnalytics(userLogin) {
+    const [data, error] = await this.#fetchData(
+      GET_PROJECT_ANALYTICS,
+      { userLogin }
+    );
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('result' in data) {
+      return [data.result, null];
+    }
+    return [null, new Error("'result' key not in response")];
+  }
+
+  async getTechSkills(userLogin) {
+    const [data, error] = await this.#fetchData(
+      GET_TECH_SKILLS,
+      { userLogin }
+    );
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('transaction' in data) {
+      return [data.transaction, null];
+    }
+    return [null, new Error("'transaction' key not in response")];
+  }
+
+  async getAuditPerformance(userLogin) {
+    const [data, error] = await this.#fetchData(
+      GET_AUDIT_PERFORMANCE,
+      { userLogin }
+    );
+    if (error !== null) {
+      return [null, error];
+    }
+    return [data, null];
+  }
+
+  async getXPBreakdown(userLogin) {
+    const [data, error] = await this.#fetchData(
+      GET_XP_BREAKDOWN,
+      { userLogin }
+    );
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('transaction' in data) {
+      return [data.transaction, null];
+    }
+    return [null, new Error("'transaction' key not in response")];
+  }
+
+  // Comprehensive analytics method that combines multiple data sources
+  async getComprehensiveAnalytics(userLogin) {
+    // Temporarily disabled caching for debugging
+    /* const cacheManager = CacheUtils.getInstance();
+    const cachedData = cacheManager.get(CacheUtils.config.KEYS.ANALYTICS_DATA, userLogin);
+
+    if (cachedData !== null) {
+      return [cachedData, null];
+    } */
+
+    try {
+      const [
+        [userInfo, userError],
+        [totalXP, xpError],
+        [skills, skillsError],
+        [projectAnalytics, projectError],
+        [techSkills, techError],
+        [auditPerformance, auditError],
+        [xpTimeline, timelineError],
+        [xpBreakdown, breakdownError]
+      ] = await Promise.all([
+        this.getUserInfo(userLogin),
+        this.getTotalXP(userLogin),
+        this.getUserSkills(userLogin),
+        this.getProjectAnalytics(userLogin),
+        this.getTechSkills(userLogin),
+        this.getAuditPerformance(userLogin),
+        this.getXPTimeline(userLogin),
+        this.getXPBreakdown(userLogin)
+      ]);
+
+      // Check for any errors
+      const errors = [userError, xpError, skillsError, projectError, techError, auditError, timelineError, breakdownError]
+        .filter(error => error !== null);
+
+      if (errors.length > 0) {
+        console.warn('Some analytics data failed to load:', errors);
+      }
+
+      const analyticsData = {
+        user: userInfo?.[0] || null,
+        totalXP: totalXP?.aggregate?.sum?.amount || 0,
+        skills: skills || [],
+        projectAnalytics: projectAnalytics || [],
+        techSkills: techSkills || [],
+        auditPerformance: auditPerformance || {},
+        xpTimeline: xpTimeline || [],
+        xpBreakdown: xpBreakdown || []
+      };
+
+      // Cache the result if successful - temporarily disabled
+      /* if (errors.length === 0) {
+        cacheManager.set(
+          CacheUtils.config.KEYS.ANALYTICS_DATA,
+          analyticsData,
+          CacheUtils.config.ANALYTICS,
+          userLogin
+        );
+      } */
+
+      return [analyticsData, errors.length > 0 ? errors[0] : null];
+
+    } catch (error) {
+      return [null, error];
+    }
   }
 }
 

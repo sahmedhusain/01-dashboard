@@ -10,9 +10,9 @@ import {
   processSkillsData,
   processXPByProject,
   getRankTitle,
-  getCohortNumber,
-  formatNumber
+  getCohortNumber
 } from '../utils/dataProcessing.js';
+import { formatNumber } from '../utils/dataFormatting.js';
 
 // ============================================================================
 // LOADING COMPONENT
@@ -76,7 +76,7 @@ const StatsCards = ({ totalXP, level, auditRatio, skillsCount, projectsCount }) 
   const stats = [
     {
       title: 'Total XP',
-      value: formatNumber(totalXP),
+      value: `${Math.round(totalXP / 1000)} KB XP`,
       icon: '⚡',
       color: '#007bff',
       subtitle: 'Experience Points'
@@ -90,7 +90,7 @@ const StatsCards = ({ totalXP, level, auditRatio, skillsCount, projectsCount }) 
     },
     {
       title: 'Audit Ratio',
-      value: auditRatio?.toFixed(2) || '0.00',
+      value: `${auditRatio?.toFixed(1) || '0.0'} MB`,
       icon: '🎯',
       color: auditRatio >= 1 ? '#28a745' : '#dc3545',
       subtitle: 'Audit Performance'

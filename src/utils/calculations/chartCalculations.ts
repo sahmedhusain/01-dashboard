@@ -10,7 +10,7 @@
  * @param {Object} margins - Margin object {top, right, bottom, left}
  * @returns {Object} Chart dimensions
  */
-export const calculateChartDimensions = (width, height, margins = {}) => {
+export const calculateChartDimensions = (width: number, height: number, margins: Record<string, number> = {}) => {
   const defaultMargins = { top: 20, right: 30, bottom: 40, left: 60 };
   const margin = { ...defaultMargins, ...margins };
   
@@ -29,7 +29,7 @@ export const calculateChartDimensions = (width, height, margins = {}) => {
  * @param {Array} range - Output range [min, max]
  * @returns {Function} Scale function
  */
-export const createLinearScale = (domain, range) => {
+export const createLinearScale = (domain: [number, number], range: [number, number]) => {
   const [domainMin, domainMax] = domain;
   const [rangeMin, rangeMax] = range;
   const domainSpan = domainMax - domainMin;
@@ -587,12 +587,12 @@ export const calculateAnimationTiming = (dataLength, options = {}) => {
  * @param {Object} dimensions - Chart dimensions
  * @returns {Object} SVG chart configuration
  */
-export const createXPProgressChart = (xpTimeline, dimensions) => {
+export const createXPProgressChart = (xpTimeline: Array<{ amount: number; createdAt: string; object?: { name?: string }; [key: string]: unknown }>, dimensions: { chartWidth: number; chartHeight: number }) => {
   if (!xpTimeline || xpTimeline.length === 0) {
     return { error: 'No XP timeline data available' };
   }
 
-  const { chartWidth, chartHeight, margin } = dimensions;
+  const { chartWidth, chartHeight } = dimensions;
 
   // Calculate cumulative XP over time
   let cumulativeXP = 0;

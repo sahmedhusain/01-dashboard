@@ -8,7 +8,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders, createMockJWT } from '../../setup/test-utils';
 import Dashboard from '../../../src/components/dashboard/Dashboard';
 import graphqlResponses from '../../fixtures/graphql-responses.json';
-import transactionData from '../../fixtures/transactions.json';
+// import transactionData from '../../fixtures/transactions.json';
 
 describe('Profile Data Flow Integration', () => {
   

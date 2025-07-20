@@ -16,7 +16,7 @@ interface PerformanceEntryWithCLS extends PerformanceEntry {
 }
 
 interface PerformanceNavigationTimingWithSize extends PerformanceNavigationTiming {
-  transferSize?: number;
+  transferSize: number;
 }
 
 /**
@@ -129,10 +129,10 @@ export const PerformanceOptimizer = {
   /**
    * Lazy load component with error boundary
    */
-  lazyLoad: (importFunc, fallback = null) => {
+  lazyLoad: (importFunc: () => Promise<{ default: React.ComponentType<unknown> }>, fallback = null) => {
     const LazyComponent = React.lazy(importFunc);
     
-    return React.forwardRef((props, ref) => (
+    return React.forwardRef<unknown, Record<string, unknown>>((props, ref) => (
       <React.Suspense fallback={fallback || <div>Loading...</div>}>
         <LazyComponent {...props} ref={ref} />
       </React.Suspense>
@@ -376,4 +376,5 @@ export const DeploymentUtils = {
   }
 };
 
-export default getEnvironmentConfig();
+const ProductionConfig = getEnvironmentConfig();
+export default ProductionConfig;

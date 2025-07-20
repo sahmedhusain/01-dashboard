@@ -6,6 +6,22 @@
 /**
  * Cache configuration and constants
  */
+
+interface CacheEntry {
+  data: unknown;
+  expiresAt: number;
+  size: number;
+  accessCount: number;
+  lastAccessed: number;
+  createdAt: number;
+}
+
+interface PerformanceMetrics {
+  hitRate: number;
+  averageResponseTime: number;
+  memoryUsage: number;
+  cacheSize: number;
+}
 const CACHE_CONFIG = {
   // Cache durations in milliseconds
   USER_DATA: 5 * 60 * 1000,      // 5 minutes
@@ -37,7 +53,7 @@ const CACHE_CONFIG = {
  * Implements intelligent caching with TTL, LRU eviction, and memory management
  */
 class CacheManager {
-  private cache: Map<string, any>;
+  private cache: Map<string, CacheEntry>;
   private accessTimes: Map<string, number>;
   private memoryUsage: number;
   private hitCount: number;
@@ -79,14 +95,13 @@ class CacheManager {
     const scopedKey = `${userLogin}:${key}`;
     const now = Date.now();
     
-    const cacheEntry = {
+    const cacheEntry: CacheEntry = {
       data,
-      timestamp: now,
-      ttl,
       expiresAt: now + ttl,
       size: this.calculateSize(data),
       accessCount: 0,
-      lastAccessed: now
+      lastAccessed: now,
+      createdAt: now
     };
 
     // Check memory limits before adding
@@ -280,10 +295,10 @@ class CacheManager {
   updateMetrics() {
     const total = this.hitCount + this.missCount;
     this.performanceMetrics = {
-      hitRate: total > 0 ? ((this.hitCount / total) * 100).toFixed(2) : 0,
-      memoryUsage: (this.memoryUsage / (1024 * 1024)).toFixed(2),
-      cacheSize: this.cache.size,
-      efficiency: this.cache.size > 0 ? (this.hitCount / this.cache.size).toFixed(2) : 0
+      hitRate: total > 0 ? parseFloat(((this.hitCount / total) * 100).toFixed(2)) : 0,
+      averageResponseTime: 0, // This would be calculated from actual response times
+      memoryUsage: parseFloat((this.memoryUsage / (1024 * 1024)).toFixed(2)),
+      cacheSize: this.cache.size
     };
   }
 
@@ -433,6 +448,39 @@ export default cacheManager;
  * Tracks application performance metrics and provides optimization insights
  */
 class PerformanceMonitor {
+  private metrics: {
+    pageLoadTimes: Array<{
+      timestamp: number;
+      loadTime: number;
+      domContentLoaded: number;
+      firstPaint: number;
+    }>;
+    apiResponseTimes: Array<{
+      timestamp: number;
+      url: string;
+      responseTime: number;
+      transferSize: number;
+    }>;
+    renderTimes: Array<{
+      timestamp: number;
+      component: string;
+      renderTime: number;
+    }>;
+    memoryUsage: Array<{
+      timestamp: number;
+      used: number;
+      total: number;
+      limit: number;
+    }>;
+    cacheHitRates: Array<{
+      timestamp: number;
+      hitRate: number;
+      memoryUsage: number;
+    }>;
+  };
+  private observers: PerformanceObserver[];
+  private startTime: number;
+
   constructor() {
     this.metrics = {
       pageLoadTimes: [],
@@ -466,7 +514,7 @@ class PerformanceMonitor {
       try {
         navObserver.observe({ entryTypes: ['navigation'] });
         this.observers.push(navObserver);
-      } catch (e) {
+      } catch (_e) {
         console.warn('Navigation timing observer not supported');
       }
     }
@@ -484,7 +532,7 @@ class PerformanceMonitor {
       try {
         resourceObserver.observe({ entryTypes: ['resource'] });
         this.observers.push(resourceObserver);
-      } catch (e) {
+      } catch (_e) {
         console.warn('Resource timing observer not supported');
       }
     }
@@ -551,11 +599,16 @@ class PerformanceMonitor {
    */
   recordMemoryUsage() {
     if ('memory' in performance) {
+      const memory = performance.memory as {
+        usedJSHeapSize: number;
+        totalJSHeapSize: number;
+        jsHeapSizeLimit: number;
+      };
       this.metrics.memoryUsage.push({
         timestamp: Date.now(),
-        used: performance.memory.usedJSHeapSize,
-        total: performance.memory.totalJSHeapSize,
-        limit: performance.memory.jsHeapSizeLimit
+        used: memory.usedJSHeapSize,
+        total: memory.totalJSHeapSize,
+        limit: memory.jsHeapSizeLimit
       });
 
       // Keep only last 50 entries
@@ -623,10 +676,15 @@ class PerformanceMonitor {
    */
   getCurrentMemoryUsage() {
     if ('memory' in performance) {
+      const memory = performance.memory as {
+        usedJSHeapSize: number;
+        totalJSHeapSize: number;
+        jsHeapSizeLimit: number;
+      };
       return {
-        used: Math.round(performance.memory.usedJSHeapSize / 1024 / 1024), // MB
-        total: Math.round(performance.memory.totalJSHeapSize / 1024 / 1024), // MB
-        percentage: Math.round((performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize) * 100)
+        used: Math.round(memory.usedJSHeapSize / 1024 / 1024), // MB
+        total: Math.round(memory.totalJSHeapSize / 1024 / 1024), // MB
+        percentage: Math.round((memory.usedJSHeapSize / memory.totalJSHeapSize) * 100)
       };
     }
     return { used: 0, total: 0, percentage: 0 };
@@ -641,7 +699,7 @@ class PerformanceMonitor {
     const cacheStats = cacheManager.getStats();
 
     // Cache hit rate recommendations
-    if (parseFloat(cacheStats.hitRate) < 70) {
+    if (cacheStats.hitRate < 70) {
       recommendations.push({
         type: 'cache',
         priority: 'high',
@@ -696,7 +754,7 @@ class PerformanceMonitor {
       const cacheStats = cacheManager.getStats();
       this.metrics.cacheHitRates.push({
         timestamp: Date.now(),
-        hitRate: parseFloat(cacheStats.hitRate),
+        hitRate: cacheStats.hitRate,
         memoryUsage: parseFloat(cacheStats.memoryUsageMB)
       });
 

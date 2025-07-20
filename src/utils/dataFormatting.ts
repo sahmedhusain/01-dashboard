@@ -94,12 +94,19 @@ export const getUserDisplayName = (user: User | null | undefined): string => {
   return 'Unknown User';
 };
 
+interface UserWithEmail extends User {
+  attrs?: {
+    email?: string;
+  };
+  email?: string;
+}
+
 /**
  * Get user email from user data
- * @param {Object} user - User object
- * @returns {string} User email or fallback
+ * @param user - User object
+ * @returns User email or fallback
  */
-export const getUserEmail = (user) => {
+export const getUserEmail = (user: UserWithEmail | null | undefined): string => {
   if (!user) return '';
 
   // Check attrs.email first (primary source from GraphQL)
@@ -113,20 +120,35 @@ export const getUserEmail = (user) => {
 
 /**
  * Format campus name with proper capitalization
- * @param {string} campus - Campus name to format
- * @returns {string} Formatted campus name
+ * @param campus - Campus name to format
+ * @returns Formatted campus name
  */
-export const formatCampusName = (campus) => {
+export const formatCampusName = (campus: string | null | undefined): string => {
   if (!campus) return 'Unknown Campus';
   return campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase();
 };
 
+interface UserWithAvatar extends User {
+  profile?: {
+    avatar?: string;
+    avatarUrl?: string;
+    picture?: string;
+    image?: string;
+    photo?: string;
+  };
+  avatar?: string;
+  avatarUrl?: string;
+  picture?: string;
+  image?: string;
+  photo?: string;
+}
+
 /**
  * Get avatar URL for user from GraphQL endpoint
- * @param {Object} user - User object from GraphQL query
- * @returns {string} Avatar URL or fallback
+ * @param user - User object from GraphQL query
+ * @returns Avatar URL or fallback
  */
-export const getAvatarUrl = (user) => {
+export const getAvatarUrl = (user: UserWithAvatar | null | undefined): string | null => {
   if (!user) return null;
 
   // Check for avatar in user.profile object (primary source from GraphQL)
@@ -162,10 +184,10 @@ export const getAvatarUrl = (user) => {
 
 /**
  * Format date for display
- * @param {string|Date} dateInput - Date to format
- * @returns {string} Formatted date string
+ * @param dateInput - Date to format
+ * @returns Formatted date string
  */
-export const formatDate = (dateInput) => {
+export const formatDate = (dateInput: string | Date | null | undefined): string => {
   if (!dateInput) return '';
   
   try {
@@ -184,10 +206,10 @@ export const formatDate = (dateInput) => {
 
 /**
  * Format date and time for display
- * @param {string|Date} dateInput - Date to format
- * @returns {string} Formatted date and time string
+ * @param dateInput - Date to format
+ * @returns Formatted date and time string
  */
-export const formatDateTime = (dateInput) => {
+export const formatDateTime = (dateInput: string | Date | null | undefined): string => {
   if (!dateInput) return '';
   
   try {
@@ -212,11 +234,11 @@ export const formatDateTime = (dateInput) => {
 
 /**
  * Format percentage for display
- * @param {number} value - Value to format as percentage
- * @param {number} decimals - Number of decimal places (default: 1)
- * @returns {string} Formatted percentage string
+ * @param value - Value to format as percentage
+ * @param decimals - Number of decimal places (default: 1)
+ * @returns Formatted percentage string
  */
-export const formatPercentage = (value, decimals = 1) => {
+export const formatPercentage = (value: number | null | undefined, decimals = 1): string => {
   if (value == null || isNaN(value)) return '0%';
   return `${value.toFixed(decimals)}%`;
 };

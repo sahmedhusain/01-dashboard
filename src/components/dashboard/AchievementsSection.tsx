@@ -49,7 +49,7 @@ const AchievementsSection = () => {
 
     const completedProjects = projectResults.filter(p => p.grade >= 1).length;
     const successRate = projectResults.length > 0 ? (completedProjects / projectResults.length) * 100 : 0;
-    const auditRatioValue = typeof auditRatio === 'object' && auditRatio && 'auditRatio' in auditRatio ? (auditRatio as any).auditRatio || 0 : (typeof auditRatio === 'number' ? auditRatio : 0);
+    const auditRatioValue = typeof auditRatio === 'object' && auditRatio && 'auditRatio' in auditRatio ? (auditRatio as { auditRatio: number }).auditRatio || 0 : (typeof auditRatio === 'number' ? auditRatio : 0);
 
     // Define achievement categories
     const achievements = {
@@ -203,7 +203,7 @@ const AchievementsSection = () => {
             </Card.Header>
             <Card.Content>
               <div className="space-y-2">
-                {achievementsData.recentAchievements.slice(0, 3).map((achievement, index) => {
+                {achievementsData.recentAchievements.slice(0, 3).map((achievement, _index) => {
                   const Icon = achievement.icon;
                   return (
                     <div key={achievement.id} className="flex items-center space-x-2">
@@ -237,7 +237,7 @@ const AchievementsSection = () => {
             </Card.Header>
             <Card.Content>
               <div className="space-y-2">
-                {achievementsData.nextAchievements.map((achievement, index) => {
+                {achievementsData.nextAchievements.map((achievement, _index) => {
                   const Icon = achievement.icon;
                   return (
                     <div key={achievement.id} className="flex items-center space-x-2">

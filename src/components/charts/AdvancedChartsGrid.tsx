@@ -16,6 +16,19 @@ interface AnimationConfig {
   duration?: number;
   delay?: number;
   ease?: string;
+  easing?: string;
+  pathAnimation?: {
+    strokeDasharray?: string;
+    strokeDashoffset?: string;
+    animation?: string;
+  };
+  pointsAnimation?: {
+    opacity?: number;
+    animation?: string;
+  };
+  slicesAnimation?: unknown[];
+  radarAnimation?: unknown;
+  barsAnimation?: unknown[];
   [key: string]: unknown;
 }
 
@@ -48,7 +61,21 @@ const AdvancedChartsGrid = ({
   className = '',
   chartSize = { width: 400, height: 300 }
 }: {
-  analyticsData: any;
+  analyticsData: {
+    xpTimeline?: unknown[];
+    projectAnalytics?: unknown[];
+    skills?: unknown[];
+    techSkills?: unknown[];
+    auditData?: {
+      auditRatio?: number;
+      totalUp?: number;
+      totalDown?: number;
+    };
+    xpProgress?: ChartData;
+    projectSuccess?: ChartData;
+    skillsRadar?: ChartData;
+    auditPerformance?: ChartData;
+  };
   className?: string;
   chartSize?: { width: number; height: number };
 }) => {

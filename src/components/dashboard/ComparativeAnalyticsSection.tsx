@@ -43,7 +43,7 @@ const ComparativeAnalyticsSection = () => {
     // Calculate user performance metrics
     const completedProjects = projectResults.filter(p => p.grade >= 1).length;
     const successRate = projectResults.length > 0 ? (completedProjects / projectResults.length) * 100 : 0;
-    const auditRatioValue = typeof auditRatio === 'object' && auditRatio && 'auditRatio' in auditRatio ? (auditRatio as any).auditRatio || 0 : 0;
+    const auditRatioValue = typeof auditRatio === 'object' && auditRatio && 'auditRatio' in auditRatio ? (auditRatio as { auditRatio: number }).auditRatio || 0 : 0;
 
     // Simulate peer comparison data (in real app, this would come from GraphQL)
     const peerComparison = {
@@ -364,7 +364,7 @@ const ComparativeAnalyticsSection = () => {
                 >
                   <h4 className="font-semibold text-surface-200">{benchmark.category}</h4>
                   <div className="space-y-2">
-                    {benchmark.benchmarks.map((level, levelIndex) => (
+                    {benchmark.benchmarks.map((level, _levelIndex) => (
                       <div
                         key={level.level}
                         className={`flex items-center justify-between p-2 rounded ${

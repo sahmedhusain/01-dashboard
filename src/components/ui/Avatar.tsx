@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { User } from 'lucide-react';
+import React, { useState } from 'react';
+import { User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { getAvatarUrl, getUserDisplayName } from '../../utils/dataFormatting';
 
-interface User {
+interface AvatarUser {
   id?: number;
   login?: string;
   firstName?: string;
@@ -18,7 +18,7 @@ interface User {
 }
 
 interface AvatarProps {
-  user: User | null;
+  user: AvatarUser | null;
   size?: string;
   className?: string;
   showBorder?: boolean;
@@ -105,7 +105,7 @@ const Avatar = ({
         />
       ) : (
         <div className="w-full h-full bg-gradient-to-r from-primary-400 to-accent-400 flex items-center justify-center">
-          <User className={cn('text-white', iconSizes[size])} />
+          <UserIcon className={cn('text-white', iconSizes[size])} />
         </div>
       )}
     </Component>

@@ -32,7 +32,7 @@ describe('Complete Authentication Flow', () => {
       });
 
       // Render the app without authentication
-      const { container } = renderWithProviders(<App />, {
+      renderWithProviders(<App />, {
         authValue: {
           user: null,
           token: null,

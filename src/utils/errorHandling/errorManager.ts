@@ -33,11 +33,11 @@ export class AppError extends Error {
   public timestamp: string;
   public userMessage: string;
   public recoveryActions: string[];
-  public context: any;
+  public context: Record<string, unknown>;
   public retryable: boolean;
   public reportable: boolean;
 
-  constructor(message: string, type = ERROR_TYPES.SYSTEM, severity = ERROR_SEVERITY.MEDIUM, options: any = {}) {
+  constructor(message: string, type = ERROR_TYPES.SYSTEM, severity = ERROR_SEVERITY.MEDIUM, options: Record<string, unknown> = {}) {
     super(message);
     this.name = 'AppError';
     this.type = type;
@@ -127,9 +127,9 @@ export class AppError extends Error {
  * Centralized error handling, logging, and user feedback
  */
 class ErrorManager {
-  private errorLog: any[];
-  private errorHandlers: Map<string, any[]>;
-  private userFeedbackCallbacks: any[];
+  private errorLog: AppError[];
+  private errorHandlers: Map<string, ((error: AppError) => void)[]>;
+  private userFeedbackCallbacks: ((error: AppError) => void)[];
   private maxLogSize: number;
 
   constructor() {

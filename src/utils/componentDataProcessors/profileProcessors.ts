@@ -4,6 +4,106 @@
  * Separates data processing from JSX presentation logic
  */
 
+// Type definitions
+interface User {
+  id?: number;
+  login?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  campus?: string;
+  auditRatio?: number;
+  totalUp?: number;
+  totalDown?: number;
+  attrs?: {
+    email?: string;
+    Phone?: string;
+    PhoneNumber?: string;
+    phone?: string;
+    Degree?: string;
+    degree?: string;
+    gender?: string;
+    genders?: string;
+    country?: string;
+    addressCountry?: string;
+    [key: string]: unknown;
+  };
+  profile?: {
+    avatar?: string;
+    avatarUrl?: string;
+    picture?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Skill {
+  name?: string;
+  type?: string;
+  amount?: number;
+  totalXP?: number;
+}
+
+interface ProcessedUserInfo {
+  displayName: string;
+  email: string;
+  campus: string;
+  avatarUrl: string | null;
+  joinDate: string;
+  lastActivity: string;
+  login?: string;
+  registrationDate?: string | null;
+  joinedDate?: string;
+  startedDate?: string;
+  phone?: string | null;
+  degree?: string | null;
+  gender?: string | null;
+  country?: string | null;
+  [key: string]: unknown;
+}
+
+interface ProcessedLevelInfo {
+  level: number;
+  totalXP: number;
+  formattedXP: string;
+  formattedXPForQuickStats: string;
+  levelProgress: number;
+  formattedProgress: string;
+}
+
+interface ProcessedProjectStats {
+  passed: number;
+  failed: number;
+  total: number;
+  passRate: number;
+  formattedPassRate: string;
+  hasProjects: boolean;
+}
+
+interface ProcessedAuditStats {
+  given: number;
+  received: number;
+  ratio: number;
+  formattedRatio: string;
+  formattedGiven: string;
+  formattedReceived: string;
+  hasAudits: boolean;
+}
+
+interface ProcessedSkill {
+  name: string;
+  displayName: string;
+  totalXP: number;
+  formattedXP: string;
+  formattedPercentage: string;
+}
+
+interface ProcessedSkills {
+  topSkills: ProcessedSkill[];
+  hasSkills: boolean;
+  totalSkills: number;
+}
+
 import {
   formatDate,
   formatXP,
@@ -21,10 +121,10 @@ import {
 
 /**
  * Process user profile basic information
- * @param {Object} user - User data
- * @returns {Object} Processed user profile info
+ * @param user - User data
+ * @returns Processed user profile info
  */
-export const processUserProfileInfo = (user: any) => {
+export const processUserProfileInfo = (user: User | null | undefined): ProcessedUserInfo => {
   if (!user) {
     return {
       displayName: 'Unknown User',
@@ -34,7 +134,9 @@ export const processUserProfileInfo = (user: any) => {
       registrationDate: null,
       avatarUrl: null,
       joinedDate: 'Unknown',
-      startedDate: 'Unknown'
+      startedDate: 'Unknown',
+      joinDate: 'Unknown',
+      lastActivity: 'Unknown'
     };
   }
 
@@ -72,7 +174,9 @@ export const processUserProfileInfo = (user: any) => {
     medicalInfo: attrs.medicalInfo || null,
     qualification: attrs.qualification || attrs.qualifica || null,
     employment: attrs.employment || null,
-    gradDate: attrs.graddate || null
+    gradDate: attrs.graddate || null,
+    joinDate: formatDate(user.createdAt),
+    lastActivity: formatDate(user.updatedAt)
   };
 };
 
@@ -82,7 +186,7 @@ export const processUserProfileInfo = (user: any) => {
  * @param {number} level - User level
  * @returns {Object} Processed level and XP data
  */
-export const processUserLevelInfo = (totalXP: any, level: any) => {
+export const processUserLevelInfo = (totalXP: number | null | undefined, level: number | null | undefined): ProcessedLevelInfo => {
   const userLevel = level || 0;
   const levelProgress = getXPProgress(totalXP, userLevel);
 
@@ -91,15 +195,8 @@ export const processUserLevelInfo = (totalXP: any, level: any) => {
     totalXP: totalXP || 0,
     formattedXP: formatXP(totalXP || 0),
     formattedXPForQuickStats: formatXPForQuickStats(totalXP || 0),
-    progress: {
-      percentage: levelProgress.percentage || 0,
-      current: levelProgress.current || 0,
-      required: levelProgress.required || 0,
-      remaining: (levelProgress.required || 0) - (levelProgress.current || 0),
-      formattedCurrent: formatXP(levelProgress.current || 0),
-      formattedRequired: formatXP(levelProgress.required || 0),
-      formattedRemaining: formatXP((levelProgress.required || 0) - (levelProgress.current || 0))
-    }
+    levelProgress: levelProgress,
+    formattedProgress: formatPercentage(levelProgress)
   };
 };
 
@@ -110,7 +207,7 @@ export const processUserLevelInfo = (totalXP: any, level: any) => {
  * @param {number} passRate - Project pass rate
  * @returns {Object} Processed project statistics
  */
-export const processUserProjectStats = (passedProjects: any, failedProjects: any, passRate: any) => {
+export const processUserProjectStats = (passedProjects: number | null | undefined, failedProjects: number | null | undefined, passRate: number | null | undefined): ProcessedProjectStats => {
   const totalProjects = (passedProjects || 0) + (failedProjects || 0);
   const projectPassRate = passRate || 0;
 
@@ -131,7 +228,7 @@ export const processUserProjectStats = (passedProjects: any, failedProjects: any
  * @param {number} totalDown - Total down audits
  * @returns {Object} Processed audit statistics
  */
-export const processUserAuditStats = (auditRatio: any, totalUp: any, totalDown: any) => {
+export const processUserAuditStats = (auditRatio: number | null | undefined, totalUp: number | null | undefined, totalDown: number | null | undefined): ProcessedAuditStats => {
   const auditsGiven = totalUp || 0;
   const auditsReceived = totalDown || 0;
   const ratio = auditRatio || 0;
@@ -154,7 +251,7 @@ export const processUserAuditStats = (auditRatio: any, totalUp: any, totalDown: 
  * @param {number} maxSkills - Maximum number of skills to show
  * @returns {Object} Processed skills data
  */
-export const processUserSkills = (skills: any, totalXP: any, maxSkills = 5) => {
+export const processUserSkills = (skills: Skill[] | null | undefined, totalXP: number | null | undefined, maxSkills = 5): ProcessedSkills => {
   if (!Array.isArray(skills) || skills.length === 0) {
     return {
       topSkills: [],

@@ -1424,7 +1424,7 @@ export const calculateProgressTrend = (xpTimeline = []) => {
  * @param {Array} progressData - Progress data
  * @returns {Array} Milestone events
  */
-export const identifyMilestones = (xpTimeline = [], progressData = []) => {
+export const identifyMilestones = (xpTimeline = [], _progressData = []) => {
   const milestones = [];
 
   // XP milestones (every 10,000 XP)
@@ -1629,7 +1629,7 @@ export const generateLearningGoals = (skills, projectResults) => {
   return goals;
 };
 
-export const identifyFocusAreas = (skills, projectResults) => {
+export const identifyFocusAreas = (skills, _projectResults) => {
   const categories = categorizeSkills(skills);
   const focusAreas = [];
 

@@ -8,9 +8,22 @@ const PiscineStatsChart = ({
   className = ""
 }: {
   data?: {
-    jsStats?: any;
-    goStats?: any;
-    overall?: any;
+    jsStats?: {
+      totalXP: number;
+      projectsCompleted: number;
+      averageGrade: number;
+    };
+    goStats?: {
+      totalXP: number;
+      projectsCompleted: number;
+      averageGrade: number;
+    };
+    overall?: {
+      totalXP: number;
+      projectsCompleted: number;
+      averageGrade: number;
+      successRate: number;
+    };
   };
   width?: number;
   height?: number;

@@ -23,6 +23,21 @@ const StatsSection = () => {
   const overviewCards = processStatsOverviewCards(statsData);
   const chartConfigs = processChartConfigurations(statsData);
 
+  // Transform statsData to match AdvancedChartsGrid expected structure
+  const analyticsData = {
+    xpTimeline: rawData.userStatistics?.xpTimeline || [],
+    projectAnalytics: rawData.userStatistics?.projectResults || [],
+    skills: rawData.userStatistics?.skills || [],
+    techSkills: rawData.userStatistics?.techSkills || rawData.userStatistics?.skills || [],
+    auditData: {
+      auditRatio: typeof rawData.userStatistics?.auditRatio === 'string'
+        ? parseFloat(rawData.userStatistics.auditRatio) || 0
+        : rawData.userStatistics?.auditRatio || 0,
+      totalUp: rawData.auditStatistics?.auditsGiven || 0,
+      totalDown: rawData.auditStatistics?.auditsReceived || 0,
+    }
+  };
+
   // Icon mapping for dynamic icon rendering
   const iconMap = {
     TrendingUp,
@@ -252,7 +267,7 @@ const StatsSection = () => {
           </Card.Header>
           <Card.Content>
             <AdvancedChartsGrid
-              analyticsData={statsData}
+              analyticsData={analyticsData}
               className="mt-4"
               chartSize={{ width: 350, height: 250 }}
             />

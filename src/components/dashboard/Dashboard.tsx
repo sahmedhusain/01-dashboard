@@ -67,6 +67,9 @@ const Dashboard = () => {
     logout();
   };
 
+  // Convert Error to LoadingError format
+  const loadingError = error ? { userMessage: error.message } : null;
+
   // Use processed dashboard state for loading and error handling
   if (dashboardState.shouldShowLoading) {
     return (
@@ -75,7 +78,7 @@ const Dashboard = () => {
           size="lg"
           text="Loading your dashboard..."
           variant="dots"
-          error={error}
+          error={loadingError}
           retry={refetchAll}
         />
       </div>
@@ -87,7 +90,7 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen bg-surface-900 flex items-center justify-center">
         <Loading
-          error={error}
+          error={loadingError}
           retry={refetchAll}
           text="Failed to load dashboard"
         />

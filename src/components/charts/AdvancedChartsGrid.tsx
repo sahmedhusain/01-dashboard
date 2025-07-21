@@ -95,14 +95,22 @@ const AdvancedChartsGrid = ({
     );
   }
 
-  const { charts } = chartsConfig;
+  const { charts } = chartsConfig as {
+    charts: {
+      xpProgress?: ChartData;
+      projectSuccess?: ChartData;
+      skillsRadar?: ChartData;
+      auditPerformance?: ChartData;
+    };
+    hasData: boolean;
+  };
 
   return (
     <div className={`w-full ${className}`}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* XP Progress Chart */}
-        {charts.xpProgress && (
+        {charts?.xpProgress && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -110,14 +118,14 @@ const AdvancedChartsGrid = ({
             className="bg-surface-800 rounded-lg p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-4">
-              {charts.xpProgress.title}
+              {charts.xpProgress.title || 'XP Progress'}
             </h3>
             <XPProgressSVG chartConfig={charts.xpProgress} />
           </motion.div>
         )}
 
         {/* Project Success Chart */}
-        {charts.projectSuccess && (
+        {charts?.projectSuccess && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -125,14 +133,14 @@ const AdvancedChartsGrid = ({
             className="bg-surface-800 rounded-lg p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-4">
-              {charts.projectSuccess.title}
+              {charts.projectSuccess.title || 'Project Success'}
             </h3>
             <ProjectSuccessSVG chartConfig={charts.projectSuccess} />
           </motion.div>
         )}
 
         {/* Skills Radar Chart */}
-        {charts.skillsRadar && (
+        {charts?.skillsRadar && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -140,14 +148,14 @@ const AdvancedChartsGrid = ({
             className="bg-surface-800 rounded-lg p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-4">
-              {charts.skillsRadar.title}
+              {charts.skillsRadar.title || 'Skills Radar'}
             </h3>
             <SkillsRadarSVG chartConfig={charts.skillsRadar} />
           </motion.div>
         )}
 
         {/* Audit Performance Chart */}
-        {charts.auditPerformance && (
+        {charts?.auditPerformance && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -155,7 +163,7 @@ const AdvancedChartsGrid = ({
             className="bg-surface-800 rounded-lg p-6"
           >
             <h3 className="text-lg font-semibold text-white mb-4">
-              {charts.auditPerformance.title}
+              {charts.auditPerformance.title || 'Audit Performance'}
             </h3>
             <AuditPerformanceSVG chartConfig={charts.auditPerformance} />
           </motion.div>
@@ -207,7 +215,7 @@ const XPProgressSVG = ({ chartConfig }) => {
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={animations.pathAnimation}
+          style={(animations as any).pathAnimation}
         />
 
         {/* Data Points */}
@@ -220,7 +228,7 @@ const XPProgressSVG = ({ chartConfig }) => {
             fill="#14b8a6"
             stroke="#fff"
             strokeWidth="2"
-            style={animations.pointsAnimation}
+            style={(animations as any).pointsAnimation}
             className="hover:r-6 transition-all cursor-pointer"
           >
             <title>{`${point.project}: ${point.amount} XP (Total: ${point.value})`}</title>
@@ -300,7 +308,7 @@ const ProjectSuccessSVG = ({ chartConfig }) => {
           fill={slice.color}
           stroke="#1f2937"
           strokeWidth="2"
-          style={animations.slicesAnimation[index]}
+          style={(animations as any).slicesAnimation?.[index]}
           className="hover:opacity-80 transition-opacity cursor-pointer"
         >
           <title>{`${slice.label}: ${slice.value} (${slice.percentage.toFixed(1)}%)`}</title>
@@ -408,7 +416,7 @@ const SkillsRadarSVG = ({ chartConfig }) => {
         fillOpacity="0.3"
         stroke="#14b8a6"
         strokeWidth="2"
-        style={animations.radarAnimation}
+        style={(animations as any).radarAnimation}
       />
 
       {/* Radar Points */}
@@ -421,7 +429,7 @@ const SkillsRadarSVG = ({ chartConfig }) => {
           fill="#14b8a6"
           stroke="#fff"
           strokeWidth="2"
-          style={animations.pointsAnimation}
+          style={(animations as any).pointsAnimation}
           className="hover:r-6 transition-all cursor-pointer"
         >
           <title>{`${point.skill}: ${point.value}`}</title>
@@ -468,7 +476,7 @@ const AuditPerformanceSVG = ({ chartConfig }) => {
               fill={bar.color}
               rx="4"
               style={{
-                ...animations.barsAnimation[index],
+                ...(animations as any).barsAnimation?.[index],
                 '--target-width': `${bar.width}px`
               }}
               className="hover:opacity-80 transition-opacity"

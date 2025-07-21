@@ -2,6 +2,7 @@
 import {
   // Core user queries - using new names
   GET_USER_BASIC_INFO,
+  GET_USER_BY_ID,
   GET_USER_COMPLETE,
   GET_USER_STATS,
   GET_USERS_LIST,
@@ -141,7 +142,7 @@ export class GraphQLService {
     if (import.meta.env.DEV) {
       console.log('getUserById called with userId:', userId, typeof userId);
     }
-    const [data, error] = await this.#fetchData(GET_USER_COMPLETE, { userLogin: userId });
+    const [data, error] = await this.#fetchData(GET_USER_BY_ID, { userId: parseInt(userId, 10) });
     if (error !== null) {
       return [null, error];
     }

@@ -45,6 +45,26 @@ export const GET_USER_BASIC_INFO = `
   }
 `;
 
+// Get user by ID - SCHEMA CORRECTED
+export const GET_USER_BY_ID = `
+  query GetUserById($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+      id
+      login
+      firstName
+      lastName
+      auditRatio
+      totalUp
+      totalDown
+      campus
+      profile
+      attrs
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 // Get user with all relationships
 export const GET_USER_COMPLETE = `
   query GetUserComplete($userLogin: String!) {

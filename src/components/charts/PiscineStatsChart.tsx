@@ -37,29 +37,40 @@ const PiscineStatsChart = ({
 
       const { jsStats = {}, goStats = {}, overall = {} } = data;
 
-      // Validate overall stats
-      if (!overall.total || overall.total <= 0) {
+      // Type assertions for stats objects
+      const overallTyped = overall as { projectsCompleted?: number; successRate?: number };
+      const jsStatsTyped = jsStats as { projectsCompleted?: number; averageGrade?: number };
+      const goStatsTyped = goStats as { projectsCompleted?: number; averageGrade?: number };
+
+      // Validate overall stats using the correct property names
+      if (!overallTyped.projectsCompleted || overallTyped.projectsCompleted <= 0) {
         return { segments: [], jsStats, goStats, overall };
       }
 
       // Create pie chart data for overall piscine performance
       const segments = [];
 
-      if (overall.passed > 0) {
+      // Calculate passed/failed based on success rate and total projects
+      const totalProjects = overallTyped.projectsCompleted || 0;
+      const successRate = overallTyped.successRate || 0;
+      const passedProjects = Math.round(totalProjects * (successRate / 100));
+      const failedProjects = totalProjects - passedProjects;
+
+      if (passedProjects > 0) {
         segments.push({
           label: 'Passed',
-          value: overall.passed,
-          percentage: (overall.passed / overall.total) * 100,
+          value: passedProjects,
+          percentage: (passedProjects / totalProjects) * 100,
           color: 'rgb(34, 197, 94)', // green
           hoverColor: 'rgb(22, 163, 74)',
         });
       }
 
-      if (overall.failed > 0) {
+      if (failedProjects > 0) {
         segments.push({
           label: 'Failed',
-          value: overall.failed,
-          percentage: (overall.failed / overall.total) * 100,
+          value: failedProjects,
+          percentage: (failedProjects / totalProjects) * 100,
           color: 'rgb(239, 68, 68)', // red
           hoverColor: 'rgb(220, 38, 38)',
         });
@@ -81,9 +92,9 @@ const PiscineStatsChart = ({
 
       return {
         segments: segmentsWithAngles,
-        jsStats,
-        goStats,
-        overall,
+        jsStats: jsStatsTyped,
+        goStats: goStatsTyped,
+        overall: overallTyped,
       };
     } catch (error) {
       console.error('Error processing piscine stats data:', error);
@@ -132,7 +143,7 @@ const PiscineStatsChart = ({
     }
   };
 
-  if (!chartData.segments.length || chartData.overall.total === 0) {
+  if (!chartData.segments.length || chartData.overall.projectsCompleted === 0) {
     return (
       <div className={`flex items-center justify-center ${className}`} style={{ width, height }}>
         <div className="text-center text-surface-400">
@@ -229,7 +240,7 @@ const PiscineStatsChart = ({
             textAnchor="middle"
             className="fill-surface-100 text-lg font-bold"
           >
-            {chartData.overall.total}
+            {chartData.overall.projectsCompleted}
           </text>
           <text
             x={centerX}
@@ -286,10 +297,10 @@ const PiscineStatsChart = ({
             JavaScript Piscine:
           </text>
           <text x={15} y={52} className="fill-surface-400 text-xs">
-            Passed: {chartData.jsStats.passed || 0}
+            Projects: {chartData.jsStats.projectsCompleted || 0}
           </text>
           <text x={15} y={64} className="fill-surface-400 text-xs">
-            Failed: {chartData.jsStats.failed || 0}
+            Avg Grade: {chartData.jsStats.averageGrade?.toFixed(1) || 0}
           </text>
           
           {/* Go Stats */}
@@ -297,10 +308,10 @@ const PiscineStatsChart = ({
             Go Piscine:
           </text>
           <text x={15} y={98} className="fill-surface-400 text-xs">
-            Passed: {chartData.goStats.passed || 0}
+            Projects: {chartData.goStats.projectsCompleted || 0}
           </text>
           <text x={15} y={110} className="fill-surface-400 text-xs">
-            Failed: {chartData.goStats.failed || 0}
+            Avg Grade: {chartData.goStats.averageGrade?.toFixed(1) || 0}
           </text>
         </g>
 
@@ -320,7 +331,7 @@ const PiscineStatsChart = ({
             Success Rate
           </text>
           <text x={10} y={32} className="fill-primary-400 text-lg font-bold">
-            {chartData.overall.passRate?.toFixed(1) || 0}%
+            {chartData.overall.successRate?.toFixed(1) || 0}%
           </text>
         </g>
       </svg>

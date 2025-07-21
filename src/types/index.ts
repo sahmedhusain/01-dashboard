@@ -141,10 +141,16 @@ export interface CardProps extends ComponentProps {
   footer?: ReactNode;
 }
 
+export interface LoadingError {
+  userMessage?: string;
+}
+
 export interface LoadingProps {
   size?: 'sm' | 'md' | 'lg';
   text?: string;
   fullScreen?: boolean;
+  error?: LoadingError | null;
+  retry?: (() => void) | null;
 }
 
 // Auth types

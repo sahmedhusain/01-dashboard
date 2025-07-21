@@ -1,13 +1,14 @@
 import { jwtDecode } from 'jwt-decode';
+import config from '../config/appConfig';
 
-// API endpoints
-export const API_BASE_URL = 'https://learn.reboot01.com/api';
-export const SIGNIN_ENDPOINT = `${API_BASE_URL}/auth/signin`;
-export const GRAPHQL_ENDPOINT = `${API_BASE_URL}/graphql-engine/v1/graphql`;
+// Dynamic API endpoints from configuration
+export const API_BASE_URL = config.api.baseURL;
+export const SIGNIN_ENDPOINT = config.api.authEndpoint;
+export const GRAPHQL_ENDPOINT = config.api.graphqlEndpoint;
 
-// Local storage keys
-export const TOKEN_KEY = 'reboot01_jwt_token';
-export const USER_KEY = 'reboot01_user_data';
+// Dynamic storage keys from configuration
+export const TOKEN_KEY = config.auth.tokenKey;
+export const USER_KEY = config.auth.userKey;
 
 /**
  * Encode credentials for Basic authentication

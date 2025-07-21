@@ -3,6 +3,8 @@
 // Functions for formatting and displaying data in components
 // ============================================================================
 
+import config from '../config/appConfig';
+
 // ============================================================================
 // XP FORMATTING
 // ============================================================================
@@ -135,6 +137,10 @@ interface UserWithAvatar extends User {
     image?: string;
     photo?: string;
   };
+  attrs?: {
+    [key: string]: any;
+    'pro-picUploadId'?: string;
+  };
   avatar?: string;
   avatarUrl?: string;
   picture?: string;
@@ -160,13 +166,43 @@ export const getAvatarUrl = (user: UserWithAvatar | null | undefined): string | 
 
   console.log('🔍 Avatar Field Analysis:');
   console.log('  - user.profile:', user.profile);
+  console.log('  - user.attrs:', user.attrs);
   console.log('  - user.avatar:', user.avatar);
   console.log('  - user.avatarUrl:', user.avatarUrl);
   console.log('  - user.picture:', user.picture);
   console.log('  - user.image:', user.image);
   console.log('  - user.login:', user.login);
 
-  // Check for avatar in user.profile object (primary source from GraphQL)
+  // Based on GetUserComplete.txt analysis:
+  // - profile field is an empty object {}
+  // - actual avatar data is in attrs["pro-picUploadId"]
+  // - need to construct URL from upload ID
+
+  // Check for profile picture upload ID in attrs (primary source for reboot01)
+  if (user.attrs && typeof user.attrs === 'object') {
+    const proUploadId = (user.attrs as any)['pro-picUploadId'];
+    console.log('  - attrs.pro-picUploadId:', proUploadId);
+    if (proUploadId && typeof proUploadId === 'string') {
+      // Use dynamic avatar configuration for URL patterns
+      const possibleUrls = [
+        `${config.avatar.providers.backblaze.baseUrl}/${proUploadId}`,
+        `${config.avatar.providers.backblaze.apiUrl}?fileId=${proUploadId}`,
+        `${config.api.baseURL}/profile-picture/${proUploadId}`,
+        // Fallback to a test avatar for debugging
+        'https://via.placeholder.com/128x128/4F46E5/FFFFFF?text=Avatar'
+      ];
+
+      // For now, use the first format but log all possibilities
+      const avatarUrl = possibleUrls[0];
+      console.log('🎯 Constructed avatar URL from upload ID:', avatarUrl);
+      console.log('🔗 Upload ID:', proUploadId);
+      console.log('🔗 All possible URLs:', possibleUrls);
+      console.groupEnd();
+      return avatarUrl;
+    }
+  }
+
+  // Check for avatar in user.profile object (fallback)
   if (user.profile && typeof user.profile === 'object') {
     console.log('✅ Profile object found, checking fields...');
     console.log('  - profile.avatar:', user.profile.avatar);
@@ -342,12 +378,13 @@ export const calculateProficiencyLevel = (amount) => {
  * @returns {string} CSS color class or hex color
  */
 export const getSkillColor = (amount) => {
-  if (!amount || amount < 100) return '#6b7280'; // Gray
-  if (amount < 500) return '#3b82f6'; // Blue
-  if (amount < 1000) return '#10b981'; // Green
-  if (amount < 2000) return '#f59e0b'; // Yellow
-  if (amount < 5000) return '#ef4444'; // Red
-  return '#8b5cf6'; // Purple
+  // Use dynamic colors from configuration with fallbacks
+  if (!amount || amount < 100) return config.ui.theme.secondary || '#6b7280'; // Gray
+  if (amount < 500) return config.ui.theme.primary || '#3b82f6'; // Blue
+  if (amount < 1000) return '#10b981'; // Green (fallback)
+  if (amount < 2000) return '#f59e0b'; // Yellow (fallback)
+  if (amount < 5000) return '#ef4444'; // Red (fallback)
+  return config.ui.theme.accent || '#8b5cf6'; // Purple
 };
 
 // ============================================================================

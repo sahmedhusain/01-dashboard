@@ -2,6 +2,7 @@
 import React, { ReactNode, ButtonHTMLAttributes } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
+import config from '../../config/appConfig';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -39,10 +40,10 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const sizes: Record<ButtonSize, string> = {
-    sm: 'px-3 py-1.5 text-sm rounded-md',
-    md: 'px-4 py-2 text-sm rounded-lg',
-    lg: 'px-6 py-3 text-base rounded-lg',
-    xl: 'px-8 py-4 text-lg rounded-xl',
+    sm: config.ui.sizes.button.sm,
+    md: config.ui.sizes.button.md,
+    lg: config.ui.sizes.button.lg,
+    xl: config.ui.sizes.button.xl,
   };
 
   const classes = cn(

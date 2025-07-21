@@ -19,41 +19,43 @@ interface PerformanceNavigationTimingWithSize extends PerformanceNavigationTimin
   transferSize: number;
 }
 
+import config from './appConfig';
+
 /**
- * Production environment configuration
+ * Production environment configuration - now uses dynamic config
  */
 export const PRODUCTION_CONFIG = {
-  // API Configuration
+  // API Configuration - from dynamic config
   api: {
-    baseURL: import.meta.env.VITE_API_URL || 'https://learn.reboot01.com/api/graphql-engine/v1/graphql',
-    timeout: 30000,
-    retryAttempts: 3,
-    retryDelay: 1000
+    baseURL: config.api.graphqlEndpoint,
+    timeout: config.api.timeout,
+    retryAttempts: config.api.retryAttempts,
+    retryDelay: config.api.retryDelay
   },
 
-  // Authentication
+  // Authentication - from dynamic config
   auth: {
-    tokenKey: 'auth_token',
-    refreshTokenKey: 'refresh_token',
-    tokenExpiry: 24 * 60 * 60 * 1000, // 24 hours
-    autoRefresh: true
+    tokenKey: config.auth.tokenKey,
+    refreshTokenKey: config.auth.refreshTokenKey,
+    tokenExpiry: config.auth.tokenExpiry,
+    autoRefresh: config.auth.autoRefresh
   },
 
-  // Caching
+  // Caching - from dynamic config
   cache: {
-    enabled: true,
-    maxSize: 100, // MB
-    defaultTTL: 5 * 60 * 1000, // 5 minutes
+    enabled: config.cache.enabled,
+    maxSize: config.cache.maxMemoryMB,
+    defaultTTL: config.cache.durations.userData,
     persistentCache: true
   },
 
-  // Performance
+  // Performance - from dynamic config
   performance: {
-    enableServiceWorker: true,
-    enableCompression: true,
-    enableLazyLoading: true,
-    chunkSizeWarning: 500000, // 500KB
-    bundleSizeWarning: 2000000 // 2MB
+    enableServiceWorker: config.performance.enableServiceWorker,
+    enableCompression: config.performance.enableCompression,
+    enableLazyLoading: config.performance.enableLazyLoading,
+    chunkSizeWarning: config.performance.chunkSizeWarning,
+    bundleSizeWarning: config.performance.bundleSizeWarning
   },
 
   // Analytics
@@ -243,8 +245,8 @@ export const BuildOptimizer = {
     description: 'Professional student analytics dashboard',
     start_url: '/',
     display: 'standalone',
-    background_color: '#0f172a',
-    theme_color: '#14b8a6',
+    background_color: config.app.backgroundColor,
+    theme_color: config.app.themeColor,
     icons: [
       {
         src: '/icons/icon-192.png',
@@ -304,7 +306,7 @@ export const BuildOptimizer = {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://learn.reboot01.com",
+      `connect-src 'self' ${config.api.baseURL.replace('/api', '')}`,
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'"

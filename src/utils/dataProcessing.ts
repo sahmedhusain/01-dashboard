@@ -792,6 +792,128 @@ export const processProjectResults = (resultsData) => {
   };
 };
 
+// Process transactions to extract project statistics
+// Based on GetUserComplete.txt analysis - transactions contain project data
+export const processTransactionsForProjects = (transactions) => {
+  if (!Array.isArray(transactions)) return {
+    totalProjects: 0,
+    passedProjects: 0,
+    failedProjects: 0,
+    passRate: 0,
+    results: []
+  };
+
+  // Group transactions by project to determine pass/fail status
+  // Only count projects from BH module with type 'project'
+  const projectMap = new Map();
+
+  transactions.forEach(transaction => {
+    // Only process project transactions from BH module
+    if (transaction.object?.type === 'project' &&
+        transaction.path?.includes('/bahrain/bh-module/')) {
+      const projectName = transaction.object.name;
+      if (!projectMap.has(projectName)) {
+        projectMap.set(projectName, {
+          name: projectName,
+          type: 'project',
+          path: transaction.path,
+          transactions: [],
+          hasXP: false,
+          hasUp: false,
+          hasDown: false,
+          latestDate: transaction.createdAt
+        });
+      }
+
+      const project = projectMap.get(projectName);
+      project.transactions.push(transaction);
+
+      // Track transaction types to determine project status
+      if (transaction.type === 'xp') project.hasXP = true;
+      if (transaction.type === 'up') project.hasUp = true;
+      if (transaction.type === 'down') project.hasDown = true;
+
+      // Keep track of latest transaction date
+      if (new Date(transaction.createdAt) > new Date(project.latestDate)) {
+        project.latestDate = transaction.createdAt;
+      }
+    }
+  });
+
+  // Convert to results array and determine pass/fail status
+  const results = Array.from(projectMap.values()).map(project => {
+    // A project is considered passed if it has XP transactions (successful completion)
+    // and/or 'up' transactions (audit points received)
+    const passed = project.hasXP || project.hasUp;
+
+    return {
+      id: project.name,
+      name: project.name,
+      type: project.type,
+      path: project.path,
+      passed,
+      createdAt: project.latestDate,
+      updatedAt: project.latestDate,
+      transactionCount: project.transactions.length
+    };
+  });
+
+  const passedProjects = results.filter(r => r.passed).length;
+  const totalProjects = results.length;
+  const failedProjects = totalProjects - passedProjects;
+  const passRate = totalProjects > 0 ? (passedProjects / totalProjects) * 100 : 0;
+
+  return {
+    totalProjects,
+    passedProjects,
+    failedProjects,
+    passRate,
+    results,
+  };
+};
+
+// Calculate success rate from skills data (average of all skills in %)
+export const calculateSkillsSuccessRate = (skills, totalXP) => {
+  if (!Array.isArray(skills) || skills.length === 0 || !totalXP || totalXP === 0) {
+    return 0;
+  }
+
+  // Calculate the percentage of each skill relative to total XP
+  const skillPercentages = skills.map(skill => {
+    const skillAmount = skill.amount || 0;
+    return (skillAmount / totalXP) * 100;
+  });
+
+  // Return the average of all skill percentages
+  const averagePercentage = skillPercentages.reduce((sum, percentage) => sum + percentage, 0) / skillPercentages.length;
+  return Math.round(averagePercentage * 100) / 100; // Round to 2 decimal places
+};
+
+// Extract level from transactions - get the latest level transaction
+export const extractLevelFromTransactions = (transactions) => {
+  if (!Array.isArray(transactions)) return 0;
+
+  // Find all level transactions and get the latest one
+  const levelTransactions = transactions
+    .filter(t => t.type === 'level')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  return levelTransactions.length > 0 ? levelTransactions[0].amount : 0;
+};
+
+// Calculate total XP from transactions (sum all XP transactions and convert bytes to KB)
+export const calculateTotalXPFromTransactions = (transactions) => {
+  if (!Array.isArray(transactions)) return 0;
+
+  // Sum all XP transactions
+  const totalXPBytes = transactions
+    .filter(t => t.type === 'xp')
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  // Convert bytes to KB (divide by 1000, not 1024 for display purposes)
+  return Math.round(totalXPBytes / 1000);
+};
+
 // ============================================================================
 // ROLE DATA PROCESSING
 // ============================================================================

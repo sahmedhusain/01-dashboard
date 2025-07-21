@@ -4,7 +4,8 @@ import Card from '../ui/Card';
 import Badge, { XPBadge } from '../ui/Badge';
 import { CardSkeleton } from '../ui/Loading';
 import Avatar from '../ui/Avatar';
-import { formatDate } from '../../utils/dataFormatting';
+import { formatDate, getAvatarUrl } from '../../utils/dataFormatting';
+import { calculateSkillsSuccessRate } from '../../utils/dataProcessing';
 
 
 
@@ -22,9 +23,9 @@ const ProfileSection = () => {
         ? `${rawData.user.firstName} ${rawData.user.lastName}`
         : rawData.user?.login || 'Unknown User',
       login: rawData.user?.login || 'unknown',
-      email: (rawData.user?.attrs as any)?.email || 'No email provided',
+      email: String((rawData.user?.attrs as any)?.email || 'No email provided'),
       campus: rawData.user?.campus || 'Unknown Campus',
-      avatarUrl: rawData.user?.profile || null,
+      avatarUrl: getAvatarUrl(rawData.user as any) || null,
       joinedDate: rawData.user?.createdAt ? new Date(rawData.user.createdAt).toLocaleDateString() : 'Unknown',
       startedDate: rawData.user?.updatedAt ? new Date(rawData.user.updatedAt).toLocaleDateString() : 'Unknown',
       // Additional user info from attrs (cast to string for display)
@@ -78,6 +79,10 @@ const ProfileSection = () => {
     }
   };
 
+  // Calculate success rate from skills (average of all skills in %)
+  const skillsSuccessRate = rawData.skills && rawData.totalXP ?
+    calculateSkillsSuccessRate(rawData.skills, rawData.totalXP) : 0;
+
   // Create quick stats from the processed data
   const quickStats = [
     {
@@ -86,24 +91,24 @@ const ProfileSection = () => {
       color: 'white'
     },
     {
+      label: 'Level',
+      value: profileData.levelInfo.level,
+      color: 'primary-400'
+    },
+    {
       label: 'Projects Completed',
       value: profileData.projectStats.passed,
       color: 'green-400'
     },
     {
       label: 'Success Rate',
-      value: profileData.projectStats.formattedPassRate,
+      value: `${skillsSuccessRate.toFixed(1)}%`,
       color: 'primary-300'
     },
     {
       label: 'Audit Ratio',
       value: profileData.auditStats.formattedRatio,
       color: 'accent-300'
-    },
-    {
-      label: 'Campus',
-      value: profileData.userInfo.campus,
-      color: 'surface-200'
     }
   ];
 
@@ -139,14 +144,7 @@ const ProfileSection = () => {
               {/* Avatar positioned above user info */}
               <div className="flex justify-start">
                 <Avatar
-                  user={{
-                    ...(rawData.user || {}),
-                    avatar: profileData.userInfo.avatarUrl,
-                    profile: {
-                      avatar: profileData.userInfo.avatarUrl,
-                      avatarUrl: profileData.userInfo.avatarUrl
-                    }
-                  }}
+                  user={rawData.user as any}
                   size="2xl"
                   showBorder
                   animate

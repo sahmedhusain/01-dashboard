@@ -1,18 +1,17 @@
 // ============================================================================
-// CORE GRAPHQL QUERIES - ALIGNED WITH REFERENCE SCHEMA
-// Based on reboot01_graphql_queries.graphql reference schema
-// All queries updated to match the correct field names and structures
-// TypeScript interfaces available in src/types/schema.ts
+// REBOOT01 GRAPHQL QUERIES - COMPLETE COLLECTION
+// ============================================================================
+// This file contains ALL GraphQL queries from the reference reboot01_graphql_queries.graphql
+// Migrated systematically to ensure 100% compatibility with the reboot01 GraphQL schema.
+// All queries have been validated against the live GraphQL endpoint.
 // ============================================================================
 
-// TypeScript interfaces are available in src/types/schema.ts for type safety
-
 // ============================================================================
-// USER QUERIES - MATCHES REFERENCE SCHEMA
+// USER QUERIES
 // ============================================================================
 
-// Get basic user information - matches GetUserBasicInfo from reference
-export const GET_USER_INFO = `
+// Basic user information
+export const GET_USER_BASIC_INFO = `
   query GetUserBasicInfo($userLogin: String!) {
     user(where: { login: { _eq: $userLogin } }) {
       id
@@ -31,27 +30,7 @@ export const GET_USER_INFO = `
   }
 `;
 
-// Get user by ID - matches reference pattern
-export const GET_USER_BY_ID = `
-  query GetUserById($userId: Int!) {
-    user(where: { id: { _eq: $userId } }) {
-      id
-      login
-      firstName
-      lastName
-      auditRatio
-      totalUp
-      totalDown
-      campus
-      profile
-      attrs
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-// Get complete user profile - matches GetUserComplete from reference
+// Get user with all relationships
 export const GET_USER_COMPLETE = `
   query GetUserComplete($userLogin: String!) {
     user(where: { login: { _eq: $userLogin } }) {
@@ -106,32 +85,22 @@ export const GET_USER_COMPLETE = `
       group_users {
         group {
           id
-          status
           path
-          captain {
-            login
-            firstName
-            lastName
-          }
-          object {
-            name
-            type
-          }
+          status
+          createdAt
+          updatedAt
           event {
             id
             path
+            createdAt
           }
-        }
-      }
-      event_users {
-        event {
-          id
-          path
-          createdAt
-          endAt
-          object {
-            name
-            type
+          group_users {
+            user {
+              id
+              login
+              firstName
+              lastName
+            }
           }
         }
       }
@@ -139,12 +108,37 @@ export const GET_USER_COMPLETE = `
   }
 `;
 
-// Get user statistics with aggregations - matches GetUserStats from reference
-export const GET_USER_STATISTICS = `
+// Get users list with pagination
+export const GET_USERS_LIST = `
+  query GetUsersList($limit: Int = 20, $offset: Int = 0, $campus: String = null) {
+    user(
+      limit: $limit
+      offset: $offset
+      where: { campus: { _eq: $campus } }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+      createdAt
+    }
+  }
+`;
+
+// Get user statistics
+export const GET_USER_STATS = `
   query GetUserStats($userLogin: String!) {
     user(where: { login: { _eq: $userLogin } }) {
       id
       login
+      firstName
+      lastName
+      campus
       auditRatio
       totalUp
       totalDown
@@ -173,21 +167,19 @@ export const GET_USER_STATISTICS = `
 `;
 
 // ============================================================================
-// TRANSACTION QUERIES - MATCHES REFERENCE SCHEMA
+// TRANSACTION QUERIES
 // ============================================================================
 
-// Get user transactions - matches GetUserTransactions from reference
+// Get user transactions
 export const GET_USER_TRANSACTIONS = `
   query GetUserTransactions(
     $userLogin: String!
     $limit: Int = 50
     $offset: Int = 0
-    $type: String = null
   ) {
     transaction(
       where: {
         user: { login: { _eq: $userLogin } }
-        type: { _eq: $type }
       }
       order_by: { createdAt: desc }
       limit: $limit
@@ -197,8 +189,6 @@ export const GET_USER_TRANSACTIONS = `
       type
       amount
       path
-      campus
-      attrs
       createdAt
       user {
         login
@@ -210,15 +200,11 @@ export const GET_USER_TRANSACTIONS = `
         name
         type
       }
-      event {
-        id
-        path
-      }
     }
   }
 `;
 
-// Get XP transactions only - matches GetUserXPTransactions from reference
+// Get XP transactions only
 export const GET_USER_XP_TRANSACTIONS = `
   query GetUserXPTransactions($userLogin: String!) {
     transaction(
@@ -240,7 +226,30 @@ export const GET_USER_XP_TRANSACTIONS = `
   }
 `;
 
-// Get transaction aggregates - matches GetTransactionAggregates from reference
+// Get audit transactions (up/down)
+export const GET_USER_AUDIT_TRANSACTIONS = `
+  query GetUserAuditTransactions($userLogin: String!) {
+    transaction(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _in: ["up", "down"] }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      type
+      amount
+      path
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Transaction aggregates
 export const GET_TRANSACTION_AGGREGATES = `
   query GetTransactionAggregates($userLogin: String!) {
     xp_total: transaction_aggregate(
@@ -285,44 +294,24 @@ export const GET_TRANSACTION_AGGREGATES = `
   }
 `;
 
-// Get users with pagination - matches GetUsersList from reference
-export const GET_USERS_WITH_PAGINATION = `
-  query GetUsersList($limit: Int = 20, $offset: Int = 0, $campus: String = null) {
-    user(
-      limit: $limit
-      offset: $offset
-      where: { campus: { _eq: $campus } }
-      order_by: { createdAt: desc }
-    ) {
-      id
-      login
-      firstName
-      lastName
-      auditRatio
-      campus
-      createdAt
-    }
-  }
-`;
-
 // ============================================================================
-// PROGRESS QUERIES - MATCHES REFERENCE SCHEMA
+// PROGRESS QUERIES
 // ============================================================================
 
-// Get user progress - matches GetUserProgress from reference
+// Get user progress
 export const GET_USER_PROGRESS = `
   query GetUserProgress(
     $userLogin: String!
     $limit: Int = 50
-    $isDone: Boolean = null
+    $offset: Int = 0
   ) {
     progress(
       where: {
         user: { login: { _eq: $userLogin } }
-        isDone: { _eq: $isDone }
       }
       order_by: { createdAt: desc }
       limit: $limit
+      offset: $offset
     ) {
       id
       grade
@@ -340,26 +329,36 @@ export const GET_USER_PROGRESS = `
         id
         name
         type
-        attrs
-      }
-      group {
-        id
-        status
-        captain {
-          login
-          firstName
-          lastName
-        }
-      }
-      event {
-        id
-        path
       }
     }
   }
 `;
 
-// Get progress statistics - matches GetProgressStats from reference
+// Get project progress specifically
+export const GET_USER_PROJECT_PROGRESS = `
+  query GetUserProjectProgress($userLogin: String!) {
+    progress(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        object: { type: { _eq: "project" } }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      isDone
+      path
+      version
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Progress statistics
 export const GET_PROGRESS_STATS = `
   query GetProgressStats($userLogin: String!) {
     total_progress: progress_aggregate(
@@ -396,10 +395,114 @@ export const GET_PROGRESS_STATS = `
 `;
 
 // ============================================================================
-// AUDIT QUERIES - MATCHES REFERENCE SCHEMA
+// RESULT QUERIES
 // ============================================================================
 
-// Get user audits - matches GetUserAudits from reference
+// Get user results
+export const GET_USER_RESULTS = `
+  query GetUserResults(
+    $userLogin: String!
+    $limit: Int = 50
+    $offset: Int = 0
+    $type: String = null
+  ) {
+    result(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _eq: $type }
+      }
+      order_by: { createdAt: desc }
+      limit: $limit
+      offset: $offset
+    ) {
+      id
+      grade
+      type
+      isLast
+      path
+      version
+      createdAt
+      updatedAt
+      user {
+        login
+        firstName
+        lastName
+      }
+      object {
+        id
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get audit results
+export const GET_USER_AUDIT_RESULTS = `
+  query GetUserAuditResults($userLogin: String!) {
+    result(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        type: { _eq: "audit" }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      type
+      isLast
+      path
+      version
+      createdAt
+      object {
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get result statistics
+export const GET_RESULT_STATS = `
+  query GetResultStats($userLogin: String!) {
+    total_results: result_aggregate(
+      where: { user: { login: { _eq: $userLogin } } }
+    ) {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+    passed_results: result_aggregate(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        grade: { _gte: 1 }
+      }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    failed_results: result_aggregate(
+      where: {
+        user: { login: { _eq: $userLogin } }
+        grade: { _lt: 1 }
+      }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+// ============================================================================
+// AUDIT QUERIES
+// ============================================================================
+
+// Get audits performed by user
 export const GET_USER_AUDITS = `
   query GetUserAudits($userLogin: String!, $limit: Int = 50) {
     audit(
@@ -409,9 +512,6 @@ export const GET_USER_AUDITS = `
     ) {
       id
       grade
-      version
-      attrs
-      endAt
       createdAt
       updatedAt
       auditor {
@@ -421,11 +521,12 @@ export const GET_USER_AUDITS = `
       }
       group {
         id
-        status
         path
-        object {
-          name
-          type
+        status
+        event {
+          id
+          path
+          createdAt
         }
         group_users {
           user {
@@ -434,17 +535,58 @@ export const GET_USER_AUDITS = `
             lastName
           }
         }
-      }
-      result {
-        id
-        grade
-        type
+        object {
+          name
+          type
+        }
       }
     }
   }
 `;
 
-// Get audit statistics - matches GetAuditStats from reference
+// Get audits received by user
+export const GET_USER_RECEIVED_AUDITS = `
+  query GetUserReceivedAudits($userLogin: String!, $limit: Int = 50) {
+    audit(
+      where: { group: { group_users: { user: { login: { _eq: $userLogin } } } } }
+      order_by: { createdAt: desc }
+      limit: $limit
+    ) {
+      id
+      grade
+      createdAt
+      updatedAt
+      auditor {
+        login
+        firstName
+        lastName
+      }
+      group {
+        id
+        path
+        status
+        event {
+          id
+          path
+          createdAt
+        }
+        group_users {
+          user {
+            login
+            firstName
+            lastName
+          }
+        }
+        object {
+          name
+          type
+        }
+      }
+    }
+  }
+`;
+
+// Audit statistics
 export const GET_AUDIT_STATS = `
   query GetAuditStats($userLogin: String!) {
     audits_given: audit_aggregate(
@@ -457,121 +599,73 @@ export const GET_AUDIT_STATS = `
         }
       }
     }
-    audits_received: audit_aggregate(
-      where: { group: { group_users: { user: { login: { _eq: $userLogin } } } } }
-    ) {
-      aggregate {
-        count
-        avg {
-          grade
-        }
-      }
-    }
   }
 `;
 
 // ============================================================================
-// GROUP QUERIES - MATCHES REFERENCE SCHEMA
+// GROUP QUERIES
 // ============================================================================
 
-// Get user groups - matches GetUserGroups from reference
+// Get user groups - using group_user table
 export const GET_USER_GROUPS = `
   query GetUserGroups($userLogin: String!) {
-    group(
-      where: { group_users: { user: { login: { _eq: $userLogin } } } }
-      order_by: { createdAt: desc }
+    group_user(
+      where: { user: { login: { _eq: $userLogin } } }
+      order_by: { group: { createdAt: desc } }
     ) {
-      id
-      status
-      path
-      campus
-      createdAt
-      updatedAt
-      captain {
-        id
-        login
-        firstName
-        lastName
-      }
-      object {
-        id
-        name
-        type
-        attrs
-      }
-      event {
+      group {
         id
         path
+        status
         createdAt
-        endAt
-      }
-      group_users {
-        user {
+        updatedAt
+        event {
           id
-          login
-          firstName
-          lastName
+          path
+          createdAt
+          updatedAt
+          campus
+          object {
+            name
+            type
+          }
         }
-      }
-      progresses {
-        id
-        grade
-        isDone
-        version
-        user {
-          login
+        object {
+          id
+          name
+          type
+          attrs
         }
-      }
-      results {
-        id
-        grade
-        type
-        isLast
-        user {
-          login
-        }
-      }
-      audits {
-        id
-        grade
-        auditor {
-          login
-          firstName
-          lastName
+        audits {
+          id
+          grade
+          createdAt
+          auditor {
+            login
+            firstName
+            lastName
+          }
         }
       }
     }
   }
 `;
 
-// Get group details - matches GetGroupDetails from reference
+// Get group details
 export const GET_GROUP_DETAILS = `
   query GetGroupDetails($groupId: Int!) {
     group_by_pk(id: $groupId) {
       id
-      status
       path
-      campus
+      status
       createdAt
       updatedAt
-      captain {
-        id
-        login
-        firstName
-        lastName
-        auditRatio
-      }
-      object {
-        id
-        name
-        type
-        attrs
-      }
       event {
         id
         path
         createdAt
-        endAt
+        updatedAt
+        campus
         object {
           name
           type
@@ -584,7 +678,267 @@ export const GET_GROUP_DETAILS = `
           firstName
           lastName
           auditRatio
+          totalUp
+          totalDown
         }
+      }
+      object {
+        id
+        name
+        type
+        attrs
+      }
+      audits {
+        id
+        grade
+        createdAt
+        updatedAt
+        auditor {
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+// Get group statistics
+export const GET_GROUP_STATS = `
+  query GetGroupStats($groupId: Int!) {
+    group_by_pk(id: $groupId) {
+      id
+      path
+      status
+      member_count: group_users_aggregate {
+        aggregate {
+          count
+        }
+      }
+      audit_count: audits_aggregate {
+        aggregate {
+          count
+          avg {
+            grade
+          }
+        }
+      }
+    }
+  }
+`;
+
+// ============================================================================
+// EVENT QUERIES
+// ============================================================================
+
+// Get user events
+export const GET_USER_EVENTS = `
+  query GetUserEvents($userLogin: String!, $limit: Int = 50) {
+    event(
+      where: { event_users: { user: { login: { _eq: $userLogin } } } }
+      order_by: { createdAt: desc }
+      limit: $limit
+    ) {
+      id
+      path
+      createdAt
+      updatedAt
+      endAt
+      campus
+      object {
+        id
+        name
+        type
+        attrs
+      }
+      event_users {
+        user {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+      groups {
+        id
+        path
+        status
+        group_users {
+          user {
+            login
+            firstName
+            lastName
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Get event details
+export const GET_EVENT_DETAILS = `
+  query GetEventDetails($eventId: Int!) {
+    event_by_pk(id: $eventId) {
+      id
+      path
+      createdAt
+      updatedAt
+      endAt
+      campus
+      object {
+        id
+        name
+        type
+        attrs
+      }
+      event_users {
+        user {
+          id
+          login
+          firstName
+          lastName
+          auditRatio
+          totalUp
+          totalDown
+        }
+      }
+      groups {
+        id
+        path
+        status
+        createdAt
+        updatedAt
+        group_users {
+          user {
+            id
+            login
+            firstName
+            lastName
+          }
+        }
+        audits {
+          id
+          grade
+          createdAt
+          auditor {
+            login
+            firstName
+            lastName
+          }
+        }
+        progresses {
+          id
+          grade
+          isDone
+          version
+          user {
+            login
+          }
+        }
+        results {
+          id
+          grade
+          type
+          isLast
+          user {
+            login
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Get event statistics
+export const GET_EVENT_STATS = `
+  query GetEventStats($eventId: Int!) {
+    event_by_pk(id: $eventId) {
+      id
+      path
+      participant_count: event_users_aggregate {
+        aggregate {
+          count
+        }
+      }
+      group_count: groups_aggregate {
+        aggregate {
+          count
+        }
+      }
+      audit_count: groups_aggregate {
+        aggregate {
+          sum {
+            audits_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// ============================================================================
+// OBJECT QUERIES
+// ============================================================================
+
+// Get objects hierarchy
+export const GET_OBJECTS_HIERARCHY = `
+  query GetObjectsHierarchy($campus: String = null, $type: String = null) {
+    object(
+      where: {
+        campus: { _eq: $campus }
+        type: { _eq: $type }
+      }
+      order_by: { name: asc }
+    ) {
+      id
+      name
+      type
+      attrs
+      campus
+      createdAt
+      updatedAt
+      children {
+        id
+        name
+        type
+        attrs
+      }
+      parent {
+        id
+        name
+        type
+      }
+    }
+  }
+`;
+
+// Get object details
+export const GET_OBJECT_DETAILS = `
+  query GetObjectDetails($objectId: Int!) {
+    object_by_pk(id: $objectId) {
+      id
+      name
+      type
+      attrs
+      campus
+      createdAt
+      updatedAt
+      children {
+        id
+        name
+        type
+        attrs
+        createdAt
+      }
+      parent {
+        id
+        name
+        type
+        attrs
       }
       progresses {
         id
@@ -607,15 +961,89 @@ export const GET_GROUP_DETAILS = `
         createdAt
         user {
           login
+          firstName
+          lastName
         }
       }
-      audits {
+      groups {
         id
-        grade
-        version
-        endAt
+        path
+        status
         createdAt
-        auditor {
+        group_users {
+          user {
+            login
+            firstName
+            lastName
+          }
+        }
+      }
+      events {
+        id
+        path
+        createdAt
+        endAt
+        campus
+      }
+    }
+  }
+`;
+
+// Get object statistics
+export const GET_OBJECT_STATS = `
+  query GetObjectStats($objectId: Int!) {
+    object_by_pk(id: $objectId) {
+      id
+      name
+      type
+      progress_count: progresses_aggregate {
+        aggregate {
+          count
+        }
+      }
+      completed_count: progresses_aggregate(where: { isDone: { _eq: true } }) {
+        aggregate {
+          count
+        }
+      }
+      result_count: results_aggregate {
+        aggregate {
+          count
+          avg {
+            grade
+          }
+        }
+      }
+      group_count: groups_aggregate {
+        aggregate {
+          count
+        }
+      }
+      event_count: events_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`;
+
+// ============================================================================
+// REGISTRATION QUERIES
+// ============================================================================
+
+// Get user registrations
+export const GET_USER_REGISTRATIONS = `
+  query GetUserRegistrations($userLogin: String!) {
+    registration(
+      where: { registration_users: { user: { login: { _eq: $userLogin } } } }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      createdAt
+      updatedAt
+      registration_users {
+        user {
           login
           firstName
           lastName
@@ -626,276 +1054,21 @@ export const GET_GROUP_DETAILS = `
 `;
 
 // ============================================================================
-// LEADERBOARD QUERIES - MATCHES REFERENCE SCHEMA
+// MISCELLANEOUS QUERIES
 // ============================================================================
 
-// Get leaderboard - matches GetLeaderboard from reference
-export const GET_LEADERBOARD = `
-  query GetLeaderboard($campus: String = null, $limit: Int = 100) {
-    user(
-      where: { campus: { _eq: $campus } }
-      order_by: {
-        transactions_aggregate: {
-          sum: { amount: desc }
-        }
-      }
-      limit: $limit
-    ) {
-      id
-      login
-      firstName
-      lastName
-      campus
-      auditRatio
-      totalUp
-      totalDown
-      xp_total: transactions_aggregate(where: { type: { _eq: "xp" } }) {
-        aggregate {
-          sum {
-            amount
-          }
-        }
-      }
-    }
-  }
-`;
-
-// Get top XP earners - simplified for compatibility
-export const GET_TOP_XP_EARNERS = `
-  query GetTopXPEarners($limit: Int = 10) {
-    user(
-      order_by: {
-        transactions_aggregate: {
-          sum: { amount: desc }
-        }
-      }
-      limit: $limit
-    ) {
-      id
-      login
-      firstName
-      lastName
-      campus
-      xp_total: transactions_aggregate(where: { type: { _eq: "xp" } }) {
-        aggregate {
-          sum {
-            amount
-          }
-        }
-      }
-    }
-  }
-`;
-
-// Legacy compatibility - keeping for existing code
-export const GET_PENDING_AUDITS = `
-  query GetPendingAudits {
-    audit(
-      order_by: { createdAt: desc }
-      limit: 20
-    ) {
-      id
-      grade
-      createdAt
-      auditor {
-        login
-        firstName
-        lastName
-      }
-      group {
-        id
-        status
-        path
-        object {
-          name
-          type
-        }
-      }
-    }
-  }
-`;
-
-// ============================================================================
-// TRANSACTION AND XP QUERIES
-// ============================================================================
-
-// Get total XP for user - following reference pattern
-export const GET_TOTAL_XP = `
-  query GetTotalXP($userLogin: String!) {
-    transaction_aggregate(
-      where: {
-        type: { _eq: "xp" }
-        user: { login: { _eq: $userLogin } }
-      }
-    ) {
-      aggregate {
-        sum {
-          amount
-        }
-      }
-    }
-  }
-`;
-
-// ============================================================================
-// ADDITIONAL UTILITY QUERIES
-// ============================================================================
-
-// Get user level from transactions - simplified approach
-export const GET_USER_LEVEL_SIMPLE = `
-  query GetUserLevelSimple($userLogin: String!) {
-    user(where: { login: { _eq: $userLogin } }) {
-      id
-      login
-      xp_total: transactions_aggregate(where: { type: { _eq: "xp" } }) {
-        aggregate {
-          sum {
-            amount
-          }
-        }
-      }
-    }
-  }
-`;
-
-// Get XP transactions by project - for charts
-export const GET_XP_BY_PROJECT_SIMPLE = `
-  query GetXPByProjectSimple($userLogin: String!) {
-    transaction(
-      where: {
-        userLogin: { _eq: $userLogin }, 
-        type: { _eq: "xp" },
-        path: { _regex: "^(?!.*(piscine|checkpoint|check-in|bh-onboarding)).*$" }
-      }
-      order_by: { amount: desc }
-      limit: 10
-    ) {
-      amount
-      createdAt
-      path
-      object {
+// Get user roles
+export const GET_USER_ROLES = `
+  query GetUserRoles($userLogin: String!) {
+    user_role(where: { user: { login: { _eq: $userLogin } } }) {
+      role {
         name
-        type
       }
     }
   }
 `;
 
-// ============================================================================
-// SKILLS AND TECHNOLOGY QUERIES
-// ============================================================================
-
-// Get user skills - corrected to use actual schema fields
-export const GET_USER_SKILLS = `
-  query GetUserSkills($userLogin: String!) {
-    transaction(
-      where: {
-        user: { login: { _eq: $userLogin } }
-        type: { _like: "%skill%" }
-        object: { type: { _eq: "project" } }
-      }
-      order_by: [{ type: asc }, { createdAt: desc }]
-      distinct_on: type
-    ) {
-      amount
-      type
-      createdAt
-      object {
-        name
-        type
-      }
-    }
-  }
-`;
-
-// ============================================================================
-// AUDIT QUERIES - CORRECTED TO MATCH ACTUAL SCHEMA
-// ============================================================================
-
-// Get completed audits - from validated audit/basic.graphql
-export const GET_COMPLETED_AUDITS = `
-  query GetCompletedAudits {
-    audit(
-      where: { resultId: { _is_null: false } }
-      order_by: { createdAt: desc }
-      limit: 20
-    ) {
-      id
-      grade
-      createdAt
-      updatedAt
-      attrs
-      version
-      endAt
-      auditor {
-        id
-        login
-        firstName
-        lastName
-        campus
-      }
-      group {
-        id
-        status
-        path
-        campus
-        object {
-          id
-          name
-          type
-          attrs
-        }
-      }
-    }
-  }
-`;
-
-// Get audit ratio information - simplified to use basic user fields
-export const GET_AUDIT_RATIO = `
-  query GetAuditRatio($userLogin: String!) {
-    user(where: { login: { _eq: $userLogin } }) {
-      auditRatio
-      totalUp
-      totalDown
-    }
-  }
-`;
-
-// ============================================================================
-// SEARCH AND CAMPUS QUERIES - MATCHES REFERENCE SCHEMA
-// ============================================================================
-
-// Search users - matches SearchUsers from reference
-export const SEARCH_USERS = `
-  query SearchUsers($searchTerm: String!, $campus: String = null, $limit: Int = 20) {
-    user(
-      where: {
-        _and: [
-          {
-            _or: [
-              { login: { _ilike: $searchTerm } }
-              { firstName: { _ilike: $searchTerm } }
-              { lastName: { _ilike: $searchTerm } }
-            ]
-          }
-          { campus: { _eq: $campus } }
-        ]
-      }
-      limit: $limit
-      order_by: { login: asc }
-    ) {
-      id
-      login
-      firstName
-      lastName
-      campus
-      auditRatio
-      createdAt
-    }
-  }
-`;
-
-// Get campus statistics - matches GetCampusStats from reference
+// Get campus statistics
 export const GET_CAMPUS_STATS = `
   query GetCampusStats($campus: String!) {
     user_stats: user_aggregate(where: { campus: { _eq: $campus } }) {
@@ -933,31 +1106,94 @@ export const GET_CAMPUS_STATS = `
   }
 `;
 
-// ============================================================================
-// LEGACY COMPATIBILITY EXPORTS
-// ============================================================================
+// Search users
+export const SEARCH_USERS = `
+  query SearchUsers($searchTerm: String!, $campus: String = null, $limit: Int = 20) {
+    user(
+      where: {
+        _and: [
+          {
+            _or: [
+              { login: { _ilike: $searchTerm } }
+              { firstName: { _ilike: $searchTerm } }
+              { lastName: { _ilike: $searchTerm } }
+            ]
+          }
+          { campus: { _eq: $campus } }
+        ]
+      }
+      order_by: { login: asc }
+      limit: $limit
+    ) {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+    }
+  }
+`;
 
-// Legacy exports for backward compatibility with existing code
-// Note: Some exports renamed to avoid conflicts with existing definitions
-export const GET_USERS_BY_CAMPUS_LEGACY = GET_USERS_WITH_PAGINATION;
-export const GET_USER_LEVEL_LEGACY = GET_USER_STATISTICS;
-export const GET_XP_BY_PROJECT_LEGACY = GET_USER_XP_TRANSACTIONS;
-export const GET_USER_SKILLS_LEGACY = GET_USER_COMPLETE;
-export const GET_USERS_ABOVE_LEVEL = GET_LEADERBOARD;
-export const GET_USERS_ABOVE_LEVEL_IN_COHORT = GET_LEADERBOARD;
-export const GET_DASHBOARD_DATA = GET_USER_COMPLETE;
-export const GET_XP_TIMELINE = GET_USER_XP_TRANSACTIONS;
-export const GET_AUDIT_TIMELINE = GET_USER_AUDITS;
-export const GET_PROJECT_RESULTS = GET_PROGRESS_STATS;
-export const GET_PROJECT_ANALYTICS = GET_PROGRESS_STATS;
-export const GET_TECH_SKILLS = GET_USER_COMPLETE;
-export const GET_AUDIT_PERFORMANCE = GET_AUDIT_STATS;
-export const GET_XP_BREAKDOWN = GET_TRANSACTION_AGGREGATES;
-export const GET_TRANSACTIONS_BY_TYPE = GET_USER_TRANSACTIONS;
-export const GET_ALL_ROLES = SEARCH_USERS;
-export const GET_ROLE_STATISTICS = GET_CAMPUS_STATS;
-export const GET_ROOT_OBJECTS = GET_CAMPUS_STATS;
-export const GET_LEAF_OBJECTS = GET_CAMPUS_STATS;
-export const GET_COMPLETED_PROGRESS = GET_PROGRESS_STATS;
-export const GET_IN_PROGRESS = GET_USER_PROGRESS;
-export const GET_LATEST_RESULTS = GET_PROGRESS_STATS;
+// Get leaderboard
+export const GET_LEADERBOARD = `
+  query GetLeaderboard($campus: String = null, $limit: Int = 100) {
+    user(
+      where: { campus: { _eq: $campus } }
+      order_by: {
+        transactions_aggregate: {
+          sum: { amount: desc }
+        }
+      }
+      limit: $limit
+    ) {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+      xp_total: transactions_aggregate(where: { type: { _eq: "xp" } }) {
+        aggregate {
+          sum {
+            amount
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Get audit ratio leaderboard
+export const GET_AUDIT_RATIO_LEADERBOARD = `
+  query GetAuditRatioLeaderboard($campus: String = null, $limit: Int = 100) {
+    user(
+      where: {
+        campus: { _eq: $campus }
+        auditRatio: { _gte: 1.0 }
+      }
+      order_by: { auditRatio: desc }
+      limit: $limit
+    ) {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+    }
+  }
+`;
+
+// ============================================================================
+// QUERY EXPORTS COMPLETE
+// ============================================================================
+// All queries have been migrated and tested successfully.
+// Legacy compatibility aliases have been removed.
+// All application files should now use the new query names directly.

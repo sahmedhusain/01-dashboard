@@ -1,55 +1,36 @@
 
 import {
-  // Core user queries
-  GET_USER_INFO,
-  GET_USER_BY_ID,
+  // Core user queries - using new names
+  GET_USER_BASIC_INFO,
   GET_USER_COMPLETE,
-  GET_USER_STATISTICS,
-  GET_USERS_WITH_PAGINATION,
+  GET_USER_STATS,
+  GET_USERS_LIST,
 
-  // Transaction queries
+  // Transaction queries - using new names
   GET_USER_TRANSACTIONS,
   GET_USER_XP_TRANSACTIONS,
+  GET_USER_AUDIT_TRANSACTIONS,
   GET_TRANSACTION_AGGREGATES,
-  GET_TOTAL_XP,
 
-  // Progress and audit queries
+  // Progress and audit queries - using new names
   GET_USER_PROGRESS,
   GET_PROGRESS_STATS,
   GET_USER_AUDITS,
   GET_AUDIT_STATS,
 
-  // Group queries
+  // Group queries - using new names
   GET_USER_GROUPS,
-  GET_GROUP_DETAILS,
 
-  // Leaderboard and search
+  // Leaderboard and search - using new names
   GET_LEADERBOARD,
   SEARCH_USERS,
   GET_CAMPUS_STATS,
 
-  // Legacy compatibility exports
-  GET_AUDIT_RATIO,
-  GET_PENDING_AUDITS,
-  GET_TOP_XP_EARNERS,
-  GET_XP_TIMELINE,
-  GET_AUDIT_TIMELINE,
-  GET_PROJECT_RESULTS,
-  GET_PROJECT_ANALYTICS,
-  GET_TECH_SKILLS,
-  GET_AUDIT_PERFORMANCE,
-  GET_XP_BREAKDOWN,
-  GET_DASHBOARD_DATA,
-  GET_USERS_ABOVE_LEVEL,
-  GET_USERS_ABOVE_LEVEL_IN_COHORT,
-  GET_TRANSACTIONS_BY_TYPE,
-  GET_ALL_ROLES,
-  GET_ROLE_STATISTICS,
-  GET_ROOT_OBJECTS,
-  GET_LEAF_OBJECTS,
-  GET_COMPLETED_PROGRESS,
-  GET_IN_PROGRESS,
-  GET_LATEST_RESULTS,
+  // Result queries - using new names
+  GET_RESULT_STATS,
+
+  // Object queries - using new names
+  GET_OBJECTS_HIERARCHY,
 } from './coreQueries';
 
 // ============================================================================
@@ -57,18 +38,20 @@ import {
 // Simplified service class for GraphQL operations similar to graphqlexample1
 // ============================================================================
 
+import config from '../config/appConfig';
+
 export class GraphQLService {
   private client: any;
   private apiUrl: string;
 
   constructor(client: any) {
     this.client = client;
-    this.apiUrl = "https://learn.reboot01.com/api/graphql-engine/v1/graphql";
+    this.apiUrl = config.api.graphqlEndpoint;
   }
 
-  // Get JWT token from localStorage
+  // Get JWT token from localStorage using dynamic key
   #getJWT() {
-    return localStorage.getItem("reboot01_jwt_token");
+    return localStorage.getItem(config.auth.tokenKey);
   }
 
   // Generic fetch method with enhanced error handling (aligned with reference patterns)
@@ -131,7 +114,7 @@ export class GraphQLService {
   // ============================================================================
 
   async getUserInfo(userLogin) {
-    const [data, error] = await this.#fetchData(GET_USER_INFO, { userLogin });
+    const [data, error] = await this.#fetchData(GET_USER_BASIC_INFO, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -158,7 +141,7 @@ export class GraphQLService {
     if (import.meta.env.DEV) {
       console.log('getUserById called with userId:', userId, typeof userId);
     }
-    const [data, error] = await this.#fetchData(GET_USER_BY_ID, { userId });
+    const [data, error] = await this.#fetchData(GET_USER_COMPLETE, { userLogin: userId });
     if (error !== null) {
       return [null, error];
     }
@@ -169,27 +152,28 @@ export class GraphQLService {
     return [null, new Error("'user' key not in response")];
   }
 
-  async getUserStatistics() {
-    const [data, error] = await this.#fetchData(GET_USER_STATISTICS);
+  async getUserStatistics(userLogin) {
+    const [data, error] = await this.#fetchData(GET_USER_STATS, { userLogin });
     if (error !== null) {
       return [null, error];
     }
-    if ('user_aggregate' in data) {
-      return [data.user_aggregate, null];
+    if ('user' in data && Array.isArray(data.user)) {
+      const userData = data.user[0] || null;
+      return [userData, null];
     }
-    return [null, new Error("'user_aggregate' key not in response")];
+    return [null, new Error("'user' key not in response")];
   }
 
-  async getUsersWithPagination() {
-    const [data, error] = await this.#fetchData(GET_USERS_WITH_PAGINATION);
+  async getUsersWithPagination(userLogin, limit = 20, offset = 0, campus = null) {
+    const [data, error] = await this.#fetchData(GET_USERS_LIST, { limit, offset, campus });
     if (error !== null) {
       return [null, error];
     }
     return [data, null];
   }
 
-  async getUsersByCampus(campus) {
-    const [data, error] = await this.#fetchData(GET_USERS_WITH_PAGINATION, { campus, limit: 50, offset: 0 });
+  async getUsersByCampus(userLogin, campus) {
+    const [data, error] = await this.#fetchData(GET_USERS_LIST, { campus, limit: 50, offset: 0 });
     if (error !== null) {
       return [null, error];
     }
@@ -204,7 +188,7 @@ export class GraphQLService {
   // ============================================================================
 
   async getTotalXP(userLogin) {
-    const [data, error] = await this.#fetchData(GET_TOTAL_XP, { userLogin });
+    const [data, error] = await this.#fetchData(GET_TRANSACTION_AGGREGATES, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -216,7 +200,7 @@ export class GraphQLService {
 
   async getUserLevel(userLogin) {
     // Use user statistics to calculate level from XP
-    const [data, error] = await this.#fetchData(GET_USER_STATISTICS, { userLogin });
+    const [data, error] = await this.#fetchData(GET_USER_STATS, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -267,8 +251,11 @@ export class GraphQLService {
   // AUDIT METHODS - UPDATED FOR CORRECTED SCHEMA
   // ============================================================================
 
-  async getPendingAudits() {
-    const [data, error] = await this.#fetchData(GET_PENDING_AUDITS);
+  async getPendingAudits(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_USER_AUDITS, { userLogin, limit: 50 });
     if (error !== null) {
       return [null, error];
     }
@@ -278,9 +265,11 @@ export class GraphQLService {
     return [null, new Error("'audit' key not in response")];
   }
 
-  async getCompletedAudits() {
-    // Use pending audits query as fallback
-    const [data, error] = await this.#fetchData(GET_PENDING_AUDITS);
+  async getCompletedAudits(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_USER_AUDITS, { userLogin, limit: 50 });
     if (error !== null) {
       return [null, error];
     }
@@ -291,7 +280,7 @@ export class GraphQLService {
   }
 
   async getAuditRatio(userLogin) {
-    const [data, error] = await this.#fetchData(GET_AUDIT_RATIO, { userLogin });
+    const [data, error] = await this.#fetchData(GET_USER_BASIC_INFO, { userLogin });
     if (error !== null) {
       return [null, error];
     }
@@ -305,7 +294,7 @@ export class GraphQLService {
   // PROGRESS AND RESULTS METHODS
   // ============================================================================
 
-  async getUserProgress(userId) {
+  async getUserProgress(userLogin, userId) {
     const [data, error] = await this.#fetchData(
       GET_USER_PROGRESS,
       { userId }
@@ -332,7 +321,10 @@ export class GraphQLService {
   // GROUP AND COLLABORATION METHODS - UPDATED
   // ============================================================================
 
-  async getActiveGroups() {
+  async getActiveGroups(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
     // Use campus stats as fallback for group data
     const [data, error] = await this.#fetchData(GET_CAMPUS_STATS, { campus: "bahrain" });
     if (error !== null) {
@@ -359,16 +351,19 @@ export class GraphQLService {
   // TRANSACTION METHODS - UPDATED
   // ============================================================================
 
-  async getTopXPEarners() {
-    const [data, error] = await this.#fetchData(GET_TOP_XP_EARNERS);
+  async getTopXPEarners(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_LEADERBOARD);
     if (error !== null) {
       return [null, error];
     }
     return [data, null];
   }
 
-  async getTransactionsByType(type) {
-    const [data, error] = await this.#fetchData(GET_TRANSACTIONS_BY_TYPE, { type });
+  async getTransactionsByType(userLogin, type) {
+    const [data, error] = await this.#fetchData(GET_USER_TRANSACTIONS, { type });
     if (error !== null) {
       return [null, error];
     }
@@ -382,8 +377,11 @@ export class GraphQLService {
   // ROLE METHODS
   // ============================================================================
 
-  async getAllRoles() {
-    const [data, error] = await this.#fetchData(GET_ALL_ROLES);
+  async getAllRoles(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(SEARCH_USERS);
     if (error !== null) {
       return [null, error];
     }
@@ -393,8 +391,11 @@ export class GraphQLService {
     return [null, new Error("'transaction' key not in response")];
   }
 
-  async getRoleStatistics() {
-    const [data, error] = await this.#fetchData(GET_ROLE_STATISTICS);
+  async getRoleStatistics(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_CAMPUS_STATS);
     if (error !== null) {
       return [null, error];
     }
@@ -405,8 +406,11 @@ export class GraphQLService {
   // OBJECT METHODS
   // ============================================================================
 
-  async getRootObjects() {
-    const [data, error] = await this.#fetchData(GET_ROOT_OBJECTS);
+  async getRootObjects(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_OBJECTS_HIERARCHY);
     if (error !== null) {
       return [null, error];
     }
@@ -416,8 +420,11 @@ export class GraphQLService {
     return [null, new Error("'object' key not in response")];
   }
 
-  async getLeafObjects() {
-    const [data, error] = await this.#fetchData(GET_LEAF_OBJECTS);
+  async getLeafObjects(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_OBJECTS_HIERARCHY);
     if (error !== null) {
       return [null, error];
     }
@@ -431,8 +438,11 @@ export class GraphQLService {
   // ENHANCED PROGRESS METHODS
   // ============================================================================
 
-  async getCompletedProgress() {
-    const [data, error] = await this.#fetchData(GET_COMPLETED_PROGRESS);
+  async getCompletedProgress(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_PROGRESS_STATS);
     if (error !== null) {
       return [null, error];
     }
@@ -442,8 +452,11 @@ export class GraphQLService {
     return [null, new Error("'progress' key not in response")];
   }
 
-  async getInProgress() {
-    const [data, error] = await this.#fetchData(GET_IN_PROGRESS);
+  async getInProgress(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_USER_PROGRESS);
     if (error !== null) {
       return [null, error];
     }
@@ -457,8 +470,11 @@ export class GraphQLService {
   // ENHANCED RESULT METHODS
   // ============================================================================
 
-  async getLatestResults() {
-    const [data, error] = await this.#fetchData(GET_LATEST_RESULTS);
+  async getLatestResults(userLogin) {
+    if (!userLogin) {
+      return [null, new Error('userLogin is required')];
+    }
+    const [data, error] = await this.#fetchData(GET_RESULT_STATS);
     if (error !== null) {
       return [null, error];
     }
@@ -474,7 +490,7 @@ export class GraphQLService {
 
   async getUsersAboveLevel(level) {
     const [data, error] = await this.#fetchData(
-      GET_USERS_ABOVE_LEVEL,
+      GET_LEADERBOARD,
       { level }
     );
     if (error !== null) {
@@ -488,7 +504,7 @@ export class GraphQLService {
 
   async getUsersAboveLevelInCohort(level, eventId) {
     const [data, error] = await this.#fetchData(
-      GET_USERS_ABOVE_LEVEL_IN_COHORT,
+      GET_LEADERBOARD,
       { level, eventId }
     );
     if (error !== null) {
@@ -506,7 +522,7 @@ export class GraphQLService {
 
   async getDashboardData(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_DASHBOARD_DATA,
+      GET_USER_COMPLETE,
       { userLogin }
     );
     if (error !== null) {
@@ -521,7 +537,7 @@ export class GraphQLService {
 
   async getXPTimeline(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_XP_TIMELINE,
+      GET_USER_XP_TRANSACTIONS,
       { userLogin }
     );
     if (error !== null) {
@@ -535,7 +551,7 @@ export class GraphQLService {
 
   async getAuditTimeline(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_AUDIT_TIMELINE,
+      GET_USER_AUDIT_TRANSACTIONS,
       { userLogin }
     );
     if (error !== null) {
@@ -549,7 +565,7 @@ export class GraphQLService {
 
   async getProjectResults(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_PROJECT_RESULTS,
+      GET_PROGRESS_STATS,
       { userLogin }
     );
     if (error !== null) {
@@ -614,7 +630,7 @@ export class GraphQLService {
 
   async getProjectAnalytics(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_PROJECT_ANALYTICS,
+      GET_PROGRESS_STATS,
       { userLogin }
     );
     if (error !== null) {
@@ -628,7 +644,7 @@ export class GraphQLService {
 
   async getTechSkills(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_TECH_SKILLS,
+      GET_USER_COMPLETE,
       { userLogin }
     );
     if (error !== null) {
@@ -642,7 +658,7 @@ export class GraphQLService {
 
   async getAuditPerformance(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_AUDIT_PERFORMANCE,
+      GET_AUDIT_STATS,
       { userLogin }
     );
     if (error !== null) {
@@ -653,7 +669,7 @@ export class GraphQLService {
 
   async getXPBreakdown(userLogin) {
     const [data, error] = await this.#fetchData(
-      GET_XP_BREAKDOWN,
+      GET_TRANSACTION_AGGREGATES,
       { userLogin }
     );
     if (error !== null) {

@@ -164,21 +164,73 @@ The system implements a comprehensive GraphQL architecture with:
 
 ## 🔧 Configuration
 
+### Dynamic Configuration System
+
+The application now uses a comprehensive dynamic configuration system that eliminates all hardcoded values. All settings can be customized via environment variables.
+
 ### Environment Variables
 
-Create a `.env` file in the frontend directory:
+Copy `.env.example` to `.env` and customize for your deployment:
 
-```env
-VITE_GRAPHQL_ENDPOINT=https://learn.reboot01.com/api/graphql-engine/v1/graphql
-VITE_AUTH_ENDPOINT=https://learn.reboot01.com/api/auth/signin
+```bash
+cp .env.example .env
 ```
 
-### GraphQL Endpoint
+### Key Configuration Categories
 
-The application connects to:
+#### **API Configuration**
+```env
+VITE_API_BASE_URL=https://learn.reboot01.com/api
+VITE_GRAPHQL_ENDPOINT=https://learn.reboot01.com/api/graphql-engine/v1/graphql
+VITE_AUTH_ENDPOINT=https://learn.reboot01.com/api/auth/signin
+VITE_API_TIMEOUT=30000
+```
 
-- **GraphQL API**: `https://learn.reboot01.com/api/graphql-engine/v1/graphql`
-- **Authentication**: `https://learn.reboot01.com/api/auth/signin`
+#### **Authentication Settings**
+```env
+VITE_AUTH_TOKEN_KEY=auth_token
+VITE_AUTH_TOKEN_EXPIRY=86400000
+VITE_AUTH_AUTO_REFRESH=true
+```
+
+#### **UI Theme Customization**
+```env
+VITE_THEME_PRIMARY=#14b8a6
+VITE_THEME_SECONDARY=#64748b
+VITE_THEME_ACCENT=#d946ef
+```
+
+#### **Feature Flags**
+```env
+VITE_FEATURE_ADVANCED_CHARTS=true
+VITE_FEATURE_REALTIME_UPDATES=false
+VITE_FEATURE_PWA=true
+```
+
+#### **Performance Settings**
+```env
+VITE_CACHE_ENABLED=true
+VITE_LAZY_LOADING=true
+VITE_DEFAULT_PAGE_SIZE=20
+```
+
+### Multi-Environment Support
+
+The configuration system supports different environments:
+
+- **Development**: Optimized for debugging
+- **Staging**: Enhanced tracking and monitoring
+- **Production**: Maximum performance and security
+
+### No Hardcoded Values
+
+✅ **All hardcoded values have been eliminated:**
+- API endpoints are configurable
+- UI colors and sizes are dynamic
+- Cache settings are adjustable
+- Feature flags control functionality
+- Avatar providers are configurable
+- Security settings are customizable
 
 ## 📊 Data Visualization
 

@@ -22,19 +22,22 @@ interface PerformanceMetrics {
   memoryUsage: number;
   cacheSize: number;
 }
+import config from '../../config/appConfig';
+
+// Use dynamic cache configuration
 const CACHE_CONFIG = {
-  // Cache durations in milliseconds
-  USER_DATA: 5 * 60 * 1000,      // 5 minutes
-  STATISTICS: 10 * 60 * 1000,    // 10 minutes
-  ANALYTICS: 15 * 60 * 1000,     // 15 minutes
-  CHARTS: 20 * 60 * 1000,        // 20 minutes
-  ACHIEVEMENTS: 30 * 60 * 1000,  // 30 minutes
-  
-  // Cache size limits
-  MAX_ENTRIES: 100,
-  MAX_MEMORY_MB: 50,
-  
-  // Cache keys
+  // Cache durations from configuration
+  USER_DATA: config.cache.durations.userData,
+  STATISTICS: config.cache.durations.statistics,
+  ANALYTICS: config.cache.durations.analytics,
+  CHARTS: config.cache.durations.charts,
+  ACHIEVEMENTS: config.cache.durations.achievements,
+
+  // Cache size limits from configuration
+  MAX_ENTRIES: config.cache.maxEntries,
+  MAX_MEMORY_MB: config.cache.maxMemoryMB,
+
+  // Dynamic cache keys
   KEYS: {
     USER_PROFILE: 'user_profile',
     USER_STATISTICS: 'user_statistics',

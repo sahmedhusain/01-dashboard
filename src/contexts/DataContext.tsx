@@ -14,6 +14,9 @@ import {
   processXPTimeline,
   processAuditTimeline,
   processProjectResults,
+  processTransactionsForProjects,
+  extractLevelFromTransactions,
+  calculateTotalXPFromTransactions,
   getRankTitle,
   getCohortNumber
 } from '../utils/dataProcessing';
@@ -251,9 +254,13 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     const xpTimeline = processXPTimeline(dashboardData.xpTimeline || []);
     const auditTimeline = processAuditTimeline(dashboardData.auditTimeline || []);
 
-    // Extract project results from analytics data (since user query doesn't include results)
-    const analyticsProjectResults = dashboardData.projectResults || [];
-    const projectResults = processProjectResults(analyticsProjectResults);
+    // Extract project results from user transactions (based on GetUserComplete.txt analysis)
+    const userTransactions = dashboardData.user?.transactions || [];
+    const projectResults = processTransactionsForProjects(userTransactions);
+
+    // Extract level and total XP from transactions
+    const actualLevel = extractLevelFromTransactions(userTransactions);
+    const actualTotalXP = calculateTotalXPFromTransactions(userTransactions);
 
 
     console.log('  - skills:', skills);
@@ -262,10 +269,10 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       // User information
       user,
 
-      // XP and level data
-      totalXP: dashboardData.totalXP || 0,
-      level: dashboardData.level || 0,
-      rankTitle: getRankTitle(dashboardData.level || 0),
+      // XP and level data (extracted from transactions)
+      totalXP: actualTotalXP || 0,
+      level: actualLevel || 0,
+      rankTitle: getRankTitle(actualLevel || 0),
       cohortNumber: getCohortNumber(dashboardData.user?.eventId || '').toString(),
 
       // Audit data
@@ -300,8 +307,8 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
 
       // Computed statistics
       statistics: {
-        totalXP: formatNumber(dashboardData.totalXP || 0),
-        level: dashboardData.level || 0,
+        totalXP: formatNumber(actualTotalXP || 0),
+        level: actualLevel || 0,
         auditRatio: auditRatio.ratio?.toFixed(2) || '0.00',
         skillsCount: skills.length,
         projectsCount: xpProjects.length,
@@ -492,17 +499,18 @@ function LegacyComponent() {
   );
 }
 
-// Provider usage
-function App() {
-  const userLogin = 'john.doe';
-
-  return (
-    <DataProvider userLogin={userLogin}>
-      <MyComponent />
-      <LegacyComponent />
-    </DataProvider>
-  );
-}
+// Provider usage example:
+// The DataProvider automatically gets the current user from authentication
+// No need to pass userLogin manually - it's extracted from the JWT token
+//
+// function App() {
+//   return (
+//     <DataProvider>
+//       <MyComponent />
+//       <LegacyComponent />
+//     </DataProvider>
+//   );
+// }
 */
 
 // Export default provider

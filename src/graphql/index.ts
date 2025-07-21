@@ -15,37 +15,37 @@ export { default as client } from './client';
 // QUERY CATEGORIES FOR EASY REFERENCE - UPDATED
 // ============================================================================
 
-// User-related queries (corrected to match actual exports)
+// User-related queries (updated to use new names)
 export const USER_QUERIES = [
-  'GET_USER_STATISTICS',
-  'GET_USERS_WITH_HIGH_AUDIT_RATIO',
-  'GET_USERS_WITH_PAGINATION',
-  'GET_USER_INFO',
-  'GET_USER_BY_ID',
-  'GET_USERS_BY_CAMPUS',
-  'GET_USER_LEVEL',
+  'GET_USER_STATS',
+  'GET_AUDIT_RATIO_LEADERBOARD',
+  'GET_USERS_LIST',
+  'GET_USER_BASIC_INFO',
+  'GET_USER_COMPLETE',
+  'GET_USERS_LIST',
+  'GET_USER_STATS',
   'GET_USER_PROGRESS',
   'GET_USER_RESULTS',
   'GET_USER_GROUPS',
 ];
 
-// Analytics queries (corrected)
+// Analytics queries (updated to use new names)
 export const ANALYTICS_QUERIES = [
-  'GET_DASHBOARD_DATA',
-  'GET_USER_STATISTICS',
-  'GET_TOP_XP_EARNERS',
-  'GET_XP_TIMELINE',
-  'GET_AUDIT_TIMELINE',
-  'GET_PROJECT_RESULTS',
+  'GET_USER_COMPLETE',
+  'GET_USER_STATS',
+  'GET_LEADERBOARD',
+  'GET_USER_XP_TRANSACTIONS',
+  'GET_USER_AUDIT_TRANSACTIONS',
+  'GET_PROGRESS_STATS',
 ];
 
-// Transaction queries (corrected)
+// Transaction queries (updated to use new names)
 export const TRANSACTION_QUERIES = [
-  'GET_TRANSACTIONS_BY_TYPE',
-  'GET_TOP_XP_EARNERS',
-  'GET_TOTAL_XP',
-  'GET_XP_BY_PROJECT',
-  'GET_XP_TIMELINE',
+  'GET_USER_TRANSACTIONS',
+  'GET_LEADERBOARD',
+  'GET_TRANSACTION_AGGREGATES',
+  'GET_USER_XP_TRANSACTIONS',
+  'GET_USER_XP_TRANSACTIONS',
 ];
 
 // Audit queries (corrected)
@@ -157,25 +157,25 @@ export const OPTIMIZED_QUERIES = [
 export const QUERY_METADATA = {
   // High-priority queries for dashboard
   DASHBOARD_QUERIES: [
-    'GET_DASHBOARD_DATA',
-    'GET_USER_INFO',
-    'GET_USER_STATISTICS',
-    'GET_TOTAL_XP',
+    'GET_USER_COMPLETE',
+    'GET_USER_BASIC_INFO',
+    'GET_USER_STATS',
+    'GET_TRANSACTION_AGGREGATES',
   ],
 
   // Heavy queries that should be cached aggressively
   HEAVY_QUERIES: [
-    'GET_DASHBOARD_DATA',
-    'GET_TOP_XP_EARNERS',
-    'GET_XP_TIMELINE',
-    'GET_AUDIT_TIMELINE',
-    'GET_PROJECT_RESULTS',
+    'GET_USER_COMPLETE',
+    'GET_LEADERBOARD',
+    'GET_USER_XP_TRANSACTIONS',
+    'GET_USER_AUDIT_TRANSACTIONS',
+    'GET_PROGRESS_STATS',
   ],
 
   // Real-time queries that need fresh data
   REALTIME_QUERIES: [
-    'GET_PENDING_AUDITS',
-    'GET_ACTIVE_GROUPS',
+    'GET_USER_AUDITS',
+    'GET_USER_GROUPS',
     'GET_USER_PROGRESS',
   ],
 
@@ -238,39 +238,39 @@ export const QUERY_COMPLEXITY = {
 export const USAGE_PATTERNS = {
   // For initial page load - optimized for speed
   INITIAL_LOAD: [
-    'GET_USER_INFO',
-    'GET_TOTAL_XP',
-    'GET_USER_STATISTICS',
+    'GET_USER_BASIC_INFO',
+    'GET_TRANSACTION_AGGREGATES',
+    'GET_USER_STATS',
   ],
 
   // For profile page - comprehensive but cached
   PROFILE_PAGE: [
-    'GET_DASHBOARD_DATA',
-    'GET_USER_SKILLS',
-    'GET_AUDIT_RATIO',
+    'GET_USER_COMPLETE',
+    'GET_USER_TRANSACTIONS',
+    'GET_USER_BASIC_INFO',
   ],
 
   // For analytics dashboard - performance optimized
   ANALYTICS_DASHBOARD: [
-    'GET_TOP_XP_EARNERS',
-    'GET_USER_STATISTICS',
-    'GET_AUDIT_RATIO',
-    'GET_ACTIVE_GROUPS',
+    'GET_LEADERBOARD',
+    'GET_USER_STATS',
+    'GET_USER_BASIC_INFO',
+    'GET_USER_GROUPS',
   ],
 
   // For detailed views - paginated and optimized
   DETAILED_VIEWS: [
-    'GET_XP_TIMELINE',
-    'GET_AUDIT_TIMELINE',
-    'GET_PROJECT_RESULTS',
+    'GET_USER_XP_TRANSACTIONS',
+    'GET_USER_AUDIT_TRANSACTIONS',
+    'GET_PROGRESS_STATS',
     'GET_USER_RESULTS',
   ],
 
   // For comparison features
   COMPARISON_FEATURES: [
-    'GET_USERS_WITH_HIGH_AUDIT_RATIO',
-    'GET_USERS_BY_CAMPUS',
-    'GET_TOP_XP_EARNERS',
+    'GET_AUDIT_RATIO_LEADERBOARD',
+    'GET_USERS_LIST',
+    'GET_LEADERBOARD',
   ],
 
   // For administrative views

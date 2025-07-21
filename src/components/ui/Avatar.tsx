@@ -3,6 +3,7 @@ import { User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { getAvatarUrl, getUserDisplayName } from '../../utils/dataFormatting';
+import config from '../../config/appConfig';
 
 interface AvatarUser {
   id?: number;
@@ -45,24 +46,32 @@ const Avatar = ({
   
   const avatarUrl = getAvatarUrl(user);
   const displayName = getUserDisplayName(user);
+
+  // Debug avatar URL
+  console.log('🎨 Avatar Component Debug:', {
+    user: user?.login,
+    avatarUrl,
+    hasUser: Boolean(user),
+    userKeys: user ? Object.keys(user) : []
+  });
   
-  // Size configurations
+  // Size configurations from dynamic config
   const sizeClasses = {
-    xs: 'w-6 h-6',
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16',
-    xl: 'w-24 h-24',
-    '2xl': 'w-32 h-32',
+    xs: config.ui.sizes.avatar.xs,
+    sm: config.ui.sizes.avatar.sm,
+    md: config.ui.sizes.avatar.md,
+    lg: config.ui.sizes.avatar.lg,
+    xl: config.ui.sizes.avatar.xl,
+    '2xl': config.ui.sizes.avatar['2xl'],
   };
   
   const iconSizes = {
-    xs: 'w-3 h-3',
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8',
-    xl: 'w-12 h-12',
-    '2xl': 'w-16 h-16',
+    xs: config.ui.sizes.avatarIcon.xs,
+    sm: config.ui.sizes.avatarIcon.sm,
+    md: config.ui.sizes.avatarIcon.md,
+    lg: config.ui.sizes.avatarIcon.lg,
+    xl: config.ui.sizes.avatarIcon.xl,
+    '2xl': config.ui.sizes.avatarIcon['2xl'],
   };
   
   const baseClasses = cn(
@@ -83,7 +92,9 @@ const Avatar = ({
     whileTap: onClick ? { scale: 0.95 } : undefined,
   } : {};
   
-  const handleImageError = () => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error('Avatar image failed to load:', avatarUrl);
+    console.error('Error details:', e);
     setImageError(true);
   };
   
@@ -185,12 +196,12 @@ export const AvatarWithStatus = ({
   };
   
   const statusSizes = {
-    xs: 'w-2 h-2',
-    sm: 'w-2 h-2',
-    md: 'w-3 h-3',
-    lg: 'w-4 h-4',
-    xl: 'w-5 h-5',
-    '2xl': 'w-6 h-6',
+    xs: config.ui.sizes.avatarStatus.xs,
+    sm: config.ui.sizes.avatarStatus.sm,
+    md: config.ui.sizes.avatarStatus.md,
+    lg: config.ui.sizes.avatarStatus.lg,
+    xl: config.ui.sizes.avatarStatus.xl,
+    '2xl': config.ui.sizes.avatarStatus['2xl'],
   };
   
   return (

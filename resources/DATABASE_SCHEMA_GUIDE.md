@@ -1,264 +1,525 @@
-# Reboot01 Database Schema Documentation
+# Reboot01 Database Schema Structure and Relations
 
 ## Overview
 
-This document provides a comprehensive analysis of the Reboot01 GraphQL database schema based on the provided documentation and database structure diagram. The schema implements a sophisticated educational platform with user management, project tracking, audit systems, and hierarchical content organization.
+The Reboot01 platform uses a comprehensive database schema designed to manage educational content, user progress, events, groups, audits, and various other aspects of a coding school platform. The database follows a relational model with well-defined entity relationships and is accessible through a GraphQL API.
 
-## Core Architecture
+## Database Schema Organization
 
-The Reboot01 database follows a multi-tenant architecture with campus-based segregation and implements a graph-based learning system with the following key characteristics:
+The database is organized into several logical groups of related tables:
 
-- **User-Centric Design**: All activities revolve around user interactions and progress tracking
-- **Hierarchical Content Structure**: Objects form a tree structure (Campus → Module → Project → Exercise)
-- **Event-Driven Learning**: Activities are organized within events (cohorts, modules, bootcamps)
-- **Peer Review System**: Comprehensive audit mechanism for project evaluation
-- **Group Collaboration**: Support for team-based projects and activities
-- **Transaction-Based Scoring**: XP, audit scores, and skill progression tracking
+1. **Events System** - Managing time-based activities
+2. **Objects System** - Content structure and curriculum
+3. **Users System** - User management and roles
+4. **Results System** - Progress tracking and assessments
+5. **Supporting Tables** - Utility and configuration tables
 
-## Entity Relationships Analysis
+---
 
-### Primary Entities and Their Roles
+## 1. Events System
 
-#### 1. User Entity (Central Hub)
-- **Purpose**: Represents learners, mentors, and administrators
-- **Key Metrics**: XP accumulation, audit ratio, skill progression
-- **Relationships**: Connected to all major entities through participation, creation, or evaluation
+### Tables Overview
+- `event`
+- `registration` 
+- `registration_user`
+- `event_user`
 
-#### 2. Transaction Entity (Scoring System)
-- **Types**: 
-  - `xp`: Experience points from project completion
-  - `up`: Positive peer evaluation (skill increase)
-  - `down`: Negative peer evaluation (skill decrease)
-- **Purpose**: Tracks all score changes and skill progression
+### event
+**Purpose**: Anchors objects into time and manages the temporal aspects of the platform.
 
-#### 3. Object Entity (Content Structure)
-- **Types**: `project`, `exercise`, `quest`, `exam`, `raid`, `piscine`, `campus`, `onboarding`
-- **Hierarchy**: Forms a tree structure via `object_child` relationships
-- **Purpose**: Defines the curriculum and learning materials
+**Key Columns**:
+- `id` - Primary key
+- `createdAt` - Event creation timestamp
+- `endAt` - Event end timestamp
+- `registrationId` - Links to registration table (1:1)
+- `objectId` - Links to object table (N:1)
+- `parentId` - Self-referencing for event hierarchy
+- `status` - Event completion status
+- `path` - Relative URL path
+- `campus` - Associated campus
+- `code` - Unlock code for exams
 
-#### 4. Event Entity (Context Provider)
-- **Purpose**: Groups activities into cohorts, modules, or time-based sessions
-- **Structure**: Hierarchical (parent-child relationships)
-- **Function**: Provides temporal and organizational context
+**Relations**:
+- **Self-referencing**: `parentId` → `event.id` (hierarchical events)
+- **One-to-One**: `registrationId` → `registration.id`
+- **Many-to-One**: `objectId` → `object.id`
+- **Many-to-Many**: Through `event_user` table
 
-#### 5. Group Entity (Collaboration)
-- **Purpose**: Manages team-based project work
-- **States**: `setup`, `working`, `audit`, `finished`
-- **Leadership**: Captain-based management system
+### registration
+**Purpose**: Manages registrations to events (exams, piscines, etc.).
 
-#### 6. Progress Entity (Learning Tracking)
-- **Purpose**: Tracks individual advancement through curriculum
-- **Status**: `isDone` flag indicates completion
-- **Versioning**: Git integration for code submission tracking
+**Key Columns**:
+- `id` - Primary key
+- `createdAt` - Registration creation time
+- `startAt` - When registration opens
+- `endAt` - When registration closes
+- `eventStartAt` - When the actual event starts
+- `objectId` - Object being registered for
+- `parentId` - Parent object reference
+- `attrs` - Additional attributes
+- `path` - URL path
+- `campus` - Associated campus
 
-#### 7. Result Entity (Evaluation System)
-- **Types**: `tester`, `user_audit`, `admit_audit`, `admin_selection`, `status`
-- **Purpose**: Records formal evaluations and grades
-- **Finality**: `isLast` flag indicates final assessment
+**Relations**:
+- **One-to-One**: `id` → `event.registrationId`
+- **Many-to-One**: `objectId` → `object.id`
+- **Many-to-Many**: Through `registration_user` table
 
-#### 8. Audit Entity (Peer Review)
-- **Purpose**: Implements peer-to-peer project evaluation
-- **Workflow**: Links auditor to group work for evaluation
-- **Timing**: `endAt` provides deadline management
+### registration_user
+**Purpose**: Links users to event registrations (Many-to-Many relationship).
 
-## Data Flow Patterns
+**Key Columns**:
+- `id` - Primary key
+- `registrationId` - Links to registration
+- `userId` - Links to user
+- `createdAt` - Registration timestamp
 
-### Learning Progression Flow
-1. **Registration**: User registers for events/objects
-2. **Group Formation**: Users join/create groups for collaborative projects
-3. **Progress Tracking**: Individual advancement recorded in `progress` table
-4. **Code Submission**: Git versioning tracked with each progress update
-5. **Peer Evaluation**: Other users audit submitted work
-6. **Result Recording**: Final grades and feedback stored in `results`
-7. **Transaction Creation**: XP and skill adjustments recorded as transactions
+### event_user
+**Purpose**: Links users to events (Many-to-Many relationship).
 
-### Audit Workflow
-1. **Group Completion**: Group finishes project work
-2. **Audit Assignment**: System assigns auditors to groups
-3. **Evaluation Process**: Auditors review work and provide grades
-4. **Result Generation**: Audit creates result entry
-5. **Transaction Update**: Up/down transactions update user skills
-6. **Ratio Calculation**: User audit ratio updated based on performance
+**Key Columns**:
+- `id` - Primary key
+- `userId` - Links to user
+- `eventId` - Links to event
+- `createdAt` - Association timestamp
 
-## Key Metrics and Calculations
+---
 
-### User Performance Indicators
-- **Total XP**: Sum of all `xp` type transactions
-- **Audit Ratio**: Calculated from up/down transaction balance
-- **Completion Rate**: Percentage of `isDone` progress entries
-- **Average Grade**: Mean of all result grades
-- **Peer Rating**: Balance of audit scores given and received
+## 2. Objects System
 
-### Campus Analytics
-- **Enrollment Numbers**: User count per campus
-- **Activity Level**: Event and group participation rates
-- **Success Metrics**: Completion and grade statistics
-- **XP Distribution**: Total and average XP per campus
+### Tables Overview
+- `object`
+- `object_child`
 
-## Schema Design Patterns
+### object
+**Purpose**: Generic representation of curriculum elements (exercises, quests, projects, etc.) arranged in hierarchical structure.
 
-### 1. Multi-Tenancy via Campus Field
-Almost every entity includes a `campus` field for data segregation, enabling:
-- Institution-specific deployments
-- Isolated analytics and reporting
-- Campus-based leaderboards and comparisons
+**Key Columns**:
+- `id` - Primary key
+- `name` - Object name
+- `type` - Object type (onboarding, campus, exercise, quest, signup, exam, raid, project, piscine)
+- `status` - Object status (should be 'online')
+- `attrs` - Object attributes (see attributes.md)
+- `childrenAttrs` - Attributes applied to child objects
+- `createdAt`, `updatedAt` - Timestamps
+- `campus` - Associated campus
+- `referenceId` - Points to reference object for duplicates
+- `referencedAt` - Duplication timestamp
+- `authorId` - Object author
 
-### 2. JSONB Attributes Pattern
-Entities use `attrs` JSONB fields for:
-- Flexible configuration storage
-- Custom metadata without schema changes
-- Feature flags and behavioral settings
+**Object Types**:
+- `onboarding` - Initial user orientation
+- `campus` - Campus-level container
+- `exercise` - Individual coding exercises
+- `quest` - Collection of related exercises
+- `signup` - Registration processes
+- `exam` - Timed assessments
+- `raid` - Group challenges
+- `project` - Major assignments
+- `piscine` - Intensive training programs
 
-### 3. Temporal Tracking
-Comprehensive timestamp management:
-- `createdAt`: Entity creation time
-- `updatedAt`: Last modification time
-- `endAt`: Expiration or deadline times (events, audits)
+**Relations**:
+- **Self-referencing**: `referenceId` → `object.id` (for duplicates)
+- **Many-to-One**: `authorId` → `user.id`
+- **Hierarchical**: Through `object_child` table
 
-### 4. Hierarchical Relationships
-Multiple hierarchy patterns implemented:
-- **Object Hierarchy**: Via `object_child` junction table
-- **Event Hierarchy**: Self-referential parent-child relationships
-- **User Roles**: Many-to-many role assignments
+### object_child
+**Purpose**: Defines parent-child relationships between objects for encapsulation.
 
-### 5. Junction Table Pattern
-Many-to-many relationships managed through junction tables:
-- `group_user`: Group memberships
-- `event_user`: Event participation
-- `registration_user`: Course registrations
-- `user_role`: Role assignments
-- `object_child`: Object hierarchies
+**Key Columns**:
+- `id` - Primary key
+- `parentId` - Parent object ID
+- `childId` - Child object ID
+- `attrs` - Child-specific attributes
+- `key` - JavaScript object key (used in URLs)
+- `index` - Position within parent
 
-## Data Types and Constraints
+**Relations**:
+- **Many-to-One**: `parentId` → `object.id`
+- **Many-to-One**: `childId` → `object.id`
 
-### Common Field Types
-- **IDs**: Integer primary keys with auto-increment
-- **Foreign Keys**: Integer references to related entities
-- **Timestamps**: ISO 8601 datetime strings
-- **Grades**: Float values (typically 0-100 scale)
-- **Flags**: Boolean values for status indicators
-- **Paths**: String representations of hierarchical locations
-- **Versions**: Git commit hashes as strings
-- **JSONB**: Flexible attribute storage
+**Example Hierarchy**:
+```
+Campus Madeira (parent)
+├── Piscine Go (child of campus, parent of quests)
+│   ├── Quest 01 (child of piscine)
+│   ├── Quest 02 (child of piscine)
+│   └── Exam (child of piscine)
+└── Raids (child of campus)
+```
 
-### Business Logic Constraints
-- **Audit Deadlines**: `endAt` timestamp enforcement
-- **Group Capacity**: Implicit limits via business logic
-- **Grade Ranges**: Typically 0-100 float values
-- **Campus Isolation**: Data segregation by campus field
-- **Version Tracking**: Git integration requirements
+---
 
-## Query Optimization Strategies
+## 3. Users System
 
-### Indexing Recommendations
-Based on common query patterns:
-- **User Lookups**: Index on `login`, `campus`
-- **Temporal Queries**: Index on `createdAt`, `updatedAt`, `endAt`
-- **Relationship Joins**: Index foreign key fields
-- **Type Filtering**: Index on `type` fields across entities
-- **Status Queries**: Index on `isDone`, `isLast`, `status` fields
+### Tables Overview
+- `user`
+- `role`
+- `user_role`
+- `group`
+- `group_user`
+- `token`
+- `record`
+- `transaction`
 
-### Performance Considerations
-- **Aggregation Queries**: Use `_aggregate` fields for statistics
-- **Pagination**: Always implement `limit` and `offset`
-- **Relationship Loading**: Selective field inclusion to reduce payload
-- **Campus Filtering**: Include campus constraints for data isolation
+### user
+**Purpose**: Core user information and profiles.
 
-## Security and Permissions Model
+**Key Columns**:
+- `id` - Primary key
+- `githubId` - (deprecated)
+- `githubLogin` - GitHub login (alias: login)
+- `discordId`, `discordLogin` - (deprecated)
+- `profile` - User profile information
+- `attrs` - Extended user attributes (email, address, etc.)
+- `createdAt`, `updatedAt` - Timestamps
+- `campus` - Associated campus
 
-### Role-Based Access Control
-The system implements role-based permissions through:
-- `user_role` junction table for role assignments
-- Campus-based data segregation
-- Query-level permission filtering
+### role
+**Purpose**: Defines permission roles for users.
 
-### Data Access Patterns
-- **Own Data**: Users can access their complete profile and activity
-- **Peer Data**: Limited access to basic user information and audit-related data
-- **Campus Data**: Access to campus-wide statistics and leaderboards
-- **Administrative Data**: Full access for admin roles
+**Key Columns**:
+- `id` - Primary key
+- `slug` - Role identifier
+- `name` - Role name
+- `description` - Role description
+- `createdAt`, `updatedAt` - Timestamps
 
-### Privacy Protection
-- **Profile Information**: JSONB attrs may contain sensitive data
-- **Audit Details**: Feedback stored in attrs with controlled access
-- **Version Information**: Git hashes may contain sensitive commit info
+### user_role
+**Purpose**: Links users to roles (Many-to-Many relationship).
 
-## Common Use Cases and Query Patterns
+**Key Columns**:
+- `id` - Primary key
+- `userId` - Links to user
+- `roleId` - Links to role
 
-### Student Dashboard Queries
-1. **Profile Summary**: User basic info + aggregated statistics
-2. **Recent Activity**: Latest transactions, progress updates
-3. **Current Projects**: Active group memberships and progress
-4. **Audit Queue**: Pending audits to perform
-5. **Leaderboard Position**: Rank comparison with peers
+### group
+**Purpose**: Manages student groups for projects and raids.
 
-### Instructor Analytics
-1. **Cohort Progress**: Event-based student advancement tracking
-2. **Project Statistics**: Completion rates and average grades
-3. **Audit Quality**: Evaluation of peer review effectiveness
-4. **Engagement Metrics**: Participation and activity levels
+**Key Columns**:
+- `id` - Primary key
+- `objectId` - Object being worked on
+- `eventId` - Associated event
+- `captainId` - Group captain user ID
+- `createdAt`, `updatedAt` - Timestamps
+- `status` - Group status (setup, working, audit, finished)
+- `path` - URL path
+- `campus` - Associated campus
 
-### Administrative Reports
-1. **Campus Overview**: Enrollment and activity statistics
-2. **Curriculum Analytics**: Object usage and success rates
-3. **User Management**: Registration and role administration
-4. **System Health**: Transaction volumes and error rates
+**Group Statuses**:
+- `setup` - Group formation phase
+- `working` - Active development
+- `audit` - Under review
+- `finished` - Completed
 
-## Integration Points
+**Relations**:
+- **Many-to-One**: `objectId` → `object.id`
+- **Many-to-One**: `eventId` → `event.id`
+- **Many-to-One**: `captainId` → `user.id`
 
-### Git Integration
-- **Version Tracking**: Progress entries include git commit hashes
-- **Code Review**: Audit process references specific commits
-- **Submission Validation**: Automated testing via version references
+### group_user
+**Purpose**: Links users to groups (Many-to-Many relationship).
 
-### External Systems
-- **Authentication**: JWT token-based auth integration
-- **Notification Systems**: Event-driven alerts for deadlines, audits
-- **Analytics Platforms**: Data export for advanced reporting
-- **Learning Management**: Integration with external course platforms
+**Key Columns**:
+- `id` - Primary key
+- `userId` - Links to user
+- `groupId` - Links to group
+- `confirmed` - User confirmation status (boolean)
+- `createdAt`, `updatedAt` - Timestamps
 
-## Scalability Considerations
+### token
+**Purpose**: Stores Hasura authorization tokens for users.
 
-### Database Performance
-- **Sharding Strategy**: Campus-based horizontal partitioning
-- **Read Replicas**: Separate analytics from transactional queries
-- **Caching**: Redis layer for frequently accessed user data
-- **Archive Strategy**: Historical data management for old events
+**Key Columns**:
+- `id` - Primary key
+- `status` - Token status
+- `createdAt`, `updatedAt` - Timestamps
 
-### Query Optimization
-- **Batch Operations**: Aggregate queries for statistics
-- **Connection Pooling**: Manage database connection limits
-- **Query Complexity**: Limit nested relationship depth
-- **Real-time Updates**: WebSocket subscriptions for live data
+### record
+**Purpose**: Tracks user records including bans and disciplinary actions.
 
-## Development Best Practices
+**Key Columns**:
+- `id` - Primary key
+- `userId` - User being recorded
+- `authorId` - User creating the record
+- `message` - Record description
+- `banEndAt` - Ban expiration date
+- `createdAt` - Record creation time
 
-### Query Writing Guidelines
-1. **Always Use Limits**: Prevent runaway queries
-2. **Include Campus Filters**: Respect multi-tenancy
-3. **Selective Field Loading**: Request only needed data
-4. **Error Handling**: Check for permission and data errors
-5. **Caching Strategy**: Implement appropriate TTL for different data types
+### transaction
+**Purpose**: Tracks user rewards and point transactions.
 
-### Schema Evolution
-1. **Backward Compatibility**: Maintain existing field contracts
-2. **Migration Strategy**: Plan for schema changes in production
-3. **Version Management**: Track schema versions across deployments
-4. **Testing**: Comprehensive query testing across user roles
+**Key Columns**:
+- `id` - Primary key
+- `type` - Transaction type (xp, up, down)
+- `amount` - Transaction amount/percentage
+- `userId` - User receiving transaction
+- `attrs` - Additional attributes
+- `createdAt` - Transaction timestamp
+- `path` - Associated path
+- `objectId` - Associated object
+- `eventId` - Associated event
+- `campus` - Associated campus
 
-## Monitoring and Observability
+**Transaction Types**:
+- `xp` - Experience points for completing objects
+- `up` - Points for conducting reviews/audits
+- `down` - Points for receiving reviews/audits
 
-### Key Metrics to Track
-- **Query Performance**: Execution times and complexity
-- **Error Rates**: Permission denials and data errors
-- **User Activity**: Login frequency and feature usage
-- **System Load**: Database connection usage and query volume
-- **Data Growth**: Table size and growth rate tracking
+---
 
-### Alerting Thresholds
-- **Slow Queries**: >1 second execution time
-- **High Error Rates**: >5% error rate on key operations
-- **Connection Limits**: >80% of connection pool usage
-- **Audit Backlogs**: Expired audits without completion
+## 4. Results System
 
-This documentation provides a foundation for understanding and working with the Reboot01 database schema. Regular updates should be made as the system evolves and new features are added.
+### Tables Overview
+- `audit`
+- `match`
+- `progress`
+- `result`
+
+### audit
+**Purpose**: Manages peer review system where students audit each other's work.
+
+**Key Columns**:
+- `id` - Primary key
+- `groupId` - Group being audited
+- `auditorId` - User conducting audit
+- `attrs` - Audit feedback and attributes
+- `grade` - Audit score (ratio of passed/required questions)
+- `createdAt`, `updatedAt` - Timestamps
+- `code` - Audit access code (nullified after expiration)
+- `resultId` - Final audit result
+- `version` - Git commit SHA being audited
+- `endAt` - Audit expiration date
+- `private` - Access control flag
+
+**Grading System**:
+- `< 1.0` - Failed
+- `>= 1.0` - Passed  
+- `> 1.0` - Passed with bonus points
+
+**Relations**:
+- **Many-to-One**: `groupId` → `group.id`
+- **Many-to-One**: `auditorId` → `user.id`
+- **One-to-One**: `resultId` → `result.id` (when finalized)
+
+### match
+**Purpose**: Manages betting system for bonus exercises and student matching.
+
+**Key Columns**:
+- `id` - Primary key
+- `createdAt`, `updatedAt` - Timestamps
+- `objectId` - Object requiring match
+- `userId` - User requesting match
+- `matchId` - Matched user ID
+- `confirmed` - Match confirmation status
+- `bet` - Betting prediction (boolean)
+- `result` - Betting outcome (boolean)
+- `path` - URL path
+- `campus` - Associated campus
+- `eventId` - Associated event
+
+**Relations**:
+- **Many-to-One**: `objectId` → `object.id`
+- **Many-to-One**: `userId` → `user.id`
+- **Self-referencing**: `matchId` → `user.id`
+- **Many-to-One**: `eventId` → `event.id`
+
+### progress
+**Purpose**: Tracks user progression through exercises and projects.
+
+**Key Columns**:
+- `id` - Primary key
+- `createdAt`, `updatedAt` - Timestamps
+- `userId` - User making progress
+- `groupId` - Associated group (if applicable)
+- `eventId` - Associated event
+- `version` - Git commit SHA
+- `grade` - Average grade from related results
+- `isDone` - Completion flag
+- `path` - URL path
+- `campus` - Associated campus
+- `objectId` - Associated object
+
+**Relations**:
+- **Many-to-One**: `userId` → `user.id`
+- **Many-to-One**: `groupId` → `group.id` (optional)
+- **Many-to-One**: `eventId` → `event.id`
+- **Many-to-One**: `objectId` → `object.id`
+
+### result
+**Purpose**: Stores results from exercises, projects, and assessments.
+
+**Key Columns**:
+- `id` - Primary key
+- `createdAt`, `updatedAt` - Timestamps
+- `grade` - Result grade
+- `attrs` - Result attributes
+- `type` - Result type (tester, user_audit, admit_audit, admin_selection, status)
+- `userId` - User achieving result
+- `groupId` - Associated group
+- `objectId` - Associated object
+- `path` - URL path
+- `version` - Git commit SHA
+- `eventId` - Associated event
+- `isLast` - Finality flag
+- `campus` - Associated campus
+
+**Result Types**:
+- `tester` - Automated test results
+- `user_audit` - Peer review results
+- `admit_audit` - Admission audit results
+- `admin_selection` - Administrative selection
+- `status` - Status updates
+
+**Relations**:
+- **Many-to-One**: `userId` → `user.id`
+- **Many-to-One**: `groupId` → `group.id`
+- **Many-to-One**: `objectId` → `object.id`
+- **Many-to-One**: `eventId` → `event.id`
+
+---
+
+## 5. Supporting Tables
+
+### group_status
+**Purpose**: Defines possible group status values.
+
+**Values**:
+- `setup` - Initial group formation
+- `working` - Active development phase  
+- `audit` - Under review/audit
+- `finished` - Completed work
+
+### discordToken
+**Purpose**: (TODO: remove) - Discord integration tokens.
+
+**Key Columns**:
+- `id` - Primary key
+- `accessToken` - Discord access token
+- `refreshToken` - Discord refresh token  
+- `expiresAt` - Token expiration
+
+---
+
+## Entity Relationship Summary
+
+### Core Relationships
+
+1. **Hierarchical Structures**:
+   - Objects can have parent-child relationships through `object_child`
+   - Events can have parent events through `parentId`
+
+2. **User Associations**:
+   - Users belong to groups through `group_user`
+   - Users have roles through `user_role`  
+   - Users register for events through `registration_user`
+   - Users participate in events through `event_user`
+
+3. **Progress Tracking**:
+   - Progress links users to objects, events, and optionally groups
+   - Results provide detailed outcomes for progress
+   - Audits generate results through peer review
+   - Matches can generate results through betting system
+
+4. **Time Management**:
+   - Events anchor objects in time
+   - Registrations control event access
+   - Progress tracks temporal user advancement
+
+### Cardinality Patterns
+
+- **One-to-One**: `event` ↔ `registration`
+- **One-to-Many**: `user` → `progress`, `object` → `event`
+- **Many-to-Many**: `user` ↔ `group`, `user` ↔ `event`, `user` ↔ `registration`
+- **Self-Referencing**: `event.parentId`, `object.referenceId`, `match.matchId`
+
+---
+
+## GraphQL API Integration
+
+The database is accessible through a GraphQL endpoint at:
+- **Endpoint**: `https://learn.reboot01.com/api/graphql-engine/v1/graphql`
+- **GraphiQL Interface**: `https://learn.reboot01.com/graphiql/`
+
+### GraphQL Schema Features
+
+The GraphQL schema provides:
+- **Queries**: Read access to all entities with filtering and pagination
+- **Mutations**: Write operations for data modification
+- **Subscriptions**: Real-time updates for dynamic content
+- **Introspection**: Schema discovery and documentation
+
+### Key GraphQL Types
+
+Based on the database schema, the GraphQL API likely exposes types such as:
+- `User`, `Group`, `Event`, `Object`
+- `Progress`, `Result`, `Audit`, `Match`
+- `Registration`, `Transaction`, `Record`
+
+### Common Query Patterns
+
+```graphql
+# Get user progress
+query UserProgress($userId: Int!) {
+  progress(where: {userId: {_eq: $userId}}) {
+    id
+    grade
+    isDone
+    object {
+      name
+      type
+    }
+    event {
+      path
+    }
+  }
+}
+
+# Get group information
+query GroupDetails($groupId: Int!) {
+  group(where: {id: {_eq: $groupId}}) {
+    id
+    status
+    captain {
+      githubLogin
+    }
+    users {
+      user {
+        githubLogin
+      }
+      confirmed
+    }
+    object {
+      name
+      type
+    }
+  }
+}
+```
+
+---
+
+## Data Flow and Business Logic
+
+### User Journey
+1. **Registration**: User registers for events through `registration_user`
+2. **Group Formation**: Users form groups via `group_user` for collaborative work
+3. **Progress Tracking**: System tracks advancement through `progress` table
+4. **Assessment**: Results generated via `audit`, `match`, or automated testing
+5. **Rewards**: Transactions record XP and recognition points
+
+### Audit System Flow
+1. Group completes work and requests audit
+2. Audit code generated and distributed to auditors
+3. Auditors review work and provide grades/feedback
+4. System aggregates audit results
+5. Final result created when sufficient audits collected
+
+### Content Management
+1. Objects define curriculum structure
+2. Object hierarchy established through `object_child`
+3. Events instantiate objects in time
+4. Users progress through object hierarchy
+5. Results track completion and mastery
+
+This database schema provides a robust foundation for managing a comprehensive coding education platform with sophisticated progress tracking, peer review systems, and flexible content organization.

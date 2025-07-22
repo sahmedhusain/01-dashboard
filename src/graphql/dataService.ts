@@ -1,11 +1,13 @@
 
 import {
-  // Core user queries - using new names
+  // Core user queries - using corrected versions
   GET_USER_BASIC_INFO,
   GET_USER_BY_ID,
   GET_USER_COMPLETE,
   GET_USER_STATS,
   GET_USERS_LIST,
+  GET_USER_GROUPS_CORRECTED,
+  GET_USER_EVENTS_CORRECTED,
 
   // Transaction queries - using new names
   GET_USER_TRANSACTIONS,
@@ -334,18 +336,38 @@ export class GraphQLService {
     return [data.group_stats || [], null];
   }
 
-  async getUserGroups(userLogin) {
+  async getUserGroups(userId) {
+    if (import.meta.env.DEV) {
+      console.log('getUserGroups called with userId:', userId, typeof userId);
+    }
     const [data, error] = await this.#fetchData(
-      GET_USER_GROUPS,
-      { userLogin }
+      GET_USER_GROUPS_CORRECTED,
+      { userId: parseInt(userId, 10) }
     );
     if (error !== null) {
       return [null, error];
     }
-    if ('group' in data) {
-      return [data.group, null];
+    if ('group_user' in data) {
+      return [data.group_user, null];
     }
     return [null, new Error("'group' key not in response")];
+  }
+
+  async getUserEvents(userId) {
+    if (import.meta.env.DEV) {
+      console.log('getUserEvents called with userId:', userId, typeof userId);
+    }
+    const [data, error] = await this.#fetchData(
+      GET_USER_EVENTS_CORRECTED,
+      { userId: parseInt(userId, 10) }
+    );
+    if (error !== null) {
+      return [null, error];
+    }
+    if ('event_user' in data) {
+      return [data.event_user, null];
+    }
+    return [[], null];
   }
 
   // ============================================================================

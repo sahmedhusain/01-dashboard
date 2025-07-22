@@ -4,8 +4,12 @@ import { ReactNode, ComponentType } from 'react';
 // Re-export GraphQL types
 export * from './graphql';
 
+// ============================================================================
+// ENHANCED USER TYPES - Updated for comprehensive data structure
+// ============================================================================
+
 export interface User {
-  id: number; // Updated to match new GraphQL schema
+  id: number;
   login: string;
   firstName?: string;
   lastName?: string;
@@ -14,68 +18,270 @@ export interface User {
   phone?: string;
   createdAt?: string;
   updatedAt?: string;
-  campus?: string; // Updated to match new GraphQL schema (string instead of Campus[])
+  campus?: string;
   auditRatio?: number;
   totalUp?: number;
   totalDown?: number;
+  profile?: string;
+  attrs?: Record<string, any>;
+  githubLogin?: string;
 }
 
-export interface Campus {
-  id: string;
-  name: string;
-  country?: string;
-  city?: string;
+// Enhanced user profile with computed fields
+export interface UserProfile extends User {
+  fullName: string;
+  initials: string;
+  avatarUrl?: string;
+  level: number;
+  totalXP: number;
+  rankTitle: string;
+  cohortNumber: string;
+  joinDate: string;
+  lastActivity: string;
+  performanceMetrics: {
+    passRate: number;
+    auditRatio: number;
+    averageGrade: number;
+    projectsCompleted: number;
+    skillsCount: number;
+  };
 }
+
+// ============================================================================
+// ENHANCED TRANSACTION TYPES - Updated for comprehensive data structure
+// ============================================================================
 
 export interface Transaction {
-  id: number; // Updated to match new GraphQL schema
-  type: string;
+  id: number;
+  type: 'xp' | 'up' | 'down' | string;
   amount: number;
   createdAt: string;
-  path?: string; // Made optional to match new GraphQL schema
-  user?: User; // Made optional to match new GraphQL schema
+  path?: string;
+  campus?: string;
+  eventId?: number;
+  objectId?: number;
+  userId?: number;
+  attrs?: Record<string, any>;
+  user?: User;
   object?: {
-    id: number; // Updated to match new GraphQL schema
+    id: number;
     name: string;
     type: string;
   };
+  event?: {
+    id: number;
+    path: string;
+  };
 }
+
+// Transaction aggregates for statistics
+export interface TransactionAggregates {
+  xp: {
+    total: number;
+    count: number;
+    average: number;
+    byProject: Array<{
+      projectName: string;
+      amount: number;
+      path: string;
+    }>;
+    timeline: Array<{
+      date: string;
+      amount: number;
+      cumulative: number;
+    }>;
+  };
+  audits: {
+    totalUp: number;
+    totalDown: number;
+    ratio: number;
+    given: number;
+    received: number;
+  };
+}
+
+// ============================================================================
+// ENHANCED PROJECT & PROGRESS TYPES
+// ============================================================================
 
 export interface Project {
-  id: number; // Updated to match new GraphQL schema
+  id: number;
   name: string;
+  type: string;
+  status?: string;
+  path?: string;
   createdAt: string;
   updatedAt?: string;
-  status?: string;
-  grade?: number;
-  path?: string;
+  campus?: string;
+  attrs?: Record<string, any>;
 }
 
+export interface Progress {
+  id: number;
+  userId: number;
+  objectId: number;
+  grade: number;
+  isDone: boolean;
+  path: string;
+  version?: string;
+  createdAt: string;
+  updatedAt: string;
+  campus?: string;
+  groupId?: number;
+  eventId?: number;
+  object?: Project;
+}
+
+export interface Result {
+  id: number;
+  userId: number;
+  objectId: number;
+  grade: number;
+  type?: string;
+  isLast: boolean;
+  path: string;
+  version?: string;
+  createdAt: string;
+  updatedAt: string;
+  campus?: string;
+  groupId?: number;
+  eventId?: number;
+  attrs?: Record<string, any>;
+  object?: Project;
+}
+
+// Progress statistics
+export interface ProgressStats {
+  total: number;
+  completed: number;
+  inProgress: number;
+  passed: number;
+  failed: number;
+  averageGrade: number;
+  completionRate: number;
+  byCategory: Record<string, {
+    total: number;
+    completed: number;
+    averageGrade: number;
+  }>;
+}
+
+// ============================================================================
+// ENHANCED SKILL TYPES
+// ============================================================================
+
 export interface Skill {
-  id: number; // Updated to match new GraphQL schema
+  id: number;
   name: string;
   type: string;
   amount: number;
+  level?: number;
+  category?: string;
+  description?: string;
 }
 
+export interface SkillCategory {
+  name: string;
+  skills: Skill[];
+  totalAmount: number;
+  averageLevel: number;
+  topSkills: Skill[];
+}
+
+// ============================================================================
+// ENHANCED AUDIT TYPES
+// ============================================================================
+
 export interface Audit {
-  id: number; // Updated to match new GraphQL schema
+  id: number;
   grade: number;
   createdAt: string;
-  auditor?: User; // Made optional to match new GraphQL schema
-  group?: {
-    id: number; // Updated to match new GraphQL schema
-    path: string;
-    captainLogin: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-    object: {
-      id: number; // Updated to match new GraphQL schema
-      name: string;
-      type: string;
-    };
+  updatedAt?: string;
+  endAt?: string;
+  code?: string;
+  version?: string;
+  private?: boolean;
+  attrs?: Record<string, any>;
+  auditorId?: number;
+  groupId?: number;
+  resultId?: number;
+  auditor?: User;
+  group?: Group;
+  result?: Result;
+}
+
+export interface AuditStats {
+  given: {
+    count: number;
+    averageGrade: number;
+    totalGrades: number;
+    recentAudits: Audit[];
   };
+  received: {
+    count: number;
+    averageGrade: number;
+    totalGrades: number;
+    recentAudits: Audit[];
+  };
+  ratio: number;
+  performance: 'excellent' | 'good' | 'average' | 'poor';
+  trend: 'improving' | 'stable' | 'declining';
+}
+
+// ============================================================================
+// ENHANCED GROUP & EVENT TYPES
+// ============================================================================
+
+export interface Group {
+  id: number;
+  status: string;
+  path: string;
+  campus?: string;
+  createdAt: string;
+  updatedAt: string;
+  objectId?: number;
+  eventId?: number;
+  captainId?: number;
+  object?: Project;
+  event?: Event;
+  captain?: User;
+  members?: User[];
+}
+
+export interface Event {
+  id: number;
+  path: string;
+  status?: string;
+  campus?: string;
+  code?: string;
+  createdAt: string;
+  endAt?: string;
+  objectId?: number;
+  parentId?: number;
+  registrationId?: number;
+  object?: Project;
+  parent?: Event;
+}
+
+export interface GroupUser {
+  id: number;
+  userId: number;
+  groupId: number;
+  confirmed?: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  user?: User;
+  group?: Group;
+}
+
+export interface EventUser {
+  id: number;
+  userId: number;
+  eventId: number;
+  level?: number;
+  createdAt: string;
+  user?: User;
+  event?: Event;
 }
 
 export interface GraphQLResponse<T> {
@@ -198,13 +404,124 @@ export interface RouteConfig {
   title?: string;
 }
 
-// Chart types
+// ============================================================================
+// ENHANCED CHART TYPES - SVG-based charts for project requirements
+// ============================================================================
+
+export interface SVGChartData {
+  labels: string[];
+  datasets: Array<{
+    label: string;
+    data: number[];
+    color: string;
+    backgroundColor?: string;
+    borderColor?: string;
+    fill?: boolean;
+  }>;
+}
+
+export interface ChartPoint {
+  x: number;
+  y: number;
+  label?: string;
+  value?: number;
+  color?: string;
+}
+
 export interface ChartConfig {
-  type: 'line' | 'bar' | 'pie' | 'doughnut' | 'radar';
+  type: 'line' | 'bar' | 'pie' | 'donut' | 'gauge' | 'area';
+  width: number;
+  height: number;
+  margin?: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  colors?: string[];
+  animate?: boolean;
+  interactive?: boolean;
   responsive?: boolean;
-  maintainAspectRatio?: boolean;
-  plugins?: Record<string, any>;
-  scales?: Record<string, any>;
+  title?: string;
+  description?: string;
+}
+
+// Specific chart data types
+export interface XPTimelineData {
+  date: string;
+  xp: number;
+  cumulative: number;
+  project?: string;
+  type?: string;
+}
+
+export interface ProjectSuccessData {
+  passed: number;
+  failed: number;
+  inProgress: number;
+  total: number;
+}
+
+export interface AuditRatioData {
+  ratio: number;
+  totalUp: number;
+  totalDown: number;
+  performance: 'excellent' | 'good' | 'average' | 'poor';
+}
+
+export interface SkillRadarData {
+  skill: string;
+  level: number;
+  maxLevel: number;
+  category: string;
+}
+
+// ============================================================================
+// ENHANCED DASHBOARD TYPES
+// ============================================================================
+
+export interface DashboardData {
+  user: UserProfile;
+  statistics: {
+    totalXP: number;
+    level: number;
+    auditRatio: number;
+    projectsCompleted: number;
+    skillsCount: number;
+    rank: number;
+    percentile: number;
+  };
+  charts: {
+    xpTimeline: XPTimelineData[];
+    projectSuccess: ProjectSuccessData;
+    auditRatio: AuditRatioData;
+    skillsRadar: SkillRadarData[];
+    progressBars: Array<{
+      category: string;
+      completed: number;
+      total: number;
+      percentage: number;
+    }>;
+  };
+  recentActivity: Array<{
+    id: string;
+    type: 'xp' | 'audit' | 'project' | 'skill';
+    title: string;
+    description: string;
+    date: string;
+    value?: number;
+    status?: 'success' | 'warning' | 'error' | 'info';
+  }>;
+  achievements: Array<{
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    earned: boolean;
+    earnedAt?: string;
+    progress?: number;
+    maxProgress?: number;
+  }>;
 }
 
 // API types

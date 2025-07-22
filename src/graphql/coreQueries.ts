@@ -1,27 +1,4 @@
 // ============================================================================
-// REBOOT01 GRAPHQL QUERIES - SCHEMA-CORRECTED COLLECTION
-// ============================================================================
-// This file contains ALL GraphQL queries corrected based on comprehensive schema analysis.
-// All queries have been tested against the live GraphQL endpoint with 96.8% success rate.
-// Schema corrections based on ERD analysis and junction table patterns.
-// Last updated: 2025-07-21 - All major schema issues resolved
-//
-// KEY SCHEMA INSIGHTS DISCOVERED:
-// - Junction tables (group_user, event_user) are first-class entities in GraphQL
-// - Main entities (user, group, event) don't expose junction fields directly
-// - Use group_user(where: {userId: {_eq: $userId}}) instead of user.group_users
-// - Use event_user(where: {userId: {_eq: $userId}}) instead of user.event_users
-// - User ID-based filtering is more reliable than login-based for junction tables
-//
-// CORRECTED QUERIES:
-// - GET_USER_RECEIVED_AUDITS: Fixed to use group_user junction table
-// - Added GET_USER_GROUPS_CORRECTED: Working version using group_user table
-// - Added GET_USER_EVENTS_CORRECTED: Working version using event_user table
-// - Added GET_GROUP_STATISTICS_CORRECTED: Working version with proper aggregates
-// - Added GET_COMPREHENSIVE_USER_DATA_CORRECTED: Complete user data with all relationships
-// ============================================================================
-
-// ============================================================================
 // USER QUERIES
 // ============================================================================
 
@@ -117,7 +94,7 @@ export const GET_USER_COMPLETE = `
           type
         }
       }
-      group_users {
+      groups {
         group {
           id
           path
@@ -128,14 +105,6 @@ export const GET_USER_COMPLETE = `
             id
             path
             createdAt
-          }
-          group_users {
-            user {
-              id
-              login
-              firstName
-              lastName
-            }
           }
         }
       }
@@ -1405,11 +1374,3 @@ export const GET_COMPREHENSIVE_USER_DATA_CORRECTED = `
     }
   }
 `;
-
-// ============================================================================
-// QUERY EXPORTS COMPLETE - SCHEMA CORRECTED
-// ============================================================================
-// All queries have been tested with 96.8% success rate (30/31 working).
-// Schema corrections based on comprehensive ERD analysis completed.
-// Junction table patterns proven to work with actual GraphQL schema.
-// Use the _CORRECTED versions for previously failing group/event queries.

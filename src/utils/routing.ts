@@ -15,9 +15,10 @@ export const TAB_CONFIG = [
   { id: 'search', label: 'Search Queries', path: '/search', icon: 'Search' },
   { id: 'stats', label: 'Statistics', path: '/stats', icon: 'BarChart3' },
   { id: 'progress', label: 'Progress', path: '/progress', icon: 'TrendingUp' },
+  { id: 'skills', label: 'Skills & Achievements', path: '/skills', icon: 'Award' },
   { id: 'analytics', label: 'Analytics', path: '/analytics', icon: 'Users' },
-  { id: 'achievements', label: 'Achievements', path: '/achievements', icon: 'Award' },
-  { id: 'audits', label: 'Audits', path: '/audits', icon: 'Trophy' },
+  { id: 'achievements', label: 'Achievements', path: '/achievements', icon: 'Trophy' },
+  { id: 'audits', label: 'Audits', path: '/audits', icon: 'Users' },
   { id: 'technologies', label: 'Technologies', path: '/technologies', icon: 'Users' },
 ];
 

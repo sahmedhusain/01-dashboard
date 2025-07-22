@@ -619,7 +619,7 @@ export const sortData = (data, sortBy, sortOrder = 'desc') => {
 
     // Handle dates
     if (aVal instanceof Date && bVal instanceof Date) {
-      return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+      return sortOrder === 'asc' ? aVal.getTime() - bVal.getTime() : bVal.getTime() - aVal.getTime();
     }
 
     // Default string comparison
@@ -970,7 +970,7 @@ export const processObjectsData = (objectsData) => {
 // ENHANCED PROGRESS DATA PROCESSING
 // ============================================================================
 
-// Process progress data with user information (enhanced version)
+// Process progress data with user information (using consolidated user normalization)
 export const processProgressWithUsers = (progressData) => {
   if (!Array.isArray(progressData)) return [];
 
@@ -981,13 +981,7 @@ export const processProgressWithUsers = (progressData) => {
     path: progress.path,
     projectName: progress.object?.name || progress.path?.split('/').pop(),
     projectType: progress.object?.type || 'unknown',
-    user: {
-      id: progress.user?.id,
-      login: progress.user?.login,
-      firstName: progress.user?.firstName,
-      lastName: progress.user?.lastName,
-      fullName: `${progress.user?.firstName || ''} ${progress.user?.lastName || ''}`.trim() || progress.user?.login,
-    },
+    user: normalizeUserInfo(progress.user),
     createdAt: progress.createdAt,
     updatedAt: progress.updatedAt,
   }));
@@ -997,7 +991,7 @@ export const processProgressWithUsers = (progressData) => {
 // ENHANCED RESULT DATA PROCESSING
 // ============================================================================
 
-// Process results data with user information
+// Process results data with user information (consolidated with processProgressWithUsers)
 export const processResultsWithUsers = (resultsData) => {
   if (!Array.isArray(resultsData)) return [];
 
@@ -1009,17 +1003,20 @@ export const processResultsWithUsers = (resultsData) => {
     passed: (result.grade || 0) >= 1,
     projectName: result.object?.name || result.path?.split('/').pop() || 'Unknown',
     projectType: result.object?.type || result.type,
-    user: {
-      id: result.user?.id,
-      login: result.user?.login,
-      firstName: result.user?.firstName,
-      lastName: result.user?.lastName,
-      fullName: `${result.user?.firstName || ''} ${result.user?.lastName || ''}`.trim() || result.user?.login,
-    },
+    user: normalizeUserInfo(result.user),
     createdAt: result.createdAt,
     updatedAt: result.updatedAt,
   }));
 };
+
+// Consolidated user info normalization
+const normalizeUserInfo = (user) => ({
+  id: user?.id,
+  login: user?.login,
+  firstName: user?.firstName,
+  lastName: user?.lastName,
+  fullName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.login,
+});
 
 // ============================================================================
 // ENHANCED UTILITY FUNCTIONS FOR COMPONENT PROCESSORS

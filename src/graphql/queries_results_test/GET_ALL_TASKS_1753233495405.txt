@@ -1,0 +1,102 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_TASKS
+Timestamp: 2025-07-23T01:18:15.405Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: task
+Record Count: 12
+Data Summary: task: Array[12]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "task": [
+    {
+      "id": 493,
+      "name": "update_captain_repo",
+      "createdAt": "2024-06-04T10:01:49.571402+00:00",
+      "updatedAt": "2024-06-04T10:01:51.063044+00:00"
+    },
+    {
+      "id": 494,
+      "name": "update_captain_repo",
+      "createdAt": "2024-06-04T10:01:49.571402+00:00",
+      "updatedAt": "2024-06-04T10:01:51.063044+00:00"
+    },
+    {
+      "id": 495,
+      "name": "update_captain_repo",
+      "createdAt": "2024-06-04T10:01:49.571402+00:00",
+      "updatedAt": "2024-06-04T10:01:51.063044+00:00"
+    },
+    {
+      "id": 496,
+      "name": "update_captain_repo",
+      "createdAt": "2024-06-04T10:01:49.571402+00:00",
+      "updatedAt": "2024-06-04T10:01:51.063044+00:00"
+    },
+    {
+      "id": 537,
+      "name": "update_captain_repo",
+      "createdAt": "2024-06-23T13:33:28.831065+00:00",
+      "updatedAt": "2024-06-23T13:33:29.935347+00:00"
+    },
+    {
+      "id": 765,
+      "name": "update_captain_repo",
+      "createdAt": "2025-01-15T20:03:22.208896+00:00",
+      "updatedAt": "2025-01-15T20:03:22.347301+00:00"
+    },
+    {
+      "id": 1082,
+      "name": "update_captain_repo",
+      "createdAt": "2025-05-28T17:47:23.696054+00:00",
+      "updatedAt": "2025-05-28T17:47:25.995765+00:00"
+    },
+    {
+      "id": 1083,
+      "name": "update_captain_repo",
+      "createdAt": "2025-05-28T17:47:23.696054+00:00",
+      "updatedAt": "2025-05-28T17:47:25.995765+00:00"
+    },
+    {
+      "id": 1084,
+      "name": "update_captain_repo",
+      "createdAt": "2025-05-28T17:47:23.696054+00:00",
+      "updatedAt": "2025-05-28T17:47:25.995765+00:00"
+    },
+    {
+      "id": 1085,
+      "name": "update_captain_repo",
+      "createdAt": "2025-05-28T17:47:23.696054+00:00",
+      "updatedAt": "2025-05-28T17:47:25.995765+00:00"
+    },
+    {
+      "id": 1086,
+      "name": "update_captain_repo",
+      "createdAt": "2025-05-28T17:47:23.696054+00:00",
+      "updatedAt": "2025-05-28T17:47:25.995765+00:00"
+    },
+    {
+      "id": 1087,
+      "name": "update_captain_repo",
+      "createdAt": "2025-05-28T17:47:23.696054+00:00",
+      "updatedAt": "2025-05-28T17:47:25.995765+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetAllTasks {
+      task {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }
+  

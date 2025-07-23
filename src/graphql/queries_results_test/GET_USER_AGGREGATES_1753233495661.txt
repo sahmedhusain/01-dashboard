@@ -1,0 +1,70 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_USER_AGGREGATES
+Timestamp: 2025-07-23T01:18:15.661Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: user_aggregate
+Record Count: 1
+Data Summary: user_aggregate: Aggregate({"count":1,"avg":{"auditRatio":1.8616195936951974,"totalUp":2819475,"totalDown":1514528},"max":{"auditRatio":1.8616195936951974,"totalUp":2819475,"totalDown":1514528},"min":{"auditRatio":1.8616195936951974,"totalUp":2819475,"totalDown":1514528},"sum":{"totalUp":2819475,"totalDown":1514528}})
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "user_aggregate": {
+    "aggregate": {
+      "count": 1,
+      "avg": {
+        "auditRatio": 1.8616195936951974,
+        "totalUp": 2819475,
+        "totalDown": 1514528
+      },
+      "max": {
+        "auditRatio": 1.8616195936951974,
+        "totalUp": 2819475,
+        "totalDown": 1514528
+      },
+      "min": {
+        "auditRatio": 1.8616195936951974,
+        "totalUp": 2819475,
+        "totalDown": 1514528
+      },
+      "sum": {
+        "totalUp": 2819475,
+        "totalDown": 1514528
+      }
+    }
+  }
+}
+==================================================
+
+Query:
+
+    query GetUserAggregates {
+      user_aggregate {
+        aggregate {
+          count
+          avg {
+            auditRatio
+            totalUp
+            totalDown
+          }
+          max {
+            auditRatio
+            totalUp
+            totalDown
+          }
+          min {
+            auditRatio
+            totalUp
+            totalDown
+          }
+          sum {
+            totalUp
+            totalDown
+          }
+        }
+      }
+    }
+  

@@ -1,0 +1,5296 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_PATHS
+Timestamp: 2025-07-23T01:18:13.628Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: path
+Record Count: 1317
+Data Summary: path: Array[1317]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "path": [
+    {
+      "path": "/bahrain/bh-signup",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-signup/inscription-form",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-signup/general-conditions",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/piscine",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/check-in",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/games",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/administration",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/school-registration",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/administration/medical-info",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/administration/id-card",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/administration/addtionnal-info",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/madere/onboarding/games",
+      "updatedAt": "2022-12-13T20:14:13.492109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-08",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quad",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/sudoku",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp1",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/introduction",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/to-git-or-not-to-git",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/who-are-you",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp2",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp3",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp4",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp5",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp6",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/now-get-to-work",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/explain",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/teacher",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp7",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp8",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printdigits",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printnbr",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/isnegative",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printcombn",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printcomb",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printcomb2",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printreversealphabet",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-02/printalphabet",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/sortwordarr",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/doop",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/map",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/any",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/countif",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/issorted",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/advancedsortwordarr",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-09/foreach",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listremoveif",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listsize",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listfind",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listpushback",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listpushfront",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listlast",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listclear",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listat",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listreverse",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listforeach",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listforeachif",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listmerge",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/listsort",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/sortlistinsert",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-11/sortedlistmerge",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/strlen",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/pointone",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/ultimatepointone",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-atoi",
+      "updatedAt": "2024-07-23T21:22:39.980688+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/divmod",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/ultimatedivmod",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi2",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/sortintegertable",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/printstr",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/swap",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/strrev",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-03/atoi",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/eightqueens",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/recursivefactorial",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/recursivepower",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/iterativefactorial",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/iterativepower",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/fibonacci",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/sqrt",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/isprime",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-04/findnextprime",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-08/point",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-08/ztail",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-08/boolean",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-08/displayfile",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreeapplypostorder",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreedeletenode",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreeinsertdata",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreeapplyinorder",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreeapplypreorder",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreesearchitem",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreelevelcount",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreeisbinary",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreemax",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreemin",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreetransplant",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-12/btreeapplybylevel",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/printnbr",
+      "updatedAt": "2024-06-26T12:41:20.736326+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/itoa",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/itoabase",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/fromto",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/zipstring",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/expandstr",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/cleanstr",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/rostring",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/rpncalc",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/brackets",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/concatalternate",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/hiddenp",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/fprime",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/chunk",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/addprimesum",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/canjump",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/revwstr",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/inter",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/options",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/printmemory",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/findpairs",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/romannumbers",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/onlyf",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/only1",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/union",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/onlyb",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/rectperimeter",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/piglatin",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/findprevprime",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/romannumbers",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/printif",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/printifnot",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/slice",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/grouping",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/printprogramname",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/printparams",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/retainfirsthalf",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/cameltosnakecase",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/revparams",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/sortparams",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/rotatevowels",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/nbrconvertalpha",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-06/flags",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/split",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/makerange",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/appendrange",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/concatparams",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/splitwhitespaces",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/printwordstables",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-07/convertbase",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/firstrune",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/compare",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/atoibase",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/lastrune",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/nrune",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/index",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/toupper",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/tolower",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/capitalize",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/isalpha",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/isnumeric",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/islower",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/isupper",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/isprintable",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/concat",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/basicjoin",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/join",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/alphacount",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/trimatoi",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/printnbrinorder",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-05/printnbrbase",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/max",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/activebits",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/abort",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/collatzcountdown",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/comcheck",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/enigma",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/compact",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/join",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/unmatch",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/fixthemain",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/rot14",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/pilot",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/podiumposition",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/descendappendrange",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/descendcomb",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/jumpover",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/rockandroll",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/reversemenuindex",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/stringtointslice",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/shoppingsummarycounter",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/shoppinglistsort",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/fooddeliverytime",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/dealapackofcards",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-10/loafofbread",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/fishandchips",
+      "updatedAt": "2024-03-16T16:17:05.455713+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/git",
+      "updatedAt": "2024-05-15T22:09:57.969305+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/basicatoi",
+      "updatedAt": "2024-06-26T12:27:54.003495+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/onlya",
+      "updatedAt": "2024-07-21T11:29:56.941586+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test",
+      "updatedAt": "2024-07-21T11:35:33.309524+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/inter",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/union",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/reversebits",
+      "updatedAt": "2023-09-14T11:54:23.724502+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-swap",
+      "updatedAt": "2024-07-23T21:22:41.466677+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-atoi",
+      "updatedAt": "2024-07-23T21:22:44.181961+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-strlen",
+      "updatedAt": "2024-07-23T21:22:48.315411+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/gcd",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/hashcode",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/lastword",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/firstword",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/repeatalpha",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/searchreplace",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/zipstring",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/expandstr",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/gcd",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/printalphabet",
+      "updatedAt": "2024-10-27T08:36:10.72365+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/strlen",
+      "updatedAt": "2024-10-27T08:39:32.893752+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/countcharacter",
+      "updatedAt": "2024-03-16T16:23:29.786079+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/fromto",
+      "updatedAt": "2024-06-26T12:32:43.614074+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printcomb",
+      "updatedAt": "2024-07-23T21:22:22.780672+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlya",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlyz",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printalphabet",
+      "updatedAt": "2024-07-23T21:22:25.51562+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/itoa",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printreversealphabet",
+      "updatedAt": "2024-07-23T21:22:30.625875+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printdigits",
+      "updatedAt": "2024-07-23T21:22:35.368009+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/cleanstr",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/fprime",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/concatalternate",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/hiddenp",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/chunk",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/addprimesum",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/canjump",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/revwstr",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/reversestrcap",
+      "updatedAt": "2023-02-17T15:32:07.679977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/findpairs",
+      "updatedAt": "2024-07-23T21:23:00.10054+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printdigits",
+      "updatedAt": "2024-07-23T21:23:00.70437+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-capitalize",
+      "updatedAt": "2024-07-23T21:23:06.234425+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-atoibase",
+      "updatedAt": "2024-07-23T21:23:07.365122+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-doop",
+      "updatedAt": "2024-07-23T21:23:10.358266+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/firing-range",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/kaggle-titanic",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/nlp-scraper",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/emotions-detector",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/sp500-strategies",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/credit-scoring",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/nft-marketplace",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/payment-channel",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/node-dashboard",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/financial-instruments",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/sky-map",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/stock-market",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/kaquiz",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/secure-messenger",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/passive",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/inspector-image",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/active",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/local",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/web-hack",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/injector",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/social-network",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/mini-framework",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/make-your-own",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/hole-in-bin",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/mal-track",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/evasion",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/obfuscator",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/malware",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/twenty-forty-eight",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/chess",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/linux",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/login",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/onlya",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/reversebits",
+      "updatedAt": "2023-03-18T11:33:05.555923+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/printhex",
+      "updatedAt": "2023-06-03T12:32:04.68736+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/onlyz",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-displaya",
+      "updatedAt": "2024-02-06T23:49:35.136944+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-rot14",
+      "updatedAt": "2024-02-06T23:50:30.081659+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/onlyf",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/atoi",
+      "updatedAt": "2024-10-27T09:00:15.025487+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-tabmult",
+      "updatedAt": "2024-02-06T23:50:36.387785+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/fishandchips",
+      "updatedAt": "2024-10-27T09:05:07.279858+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-displayalrevm",
+      "updatedAt": "2024-02-06T23:50:37.117515+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/wdmatch",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/add-vm",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/connect",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/remote",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/scan",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/output",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/fs",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/justify",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/reverse",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/stylize",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/dockerize",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/exportfile",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/filters",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/geolocalization",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/visualizations",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/search-bar",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/history",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/different-maps",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/color",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/score-handling",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/tetris-optimizer",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/ascii-art",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/go-reloaded",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/filler",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/push-swap",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/my-ls-1",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/net-cat",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/lem-in",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/make-your-game",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/real-time-forum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/stock-exchange-sim",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/zappy",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/rt",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/multiplayer-fps",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/corewar",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/wget",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/bomberman-dom",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/graphql",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/0-shell",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/scripting",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/atm-management-system",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/smart-road",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/netfix",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/mister-quiz",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/shop",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/system-monitor",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/cross-platform-appimage",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/job-control",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/math-skills",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/localhost",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/authentication",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/image-upload",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/security",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/moderation",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/advanced-features",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/forum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/guess-it-1",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/linear-stats",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/guess-it-2",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/widget-factory",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/army-of-one",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/vehicle-physics",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/zombie-ai",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/nascar-online-alpha",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/mouse-vr",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/the-pages",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/stealth-boom",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/jumpo",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/bizz-card",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/quizz-app",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/movie-list",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/hacker-news",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/favorite-images",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/bouncer",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/map-markers",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/secure-notes",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/package",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/bloc-counter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/itoa",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-listremoveif",
+      "updatedAt": "2024-07-23T21:23:42.521429+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/itoabase",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/hiddenp",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/searchreplace",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/rostring",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/revwstr",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/brackets",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/digitlen",
+      "updatedAt": "2024-03-16T16:26:52.591397+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/addprimesum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/fprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/wdmatch",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/inter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/options",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/union",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/piglatin",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/findprevprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/chunk",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/repeatealpha",
+      "updatedAt": "2025-02-09T08:46:14.158238+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/numpy",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/pandas",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/visualizations",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/data-wrangling",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/time-series",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/backtesting-sp500",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/linear-regression",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/classification",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/pipeline",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/training",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/model-selection",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/forest-prediction",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/neural-networks",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/foldint",
+      "updatedAt": "2024-08-08T20:52:12.573945+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/reduceint",
+      "updatedAt": "2024-08-08T20:52:12.573945+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/printmemory",
+      "updatedAt": "2024-08-12T10:08:53.571501+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/keras",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/keras-2",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/nlp",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ai/nlp-spacy",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/connect-interface",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/sign-service",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/non-fungible-cats",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/decentralized-finance",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/exploring-blockchains",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/tracking-network",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/intro",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/variables",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/data-structures",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/plain-sum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/named-required-sum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/named-optional-sum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/optional-sum",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/max-num",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/person",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/circle",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/university",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-flutter/dart-intro/student",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/min-and-max",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/matrix-multiplication",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/smallest",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/modify-letter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/reverse-it",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/counting-words",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/partial-sums",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/inv-pyramid",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/insertion-sort",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust/rpn",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/count-factorial-steps",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/lucas-number",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/own-and-return",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/check-user-name",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/get-document-id",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/dress-code",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/prime-checker",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/scytale-decoder",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/reverse-it",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/matrix-determinant",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/order-books",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/rot21",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/nextprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/previousprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust/queens",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/min-and-max",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/matrix-multiplication",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/smallest",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/modify-letter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/count-factorial-steps",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/prime-checker",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/scytale-decoder",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/office-worker",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/drop-the-blog",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/profanity-filter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/reverse-it",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/counting-words",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/partial-sums",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/inv-pyramid",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/insertion-sort",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/blood-types-s",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/matrix-determinant",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/order-books",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/rot21",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/nextprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/previousprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/brain-fuck",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/brackets-matching",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/flat-tree",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/display-table",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/filter-table",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/lunch-queue",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/queens",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/matrix-display",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust/rpn",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/check-user-name",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/get-document-id",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/dress-code",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/negative-spelling",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/scytale-decoder",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/office-worker",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/organize-garage",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/moving-targets",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/format-me",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/car-rental",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/drop-the-blog",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/reverse-it",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/counting-words",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/partial-sums",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/inv-pyramid",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/blood-types-s",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/nextprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/previousprime",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/lunch-queue",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/queens",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/matrix-display",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust/rpn",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/stars",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/ordinal",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/pangram",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/diamond-creation",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/scores",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/talking",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/searching",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/logic-number",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/rot",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/pig-latin",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/spelling",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/rgb-match",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-06-rust/scytale-cipher",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/generics-list",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/easy-traits",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/generics",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/lalgebra-scalar",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/lalgebra-vector",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/traits",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/blood-types",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/roman-numbers",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/concatslice",
+      "updatedAt": "2024-03-16T16:28:56.781518+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/commits-stats",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-08-rust/vector-operations",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/roman-numbers-iter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/closures",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/sales",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/adding",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/adding-twice",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/get-products",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/highest",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/iterators",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/slices-to-map",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/step-iterator",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-10-rust/project-motion",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/fibonacci2",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/scalar",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/temperature-conv",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/looping",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/speed-transformation",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/groceries",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/reverse-string",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/find-factorial",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/matrix-transposition",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/division-and-remainder",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-01-rust/tuples-refs",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/changes",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/circle",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/card-deck",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/arrays",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/strings",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/edit-distance",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/capitalizing",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/hashing",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/string-permutation",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/bigger",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/simple-hash",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-03-rust/collect",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/unwrap-or-expect",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/panic",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/handling",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/profanity-filter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/question-mark",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/banner",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/cipher",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/error-types",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-04-rust/boxing-todo",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust/box-it",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust/borrow-box",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust/box-recursion",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust/how-many-references",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust/drop-the-thread",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-07-rust/ref-cell",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/ownership",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/copy",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/borrow",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/borrow-me-the-reference",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/string-literals",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/name-initials",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/arrange-it",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/tic-tac-toe",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/to-url",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-02-rust/doubtful",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/matrix-ops",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/delete-prefix",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/matrix",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/border-cross",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/lifetimes",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/events",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-09-rust/matrix-mult",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust/does-it-fit",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust/macro-calculator",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust/middle-day",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust/shopping-mall",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust/expected-variable",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-rust/quest-05-rust/mobs",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/how-2-js",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/primitives",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/mutability",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/more-or-less",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/last-first-kiss",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/concat-str",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/change",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/circular",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/biggie-smalls",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/method-man",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/abs",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/min-max",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/sign",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/is",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/declarations",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/returns",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/dog-years",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/physics",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/collections",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/data/block-chain",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-forever",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-reverso",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-how-many",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-who",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-vip",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/tell-it-cypher",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/personal-shopper",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/happiness-manager",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/friend-support",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/uninvited",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/node/gatecrashers",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/pyramid",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/chunky",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/get",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/nasa",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/triangle",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/molecules-cells",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/repeat",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/elementary",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/index-of",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/slicer",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/keep-cut",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/cut-corners",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/reverser",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/unbreakable",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/flat",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/find-expression",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/loop/sums",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/invert",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/pick-omit",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/fusion",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/manipulate-values",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/manipulate-keys",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/manipulate-entries",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/curry-entries",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/deep-copy",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/replica",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/pronoun",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/neuron",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/object/flagger",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/using-map",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/using-filter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/using-reduce",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/long-words",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/for-each",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/mapper",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/filter",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/reduce",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/quantifiers",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/sweet-curry",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/has-city",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/flow",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/call-me-maybe/currify",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/debounce",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/throttle",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/interpolation",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/keep-trying-or-giveup",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/get-json",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/is-winner",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/gougle-search",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/all",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/series",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/async/race",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/get-them-all",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/build-brick-and-break",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/harder-bigger-bolder-stronger",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/pimp-my-style",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/fifty-shades-of-cold",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/keycodes-symphony",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/mouse-trap",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/pick-and-click",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/gossip-grid",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/dom/where-do-we-go",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/its-a-match",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/letter-space-number",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/vowel-dots",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/same-amount",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/ion-out",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/greedy-url",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/group-price",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/find/valid-ip",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/sunny-sunday",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/dr-strange",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/date-is",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/get-some-time",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/rebecca-black",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/match-cron",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/count-leap-years",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/day-of-the-year",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-js/time/unicode-technical-report-35",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions/retrieve-block-date",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions/retrieve-transaction-in-out",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions/retrieve-transaction-value",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions/send-eth-transaction",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions/send-transaction",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/transactions/send-transaction-to-peer",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/increment",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/hash-file",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/semi-brute",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/signer",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/generate-address",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/basic-wallet",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/crypto/hash-160",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/named-festival",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/time-and-place",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/lineup",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/organized-festival",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/buy-tickets",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/fun-and-profit",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/artists-do-work",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/festival-smart-contract/time-is-money",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/local-node",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/get-account",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/send-ether",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/send-hash",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/check-document",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/register",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/anchoring/register-with-events",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/connect-interface/local-node-info",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/connect-interface/random-wallet",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/connect-interface/donation",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/connect-interface/connect-to-metamask",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/connect-interface/read-secret",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens/minimal-token",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens/token-sale",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens/usable-token",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens/basic-swap",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens/transfers-history",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-blockchain/simple-tokens/eventful-token",
+      "updatedAt": "2023-02-17T15:33:13.669258+00:00"
+    },
+    {
+      "path": "/bahrain/bh-onboarding/administration/pro-pic",
+      "updatedAt": "2023-04-04T11:53:14.343124+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/max",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/strrev",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/firstrune",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/recursivefactorial",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/printparams",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/splitwhitespaces",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/join",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat/searchreplace",
+      "updatedAt": "2023-06-18T11:15:50.475577+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/fifthandskip",
+      "updatedAt": "2024-03-16T16:30:07.137856+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/union",
+      "updatedAt": "2024-07-21T11:43:51.648129+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/brainfuck",
+      "updatedAt": "2024-07-21T11:46:29.132863+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/brackets",
+      "updatedAt": "2024-07-21T11:47:16.862134+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-revconcatalternate",
+      "updatedAt": "2024-07-23T21:22:45.240771+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printreversealphabet",
+      "updatedAt": "2024-07-23T21:23:02.624133+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-swapbits",
+      "updatedAt": "2024-07-23T21:23:32.808555+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-max",
+      "updatedAt": "2024-07-23T21:23:35.477449+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/deep-in-system",
+      "updatedAt": "2024-09-25T10:16:21.141279+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/a-table",
+      "updatedAt": "2024-09-25T10:49:04.462162+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-repeat",
+      "updatedAt": "2023-11-19T06:42:58.072502+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/saveandmiss",
+      "updatedAt": "2024-06-26T12:38:35.235371+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest",
+      "updatedAt": "2024-07-21T11:35:51.833419+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/wdmatch",
+      "updatedAt": "2024-07-21T11:44:38.639002+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlyf",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/only1",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlyb",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/rectperimeter",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/countcharacter",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/checknumber",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/countalpha",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/printif",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/printifnot",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-strlen",
+      "updatedAt": "2024-07-23T21:22:29.973583+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/retainfirsthalf",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/digitlen",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/cameltosnakecase",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/gcd",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/hashcode",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/lastword",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-split",
+      "updatedAt": "2024-07-23T21:22:37.143904+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/swapbits",
+      "updatedAt": "2023-09-14T09:49:26.113667+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/quest-08/cat",
+      "updatedAt": "2023-09-27T08:48:25.026977+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/max",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/firstrune",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/strrev",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/recursivefactorial",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/printparams",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/splitwhitespaces",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/join",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest/checkpoint-repeat/searchreplace",
+      "updatedAt": "2023-10-01T12:32:31.437128+00:00"
+    },
+    {
+      "path": "/bahrain/bh-retest",
+      "updatedAt": "2023-10-03T08:44:19.441045+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/max",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/firstrune",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/strrev",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/recursivefactorial",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/printparams",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/splitwhitespaces",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/join",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/retest/searchreplace",
+      "updatedAt": "2023-12-11T10:19:34.539452+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-printrevcomb",
+      "updatedAt": "2024-02-06T23:49:48.23862+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-displayalrevm",
+      "updatedAt": "2024-02-06T23:49:50.938695+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-hello",
+      "updatedAt": "2024-02-06T23:49:53.646309+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-countdown",
+      "updatedAt": "2024-02-06T23:49:54.289179+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-displayalpham",
+      "updatedAt": "2024-02-06T23:49:55.904793+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-24-01-2024-displayz",
+      "updatedAt": "2024-02-06T23:49:58.449698+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/fishandchips",
+      "updatedAt": "2024-02-06T23:49:58.5267+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/concatslice",
+      "updatedAt": "2024-02-06T23:49:58.5267+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-repeatalpha",
+      "updatedAt": "2024-02-06T23:50:12.459662+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-alphamirror",
+      "updatedAt": "2024-02-06T23:50:15.011+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-displaya",
+      "updatedAt": "2024-02-06T23:50:19.186581+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-displaylastparam",
+      "updatedAt": "2024-02-06T23:50:21.036345+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-switchcase",
+      "updatedAt": "2024-02-06T23:50:22.620603+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-displayz",
+      "updatedAt": "2024-02-06T23:50:23.611787+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-displayfirstparam",
+      "updatedAt": "2024-02-06T23:50:24.982754+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-hello",
+      "updatedAt": "2024-02-06T23:50:24.988894+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-nrune",
+      "updatedAt": "2024-02-06T23:50:25.890202+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-firstword",
+      "updatedAt": "2024-02-06T23:50:25.889855+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-rot13",
+      "updatedAt": "2024-02-06T23:50:30.900435+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-searchreplace",
+      "updatedAt": "2024-02-06T23:50:57.569109+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-printbits",
+      "updatedAt": "2024-02-06T23:50:58.305342+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-gcd",
+      "updatedAt": "2024-02-06T23:50:58.30568+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-hiddenp",
+      "updatedAt": "2024-02-06T23:50:59.202909+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-searchreplace",
+      "updatedAt": "2024-02-06T23:50:26.88325+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-rot14",
+      "updatedAt": "2024-02-06T23:50:55.419517+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-ispowerof2",
+      "updatedAt": "2024-02-06T23:50:58.866138+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-cleanstr",
+      "updatedAt": "2024-02-06T23:50:58.866488+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/piglatin",
+      "updatedAt": "2024-07-21T11:48:00.521723+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/printnbrbase",
+      "updatedAt": "2024-07-21T11:48:56.615067+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/firstword",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/repeatalpha",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/findprevprime",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/thirdtimeisacharm",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/printrevcomb",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/weareunique",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/itoa",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/iscapitalized",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/zipstring",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/concatalternate",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/reversestrcap",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/inter",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/union",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/chunk",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/addprimesum",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/fprime",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/canjump",
+      "updatedAt": "2024-07-23T21:21:08.675095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/onlyf",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-rpncalc",
+      "updatedAt": "2024-07-23T21:22:38.422555+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/only1",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/onlyb",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/rectperimeter",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/printif",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/printifnot",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/retainfirsthalf",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/cameltosnakecase",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/gcd",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/hashcode",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/lastword",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/firstword",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/repeatalpha",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/searchreplace",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/zipstring",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/expandstr",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/cleanstr",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/concatalternate",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/hiddenp",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/chunk",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/addprimesum",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/canjump",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/revwstr",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/findpairs",
+      "updatedAt": "2024-07-23T21:22:36.096272+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/onlyf",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/only1",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/onlyb",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/rectperimeter",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/printif",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/printifnot",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/retainfirsthalf",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/cameltosnakecase",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/gcd",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/hashcode",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/lastword",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/firstword",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/repeatalpha",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/searchreplace",
+      "updatedAt": "2024-07-23T21:22:51.494609+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/only1",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/onlyb",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/rectperimeter",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/checknumber",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/printmemory",
+      "updatedAt": "2024-10-02T17:04:44.25504+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/searchreplace",
+      "updatedAt": "2025-01-15T10:56:13.919037+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/expandstr",
+      "updatedAt": "2025-01-15T10:59:01.417623+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/cleanstr",
+      "updatedAt": "2025-01-15T10:59:32.716053+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/wdmatch",
+      "updatedAt": "2025-01-15T11:00:13.373037+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-printstr",
+      "updatedAt": "2024-02-06T23:50:26.960585+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-rot14",
+      "updatedAt": "2024-07-23T21:22:31.247928+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-swap",
+      "updatedAt": "2024-07-23T21:22:31.481684+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-atoibase",
+      "updatedAt": "2024-07-23T21:22:51.628811+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-grouping",
+      "updatedAt": "2024-07-23T21:23:01.006007+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-swap",
+      "updatedAt": "2024-07-23T21:23:01.013592+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/countalpha",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/printif",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/printifnot",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/retainfirsthalf",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/digitlen",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/fishandchips",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/cameltosnakecase",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/hashcode",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/lastword",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/firstword",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/repeatalpha",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/thirdtimeisacharm",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/printrevcomb",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/weareunique",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/iscapitalized",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/fromto",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/zipstring",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/expandstr",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/cleanstr",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/concatalternate",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/reversestrcap",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/concatslice",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/saveandmiss",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/notdecimal",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/slice",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/fifthandskip",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/revconcatalternate",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/wordflip",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/findpairs",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/romannumbers",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/rpncalc",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/grouping",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/brainfuck",
+      "updatedAt": "2024-07-23T21:23:11.064627+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-hello",
+      "updatedAt": "2024-07-23T21:23:29.062718+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-ispowerof2",
+      "updatedAt": "2024-07-23T21:23:39.291968+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-doop",
+      "updatedAt": "2024-07-23T21:23:42.519108+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-countdown",
+      "updatedAt": "2024-07-23T21:23:42.934052+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-printdigits",
+      "updatedAt": "2024-07-23T21:23:42.957363+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-lastrune",
+      "updatedAt": "2024-02-06T23:50:29.833393+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-compare",
+      "updatedAt": "2024-02-06T23:50:50.714188+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-addprimesum",
+      "updatedAt": "2024-02-06T23:50:50.714142+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-paramcount",
+      "updatedAt": "2024-02-06T23:50:59.202235+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-slice",
+      "updatedAt": "2024-07-23T21:22:31.489866+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-capitalize",
+      "updatedAt": "2024-07-23T21:22:45.701565+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-splitwhitespaces",
+      "updatedAt": "2024-07-23T21:22:48.571606+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-brackets",
+      "updatedAt": "2024-07-23T21:22:50.07778+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-atoi",
+      "updatedAt": "2024-07-23T21:23:10.78887+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-strlen",
+      "updatedAt": "2024-07-23T21:23:41.480719+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-atoibase",
+      "updatedAt": "2024-07-23T21:23:42.758022+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-displayalrevm",
+      "updatedAt": "2024-07-23T21:23:42.939624+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-alphamirror",
+      "updatedAt": "2024-07-23T21:23:42.951416+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-printbits",
+      "updatedAt": "2024-07-23T21:23:42.975713+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/jart",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/jaikin",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/jraffic",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/standard-lib",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/todo-list",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/time-tracker",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/date-formatter",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/area-calculator",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/factorial-master",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/flexisort",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/double-linked-list",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/circular-linked-list",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/single-linked-list",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/harmonious-fusion",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/distinct-substring-length",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/is-anagram",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/spiral-matrix",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/maximal-square",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java/steady-sequence",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/day-of-week",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/monthly-period",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/age-finder",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/html-validator",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/url-parsing",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/config-protector",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/singleton-blueprint",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/builder-blueprint",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/factory-blueprint",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/top-frequents",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/longest-common-prefix",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/first-unique",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-strrev",
+      "updatedAt": "2024-02-06T23:50:29.833825+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-max",
+      "updatedAt": "2024-02-06T23:50:47.721021+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-reverserange",
+      "updatedAt": "2024-02-06T23:50:47.721371+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-range",
+      "updatedAt": "2024-02-06T23:50:57.943747+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-fifthandskip",
+      "updatedAt": "2024-07-23T21:22:36.953565+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printdigits",
+      "updatedAt": "2024-07-23T21:22:46.454535+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-strlen",
+      "updatedAt": "2024-07-23T21:23:10.788455+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-rot13",
+      "updatedAt": "2024-07-23T21:23:32.802691+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-printhex",
+      "updatedAt": "2024-07-23T21:23:41.8169+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-tabmult",
+      "updatedAt": "2024-07-23T21:23:42.520388+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-paramcount",
+      "updatedAt": "2024-07-23T21:23:42.969329+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-split",
+      "updatedAt": "2024-07-23T21:23:42.983805+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-listsize",
+      "updatedAt": "2024-07-23T21:23:43.07289+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/valid-sudoku",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/armstrong-number",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java/perfect-number",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/hello-world",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/int-operations",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/float-operations",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/is-even",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/chifoumi",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/string-length",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/string-concat",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/string-contains",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/string-replace",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/clean-extract",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/is-palindrome",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-intro/compute-array",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/do-op",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/sort-args",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/cat",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/cat-in-file",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/capitalize",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/file-manager",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/io-args/file-search",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-properties",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-constructors",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-getters",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-static",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-utils",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-inheritance",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-override",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-planet",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-galaxy",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop1/star-mass",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-utils",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-character",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-monster",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-interface",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-sorcerer",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-templar",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-abstract",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-weapon",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-exception",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/oop2/adventure-catch",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/list-contains",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/list-equals",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/list-search-index",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/sort-list",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/map-inventory",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/map-equals",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-lastword",
+      "updatedAt": "2024-02-06T23:50:30.081321+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-expandstr",
+      "updatedAt": "2024-02-06T23:50:57.24204+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-displayalpham",
+      "updatedAt": "2024-02-06T23:50:57.241699+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-rostring",
+      "updatedAt": "2024-07-23T21:22:37.39825+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-atoibase",
+      "updatedAt": "2024-07-23T21:22:37.805863+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-itoabase",
+      "updatedAt": "2024-07-23T21:22:38.161175+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-rpncalc",
+      "updatedAt": "2024-07-23T21:22:48.576526+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printalphabet",
+      "updatedAt": "2024-07-23T21:23:01.689844+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-displayalpham",
+      "updatedAt": "2024-07-23T21:23:29.865811+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-compare",
+      "updatedAt": "2024-07-23T21:23:42.536872+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-displaylastparam",
+      "updatedAt": "2024-07-23T21:23:42.757654+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-sortwordarr",
+      "updatedAt": "2024-07-23T21:23:42.963931+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-lastrune",
+      "updatedAt": "2024-07-23T21:23:43.00242+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/set-operations",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/set-equal",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/stream-collect",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/stream-map",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/stream-reduce",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/keep-the-change",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/wedding",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/java-structures/wedding-complex",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/standard-lib/parse-date",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/standard-lib/format-date",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/standard-lib/regex-match",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/standard-lib/regex-replace",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/standard-lib/difference-between-date",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns/singleton",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns/factory",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns/builder",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns/decorator",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns/strategy",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/design-patterns/observer",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/goodbye-mars",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/system-logger",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/universal-greeting",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/unit-converter",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/multiplication-table",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/average-calc",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/strlen",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/count-char",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/digitlen",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/sort-array",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/reverse-array",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/rotate-array",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/almost-palindrome",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/factorial",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java/next-prime",
+      "updatedAt": "2024-09-24T08:11:03.481675+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-24-01-2024-firstrune",
+      "updatedAt": "2024-02-06T23:50:30.90076+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/onlya",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/onlyz",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/fishandchips",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/countcharacter",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/countalpha",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/checknumber",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/digitlen",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/fromto",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/itoa",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/weareunique",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/printrevcomb",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/iscapitalized",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/findprevprime",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/thirdtimeisacharm",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/saveandmiss",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/concatslice",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/fprime",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/reversestrcap",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/wdmatch",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/fifthandskip",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/slice",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/revconcatalternate",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/notdecimal",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/wordflip",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/rostring",
+      "updatedAt": "2024-02-06T23:50:30.949285+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-24-01-2024-foreach",
+      "updatedAt": "2024-02-06T23:50:47.144928+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/onlya",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/onlyz",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/fishandchips",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/countcharacter",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/countalpha",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/checknumber",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/digitlen",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/weareunique",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/printrevcomb",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/iscapitalized",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/findprevprime",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/thirdtimeisacharm",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/saveandmiss",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/concatslice",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/union",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/inter",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/fifthandskip",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/slice",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/revconcatalternate",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/notdecimal",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/wordflip",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/rostring",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/itoabase",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printreversealphabet",
+      "updatedAt": "2024-07-23T21:22:38.051095+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printalphabet",
+      "updatedAt": "2024-07-23T21:22:42.083847+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-split",
+      "updatedAt": "2024-07-23T21:22:49.300219+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printnbrbase",
+      "updatedAt": "2024-07-23T21:22:49.875372+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-split",
+      "updatedAt": "2024-07-23T21:22:53.135944+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printnbrbase",
+      "updatedAt": "2024-07-23T21:23:00.704742+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printcomb",
+      "updatedAt": "2024-07-23T21:23:06.234068+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/piglatin",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/options",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/rpncalc",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/brackets",
+      "updatedAt": "2024-02-06T23:50:59.239776+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/onlya",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/onlyz",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/fishandchips",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/countcharacter",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/countalpha",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/checknumber",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/digitlen",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/fromto",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/weareunique",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/printrevcomb",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/iscapitalized",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/thirdtimeisacharm",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/saveandmiss",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/concatslice",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/reversestrcap",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/wdmatch",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/fifthandskip",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/revconcatalternate",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/notdecimal",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/wordflip",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint/brainfuck",
+      "updatedAt": "2024-02-06T23:51:00.316343+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printcomb",
+      "updatedAt": "2024-07-23T21:22:49.137766+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-itoabase",
+      "updatedAt": "2024-07-23T21:22:50.271641+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-grouping",
+      "updatedAt": "2024-07-23T21:23:01.786674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-brainfuck",
+      "updatedAt": "2024-07-23T21:23:01.820083+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-displayfirstparam",
+      "updatedAt": "2024-07-23T21:23:24.799369+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-firstrune",
+      "updatedAt": "2024-07-23T21:23:28.368459+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-reversebits",
+      "updatedAt": "2024-07-23T21:23:36.371866+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/lets-play",
+      "updatedAt": "2024-09-25T09:37:06.272316+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/angul-it",
+      "updatedAt": "2024-09-25T09:38:52.416172+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/buy-01",
+      "updatedAt": "2024-09-25T09:40:26.673075+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/mr-jenk",
+      "updatedAt": "2024-09-25T09:42:42.579661+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/safe-zone",
+      "updatedAt": "2024-09-25T09:48:31.965506+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/buy-02",
+      "updatedAt": "2024-09-25T09:49:25.043433+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/nexus",
+      "updatedAt": "2024-09-25T09:54:12.712868+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/travel-plan",
+      "updatedAt": "2024-09-25T10:03:24.754943+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/neo-4-flix",
+      "updatedAt": "2024-09-25T10:04:14.715906+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/deep-in-net",
+      "updatedAt": "2024-09-25T10:15:59.687992+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/crud-master",
+      "updatedAt": "2024-09-25T10:18:53.412834+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/play-with-containers",
+      "updatedAt": "2024-09-25T10:19:43.374683+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/orchestrator",
+      "updatedAt": "2024-09-25T10:20:40.78354+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/cloud-design",
+      "updatedAt": "2024-09-25T10:21:46.914189+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/code-keeper",
+      "updatedAt": "2024-09-25T10:22:04.808445+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/athlete-keep-hydrated",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/going-on-holidays",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/teenage-drama",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/the-olympics",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/music-on",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/sunday-night-movie",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ux/seamstress",
+      "updatedAt": "2024-09-25T10:37:29.884674+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ui",
+      "updatedAt": "2024-09-25T10:48:32.614231+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ui/colors-and-moodboard",
+      "updatedAt": "2024-09-25T10:48:32.614231+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ui/atomic-design",
+      "updatedAt": "2024-09-25T10:48:32.614231+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ui/rules",
+      "updatedAt": "2024-09-25T10:48:32.614231+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ui/building-an-interface",
+      "updatedAt": "2024-09-25T10:48:32.614231+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/piscine-ui/heuristics",
+      "updatedAt": "2024-09-25T10:48:32.614231+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/get-a-room",
+      "updatedAt": "2024-09-25T10:49:47.922962+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/lets-do-some-sports",
+      "updatedAt": "2024-09-25T10:52:24.336323+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/lets-fair-trade",
+      "updatedAt": "2024-09-25T10:52:40.67819+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/onlya",
+      "updatedAt": "2024-10-27T08:35:12.430519+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/rectperimeter",
+      "updatedAt": "2024-10-27T08:37:49.322591+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/findprevprime",
+      "updatedAt": "2024-10-27T08:59:58.653015+00:00"
+    },
+    {
+      "path": "/bahrain/bh-module/lets-travel",
+      "updatedAt": "2024-11-02T14:56:23.981158+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/re-test/searchreplace",
+      "updatedAt": "2025-02-09T08:47:45.959456+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/robots-harmony",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/motion-magic",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/the-skeleton",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/call-it",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/select-then-style",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/embedded-organs",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/class-it",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/glance-on-power",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/shape-crafting/first-move",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/star-forge",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/declare-everything",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/play-with-variables",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/the-smooth-operator",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/objects-around",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/transform-objects",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/listed",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/good-recipe",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/only-if",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/first-function",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/building-power/i-win-arguments",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/motion-magic/first-wink",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/motion-magic/first-hello",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/motion-magic/colorful-arms",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/ai-forge/motion-magic/colorful-legs",
+      "updatedAt": "2025-07-09T09:23:01.805403+00:00"
+    },
+    {
+      "path": "/bahrain/bh-piscine/final-checkpoint",
+      "updatedAt": "2025-07-13T07:42:40.769479+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetAllPaths {
+      path {
+        path
+        updatedAt
+      }
+    }
+  

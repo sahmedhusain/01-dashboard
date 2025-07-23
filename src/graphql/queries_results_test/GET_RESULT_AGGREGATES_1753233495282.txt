@@ -1,0 +1,50 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_RESULT_AGGREGATES
+Timestamp: 2025-07-23T01:18:15.282Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: result_aggregate
+Record Count: 1
+Data Summary: result_aggregate: Aggregate({"count":795,"avg":{"grade":0.3708705100657019},"max":{"grade":2.88},"min":{"grade":0}})
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "result_aggregate": {
+    "aggregate": {
+      "count": 795,
+      "avg": {
+        "grade": 0.3708705100657019
+      },
+      "max": {
+        "grade": 2.88
+      },
+      "min": {
+        "grade": 0
+      }
+    }
+  }
+}
+==================================================
+
+Query:
+
+    query GetResultAggregates {
+      result_aggregate {
+        aggregate {
+          count
+          avg {
+            grade
+          }
+          max {
+            grade
+          }
+          min {
+            grade
+          }
+        }
+      }
+    }
+  

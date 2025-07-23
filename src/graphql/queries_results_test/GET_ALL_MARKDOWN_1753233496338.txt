@@ -1,0 +1,84 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_MARKDOWN
+Timestamp: 2025-07-23T01:18:16.338Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: markdown
+Record Count: 9
+Data Summary: markdown: Array[9]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "markdown": [
+    {
+      "name": "group presence",
+      "content": "###### Is the entire group present for the evaluation? (For campuses allowing remote evaluation, are the absent members present remotely?)",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "members contribution",
+      "content": "###### Could each group member clearly explain their contribution to the project?",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "members understanding",
+      "content": "###### Does each group member have a clear understanding of the tasks performed to solve the subject and how they were accomplished?",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "tasks distribution",
+      "content": "###### Did they manage and delegate tasks among each other efficiently / equally?)",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "good practices",
+      "content": "###### Did the team's code respect the good practices?",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "unmentioned reason",
+      "content": "###### If you find any reason not mentioned in the audit for the project to be failed, please respond `No`.",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "skills acquisition",
+      "content": "###### +Does each member have an idea of how to apply the skills and knowledge gained from this project in future endeavors?",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "unit tests",
+      "content": "###### +Are there unit tests in place for critical parts of the application?",
+      "createdAt": "2024-08-08T20:51:44.046151+00:00",
+      "updatedAt": "2024-08-08T20:51:44.046151+00:00"
+    },
+    {
+      "name": "privacy policy",
+      "content": "# Privacy policy\n\nLooks like you caught us offguard ! This page is still in the works and will be available soon 🚧",
+      "createdAt": "2025-04-02T15:50:01.91523+00:00",
+      "updatedAt": "2025-04-02T15:50:01.91523+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetAllMarkdown {
+      markdown {
+        name
+        content
+        createdAt
+        updatedAt
+      }
+    }
+  

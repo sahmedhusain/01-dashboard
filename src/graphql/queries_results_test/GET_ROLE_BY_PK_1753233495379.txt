@@ -1,0 +1,31 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ROLE_BY_PK
+Timestamp: 2025-07-23T01:18:15.379Z
+Status: SUCCESS
+Variables: {"id":1599}
+
+Data Keys: role_by_pk
+Record Count: 0
+Data Summary: role_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "role_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetRoleByPk($id: Int!) {
+      role_by_pk(id: $id) {
+        id
+        slug
+        name
+        description
+        createdAt
+        updatedAt
+      }
+    }
+  

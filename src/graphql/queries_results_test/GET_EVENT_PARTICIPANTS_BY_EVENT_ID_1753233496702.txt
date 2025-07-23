@@ -1,0 +1,1977 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_EVENT_PARTICIPANTS_BY_EVENT_ID
+Timestamp: 2025-07-23T01:18:16.701Z
+Status: SUCCESS
+Variables: {"eventId":1}
+
+Data Keys: event_user
+Record Count: 278
+Data Summary: event_user: Array[278]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "event_user": [
+    {
+      "id": 1,
+      "userId": 818,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 2,
+      "userId": 333,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 3,
+      "userId": 341,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 4,
+      "userId": 136,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 5,
+      "userId": 139,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 6,
+      "userId": 239,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 7,
+      "userId": 156,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 8,
+      "userId": 78,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 9,
+      "userId": 688,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 10,
+      "userId": 108,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 11,
+      "userId": 827,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 12,
+      "userId": 873,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 13,
+      "userId": 917,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 14,
+      "userId": 24,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 15,
+      "userId": 70,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 16,
+      "userId": 266,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 17,
+      "userId": 161,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 18,
+      "userId": 213,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 19,
+      "userId": 267,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 20,
+      "userId": 252,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 21,
+      "userId": 137,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 22,
+      "userId": 281,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 23,
+      "userId": 273,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 24,
+      "userId": 274,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 25,
+      "userId": 289,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 26,
+      "userId": 275,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 27,
+      "userId": 270,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 28,
+      "userId": 305,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 29,
+      "userId": 339,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 30,
+      "userId": 185,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 31,
+      "userId": 370,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 32,
+      "userId": 334,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 33,
+      "userId": 198,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 34,
+      "userId": 406,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 35,
+      "userId": 384,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 36,
+      "userId": 456,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 37,
+      "userId": 651,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 38,
+      "userId": 564,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 39,
+      "userId": 679,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 40,
+      "userId": 471,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 41,
+      "userId": 711,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 42,
+      "userId": 633,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 43,
+      "userId": 767,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 44,
+      "userId": 324,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 45,
+      "userId": 172,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 46,
+      "userId": 332,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 47,
+      "userId": 42,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 48,
+      "userId": 287,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 49,
+      "userId": 175,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 50,
+      "userId": 206,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 51,
+      "userId": 302,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 52,
+      "userId": 314,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 53,
+      "userId": 196,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 54,
+      "userId": 238,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 55,
+      "userId": 107,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 56,
+      "userId": 64,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 57,
+      "userId": 155,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 58,
+      "userId": 203,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 59,
+      "userId": 490,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 60,
+      "userId": 100,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 61,
+      "userId": 777,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 62,
+      "userId": 182,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 63,
+      "userId": 376,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 64,
+      "userId": 539,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 65,
+      "userId": 731,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 66,
+      "userId": 839,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 67,
+      "userId": 421,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 68,
+      "userId": 667,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 69,
+      "userId": 242,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 70,
+      "userId": 858,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 71,
+      "userId": 718,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 72,
+      "userId": 751,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 73,
+      "userId": 766,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 74,
+      "userId": 573,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 75,
+      "userId": 652,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 76,
+      "userId": 82,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 77,
+      "userId": 347,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 78,
+      "userId": 635,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 79,
+      "userId": 319,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 80,
+      "userId": 520,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 81,
+      "userId": 531,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 82,
+      "userId": 424,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 83,
+      "userId": 666,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 84,
+      "userId": 164,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 85,
+      "userId": 441,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 86,
+      "userId": 268,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 87,
+      "userId": 280,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 88,
+      "userId": 279,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 89,
+      "userId": 397,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 90,
+      "userId": 207,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 91,
+      "userId": 265,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 92,
+      "userId": 188,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 93,
+      "userId": 69,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 94,
+      "userId": 732,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 95,
+      "userId": 369,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 96,
+      "userId": 399,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 97,
+      "userId": 337,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 98,
+      "userId": 184,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 99,
+      "userId": 465,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 100,
+      "userId": 348,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 101,
+      "userId": 380,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 102,
+      "userId": 80,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 103,
+      "userId": 655,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 104,
+      "userId": 104,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 105,
+      "userId": 200,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 106,
+      "userId": 228,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 107,
+      "userId": 373,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 108,
+      "userId": 211,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 109,
+      "userId": 734,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 110,
+      "userId": 329,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 111,
+      "userId": 776,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 112,
+      "userId": 472,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 113,
+      "userId": 810,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 114,
+      "userId": 603,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 115,
+      "userId": 677,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 116,
+      "userId": 548,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 117,
+      "userId": 448,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 118,
+      "userId": 788,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 119,
+      "userId": 791,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 120,
+      "userId": 797,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 121,
+      "userId": 712,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 122,
+      "userId": 623,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 123,
+      "userId": 664,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 124,
+      "userId": 461,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 125,
+      "userId": 468,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 126,
+      "userId": 637,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 127,
+      "userId": 420,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 128,
+      "userId": 643,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 129,
+      "userId": 419,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 130,
+      "userId": 437,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 131,
+      "userId": 690,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 132,
+      "userId": 784,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 133,
+      "userId": 594,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 134,
+      "userId": 782,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 135,
+      "userId": 416,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 136,
+      "userId": 815,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 137,
+      "userId": 442,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 138,
+      "userId": 304,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 139,
+      "userId": 570,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 140,
+      "userId": 413,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 141,
+      "userId": 773,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 142,
+      "userId": 372,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 143,
+      "userId": 495,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 144,
+      "userId": 114,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 145,
+      "userId": 390,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 146,
+      "userId": 476,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 147,
+      "userId": 297,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 148,
+      "userId": 470,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 149,
+      "userId": 500,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 150,
+      "userId": 686,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 151,
+      "userId": 728,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 152,
+      "userId": 429,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 153,
+      "userId": 243,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 154,
+      "userId": 431,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 155,
+      "userId": 112,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 156,
+      "userId": 19,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 157,
+      "userId": 141,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 158,
+      "userId": 863,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 159,
+      "userId": 477,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 160,
+      "userId": 656,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 161,
+      "userId": 804,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 162,
+      "userId": 582,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 163,
+      "userId": 918,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 164,
+      "userId": 632,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 165,
+      "userId": 443,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 166,
+      "userId": 959,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 167,
+      "userId": 958,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 168,
+      "userId": 440,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 169,
+      "userId": 932,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 170,
+      "userId": 953,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 171,
+      "userId": 847,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 172,
+      "userId": 902,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 173,
+      "userId": 890,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 174,
+      "userId": 792,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 175,
+      "userId": 361,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 176,
+      "userId": 269,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 177,
+      "userId": 833,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 178,
+      "userId": 903,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 179,
+      "userId": 814,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 180,
+      "userId": 258,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 181,
+      "userId": 604,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 182,
+      "userId": 841,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 183,
+      "userId": 864,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 184,
+      "userId": 943,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 185,
+      "userId": 920,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 186,
+      "userId": 933,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 187,
+      "userId": 535,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 188,
+      "userId": 367,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 189,
+      "userId": 359,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 190,
+      "userId": 210,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 191,
+      "userId": 435,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 192,
+      "userId": 754,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 193,
+      "userId": 663,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 194,
+      "userId": 879,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 195,
+      "userId": 223,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 196,
+      "userId": 68,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 197,
+      "userId": 436,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 198,
+      "userId": 336,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 199,
+      "userId": 262,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 200,
+      "userId": 318,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 201,
+      "userId": 928,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 202,
+      "userId": 951,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 203,
+      "userId": 817,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 204,
+      "userId": 704,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 205,
+      "userId": 874,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 206,
+      "userId": 328,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 207,
+      "userId": 430,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 208,
+      "userId": 961,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 209,
+      "userId": 53,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 210,
+      "userId": 54,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 211,
+      "userId": 940,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 212,
+      "userId": 972,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 213,
+      "userId": 323,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 214,
+      "userId": 368,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 215,
+      "userId": 671,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 216,
+      "userId": 916,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 217,
+      "userId": 489,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 218,
+      "userId": 844,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 219,
+      "userId": 285,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 220,
+      "userId": 765,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 221,
+      "userId": 189,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 222,
+      "userId": 444,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 223,
+      "userId": 584,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 224,
+      "userId": 157,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 225,
+      "userId": 764,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 226,
+      "userId": 1005,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 227,
+      "userId": 995,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 228,
+      "userId": 824,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 229,
+      "userId": 926,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 230,
+      "userId": 16,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 231,
+      "userId": 145,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 232,
+      "userId": 999,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 233,
+      "userId": 303,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 234,
+      "userId": 130,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 235,
+      "userId": 988,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 236,
+      "userId": 843,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 237,
+      "userId": 899,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 238,
+      "userId": 964,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 239,
+      "userId": 204,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 240,
+      "userId": 263,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 241,
+      "userId": 994,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 242,
+      "userId": 807,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 243,
+      "userId": 569,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 244,
+      "userId": 378,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 245,
+      "userId": 683,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 246,
+      "userId": 464,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 247,
+      "userId": 911,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 248,
+      "userId": 802,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 249,
+      "userId": 482,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 250,
+      "userId": 998,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 251,
+      "userId": 990,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 252,
+      "userId": 195,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 253,
+      "userId": 808,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 254,
+      "userId": 675,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 255,
+      "userId": 438,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 256,
+      "userId": 989,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 257,
+      "userId": 981,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 258,
+      "userId": 309,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 259,
+      "userId": 563,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 260,
+      "userId": 822,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 261,
+      "userId": 246,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 262,
+      "userId": 752,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 263,
+      "userId": 457,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 264,
+      "userId": 659,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 265,
+      "userId": 1017,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 266,
+      "userId": 939,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 267,
+      "userId": 845,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 268,
+      "userId": 946,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 269,
+      "userId": 148,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 270,
+      "userId": 929,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 271,
+      "userId": 199,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 272,
+      "userId": 35,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 273,
+      "userId": 95,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 274,
+      "userId": 914,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 275,
+      "userId": 395,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 276,
+      "userId": 1020,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 277,
+      "userId": 58,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    },
+    {
+      "id": 278,
+      "userId": 177,
+      "eventId": 1,
+      "level": 0,
+      "createdAt": "2023-02-21T19:05:00.037381+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetEventParticipantsByEventId($eventId: Int!) {
+      event_user(where: {eventId: {_eq: $eventId}}) {
+        id
+        userId
+        eventId
+        level
+        createdAt
+      }
+    }
+  

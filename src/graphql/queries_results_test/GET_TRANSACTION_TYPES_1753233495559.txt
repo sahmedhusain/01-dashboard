@@ -1,0 +1,168 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_TRANSACTION_TYPES
+Timestamp: 2025-07-23T01:18:15.559Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: transaction_type
+Record Count: 47
+Data Summary: transaction_type: Array[47]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "transaction_type": [
+    {
+      "type": "xp"
+    },
+    {
+      "type": "up"
+    },
+    {
+      "type": "down"
+    },
+    {
+      "type": "skill_prog"
+    },
+    {
+      "type": "skill_algo"
+    },
+    {
+      "type": "skill_sys-admin"
+    },
+    {
+      "type": "skill_front-end"
+    },
+    {
+      "type": "skill_back-end"
+    },
+    {
+      "type": "skill_stats"
+    },
+    {
+      "type": "skill_ai"
+    },
+    {
+      "type": "skill_game"
+    },
+    {
+      "type": "skill_blockchain"
+    },
+    {
+      "type": "skill_mobile"
+    },
+    {
+      "type": "skill_tcp"
+    },
+    {
+      "type": "skill_go"
+    },
+    {
+      "type": "skill_js"
+    },
+    {
+      "type": "skill_rust"
+    },
+    {
+      "type": "skill_html"
+    },
+    {
+      "type": "skill_css"
+    },
+    {
+      "type": "skill_unix"
+    },
+    {
+      "type": "skill_docker"
+    },
+    {
+      "type": "skill_sql"
+    },
+    {
+      "type": "skill_c"
+    },
+    {
+      "type": "skill_sh"
+    },
+    {
+      "type": "skill_php"
+    },
+    {
+      "type": "skill_python"
+    },
+    {
+      "type": "skill_ruby"
+    },
+    {
+      "type": "skill_java"
+    },
+    {
+      "type": "skill_c-sharp"
+    },
+    {
+      "type": "skill_c-pp"
+    },
+    {
+      "type": "skill_graphql"
+    },
+    {
+      "type": "skill_rails"
+    },
+    {
+      "type": "skill_laravel"
+    },
+    {
+      "type": "skill_django"
+    },
+    {
+      "type": "skill_react"
+    },
+    {
+      "type": "skill_dotnet"
+    },
+    {
+      "type": "skill_electron"
+    },
+    {
+      "type": "level"
+    },
+    {
+      "type": "skill_cybersecurity"
+    },
+    {
+      "type": "skill_ux"
+    },
+    {
+      "type": "skill_cloud"
+    },
+    {
+      "type": "skill_automation"
+    },
+    {
+      "type": "skill_ci"
+    },
+    {
+      "type": "skill_testing"
+    },
+    {
+      "type": "skill_no-sql"
+    },
+    {
+      "type": "skill_git"
+    },
+    {
+      "type": "skill_curriculum-objectives-completed"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetTransactionTypes {
+      transaction_type {
+        type
+      }
+    }
+  

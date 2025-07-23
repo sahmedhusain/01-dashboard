@@ -1,0 +1,48 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_ROLES
+Timestamp: 2025-07-23T01:18:15.331Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: role
+Record Count: 2
+Data Summary: role: Array[2]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "role": [
+    {
+      "id": 1,
+      "slug": "admin",
+      "name": "Admin",
+      "description": "Admin",
+      "createdAt": "2019-02-26T17:59:35.253297+00:00",
+      "updatedAt": "2019-04-02T18:13:48.634417+00:00"
+    },
+    {
+      "id": 6,
+      "slug": "campus_admin_bahrain",
+      "name": "Admin Campus Bahrain",
+      "description": "Admin for the campus of Bahrain",
+      "createdAt": "2022-11-10T10:04:52.198144+00:00",
+      "updatedAt": "2022-11-10T10:04:52.198144+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetAllRoles {
+      role {
+        id
+        slug
+        name
+        description
+        createdAt
+        updatedAt
+      }
+    }
+  

@@ -1,0 +1,32 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_GROUP_USER_AGGREGATES
+Timestamp: 2025-07-23T01:18:16.138Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: group_user_aggregate
+Record Count: 1
+Data Summary: group_user_aggregate: Aggregate({"count":10673})
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "group_user_aggregate": {
+    "aggregate": {
+      "count": 10673
+    }
+  }
+}
+==================================================
+
+Query:
+
+    query GetGroupUserAggregates {
+      group_user_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  

@@ -1,12 +1,76 @@
 import { ApolloClient, createHttpLink, from, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+import { ApolloLink, Observable } from '@apollo/client';
 import { GRAPHQL_ENDPOINT, getAuthHeader, clearAuthData } from '../utils/auth';
 
 // ============================================================================
 // SIMPLIFIED APOLLO CLIENT CONFIGURATION
 // Following reference patterns with essential functionality only
 // ============================================================================
+
+// Mock data for development
+const createMockUserData = (userId: number) => ({
+  id: userId,
+  login: 'sayedahmed',
+  firstName: 'Sayed',
+  lastName: 'Ahmed',
+  campus: 'bahrain',
+  auditRatio: 1.2,
+  totalUp: 2800000,
+  totalDown: 1500000,
+  profile: JSON.stringify({
+    bio: 'Test user for development',
+    location: 'Bahrain'
+  }),
+  attrs: {
+    country: 'Bahrain',
+    degree: 'Computer Science',
+    personal: {
+      email: 'sayedahmed97.sad@gmail.com',
+      phone: '+973-12345678'
+    }
+  },
+  createdAt: '2023-01-01T00:00:00Z',
+  updatedAt: new Date().toISOString()
+});
+
+// Mock link for development
+const mockLink = new ApolloLink((operation, forward) => {
+  const authHeaders = getAuthHeader();
+  const isMockMode = authHeaders.Authorization?.includes('mock-dev-token');
+
+  if (isMockMode) {
+    if (import.meta.env.DEV) {
+      console.log('Mock GraphQL - Intercepting query:', operation.operationName);
+    }
+
+    return new Observable(observer => {
+      setTimeout(() => {
+        const variables = operation.variables;
+        let mockData = {};
+
+        // Handle different query types
+        if (operation.query.definitions[0]?.name?.value === 'GetUserById') {
+          mockData = {
+            user_by_pk: createMockUserData(variables.userId)
+          };
+        } else {
+          // Default mock response
+          mockData = {
+            user_by_pk: createMockUserData(1599)
+          };
+        }
+
+        observer.next({ data: mockData });
+        observer.complete();
+      }, 500); // Simulate network delay
+    });
+  }
+
+  // If not in mock mode, continue with real request
+  return forward(operation);
+});
 
 // HTTP link for GraphQL endpoint
 const httpLink = createHttpLink({
@@ -16,6 +80,13 @@ const httpLink = createHttpLink({
 // Auth link to add JWT token to requests
 const authLink = setContext((_, { headers }) => {
   const authHeaders = getAuthHeader();
+
+  // Check if we're in mock mode (token starts with 'mock-dev-token')
+  const isMockMode = authHeaders.Authorization?.includes('mock-dev-token');
+
+  if (isMockMode && import.meta.env.DEV) {
+    console.log('GraphQL Client - Running in mock mode');
+  }
 
   return {
     headers: {
@@ -122,7 +193,7 @@ const cache = new InMemoryCache({
 
 // Apollo Client configuration - simplified
 const client = new ApolloClient({
-  link: from([errorLink, authLink, httpLink]),
+  link: from([errorLink, authLink, mockLink, httpLink]),
   cache,
   defaultOptions: {
     watchQuery: {

@@ -1,0 +1,6104 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_TRANSACTIONS_WITH_DETAILS
+Timestamp: 2025-07-23T01:18:18.879Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: transaction
+Record Count: 462
+Data Summary: transaction: Array[462]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "transaction": [
+    {
+      "id": 166458,
+      "type": "up",
+      "amount": 24500,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-09-04T19:56:07.271691+00:00",
+      "attrs": {
+        "auditId": 29219
+      }
+    },
+    {
+      "id": 150537,
+      "type": "up",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-07-30T15:10:47.116125+00:00",
+      "attrs": {
+        "auditId": 24049
+      }
+    },
+    {
+      "id": 150553,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-30T15:18:06.350363+00:00",
+      "attrs": {
+        "auditId": 24420
+      }
+    },
+    {
+      "id": 104921,
+      "type": "xp",
+      "amount": 6825,
+      "userId": 1599,
+      "objectId": 100206,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/fooddeliverytime",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T22:00:39.836475+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 105256,
+      "type": "xp",
+      "amount": 10900,
+      "userId": 1599,
+      "objectId": 100950,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-03/onlyz",
+      "campus": "bahrain",
+      "createdAt": "2024-03-09T08:28:53.236647+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 104947,
+      "type": "xp",
+      "amount": 5688,
+      "userId": 1599,
+      "objectId": 100189,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/collatzcountdown",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T22:25:43.425589+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 141176,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-06T17:12:27.396833+00:00",
+      "attrs": {
+        "auditId": 22337
+      }
+    },
+    {
+      "id": 104252,
+      "type": "xp",
+      "amount": 5875,
+      "userId": 1599,
+      "objectId": 100178,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/join",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T10:56:56.516499+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 104253,
+      "type": "level",
+      "amount": 23,
+      "userId": 1599,
+      "objectId": 100178,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/join",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T10:56:56.530829+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 105258,
+      "type": "xp",
+      "amount": 21800,
+      "userId": 1599,
+      "objectId": 100952,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printreversealphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-03-09T08:31:20.888338+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 105259,
+      "type": "level",
+      "amount": 24,
+      "userId": 1599,
+      "objectId": 100952,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printreversealphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-03-09T08:31:20.899586+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 104972,
+      "type": "xp",
+      "amount": 4550,
+      "userId": 1599,
+      "objectId": 100188,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/abort",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T22:48:42.915453+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 105274,
+      "type": "xp",
+      "amount": 32700,
+      "userId": 1599,
+      "objectId": 100959,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-03/digitlen",
+      "campus": "bahrain",
+      "createdAt": "2024-03-09T09:03:01.786042+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 141220,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-06T17:48:34.312534+00:00",
+      "attrs": {
+        "auditId": 22332
+      }
+    },
+    {
+      "id": 150906,
+      "type": "xp",
+      "amount": 24500,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.2461+00:00",
+      "attrs": {
+        "version": "1fbeb49540151249dd57015e8aaef9efca51278d"
+      }
+    },
+    {
+      "id": 150907,
+      "type": "skill_go",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.2461+00:00",
+      "attrs": {
+        "version": "1fbeb49540151249dd57015e8aaef9efca51278d"
+      }
+    },
+    {
+      "id": 150908,
+      "type": "skill_html",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.2461+00:00",
+      "attrs": {
+        "version": "1fbeb49540151249dd57015e8aaef9efca51278d"
+      }
+    },
+    {
+      "id": 150916,
+      "type": "level",
+      "amount": 13,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.295727+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 150894,
+      "type": "down",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T13:41:01.922499+00:00",
+      "attrs": {
+        "auditId": 24327
+      }
+    },
+    {
+      "id": 150967,
+      "type": "up",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T18:02:28.625919+00:00",
+      "attrs": {
+        "auditId": 24515
+      }
+    },
+    {
+      "id": 151033,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-08-01T14:27:56.292479+00:00",
+      "attrs": {
+        "auditId": 24536
+      }
+    },
+    {
+      "id": 166580,
+      "type": "up",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-09-05T11:32:00.12439+00:00",
+      "attrs": {
+        "auditId": 29454
+      }
+    },
+    {
+      "id": 104355,
+      "type": "xp",
+      "amount": 5688,
+      "userId": 1599,
+      "objectId": 100195,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/rot14",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T13:28:40.613646+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 151622,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T16:19:48.763354+00:00",
+      "attrs": {
+        "auditId": 24838
+      }
+    },
+    {
+      "id": 151640,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T16:46:20.188466+00:00",
+      "attrs": {
+        "auditId": 24839
+      }
+    },
+    {
+      "id": 151668,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T17:06:54.123496+00:00",
+      "attrs": {
+        "auditId": 24837
+      }
+    },
+    {
+      "id": 151673,
+      "type": "xp",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T17:12:35.173265+00:00",
+      "attrs": {
+        "version": "792090dc9e945ecb2a41cd5b334f692966d2bdd5"
+      }
+    },
+    {
+      "id": 151674,
+      "type": "skill_css",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T17:12:35.173265+00:00",
+      "attrs": {
+        "version": "792090dc9e945ecb2a41cd5b334f692966d2bdd5"
+      }
+    },
+    {
+      "id": 151675,
+      "type": "skill_html",
+      "amount": 27,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T17:12:35.173265+00:00",
+      "attrs": {
+        "version": "792090dc9e945ecb2a41cd5b334f692966d2bdd5"
+      }
+    },
+    {
+      "id": 151676,
+      "type": "skill_front-end",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T17:12:35.173265+00:00",
+      "attrs": {
+        "version": "792090dc9e945ecb2a41cd5b334f692966d2bdd5"
+      }
+    },
+    {
+      "id": 104846,
+      "type": "xp",
+      "amount": 5688,
+      "userId": 1599,
+      "objectId": 100199,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/descendcomb",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T20:55:15.947074+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 104866,
+      "type": "xp",
+      "amount": 6825,
+      "userId": 1599,
+      "objectId": 100193,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-10/unmatch",
+      "campus": "bahrain",
+      "createdAt": "2024-03-06T21:21:07.994785+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 110530,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-18T15:28:41.659322+00:00",
+      "attrs": {
+        "auditId": 15726
+      }
+    },
+    {
+      "id": 110549,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-18T16:07:48.889433+00:00",
+      "attrs": {
+        "auditId": 15729
+      }
+    },
+    {
+      "id": 110560,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-18T16:40:15.315627+00:00",
+      "attrs": {
+        "auditId": 15730
+      }
+    },
+    {
+      "id": 110562,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-18T16:41:19.847804+00:00",
+      "attrs": {
+        "auditId": 15721
+      }
+    },
+    {
+      "id": 110564,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-18T16:42:32.436359+00:00",
+      "attrs": {
+        "auditId": 15724
+      }
+    },
+    {
+      "id": 152254,
+      "type": "xp",
+      "amount": 50,
+      "userId": 1599,
+      "objectId": 101252,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/onlyf",
+      "campus": "bahrain",
+      "createdAt": "2024-08-06T14:11:13.968074+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 152255,
+      "type": "skill_prog",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 101252,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/onlyf",
+      "campus": "bahrain",
+      "createdAt": "2024-08-06T14:11:13.968074+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 152278,
+      "type": "xp",
+      "amount": 100,
+      "userId": 1599,
+      "objectId": 101256,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "campus": "bahrain",
+      "createdAt": "2024-08-06T14:16:56.666111+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 110694,
+      "type": "up",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-19T13:26:49.617159+00:00",
+      "attrs": {
+        "auditId": 15704
+      }
+    },
+    {
+      "id": 152511,
+      "type": "xp",
+      "amount": 150,
+      "userId": 1599,
+      "objectId": 101267,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/lastword",
+      "campus": "bahrain",
+      "createdAt": "2024-08-06T16:19:27.859328+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 141944,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-07T23:19:02.267222+00:00",
+      "attrs": {
+        "auditId": 22339
+      }
+    },
+    {
+      "id": 112828,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-30T10:24:05.458601+00:00",
+      "attrs": {
+        "auditId": 16800
+      }
+    },
+    {
+      "id": 167217,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 101118,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/git",
+      "campus": "bahrain",
+      "createdAt": "2024-09-06T17:53:06.001479+00:00",
+      "attrs": {
+        "auditId": 29735
+      }
+    },
+    {
+      "id": 167218,
+      "type": "xp",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 101118,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/git",
+      "campus": "bahrain",
+      "createdAt": "2024-09-06T17:53:06.039106+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 167219,
+      "type": "skill_git",
+      "amount": 50,
+      "userId": 1599,
+      "objectId": 101118,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/git",
+      "campus": "bahrain",
+      "createdAt": "2024-09-06T17:53:06.039106+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 112734,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-29T17:21:08.698269+00:00",
+      "attrs": {
+        "auditId": 16801
+      }
+    },
+    {
+      "id": 112736,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-04-29T17:22:58.520709+00:00",
+      "attrs": {
+        "auditId": 16803
+      }
+    },
+    {
+      "id": 113143,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T14:31:19.41413+00:00",
+      "attrs": {
+        "auditId": 16799
+      }
+    },
+    {
+      "id": 113210,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.935446+00:00",
+      "attrs": {
+        "auditId": 16802
+      }
+    },
+    {
+      "id": 113211,
+      "type": "xp",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.952346+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 113212,
+      "type": "skill_go",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.952346+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 113213,
+      "type": "skill_algo",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.952346+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 113214,
+      "type": "level",
+      "amount": 1,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.981907+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 113215,
+      "type": "level",
+      "amount": 2,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.981907+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 113216,
+      "type": "level",
+      "amount": 3,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-02T22:37:06.981907+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 113312,
+      "type": "up",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 20,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-05-04T14:33:11.93346+00:00",
+      "attrs": {
+        "auditId": 16784
+      }
+    },
+    {
+      "id": 114629,
+      "type": "up",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-10T15:41:39.010726+00:00",
+      "attrs": {
+        "auditId": 17639
+      }
+    },
+    {
+      "id": 114707,
+      "type": "up",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-12T12:48:54.478409+00:00",
+      "attrs": {
+        "auditId": 17753
+      }
+    },
+    {
+      "id": 114397,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-05-08T18:01:22.060941+00:00",
+      "attrs": {
+        "auditId": 17400
+      }
+    },
+    {
+      "id": 115134,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-13T16:22:16.674393+00:00",
+      "attrs": {
+        "auditId": 17828
+      }
+    },
+    {
+      "id": 115176,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-13T16:44:40.708624+00:00",
+      "attrs": {
+        "auditId": 17837
+      }
+    },
+    {
+      "id": 115233,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T13:15:21.707968+00:00",
+      "attrs": {
+        "auditId": 17831
+      }
+    },
+    {
+      "id": 115241,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T13:35:33.262308+00:00",
+      "attrs": {
+        "auditId": 17836
+      }
+    },
+    {
+      "id": 115261,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T15:06:38.380266+00:00",
+      "attrs": {
+        "auditId": 17833
+      }
+    },
+    {
+      "id": 115264,
+      "type": "xp",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T15:06:38.409158+00:00",
+      "attrs": {
+        "version": "13bbe334b50de2a357fe2183300d4cb7f954501f"
+      }
+    },
+    {
+      "id": 115265,
+      "type": "skill_go",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T15:06:38.409158+00:00",
+      "attrs": {
+        "version": "13bbe334b50de2a357fe2183300d4cb7f954501f"
+      }
+    },
+    {
+      "id": 115266,
+      "type": "skill_algo",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T15:06:38.409158+00:00",
+      "attrs": {
+        "version": "13bbe334b50de2a357fe2183300d4cb7f954501f"
+      }
+    },
+    {
+      "id": 115273,
+      "type": "level",
+      "amount": 4,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T15:06:38.423225+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 115274,
+      "type": "level",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 100518,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art",
+      "campus": "bahrain",
+      "createdAt": "2024-05-14T15:06:38.423225+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 142180,
+      "type": "xp",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:35:14.618412+00:00",
+      "attrs": {
+        "version": "891b0514d34acdbfa436eb473a947816bae0684c"
+      }
+    },
+    {
+      "id": 142181,
+      "type": "skill_css",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:35:14.618412+00:00",
+      "attrs": {
+        "version": "891b0514d34acdbfa436eb473a947816bae0684c"
+      }
+    },
+    {
+      "id": 142182,
+      "type": "skill_html",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:35:14.618412+00:00",
+      "attrs": {
+        "version": "891b0514d34acdbfa436eb473a947816bae0684c"
+      }
+    },
+    {
+      "id": 142183,
+      "type": "skill_front-end",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:35:14.618412+00:00",
+      "attrs": {
+        "version": "891b0514d34acdbfa436eb473a947816bae0684c"
+      }
+    },
+    {
+      "id": 142188,
+      "type": "level",
+      "amount": 11,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:35:14.701933+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 115433,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-16T16:33:23.743804+00:00",
+      "attrs": {
+        "auditId": 18072
+      }
+    },
+    {
+      "id": 115338,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-15T15:22:01.983121+00:00",
+      "attrs": {
+        "auditId": 18067
+      }
+    },
+    {
+      "id": 115527,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T14:18:04.946547+00:00",
+      "attrs": {
+        "auditId": 18075
+      }
+    },
+    {
+      "id": 115531,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T14:44:53.41138+00:00",
+      "attrs": {
+        "auditId": 18089
+      }
+    },
+    {
+      "id": 115534,
+      "type": "xp",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T14:44:53.428063+00:00",
+      "attrs": {
+        "version": "b9c294b52c9e270d349fce57b8d050ce631895fb"
+      }
+    },
+    {
+      "id": 115535,
+      "type": "skill_go",
+      "amount": 28,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T14:44:53.428063+00:00",
+      "attrs": {
+        "version": "b9c294b52c9e270d349fce57b8d050ce631895fb"
+      }
+    },
+    {
+      "id": 115540,
+      "type": "level",
+      "amount": 6,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T14:44:53.443691+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 115614,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T16:40:02.650143+00:00",
+      "attrs": {
+        "auditId": 18222
+      }
+    },
+    {
+      "id": 115626,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T16:51:57.983356+00:00",
+      "attrs": {
+        "auditId": 18225
+      }
+    },
+    {
+      "id": 115656,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T17:45:22.980409+00:00",
+      "attrs": {
+        "auditId": 18071
+      }
+    },
+    {
+      "id": 115659,
+      "type": "xp",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T17:45:22.998941+00:00",
+      "attrs": {
+        "version": "192e71d58720a035dab7d0527d30a3154bc96bfb"
+      }
+    },
+    {
+      "id": 115660,
+      "type": "skill_go",
+      "amount": 26,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T17:45:22.998941+00:00",
+      "attrs": {
+        "version": "192e71d58720a035dab7d0527d30a3154bc96bfb"
+      }
+    },
+    {
+      "id": 115665,
+      "type": "level",
+      "amount": 7,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T17:45:23.017888+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 115363,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-15T17:54:23.608466+00:00",
+      "attrs": {
+        "auditId": 18084
+      }
+    },
+    {
+      "id": 115629,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T16:57:00.005308+00:00",
+      "attrs": {
+        "auditId": 17787
+      }
+    },
+    {
+      "id": 115669,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T17:46:29.975192+00:00",
+      "attrs": {
+        "auditId": 18226
+      }
+    },
+    {
+      "id": 115367,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-15T18:13:47.281389+00:00",
+      "attrs": {
+        "auditId": 18083
+      }
+    },
+    {
+      "id": 115646,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T17:05:26.216669+00:00",
+      "attrs": {
+        "auditId": 18074
+      }
+    },
+    {
+      "id": 115371,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-15T18:21:40.268086+00:00",
+      "attrs": {
+        "auditId": 18085
+      }
+    },
+    {
+      "id": 115736,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-20T13:44:47.336858+00:00",
+      "attrs": {
+        "auditId": 18219
+      }
+    },
+    {
+      "id": 115739,
+      "type": "xp",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-20T13:44:47.361988+00:00",
+      "attrs": {
+        "version": "42c015e6a946b2c5780ecc105097778491422580"
+      }
+    },
+    {
+      "id": 115740,
+      "type": "skill_go",
+      "amount": 29,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-20T13:44:47.361988+00:00",
+      "attrs": {
+        "version": "42c015e6a946b2c5780ecc105097778491422580"
+      }
+    },
+    {
+      "id": 115745,
+      "type": "level",
+      "amount": 8,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-20T13:44:47.37569+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 115732,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100503,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/justify",
+      "campus": "bahrain",
+      "createdAt": "2024-05-20T13:09:35.158314+00:00",
+      "attrs": {
+        "auditId": 18221
+      }
+    },
+    {
+      "id": 115927,
+      "type": "up",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-05-21T14:41:24.064988+00:00",
+      "attrs": {
+        "auditId": 18341
+      }
+    },
+    {
+      "id": 142364,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T13:41:29.991488+00:00",
+      "attrs": {
+        "auditId": 22608
+      }
+    },
+    {
+      "id": 116965,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-29T18:00:35.190387+00:00",
+      "attrs": {
+        "auditId": 18267
+      }
+    },
+    {
+      "id": 117064,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-30T15:30:23.514566+00:00",
+      "attrs": {
+        "auditId": 18262
+      }
+    },
+    {
+      "id": 117067,
+      "type": "xp",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-30T15:30:23.536272+00:00",
+      "attrs": {
+        "version": "9ef0ea915ec62c1e0523e20eefb685b65b490806"
+      }
+    },
+    {
+      "id": 117068,
+      "type": "skill_go",
+      "amount": 27,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-30T15:30:23.536272+00:00",
+      "attrs": {
+        "version": "9ef0ea915ec62c1e0523e20eefb685b65b490806"
+      }
+    },
+    {
+      "id": 116674,
+      "type": "xp",
+      "amount": 100,
+      "userId": 1599,
+      "objectId": 100275,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-paramcount",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T16:11:10.749843+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 116675,
+      "type": "skill_prog",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100275,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-paramcount",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T16:11:10.749843+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 167479,
+      "type": "down",
+      "amount": 9187.5,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-07T15:08:51.090707+00:00",
+      "attrs": {
+        "auditId": 29303
+      }
+    },
+    {
+      "id": 116696,
+      "type": "xp",
+      "amount": 200,
+      "userId": 1599,
+      "objectId": 100270,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-strlen",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T16:23:51.157436+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 116697,
+      "type": "skill_prog",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100270,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-strlen",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T16:23:51.157436+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 116728,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T17:41:27.3352+00:00",
+      "attrs": {
+        "auditId": 18264
+      }
+    },
+    {
+      "id": 116732,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T18:26:09.803161+00:00",
+      "attrs": {
+        "auditId": 18260
+      }
+    },
+    {
+      "id": 170927,
+      "type": "up",
+      "amount": 18375,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-16T16:55:47.122591+00:00",
+      "attrs": {
+        "auditId": 30679
+      }
+    },
+    {
+      "id": 142473,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T14:53:41.787007+00:00",
+      "attrs": {
+        "auditId": 22605
+      }
+    },
+    {
+      "id": 170970,
+      "type": "up",
+      "amount": 34375,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-09-16T18:31:11.596251+00:00",
+      "attrs": {
+        "auditId": 30902
+      }
+    },
+    {
+      "id": 88621,
+      "type": "xp",
+      "amount": 600,
+      "userId": 1599,
+      "objectId": 100026,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp2",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T13:13:24.686382+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88638,
+      "type": "xp",
+      "amount": 600,
+      "userId": 1599,
+      "objectId": 100027,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp3",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T13:49:21.170911+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88639,
+      "type": "level",
+      "amount": 3,
+      "userId": 1599,
+      "objectId": 100027,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp3",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T13:49:21.183508+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88673,
+      "type": "xp",
+      "amount": 600,
+      "userId": 1599,
+      "objectId": 100028,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp4",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T14:09:27.711054+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88324,
+      "type": "xp",
+      "amount": 263,
+      "userId": 1599,
+      "objectId": 100022,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/introduction",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T10:27:53.955054+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88455,
+      "type": "xp",
+      "amount": 375,
+      "userId": 1599,
+      "objectId": 100025,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/who-are-you",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T11:28:11.76196+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88456,
+      "type": "level",
+      "amount": 1,
+      "userId": 1599,
+      "objectId": 100025,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/who-are-you",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T11:28:11.775569+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 142856,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T21:15:33.390931+00:00",
+      "attrs": {
+        "auditId": 22607
+      }
+    },
+    {
+      "id": 88508,
+      "type": "xp",
+      "amount": 650,
+      "userId": 1599,
+      "objectId": 100024,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/to-git-or-not-to-git",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T11:59:27.304228+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 88509,
+      "type": "level",
+      "amount": 2,
+      "userId": 1599,
+      "objectId": 100024,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/to-git-or-not-to-git",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T11:59:27.317616+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 120499,
+      "type": "up",
+      "amount": 24500,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-06-16T10:37:56.091711+00:00",
+      "attrs": {
+        "auditId": 19906
+      }
+    },
+    {
+      "id": 88611,
+      "type": "xp",
+      "amount": 488,
+      "userId": 1599,
+      "objectId": 100021,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp1",
+      "campus": "bahrain",
+      "createdAt": "2024-02-18T13:00:24.238436+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 167875,
+      "type": "up",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 250,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-09-08T13:09:02.312469+00:00",
+      "attrs": {
+        "auditId": 29760
+      }
+    },
+    {
+      "id": 163844,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-08-31T18:40:49.961063+00:00",
+      "attrs": {
+        "auditId": 27571
+      }
+    },
+    {
+      "id": 123637,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-23T18:04:55.864336+00:00",
+      "attrs": {
+        "auditId": 20608
+      }
+    },
+    {
+      "id": 123818,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-23T18:35:49.2637+00:00",
+      "attrs": {
+        "auditId": 20609
+      }
+    },
+    {
+      "id": 90440,
+      "type": "xp",
+      "amount": 600,
+      "userId": 1599,
+      "objectId": 100044,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printalphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-02-19T13:45:49.215957+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 90468,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100043,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printreversealphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-02-19T14:01:00.929754+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 90558,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100037,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printdigits",
+      "campus": "bahrain",
+      "createdAt": "2024-02-19T14:26:11.846838+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 90559,
+      "type": "level",
+      "amount": 4,
+      "userId": 1599,
+      "objectId": 100037,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printdigits",
+      "campus": "bahrain",
+      "createdAt": "2024-02-19T14:26:11.854712+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 125826,
+      "type": "xp",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.532971+00:00",
+      "attrs": {
+        "version": "e80f9f80b6a2898a1cfc42d977beda380ce2d23c"
+      }
+    },
+    {
+      "id": 125827,
+      "type": "skill_go",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.532971+00:00",
+      "attrs": {
+        "version": "e80f9f80b6a2898a1cfc42d977beda380ce2d23c"
+      }
+    },
+    {
+      "id": 125828,
+      "type": "skill_html",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.532971+00:00",
+      "attrs": {
+        "version": "e80f9f80b6a2898a1cfc42d977beda380ce2d23c"
+      }
+    },
+    {
+      "id": 125829,
+      "type": "skill_back-end",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.532971+00:00",
+      "attrs": {
+        "version": "e80f9f80b6a2898a1cfc42d977beda380ce2d23c"
+      }
+    },
+    {
+      "id": 125836,
+      "type": "level",
+      "amount": 9,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.591235+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 156261,
+      "type": "up",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100502,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/fs",
+      "campus": "bahrain",
+      "createdAt": "2024-08-20T12:11:43.613132+00:00",
+      "attrs": {
+        "auditId": 25123
+      }
+    },
+    {
+      "id": 156340,
+      "type": "xp",
+      "amount": 50,
+      "userId": 1599,
+      "objectId": 101254,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/onlyb",
+      "campus": "bahrain",
+      "createdAt": "2024-08-20T14:12:28.541238+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 156341,
+      "type": "skill_prog",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 101254,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/onlyb",
+      "campus": "bahrain",
+      "createdAt": "2024-08-20T14:12:28.541238+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 156372,
+      "type": "xp",
+      "amount": 100,
+      "userId": 1599,
+      "objectId": 101255,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/rectperimeter",
+      "campus": "bahrain",
+      "createdAt": "2024-08-20T14:20:49.747558+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 156373,
+      "type": "skill_prog",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 101255,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/rectperimeter",
+      "campus": "bahrain",
+      "createdAt": "2024-08-20T14:20:49.747558+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 168788,
+      "type": "up",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-09-09T22:40:02.568085+00:00",
+      "attrs": {
+        "auditId": 30121
+      }
+    },
+    {
+      "id": 91056,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100039,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/isnegative",
+      "campus": "bahrain",
+      "createdAt": "2024-02-19T17:13:54.511488+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 91247,
+      "type": "xp",
+      "amount": 950,
+      "userId": 1599,
+      "objectId": 100041,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printcomb",
+      "campus": "bahrain",
+      "createdAt": "2024-02-19T18:16:33.126962+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 92379,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100072,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/pointone",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T14:52:03.022229+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 92410,
+      "type": "xp",
+      "amount": 825,
+      "userId": 1599,
+      "objectId": 100073,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/ultimatepointone",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T15:05:35.524725+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 92411,
+      "type": "level",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 100073,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/ultimatepointone",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T15:05:35.544987+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 164631,
+      "type": "xp",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-09-02T14:20:29.121488+00:00",
+      "attrs": {
+        "version": "787eb627302bf259e4e03358ca83f8994c77d14f"
+      }
+    },
+    {
+      "id": 164632,
+      "type": "skill_go",
+      "amount": 38,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-09-02T14:20:29.121488+00:00",
+      "attrs": {
+        "version": "787eb627302bf259e4e03358ca83f8994c77d14f"
+      }
+    },
+    {
+      "id": 92489,
+      "type": "xp",
+      "amount": 1100,
+      "userId": 1599,
+      "objectId": 100074,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/divmod",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T15:38:09.522673+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 92533,
+      "type": "xp",
+      "amount": 1100,
+      "userId": 1599,
+      "objectId": 100075,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/ultimatedivmod",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T15:51:02.313158+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 164637,
+      "type": "level",
+      "amount": 14,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-09-02T14:20:29.291249+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 94074,
+      "type": "xp",
+      "amount": 2100,
+      "userId": 1599,
+      "objectId": 100078,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/sortintegertable",
+      "campus": "bahrain",
+      "createdAt": "2024-02-21T22:30:40.812838+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 92916,
+      "type": "xp",
+      "amount": 1100,
+      "userId": 1599,
+      "objectId": 100079,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/printstr",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T17:38:31.531637+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 169096,
+      "type": "up",
+      "amount": 24500,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-09-10T17:20:35.866053+00:00",
+      "attrs": {
+        "auditId": 30512
+      }
+    },
+    {
+      "id": 92992,
+      "type": "xp",
+      "amount": 1250,
+      "userId": 1599,
+      "objectId": 100071,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/strlen",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T18:05:09.772451+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 92993,
+      "type": "level",
+      "amount": 6,
+      "userId": 1599,
+      "objectId": 100071,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/strlen",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T18:05:09.787757+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93008,
+      "type": "xp",
+      "amount": 1250,
+      "userId": 1599,
+      "objectId": 100080,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/swap",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T18:11:54.207817+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93018,
+      "type": "xp",
+      "amount": 1250,
+      "userId": 1599,
+      "objectId": 100081,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/strrev",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T18:15:13.10196+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93036,
+      "type": "xp",
+      "amount": 1250,
+      "userId": 1599,
+      "objectId": 100076,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T18:22:27.712108+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93060,
+      "type": "xp",
+      "amount": 950,
+      "userId": 1599,
+      "objectId": 100042,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printcomb2",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T18:35:50.448218+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93149,
+      "type": "xp",
+      "amount": 1375,
+      "userId": 1599,
+      "objectId": 100038,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printnbr",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T19:06:42.3545+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93246,
+      "type": "xp",
+      "amount": 1250,
+      "userId": 1599,
+      "objectId": 100077,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi2",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T23:29:05.287867+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93247,
+      "type": "level",
+      "amount": 7,
+      "userId": 1599,
+      "objectId": 100077,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi2",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T23:29:05.298597+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93248,
+      "type": "xp",
+      "amount": 1750,
+      "userId": 1599,
+      "objectId": 100082,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-03/atoi",
+      "campus": "bahrain",
+      "createdAt": "2024-02-20T23:37:54.234545+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93249,
+      "type": "xp",
+      "amount": 600,
+      "userId": 1599,
+      "objectId": 100029,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp5",
+      "campus": "bahrain",
+      "createdAt": "2024-02-21T00:08:21.806342+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93250,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100030,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp6",
+      "campus": "bahrain",
+      "createdAt": "2024-02-21T00:10:44.671115+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 145360,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-07-11T16:09:57.801044+00:00",
+      "attrs": {
+        "auditId": 22438
+      }
+    },
+    {
+      "id": 93258,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100034,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp7",
+      "campus": "bahrain",
+      "createdAt": "2024-02-21T00:56:24.892905+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 93267,
+      "type": "xp",
+      "amount": 713,
+      "userId": 1599,
+      "objectId": 100035,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp8",
+      "campus": "bahrain",
+      "createdAt": "2024-02-21T01:24:41.080986+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 158814,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-08-26T13:31:59.872237+00:00",
+      "attrs": {
+        "auditId": 26871
+      }
+    },
+    {
+      "id": 94852,
+      "type": "xp",
+      "amount": 6100,
+      "userId": 1599,
+      "objectId": 100223,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlyz",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T12:44:17.150495+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 94853,
+      "type": "level",
+      "amount": 8,
+      "userId": 1599,
+      "objectId": 100223,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlyz",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T12:44:17.182913+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 94862,
+      "type": "xp",
+      "amount": 12200,
+      "userId": 1599,
+      "objectId": 100044,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printalphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T12:47:51.94084+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 94863,
+      "type": "level",
+      "amount": 9,
+      "userId": 1599,
+      "objectId": 100044,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printalphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T12:47:51.965096+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 94899,
+      "type": "xp",
+      "amount": 18300,
+      "userId": 1599,
+      "objectId": 100891,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T13:07:34.913812+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 94900,
+      "type": "level",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100891,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T13:07:34.926953+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 94901,
+      "type": "level",
+      "amount": 11,
+      "userId": 1599,
+      "objectId": 100891,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T13:07:34.926953+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 94982,
+      "type": "xp",
+      "amount": 24400,
+      "userId": 1599,
+      "objectId": 100041,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printcomb",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T13:42:53.927381+00:00",
+      "attrs": {
+        "group": 4
+      }
+    },
+    {
+      "id": 94983,
+      "type": "level",
+      "amount": 12,
+      "userId": 1599,
+      "objectId": 100041,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printcomb",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T13:42:53.940369+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95964,
+      "type": "xp",
+      "amount": 1650,
+      "userId": 1599,
+      "objectId": 100040,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-02/printcombn",
+      "campus": "bahrain",
+      "createdAt": "2024-02-24T21:04:24.620434+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95985,
+      "type": "xp",
+      "amount": 3050,
+      "userId": 1599,
+      "objectId": 100087,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/iterativefactorial",
+      "campus": "bahrain",
+      "createdAt": "2024-02-24T23:47:49.857398+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95986,
+      "type": "level",
+      "amount": 14,
+      "userId": 1599,
+      "objectId": 100087,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/iterativefactorial",
+      "campus": "bahrain",
+      "createdAt": "2024-02-24T23:47:49.874125+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95987,
+      "type": "xp",
+      "amount": 3050,
+      "userId": 1599,
+      "objectId": 100085,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/recursivefactorial",
+      "campus": "bahrain",
+      "createdAt": "2024-02-24T23:53:59.922592+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95988,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100088,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/iterativepower",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T00:06:06.534039+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95989,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100086,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/recursivepower",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T00:16:06.975257+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95990,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100089,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/fibonacci",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T00:31:39.619095+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95991,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100090,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/sqrt",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T01:08:54.902127+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95271,
+      "type": "xp",
+      "amount": 30500,
+      "userId": 1599,
+      "objectId": 100897,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/concatslice",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T16:06:59.502697+00:00",
+      "attrs": {
+        "group": 5
+      }
+    },
+    {
+      "id": 95272,
+      "type": "level",
+      "amount": 13,
+      "userId": 1599,
+      "objectId": 100897,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-01/concatslice",
+      "campus": "bahrain",
+      "createdAt": "2024-02-22T16:06:59.516954+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 95992,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100091,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/isprime",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T01:18:59.942241+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 169438,
+      "type": "up",
+      "amount": 49000,
+      "userId": 1599,
+      "objectId": 100513,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/different-maps",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T13:39:09.147937+00:00",
+      "attrs": {
+        "auditId": 30523
+      }
+    },
+    {
+      "id": 160048,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-08-27T15:20:05.671722+00:00",
+      "attrs": {
+        "auditId": 27568
+      }
+    },
+    {
+      "id": 169581,
+      "type": "down",
+      "amount": 9187.5,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T15:23:36.616046+00:00",
+      "attrs": {
+        "auditId": 29304
+      }
+    },
+    {
+      "id": 169583,
+      "type": "xp",
+      "amount": 18375,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T15:23:36.643438+00:00",
+      "attrs": {
+        "version": "8a8c2bc5556a83b14c1178d770612c0aeb31a79d"
+      }
+    },
+    {
+      "id": 169584,
+      "type": "skill_go",
+      "amount": 30,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T15:23:36.643438+00:00",
+      "attrs": {
+        "version": "8a8c2bc5556a83b14c1178d770612c0aeb31a79d"
+      }
+    },
+    {
+      "id": 169585,
+      "type": "skill_algo",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T15:23:36.643438+00:00",
+      "attrs": {
+        "version": "8a8c2bc5556a83b14c1178d770612c0aeb31a79d"
+      }
+    },
+    {
+      "id": 169589,
+      "type": "level",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T15:23:36.720843+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97574,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100117,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/compare",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:01:37.649514+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97578,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100179,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/alphacount",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:03:35.372972+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97583,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100167,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/index",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:07:56.999882+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97590,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100176,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/concat",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:13:16.819381+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97600,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100173,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/islower",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:18:06.205389+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97602,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100171,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/isalpha",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:21:01.495678+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97593,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100174,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/isupper",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:16:01.514198+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97594,
+      "type": "level",
+      "amount": 16,
+      "userId": 1599,
+      "objectId": 100174,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/isupper",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:16:01.52843+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97607,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100172,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/isnumeric",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:23:01.31894+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97614,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100175,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/isprintable",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:28:18.752364+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97619,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100168,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/toupper",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:30:45.038533+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97628,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100169,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/tolower",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:32:56.618248+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97637,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100180,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/trimatoi",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:40:31.588377+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97638,
+      "type": "level",
+      "amount": 17,
+      "userId": 1599,
+      "objectId": 100180,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/trimatoi",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:40:31.602221+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97632,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100181,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/printnbrinorder",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:36:32.465969+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97642,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100170,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/capitalize",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:45:43.994352+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97646,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100177,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/basicjoin",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:49:02.380894+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97655,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100178,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/join",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T12:57:07.958659+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 96423,
+      "type": "xp",
+      "amount": 4000,
+      "userId": 1599,
+      "objectId": 100092,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/findnextprime",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T11:55:34.48103+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 96424,
+      "type": "level",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100092,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-04/findnextprime",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T11:55:34.497177+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 96480,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100116,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/firstrune",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T13:03:01.465992+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 96484,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100138,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/lastrune",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T13:07:21.582569+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 97992,
+      "type": "xp",
+      "amount": 3350,
+      "userId": 1599,
+      "objectId": 100151,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/printprogramname",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T15:54:46.839714+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 98066,
+      "type": "xp",
+      "amount": 3350,
+      "userId": 1599,
+      "objectId": 100152,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/printparams",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T16:18:58.622975+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 98094,
+      "type": "xp",
+      "amount": 3350,
+      "userId": 1599,
+      "objectId": 100153,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/revparams",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T16:28:30.990979+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101404,
+      "type": "xp",
+      "amount": 4400,
+      "userId": 1599,
+      "objectId": 100160,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/appendrange",
+      "campus": "bahrain",
+      "createdAt": "2024-03-02T16:05:46.141092+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101405,
+      "type": "xp",
+      "amount": 4400,
+      "userId": 1599,
+      "objectId": 100159,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/makerange",
+      "campus": "bahrain",
+      "createdAt": "2024-03-02T16:11:13.907187+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101407,
+      "type": "xp",
+      "amount": 5500,
+      "userId": 1599,
+      "objectId": 100161,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/concatparams",
+      "campus": "bahrain",
+      "createdAt": "2024-03-02T16:16:46.291103+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101411,
+      "type": "xp",
+      "amount": 5500,
+      "userId": 1599,
+      "objectId": 100162,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/splitwhitespaces",
+      "campus": "bahrain",
+      "createdAt": "2024-03-02T16:23:13.44481+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 96597,
+      "type": "xp",
+      "amount": 3200,
+      "userId": 1599,
+      "objectId": 100166,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-05/nrune",
+      "campus": "bahrain",
+      "createdAt": "2024-02-25T14:23:40.307851+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101413,
+      "type": "xp",
+      "amount": 4400,
+      "userId": 1599,
+      "objectId": 100163,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/printwordstables",
+      "campus": "bahrain",
+      "createdAt": "2024-03-02T16:27:00.266466+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101414,
+      "type": "xp",
+      "amount": 5500,
+      "userId": 1599,
+      "objectId": 100139,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/split",
+      "campus": "bahrain",
+      "createdAt": "2024-03-02T16:32:00.406526+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 133465,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-06-30T15:10:29.194654+00:00",
+      "attrs": {
+        "auditId": 21525
+      }
+    },
+    {
+      "id": 98181,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100154,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/sortparams",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T17:15:42.991662+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 98199,
+      "type": "xp",
+      "amount": 4188,
+      "userId": 1599,
+      "objectId": 100156,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/nbrconvertalpha",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T17:23:21.89217+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 152279,
+      "type": "skill_prog",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 101256,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "campus": "bahrain",
+      "createdAt": "2024-08-06T14:16:56.666111+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 152512,
+      "type": "skill_prog",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 101267,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/lastword",
+      "campus": "bahrain",
+      "createdAt": "2024-08-06T16:19:27.859328+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 148280,
+      "type": "down",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-07-21T13:32:53.627659+00:00",
+      "attrs": {
+        "auditId": 23462
+      }
+    },
+    {
+      "id": 148282,
+      "type": "down",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-07-21T13:33:26.58228+00:00",
+      "attrs": {
+        "auditId": 23459
+      }
+    },
+    {
+      "id": 148284,
+      "type": "down",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-07-21T13:34:07.575629+00:00",
+      "attrs": {
+        "auditId": 23461
+      }
+    },
+    {
+      "id": 148285,
+      "type": "xp",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-07-21T13:34:07.589492+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 148286,
+      "type": "skill_stats",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-07-21T13:34:07.589492+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 148287,
+      "type": "level",
+      "amount": 12,
+      "userId": 1599,
+      "objectId": 100568,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/math-skills",
+      "campus": "bahrain",
+      "createdAt": "2024-07-21T13:34:07.606416+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 100444,
+      "type": "xp",
+      "amount": 8800,
+      "userId": 1599,
+      "objectId": 100910,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/onlyz",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T11:55:48.459157+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 100449,
+      "type": "xp",
+      "amount": 17600,
+      "userId": 1599,
+      "objectId": 100912,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printreversealphabet",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T12:01:32.500097+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 100467,
+      "type": "xp",
+      "amount": 26400,
+      "userId": 1599,
+      "objectId": 100915,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/countcharacter",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T12:21:20.78372+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 100468,
+      "type": "level",
+      "amount": 19,
+      "userId": 1599,
+      "objectId": 100915,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/countcharacter",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T12:21:20.796927+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 148754,
+      "type": "up",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 101118,
+      "eventId": 20,
+      "path": "/bahrain/bh-module/git",
+      "campus": "bahrain",
+      "createdAt": "2024-07-22T14:24:37.277938+00:00",
+      "attrs": {
+        "auditId": 22949
+      }
+    },
+    {
+      "id": 100534,
+      "type": "xp",
+      "amount": 35200,
+      "userId": 1599,
+      "objectId": 100926,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/iscapitalized",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T13:05:13.676655+00:00",
+      "attrs": {
+        "group": 4
+      }
+    },
+    {
+      "id": 100535,
+      "type": "level",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100926,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/iscapitalized",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T13:05:13.696313+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 148805,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-22T15:42:49.684215+00:00",
+      "attrs": {
+        "auditId": 23698
+      }
+    },
+    {
+      "id": 100561,
+      "type": "xp",
+      "amount": 44000,
+      "userId": 1599,
+      "objectId": 100930,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/concatslice",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T13:14:49.985666+00:00",
+      "attrs": {
+        "group": 5
+      }
+    },
+    {
+      "id": 100562,
+      "type": "level",
+      "amount": 21,
+      "userId": 1599,
+      "objectId": 100930,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/checkpoint-02/concatslice",
+      "campus": "bahrain",
+      "createdAt": "2024-02-29T13:14:50.010454+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101758,
+      "type": "xp",
+      "amount": 6600,
+      "userId": 1599,
+      "objectId": 100164,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-07/convertbase",
+      "campus": "bahrain",
+      "createdAt": "2024-03-03T11:13:57.251539+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 98562,
+      "type": "xp",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100157,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/flags",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T23:42:16.328865+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 98563,
+      "type": "level",
+      "amount": 18,
+      "userId": 1599,
+      "objectId": 100157,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-06/flags",
+      "campus": "bahrain",
+      "createdAt": "2024-02-26T23:42:16.339574+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101817,
+      "type": "xp",
+      "amount": 4400,
+      "userId": 1599,
+      "objectId": 100096,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-08/boolean",
+      "campus": "bahrain",
+      "createdAt": "2024-03-03T13:05:30.468629+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101825,
+      "type": "xp",
+      "amount": 7700,
+      "userId": 1599,
+      "objectId": 100094,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-08/point",
+      "campus": "bahrain",
+      "createdAt": "2024-03-03T13:25:45.515103+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101826,
+      "type": "level",
+      "amount": 22,
+      "userId": 1599,
+      "objectId": 100094,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-08/point",
+      "campus": "bahrain",
+      "createdAt": "2024-03-03T13:25:45.529234+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 103145,
+      "type": "xp",
+      "amount": 4400,
+      "userId": 1599,
+      "objectId": 100053,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/foreach",
+      "campus": "bahrain",
+      "createdAt": "2024-03-04T17:04:36.5836+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 101842,
+      "type": "xp",
+      "amount": 5500,
+      "userId": 1599,
+      "objectId": 100098,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-08/displayfile",
+      "campus": "bahrain",
+      "createdAt": "2024-03-03T13:30:53.885714+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 103193,
+      "type": "xp",
+      "amount": 4550,
+      "userId": 1599,
+      "objectId": 100048,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/map",
+      "campus": "bahrain",
+      "createdAt": "2024-03-04T17:24:33.680048+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 103263,
+      "type": "xp",
+      "amount": 4550,
+      "userId": 1599,
+      "objectId": 100049,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/any",
+      "campus": "bahrain",
+      "createdAt": "2024-03-04T18:05:01.006216+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 103279,
+      "type": "xp",
+      "amount": 4550,
+      "userId": 1599,
+      "objectId": 100050,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/countif",
+      "campus": "bahrain",
+      "createdAt": "2024-03-04T18:21:13.679586+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 137563,
+      "type": "xp",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:50:28.338162+00:00",
+      "attrs": {
+        "version": "37a766c8d222c52c70d29bfe2ca2485743a4b4f8"
+      }
+    },
+    {
+      "id": 137569,
+      "type": "level",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:50:28.429508+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 103311,
+      "type": "xp",
+      "amount": 5688,
+      "userId": 1599,
+      "objectId": 100051,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/issorted",
+      "campus": "bahrain",
+      "createdAt": "2024-03-04T18:49:21.598951+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 137548,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:45:40.107387+00:00",
+      "attrs": {
+        "auditId": 21532
+      }
+    },
+    {
+      "id": 138827,
+      "type": "up",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100519,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "campus": "bahrain",
+      "createdAt": "2024-07-03T16:01:33.251115+00:00",
+      "attrs": {
+        "auditId": 21700
+      }
+    },
+    {
+      "id": 98960,
+      "type": "xp",
+      "amount": 3050,
+      "userId": 1599,
+      "objectId": 100184,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain",
+      "createdAt": "2024-02-27T14:35:30.328731+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 140569,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-05T01:37:18.380526+00:00",
+      "attrs": {
+        "auditId": 22122
+      }
+    },
+    {
+      "id": 103633,
+      "type": "xp",
+      "amount": 5688,
+      "userId": 1599,
+      "objectId": 100047,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/doop",
+      "campus": "bahrain",
+      "createdAt": "2024-03-05T11:58:09.123937+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 103645,
+      "type": "xp",
+      "amount": 5688,
+      "userId": 1599,
+      "objectId": 100046,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/sortwordarr",
+      "campus": "bahrain",
+      "createdAt": "2024-03-05T12:13:11.542517+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 140498,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-07-04T19:56:03.076133+00:00",
+      "attrs": {
+        "auditId": 22165
+      }
+    },
+    {
+      "id": 103683,
+      "type": "xp",
+      "amount": 6825,
+      "userId": 1599,
+      "objectId": 100052,
+      "eventId": 114,
+      "path": "/bahrain/bh-piscine/quest-09/advancedsortwordarr",
+      "campus": "bahrain",
+      "createdAt": "2024-03-05T12:55:38.035333+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 140739,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-05T21:03:10.641598+00:00",
+      "attrs": {
+        "auditId": 22390
+      }
+    },
+    {
+      "id": 140745,
+      "type": "up",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100701,
+      "eventId": 20,
+      "path": "/bahrain/bh-module/linear-stats",
+      "campus": "bahrain",
+      "createdAt": "2024-07-05T21:55:55.489766+00:00",
+      "attrs": {
+        "auditId": 22342
+      }
+    },
+    {
+      "id": 180370,
+      "type": "up",
+      "amount": 49000,
+      "userId": 1599,
+      "objectId": 100512,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/history",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T15:28:26.203384+00:00",
+      "attrs": {
+        "auditId": 31764
+      }
+    },
+    {
+      "id": 180409,
+      "type": "xp",
+      "amount": 50,
+      "userId": 1599,
+      "objectId": 101251,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/onlyz",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T15:39:46.554216+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 180410,
+      "type": "skill_prog",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 101251,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/onlyz",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T15:39:46.554216+00:00",
+      "attrs": {
+        "group": 1
+      }
+    },
+    {
+      "id": 180413,
+      "type": "xp",
+      "amount": 100,
+      "userId": 1599,
+      "objectId": 101256,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T15:41:43.637013+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 180414,
+      "type": "skill_prog",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 101256,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T15:41:43.637013+00:00",
+      "attrs": {
+        "group": 2
+      }
+    },
+    {
+      "id": 180512,
+      "type": "xp",
+      "amount": 150,
+      "userId": 1599,
+      "objectId": 101266,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/hashcode",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T16:30:44.189685+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 180513,
+      "type": "skill_prog",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 101266,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/hashcode",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T16:30:44.189685+00:00",
+      "attrs": {
+        "group": 3
+      }
+    },
+    {
+      "id": 180528,
+      "type": "xp",
+      "amount": 200,
+      "userId": 1599,
+      "objectId": 101270,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/thirdtimeisacharm",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T16:44:42.066048+00:00",
+      "attrs": {
+        "group": 4
+      }
+    },
+    {
+      "id": 180529,
+      "type": "skill_prog",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 101270,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/thirdtimeisacharm",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T16:44:42.066048+00:00",
+      "attrs": {
+        "group": 4
+      }
+    },
+    {
+      "id": 180684,
+      "type": "xp",
+      "amount": 250,
+      "userId": 1599,
+      "objectId": 100303,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/union",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T18:31:11.697897+00:00",
+      "attrs": {
+        "group": 5
+      }
+    },
+    {
+      "id": 180685,
+      "type": "skill_prog",
+      "amount": 50,
+      "userId": 1599,
+      "objectId": 100303,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/checkpoint/union",
+      "campus": "bahrain",
+      "createdAt": "2024-09-26T18:31:11.697897+00:00",
+      "attrs": {
+        "group": 5
+      }
+    },
+    {
+      "id": 190762,
+      "type": "up",
+      "amount": 147000,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2024-10-08T17:40:16.596254+00:00",
+      "attrs": {
+        "auditId": 32639
+      }
+    },
+    {
+      "id": 193866,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-14T17:26:32.627864+00:00",
+      "attrs": {
+        "auditId": 33063
+      }
+    },
+    {
+      "id": 193869,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-14T17:27:55.169993+00:00",
+      "attrs": {
+        "auditId": 33064
+      }
+    },
+    {
+      "id": 193882,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-14T18:14:35.526385+00:00",
+      "attrs": {
+        "auditId": 33059
+      }
+    },
+    {
+      "id": 193886,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-14T18:15:21.719285+00:00",
+      "attrs": {
+        "auditId": 33060
+      }
+    },
+    {
+      "id": 194184,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-15T17:53:53.13539+00:00",
+      "attrs": {
+        "auditId": 33068
+      }
+    },
+    {
+      "id": 194186,
+      "type": "xp",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-15T17:53:53.163198+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 194187,
+      "type": "skill_go",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-15T17:53:53.163198+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 194188,
+      "type": "skill_tcp",
+      "amount": 30,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-15T17:53:53.163198+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 194189,
+      "type": "skill_unix",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100524,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/net-cat",
+      "campus": "bahrain",
+      "createdAt": "2024-10-15T17:53:53.163198+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 194653,
+      "type": "up",
+      "amount": 19100,
+      "userId": 1599,
+      "objectId": 100694,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/authentication",
+      "campus": "bahrain",
+      "createdAt": "2024-10-20T17:20:12.222276+00:00",
+      "attrs": {
+        "auditId": 33434
+      }
+    },
+    {
+      "id": 197451,
+      "type": "down",
+      "amount": 8593.75,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-05T16:53:15.500182+00:00",
+      "attrs": {
+        "auditId": 34116
+      }
+    },
+    {
+      "id": 197456,
+      "type": "down",
+      "amount": 8593.75,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-05T16:59:54.554324+00:00",
+      "attrs": {
+        "auditId": 34114
+      }
+    },
+    {
+      "id": 197461,
+      "type": "down",
+      "amount": 8593.75,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-05T17:02:45.876091+00:00",
+      "attrs": {
+        "auditId": 34112
+      }
+    },
+    {
+      "id": 197535,
+      "type": "down",
+      "amount": 8593.75,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-06T15:38:57.296857+00:00",
+      "attrs": {
+        "auditId": 34110
+      }
+    },
+    {
+      "id": 197802,
+      "type": "down",
+      "amount": 8593.75,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-11T16:31:20.268269+00:00",
+      "attrs": {
+        "auditId": 34118
+      }
+    },
+    {
+      "id": 197806,
+      "type": "xp",
+      "amount": 34375,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-11T16:31:20.320525+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 197807,
+      "type": "skill_go",
+      "amount": 40,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-11T16:31:20.320525+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 197808,
+      "type": "skill_algo",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-11T16:31:20.320525+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 197818,
+      "type": "level",
+      "amount": 16,
+      "userId": 1599,
+      "objectId": 100526,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/lem-in",
+      "campus": "bahrain",
+      "createdAt": "2024-11-11T16:31:20.450402+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 198042,
+      "type": "up",
+      "amount": 76250,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2024-11-12T18:18:27.597377+00:00",
+      "attrs": {
+        "auditId": 34362
+      }
+    },
+    {
+      "id": 198265,
+      "type": "up",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-11-14T03:32:32.32128+00:00",
+      "attrs": {
+        "auditId": 34387
+      }
+    },
+    {
+      "id": 198587,
+      "type": "up",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-11-17T16:24:14.358121+00:00",
+      "attrs": {
+        "auditId": 34571
+      }
+    },
+    {
+      "id": 205904,
+      "type": "up",
+      "amount": 147000,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-01-07T10:04:03.760887+00:00",
+      "attrs": {
+        "auditId": 36978
+      }
+    },
+    {
+      "id": 216081,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T16:37:37.124294+00:00",
+      "attrs": {
+        "auditId": 37918
+      }
+    },
+    {
+      "id": 216091,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T16:39:18.780991+00:00",
+      "attrs": {
+        "auditId": 37911
+      }
+    },
+    {
+      "id": 216202,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:05:47.654819+00:00",
+      "attrs": {
+        "auditId": 37908
+      }
+    },
+    {
+      "id": 216222,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:07:33.641146+00:00",
+      "attrs": {
+        "auditId": 37905
+      }
+    },
+    {
+      "id": 216238,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:10:51.724407+00:00",
+      "attrs": {
+        "auditId": 37906
+      }
+    },
+    {
+      "id": 216248,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:12:40.688234+00:00",
+      "attrs": {
+        "auditId": 37917
+      }
+    },
+    {
+      "id": 216257,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:14:21.363527+00:00",
+      "attrs": {
+        "auditId": 37907
+      }
+    },
+    {
+      "id": 216280,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:21:40.134929+00:00",
+      "attrs": {
+        "auditId": 37914
+      }
+    },
+    {
+      "id": 216291,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-19T17:24:17.955957+00:00",
+      "attrs": {
+        "auditId": 37904
+      }
+    },
+    {
+      "id": 216679,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100592,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:09:57.775594+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216680,
+      "type": "level",
+      "amount": 1,
+      "userId": 1599,
+      "objectId": 100592,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:09:57.796262+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216681,
+      "type": "level",
+      "amount": 2,
+      "userId": 1599,
+      "objectId": 100592,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:09:57.796262+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216682,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100593,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-forever",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:11:34.926155+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216683,
+      "type": "level",
+      "amount": 3,
+      "userId": 1599,
+      "objectId": 100593,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-forever",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:11:34.950047+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216684,
+      "type": "level",
+      "amount": 4,
+      "userId": 1599,
+      "objectId": 100593,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-forever",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:11:34.950047+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216685,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100594,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-reverso",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:13:36.053941+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216686,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100595,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-how-many",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:15:59.074367+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216687,
+      "type": "level",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 100595,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-how-many",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:15:59.087049+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 216688,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100596,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-who",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T02:23:18.881143+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217960,
+      "type": "down",
+      "amount": 19063,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.0686+00:00",
+      "attrs": {
+        "auditId": 37922
+      }
+    },
+    {
+      "id": 217965,
+      "type": "xp",
+      "amount": 76250,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217966,
+      "type": "skill_go",
+      "amount": 45,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217967,
+      "type": "skill_sql",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217968,
+      "type": "skill_html",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217969,
+      "type": "skill_docker",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217970,
+      "type": "skill_back-end",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217971,
+      "type": "skill_front-end",
+      "amount": 40,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217972,
+      "type": "skill_sys-admin",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217997,
+      "type": "level",
+      "amount": 17,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.64976+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 217998,
+      "type": "level",
+      "amount": 18,
+      "userId": 1599,
+      "objectId": 100699,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T16:48:56.64976+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218202,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100597,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-vip",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T18:15:45.833593+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218203,
+      "type": "level",
+      "amount": 6,
+      "userId": 1599,
+      "objectId": 100597,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-vip",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T18:15:45.849654+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218208,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100598,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-it-cypher",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T18:18:07.205692+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218250,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100601,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/friend-support",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T18:45:29.246122+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218251,
+      "type": "level",
+      "amount": 7,
+      "userId": 1599,
+      "objectId": 100601,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/friend-support",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T18:45:29.273699+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218265,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100602,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/uninvited",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T18:55:01.919941+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 218278,
+      "type": "xp",
+      "amount": 2600,
+      "userId": 1599,
+      "objectId": 100603,
+      "eventId": 601,
+      "path": "/bahrain/bh-module/piscine-js/node/gatecrashers",
+      "campus": "bahrain",
+      "createdAt": "2025-01-20T19:06:41.850112+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 219304,
+      "type": "up",
+      "amount": 103500,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-01-21T16:21:17.837671+00:00",
+      "attrs": {
+        "auditId": 38310
+      }
+    },
+    {
+      "id": 222339,
+      "type": "up",
+      "amount": 100000,
+      "userId": 1599,
+      "objectId": 100537,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/graphql",
+      "campus": "bahrain",
+      "createdAt": "2025-01-26T20:24:33.473753+00:00",
+      "attrs": {
+        "auditId": 38428
+      }
+    },
+    {
+      "id": 222604,
+      "type": "xp",
+      "amount": 70000,
+      "userId": 1599,
+      "objectId": 100569,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain",
+      "createdAt": "2025-01-27T11:54:29.277787+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 222605,
+      "type": "skill_js",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100569,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain",
+      "createdAt": "2025-01-27T11:54:29.277787+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 222606,
+      "type": "level",
+      "amount": 19,
+      "userId": 1599,
+      "objectId": 100569,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain",
+      "createdAt": "2025-01-27T11:54:29.393318+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 222607,
+      "type": "level",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100569,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain",
+      "createdAt": "2025-01-27T11:54:29.393318+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 228744,
+      "type": "down",
+      "amount": 73500,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-11T18:20:57.227733+00:00",
+      "attrs": {
+        "auditId": 39754
+      }
+    },
+    {
+      "id": 228747,
+      "type": "down",
+      "amount": 73500,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-11T18:25:17.833817+00:00",
+      "attrs": {
+        "auditId": 39758
+      }
+    },
+    {
+      "id": 228750,
+      "type": "down",
+      "amount": 73500,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-11T18:26:24.554031+00:00",
+      "attrs": {
+        "auditId": 39756
+      }
+    },
+    {
+      "id": 228753,
+      "type": "down",
+      "amount": 73500,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-11T18:27:11.448359+00:00",
+      "attrs": {
+        "auditId": 39759
+      }
+    },
+    {
+      "id": 228827,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100700,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "campus": "bahrain",
+      "createdAt": "2025-02-12T14:17:14.531137+00:00",
+      "attrs": {
+        "auditId": 39766
+      }
+    },
+    {
+      "id": 228970,
+      "type": "down",
+      "amount": 73500,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:30.927992+00:00",
+      "attrs": {
+        "auditId": 39770
+      }
+    },
+    {
+      "id": 228974,
+      "type": "xp",
+      "amount": 147000,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:30.949519+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 228975,
+      "type": "skill_js",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:30.949519+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 228976,
+      "type": "skill_game",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:30.949519+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 228980,
+      "type": "level",
+      "amount": 21,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:31.032966+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 228981,
+      "type": "level",
+      "amount": 22,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:31.032966+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 228982,
+      "type": "level",
+      "amount": 23,
+      "userId": 1599,
+      "objectId": 100527,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/make-your-game",
+      "campus": "bahrain",
+      "createdAt": "2025-02-14T15:13:31.032966+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 229399,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100700,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "campus": "bahrain",
+      "createdAt": "2025-02-17T16:10:45.231486+00:00",
+      "attrs": {
+        "auditId": 39765
+      }
+    },
+    {
+      "id": 229522,
+      "type": "up",
+      "amount": 145000,
+      "userId": 1599,
+      "objectId": 100487,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/mini-framework",
+      "campus": "bahrain",
+      "createdAt": "2025-02-18T13:09:14.92452+00:00",
+      "attrs": {
+        "auditId": 40228
+      }
+    },
+    {
+      "id": 229710,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100700,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "campus": "bahrain",
+      "createdAt": "2025-02-18T19:02:06.715037+00:00",
+      "attrs": {
+        "auditId": 40280
+      }
+    },
+    {
+      "id": 229711,
+      "type": "xp",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100700,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "campus": "bahrain",
+      "createdAt": "2025-02-18T19:02:06.724477+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 229712,
+      "type": "skill_ai",
+      "amount": 5,
+      "userId": 1599,
+      "objectId": 100700,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "campus": "bahrain",
+      "createdAt": "2025-02-18T19:02:06.724477+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 229713,
+      "type": "skill_algo",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100700,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "campus": "bahrain",
+      "createdAt": "2025-02-18T19:02:06.724477+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 231996,
+      "type": "up",
+      "amount": 100000,
+      "userId": 1599,
+      "objectId": 100537,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/graphql",
+      "campus": "bahrain",
+      "createdAt": "2025-03-04T19:41:42.24576+00:00",
+      "attrs": {
+        "auditId": 41307
+      }
+    },
+    {
+      "id": 232416,
+      "type": "down",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100701,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/linear-stats",
+      "campus": "bahrain",
+      "createdAt": "2025-03-05T13:14:05.433182+00:00",
+      "attrs": {
+        "auditId": 41335
+      }
+    },
+    {
+      "id": 233419,
+      "type": "down",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100701,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/linear-stats",
+      "campus": "bahrain",
+      "createdAt": "2025-03-09T20:13:56.842366+00:00",
+      "attrs": {
+        "auditId": 41334
+      }
+    },
+    {
+      "id": 238296,
+      "type": "down",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100701,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/linear-stats",
+      "campus": "bahrain",
+      "createdAt": "2025-04-14T18:49:00.228363+00:00",
+      "attrs": {
+        "auditId": 44390
+      }
+    },
+    {
+      "id": 238297,
+      "type": "xp",
+      "amount": 10000,
+      "userId": 1599,
+      "objectId": 100701,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/linear-stats",
+      "campus": "bahrain",
+      "createdAt": "2025-04-14T18:49:00.248338+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 238298,
+      "type": "skill_stats",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100701,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/linear-stats",
+      "campus": "bahrain",
+      "createdAt": "2025-04-14T18:49:00.248338+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 248755,
+      "type": "up",
+      "amount": 103500,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-04-28T19:38:21.170906+00:00",
+      "attrs": {
+        "auditId": 46554
+      }
+    },
+    {
+      "id": 257118,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100694,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/authentication",
+      "campus": "bahrain",
+      "createdAt": "2025-05-13T18:34:19.628587+00:00",
+      "attrs": {
+        "auditId": 48574
+      }
+    },
+    {
+      "id": 257279,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100694,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/authentication",
+      "campus": "bahrain",
+      "createdAt": "2025-05-14T18:37:36.83982+00:00",
+      "attrs": {
+        "auditId": 48576
+      }
+    },
+    {
+      "id": 258095,
+      "type": "xp",
+      "amount": 19100,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-05-20T13:07:47.508319+00:00",
+      "attrs": {
+        "version": "c240650a1cccebb0bdd51e458fd9cbd7edfb1c88"
+      }
+    },
+    {
+      "id": 258096,
+      "type": "skill_go",
+      "amount": 47,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-05-20T13:07:47.508319+00:00",
+      "attrs": {
+        "version": "c240650a1cccebb0bdd51e458fd9cbd7edfb1c88"
+      }
+    },
+    {
+      "id": 258097,
+      "type": "skill_html",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-05-20T13:07:47.508319+00:00",
+      "attrs": {
+        "version": "c240650a1cccebb0bdd51e458fd9cbd7edfb1c88"
+      }
+    },
+    {
+      "id": 258098,
+      "type": "skill_back-end",
+      "amount": 40,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-05-20T13:07:47.508319+00:00",
+      "attrs": {
+        "version": "c240650a1cccebb0bdd51e458fd9cbd7edfb1c88"
+      }
+    },
+    {
+      "id": 258099,
+      "type": "skill_front-end",
+      "amount": 42,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-05-20T13:07:47.508319+00:00",
+      "attrs": {
+        "version": "c240650a1cccebb0bdd51e458fd9cbd7edfb1c88"
+      }
+    },
+    {
+      "id": 115518,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100501,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/output",
+      "campus": "bahrain",
+      "createdAt": "2024-05-19T13:58:41.248619+00:00",
+      "attrs": {
+        "auditId": 18086
+      }
+    },
+    {
+      "id": 123367,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-23T17:09:10.19115+00:00",
+      "attrs": {
+        "auditId": 20611
+      }
+    },
+    {
+      "id": 125830,
+      "type": "skill_front-end",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.532971+00:00",
+      "attrs": {
+        "version": "e80f9f80b6a2898a1cfc42d977beda380ce2d23c"
+      }
+    },
+    {
+      "id": 133502,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-06-30T15:23:19.643624+00:00",
+      "attrs": {
+        "auditId": 21531
+      }
+    },
+    {
+      "id": 125824,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-24T17:51:22.505401+00:00",
+      "attrs": {
+        "auditId": 20612
+      }
+    },
+    {
+      "id": 123708,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100522,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "campus": "bahrain",
+      "createdAt": "2024-06-23T18:19:23.843432+00:00",
+      "attrs": {
+        "auditId": 20607
+      }
+    },
+    {
+      "id": 137564,
+      "type": "skill_docker",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:50:28.338162+00:00",
+      "attrs": {
+        "version": "37a766c8d222c52c70d29bfe2ca2485743a4b4f8"
+      }
+    },
+    {
+      "id": 137561,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:50:28.315184+00:00",
+      "attrs": {
+        "auditId": 21523
+      }
+    },
+    {
+      "id": 142178,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:35:14.59858+00:00",
+      "attrs": {
+        "auditId": 22341
+      }
+    },
+    {
+      "id": 150904,
+      "type": "down",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.215626+00:00",
+      "attrs": {
+        "auditId": 24325
+      }
+    },
+    {
+      "id": 150370,
+      "type": "down",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-29T17:04:42.369467+00:00",
+      "attrs": {
+        "auditId": 24332
+      }
+    },
+    {
+      "id": 169071,
+      "type": "down",
+      "amount": 9187.5,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-10T16:21:23.353518+00:00",
+      "attrs": {
+        "auditId": 29960
+      }
+    },
+    {
+      "id": 164633,
+      "type": "skill_back-end",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-09-02T14:20:29.121488+00:00",
+      "attrs": {
+        "version": "787eb627302bf259e4e03358ca83f8994c77d14f"
+      }
+    },
+    {
+      "id": 116724,
+      "type": "down",
+      "amount": 2041.6666666666667,
+      "userId": 1599,
+      "objectId": 100515,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/color",
+      "campus": "bahrain",
+      "createdAt": "2024-05-26T17:39:55.245516+00:00",
+      "attrs": {
+        "auditId": 18258
+      }
+    },
+    {
+      "id": 150909,
+      "type": "skill_back-end",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.2461+00:00",
+      "attrs": {
+        "version": "1fbeb49540151249dd57015e8aaef9efca51278d"
+      }
+    },
+    {
+      "id": 150910,
+      "type": "skill_front-end",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:45:59.2461+00:00",
+      "attrs": {
+        "version": "1fbeb49540151249dd57015e8aaef9efca51278d"
+      }
+    },
+    {
+      "id": 169386,
+      "type": "down",
+      "amount": 9187.5,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T11:38:45.298542+00:00",
+      "attrs": {
+        "auditId": 29296
+      }
+    },
+    {
+      "id": 164629,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-09-02T14:20:29.104689+00:00",
+      "attrs": {
+        "auditId": 27574
+      }
+    },
+    {
+      "id": 142175,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-08T11:34:31.091101+00:00",
+      "attrs": {
+        "auditId": 22334
+      }
+    },
+    {
+      "id": 150891,
+      "type": "down",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T13:34:03.580595+00:00",
+      "attrs": {
+        "auditId": 24329
+      }
+    },
+    {
+      "id": 150901,
+      "type": "down",
+      "amount": 12250,
+      "userId": 1599,
+      "objectId": 100525,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "campus": "bahrain",
+      "createdAt": "2024-07-31T14:14:54.331767+00:00",
+      "attrs": {
+        "auditId": 24328
+      }
+    },
+    {
+      "id": 169389,
+      "type": "down",
+      "amount": 9187.5,
+      "userId": 1599,
+      "objectId": 100521,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/push-swap",
+      "campus": "bahrain",
+      "createdAt": "2024-09-11T11:43:34.958933+00:00",
+      "attrs": {
+        "auditId": 29300
+      }
+    },
+    {
+      "id": 160030,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-08-27T15:00:09.98031+00:00",
+      "attrs": {
+        "auditId": 27575
+      }
+    },
+    {
+      "id": 159923,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100511,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/search-bar",
+      "campus": "bahrain",
+      "createdAt": "2024-08-27T14:23:48.234542+00:00",
+      "attrs": {
+        "auditId": 27572
+      }
+    },
+    {
+      "id": 151663,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T16:50:53.059127+00:00",
+      "attrs": {
+        "auditId": 24843
+      }
+    },
+    {
+      "id": 151671,
+      "type": "down",
+      "amount": 6125,
+      "userId": 1599,
+      "objectId": 100510,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/visualizations",
+      "campus": "bahrain",
+      "createdAt": "2024-08-04T17:12:35.119791+00:00",
+      "attrs": {
+        "auditId": 24842
+      }
+    },
+    {
+      "id": 269230,
+      "type": "up",
+      "amount": -9200,
+      "userId": 1599,
+      "objectId": 100505,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/stylize",
+      "campus": "bahrain",
+      "createdAt": "2025-05-28T17:52:57.069058+00:00",
+      "attrs": {
+        "auditId": 22122
+      }
+    },
+    {
+      "id": 270168,
+      "type": "up",
+      "amount": 480000,
+      "userId": 1599,
+      "objectId": 100486,
+      "eventId": 20,
+      "path": "/bahrain/bh-module/social-network",
+      "campus": "bahrain",
+      "createdAt": "2025-05-29T01:10:28.856954+00:00",
+      "attrs": {
+        "auditId": 50153
+      }
+    },
+    {
+      "id": 271891,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100702,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "campus": "bahrain",
+      "createdAt": "2025-06-01T18:52:38.063832+00:00",
+      "attrs": {
+        "auditId": 50438
+      }
+    },
+    {
+      "id": 143420,
+      "type": "xp",
+      "amount": 9200,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-09T12:43:35.031838+00:00",
+      "attrs": {
+        "version": "955628c725adb3c08bf53e229b185fe6a70189ca"
+      }
+    },
+    {
+      "id": 143421,
+      "type": "skill_back-end",
+      "amount": 20,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-09T12:43:35.031838+00:00",
+      "attrs": {
+        "version": "955628c725adb3c08bf53e229b185fe6a70189ca"
+      }
+    },
+    {
+      "id": 143308,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-09T11:59:27.236507+00:00",
+      "attrs": {
+        "auditId": 22609
+      }
+    },
+    {
+      "id": 143418,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100507,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/exportfile",
+      "campus": "bahrain",
+      "createdAt": "2024-07-09T12:43:34.97745+00:00",
+      "attrs": {
+        "auditId": 22602
+      }
+    },
+    {
+      "id": 137565,
+      "type": "skill_back-end",
+      "amount": 15,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:50:28.338162+00:00",
+      "attrs": {
+        "version": "37a766c8d222c52c70d29bfe2ca2485743a4b4f8"
+      }
+    },
+    {
+      "id": 137554,
+      "type": "down",
+      "amount": 4600,
+      "userId": 1599,
+      "objectId": 100506,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/dockerize",
+      "campus": "bahrain",
+      "createdAt": "2024-07-02T14:48:11.658692+00:00",
+      "attrs": {
+        "auditId": 21529
+      }
+    },
+    {
+      "id": 232058,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-03-04T21:08:22.60709+00:00",
+      "attrs": {
+        "auditId": 41040
+      }
+    },
+    {
+      "id": 232016,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-03-04T20:00:05.413214+00:00",
+      "attrs": {
+        "auditId": 41039
+      }
+    },
+    {
+      "id": 232011,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-03-04T19:59:46.543863+00:00",
+      "attrs": {
+        "auditId": 41033
+      }
+    },
+    {
+      "id": 231567,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100695,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/image-upload",
+      "campus": "bahrain",
+      "createdAt": "2025-03-03T19:00:01.329885+00:00",
+      "attrs": {
+        "auditId": 41035
+      }
+    },
+    {
+      "id": 275112,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100694,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/authentication",
+      "campus": "bahrain",
+      "createdAt": "2025-06-11T19:54:31.827493+00:00",
+      "attrs": {
+        "auditId": 51750
+      }
+    },
+    {
+      "id": 275393,
+      "type": "down",
+      "amount": 4775,
+      "userId": 1599,
+      "objectId": 100694,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/authentication",
+      "campus": "bahrain",
+      "createdAt": "2025-06-13T17:02:26.48485+00:00",
+      "attrs": {
+        "auditId": 51747
+      }
+    },
+    {
+      "id": 279394,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100702,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "campus": "bahrain",
+      "createdAt": "2025-06-22T13:25:48.898811+00:00",
+      "attrs": {
+        "auditId": 54340
+      }
+    },
+    {
+      "id": 279613,
+      "type": "down",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100702,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "campus": "bahrain",
+      "createdAt": "2025-06-22T16:16:12.63057+00:00",
+      "attrs": {
+        "auditId": 52789
+      }
+    },
+    {
+      "id": 279614,
+      "type": "xp",
+      "amount": 5000,
+      "userId": 1599,
+      "objectId": 100702,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "campus": "bahrain",
+      "createdAt": "2025-06-22T16:16:12.644345+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 279615,
+      "type": "skill_ai",
+      "amount": 10,
+      "userId": 1599,
+      "objectId": 100702,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "campus": "bahrain",
+      "createdAt": "2025-06-22T16:16:12.644345+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 279616,
+      "type": "skill_algo",
+      "amount": 35,
+      "userId": 1599,
+      "objectId": 100702,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "campus": "bahrain",
+      "createdAt": "2025-06-22T16:16:12.644345+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 281305,
+      "type": "up",
+      "amount": 480000,
+      "userId": 1599,
+      "objectId": 100486,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/social-network",
+      "campus": "bahrain",
+      "createdAt": "2025-06-25T13:05:41.771479+00:00",
+      "attrs": {
+        "auditId": 55260
+      }
+    },
+    {
+      "id": 284783,
+      "type": "up",
+      "amount": 145000,
+      "userId": 1599,
+      "objectId": 100487,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/mini-framework",
+      "campus": "bahrain",
+      "createdAt": "2025-07-03T19:33:36.064131+00:00",
+      "attrs": {
+        "auditId": 56186
+      }
+    },
+    {
+      "id": 286349,
+      "type": "down",
+      "amount": 51750,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-07T22:47:57.883252+00:00",
+      "attrs": {
+        "auditId": 56935
+      }
+    },
+    {
+      "id": 286352,
+      "type": "down",
+      "amount": 51750,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-07T22:48:15.558483+00:00",
+      "attrs": {
+        "auditId": 56929
+      }
+    },
+    {
+      "id": 286359,
+      "type": "down",
+      "amount": 51750,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-08T03:27:17.963705+00:00",
+      "attrs": {
+        "auditId": 56928
+      }
+    },
+    {
+      "id": 286444,
+      "type": "up",
+      "amount": 145000,
+      "userId": 1599,
+      "objectId": 100487,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/mini-framework",
+      "campus": "bahrain",
+      "createdAt": "2025-07-08T12:15:51.155526+00:00",
+      "attrs": {
+        "auditId": 56887
+      }
+    },
+    {
+      "id": 286587,
+      "type": "down",
+      "amount": 51750,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-08T14:32:02.0954+00:00",
+      "attrs": {
+        "auditId": 56937
+      }
+    },
+    {
+      "id": 287621,
+      "type": "up",
+      "amount": 145000,
+      "userId": 1599,
+      "objectId": 100487,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/mini-framework",
+      "campus": "bahrain",
+      "createdAt": "2025-07-09T18:39:45.172264+00:00",
+      "attrs": {
+        "auditId": 57553
+      }
+    },
+    {
+      "id": 290514,
+      "type": "down",
+      "amount": 51750,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.304699+00:00",
+      "attrs": {
+        "auditId": 56945
+      }
+    },
+    {
+      "id": 290520,
+      "type": "xp",
+      "amount": 103500,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.325293+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290521,
+      "type": "skill_go",
+      "amount": 52,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.325293+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290522,
+      "type": "skill_js",
+      "amount": 40,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.325293+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290523,
+      "type": "skill_back-end",
+      "amount": 40,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.325293+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290524,
+      "type": "skill_front-end",
+      "amount": 45,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.325293+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290527,
+      "type": "level",
+      "amount": 24,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.409333+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290528,
+      "type": "level",
+      "amount": 25,
+      "userId": 1599,
+      "objectId": 100528,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:11:58.409333+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 290544,
+      "type": "down",
+      "amount": 25875,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:20:56.224892+00:00",
+      "attrs": {
+        "auditId": 58144
+      }
+    },
+    {
+      "id": 290580,
+      "type": "down",
+      "amount": 25875,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T19:59:57.696525+00:00",
+      "attrs": {
+        "auditId": 58148
+      }
+    },
+    {
+      "id": 290599,
+      "type": "down",
+      "amount": 25875,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-13T20:41:30.581499+00:00",
+      "attrs": {
+        "auditId": 58143
+      }
+    },
+    {
+      "id": 292413,
+      "type": "down",
+      "amount": 25875,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-14T16:25:37.490012+00:00",
+      "attrs": {
+        "auditId": 58150
+      }
+    },
+    {
+      "id": 292669,
+      "type": "up",
+      "amount": 49000,
+      "userId": 1599,
+      "objectId": 100512,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/history",
+      "campus": "bahrain",
+      "createdAt": "2025-07-14T17:50:52.163125+00:00",
+      "attrs": {
+        "auditId": 58357
+      }
+    },
+    {
+      "id": 296248,
+      "type": "down",
+      "amount": 25875,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-16T17:16:32.320607+00:00",
+      "attrs": {
+        "auditId": 58153
+      }
+    },
+    {
+      "id": 296252,
+      "type": "xp",
+      "amount": 51750,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-16T17:16:32.347068+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 296253,
+      "type": "skill_go",
+      "amount": 55,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-16T17:16:32.347068+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 296254,
+      "type": "skill_back-end",
+      "amount": 50,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-16T17:16:32.347068+00:00",
+      "attrs": {}
+    },
+    {
+      "id": 296255,
+      "type": "level",
+      "amount": 26,
+      "userId": 1599,
+      "objectId": 100514,
+      "eventId": 72,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "campus": "bahrain",
+      "createdAt": "2025-07-16T17:16:32.431743+00:00",
+      "attrs": {}
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetTransactionsWithDetails {
+      transaction {
+        id
+        type
+        amount
+        userId
+        objectId
+        eventId
+        path
+        campus
+        createdAt
+        attrs
+      }
+    }
+  

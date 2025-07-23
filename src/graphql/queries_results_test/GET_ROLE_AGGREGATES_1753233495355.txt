@@ -1,0 +1,32 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ROLE_AGGREGATES
+Timestamp: 2025-07-23T01:18:15.355Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: role_aggregate
+Record Count: 1
+Data Summary: role_aggregate: Aggregate({"count":2})
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "role_aggregate": {
+    "aggregate": {
+      "count": 2
+    }
+  }
+}
+==================================================
+
+Query:
+
+    query GetRoleAggregates {
+      role_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  

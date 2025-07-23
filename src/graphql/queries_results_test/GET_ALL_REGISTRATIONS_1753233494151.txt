@@ -1,0 +1,5181 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_REGISTRATIONS
+Timestamp: 2025-07-23T01:18:14.151Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: registration
+Record Count: 572
+Data Summary: registration: Array[572]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "registration": [
+    {
+      "id": 18,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-08T07:00:00+00:00",
+      "endAt": "2023-03-09T14:10:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 40,
+      "createdAt": "2023-06-18T11:17:13.588792+00:00",
+      "startAt": "2023-06-18T11:30:00+00:00",
+      "endAt": "2023-06-18T13:50:00+00:00",
+      "objectId": 100764,
+      "path": "/bahrain/bh-piscine/checkpoint-repeat",
+      "campus": "bahrain"
+    },
+    {
+      "id": 27,
+      "createdAt": "2023-05-14T06:00:00.836316+00:00",
+      "startAt": "2023-05-17T07:00:00+00:00",
+      "endAt": "2023-05-18T06:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 19,
+      "createdAt": "2023-03-01T10:29:29.040039+00:00",
+      "startAt": "2023-03-01T09:00:00+00:00",
+      "endAt": "2023-03-02T13:30:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 12,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-01T07:00:00+00:00",
+      "endAt": "2023-03-02T07:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 25,
+      "createdAt": "2023-05-10T08:12:29.568012+00:00",
+      "startAt": "2023-05-10T07:00:00+00:00",
+      "endAt": "2023-05-10T14:30:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 16,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-01T07:00:00+00:00",
+      "endAt": "2023-03-02T15:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 13,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-07T05:00:00+00:00",
+      "endAt": "2023-03-09T09:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 28,
+      "createdAt": "2023-05-14T06:00:00.836316+00:00",
+      "startAt": "2023-05-17T07:00:00+00:00",
+      "endAt": "2023-05-18T19:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 24,
+      "createdAt": "2023-05-07T07:09:37.185365+00:00",
+      "startAt": "2023-05-07T07:08:00+00:00",
+      "endAt": "2023-05-10T02:30:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 34,
+      "createdAt": "2023-05-21T06:00:00.400965+00:00",
+      "startAt": "2023-05-19T17:00:00.399+00:00",
+      "endAt": "2023-05-21T05:00:00.399+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 21,
+      "createdAt": "2023-04-12T11:24:20.424565+00:00",
+      "startAt": "2023-04-12T11:22:00+00:00",
+      "endAt": "2023-05-14T04:00:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 26,
+      "createdAt": "2023-05-11T07:05:35.663749+00:00",
+      "startAt": "2023-05-11T07:30:00+00:00",
+      "endAt": "2023-05-14T06:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 32,
+      "createdAt": "2023-05-14T06:00:00.836316+00:00",
+      "startAt": "2023-05-31T07:00:00.835+00:00",
+      "endAt": "2023-06-01T19:00:00.835+00:00",
+      "objectId": 100183,
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "campus": "bahrain"
+    },
+    {
+      "id": 46,
+      "createdAt": "2023-08-21T14:46:59.292702+00:00",
+      "startAt": "2023-08-20T14:46:00+00:00",
+      "endAt": "2023-08-30T14:16:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 30,
+      "createdAt": "2023-05-14T06:00:00.836316+00:00",
+      "startAt": "2023-05-23T06:00:00+00:00",
+      "endAt": "2023-05-25T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 29,
+      "createdAt": "2023-05-14T06:00:00.836316+00:00",
+      "startAt": "2023-05-24T07:00:00+00:00",
+      "endAt": "2023-05-25T06:30:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 44,
+      "createdAt": "2023-07-26T12:31:29.596489+00:00",
+      "startAt": "2023-08-01T06:00:00+00:00",
+      "endAt": "2023-08-08T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 41,
+      "createdAt": "2023-07-23T14:27:01.043221+00:00",
+      "startAt": "2023-07-23T15:00:00+00:00",
+      "endAt": "2023-08-07T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 42,
+      "createdAt": "2023-07-25T07:56:26.758222+00:00",
+      "startAt": "2023-08-01T06:00:00+00:00",
+      "endAt": "2023-09-03T06:59:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 45,
+      "createdAt": "2023-08-17T13:01:49.726444+00:00",
+      "startAt": "2023-08-20T05:00:00+00:00",
+      "endAt": "2023-08-30T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 58,
+      "createdAt": "2023-09-01T23:06:20.928407+00:00",
+      "startAt": "2023-09-01T23:06:00+00:00",
+      "endAt": "2023-09-01T23:06:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 62,
+      "createdAt": "2023-09-03T07:00:00.979195+00:00",
+      "startAt": "2023-09-13T08:00:00+00:00",
+      "endAt": "2023-09-14T19:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 57,
+      "createdAt": "2023-09-01T22:48:13.306786+00:00",
+      "startAt": "2023-09-01T22:47:00+00:00",
+      "endAt": "2023-09-01T22:48:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 64,
+      "createdAt": "2023-09-03T07:00:00.979195+00:00",
+      "startAt": "2023-09-20T08:00:00.978+00:00",
+      "endAt": "2023-09-21T20:00:00.978+00:00",
+      "objectId": 100183,
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "campus": "bahrain"
+    },
+    {
+      "id": 59,
+      "createdAt": "2023-09-03T07:00:00.979195+00:00",
+      "startAt": "2023-09-06T08:00:00+00:00",
+      "endAt": "2023-09-07T06:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 60,
+      "createdAt": "2023-09-03T07:00:00.979195+00:00",
+      "startAt": "2023-09-06T08:00:00+00:00",
+      "endAt": "2023-09-07T19:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 61,
+      "createdAt": "2023-09-03T07:00:00.979195+00:00",
+      "startAt": "2023-09-13T08:00:00+00:00",
+      "endAt": "2023-09-14T06:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 67,
+      "createdAt": "2023-09-18T12:30:13.908032+00:00",
+      "startAt": "2023-09-18T12:29:00+00:00",
+      "endAt": "2023-09-19T23:31:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 63,
+      "createdAt": "2023-09-03T07:00:00.979195+00:00",
+      "startAt": "2023-09-20T07:00:00+00:00",
+      "endAt": "2023-09-23T06:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 35,
+      "createdAt": "2023-05-21T06:00:00.400965+00:00",
+      "startAt": "2023-09-08T03:00:00+00:00",
+      "endAt": "2023-11-26T06:00:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 89,
+      "createdAt": "2023-11-26T07:00:00.531052+00:00",
+      "startAt": "2023-12-06T08:00:00.53+00:00",
+      "endAt": "2023-12-07T20:00:00.53+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 90,
+      "createdAt": "2023-11-26T07:00:00.531052+00:00",
+      "startAt": "2023-12-13T08:00:00.53+00:00",
+      "endAt": "2023-12-14T20:00:00.53+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 162,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-03-06T08:00:00.942+00:00",
+      "endAt": "2024-03-07T20:00:00.942+00:00",
+      "objectId": 100183,
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "campus": "bahrain"
+    },
+    {
+      "id": 118,
+      "createdAt": "2024-01-29T06:49:35.284635+00:00",
+      "startAt": "2024-01-29T06:48:00+00:00",
+      "endAt": "2024-01-29T06:48:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 112,
+      "createdAt": "2024-01-22T07:36:53.732706+00:00",
+      "startAt": "2024-01-22T07:00:00+00:00",
+      "endAt": "2024-01-25T10:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 82,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-11-29T08:00:00+00:00",
+      "endAt": "2023-11-30T06:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 74,
+      "createdAt": "2023-10-05T10:51:55.545227+00:00",
+      "startAt": "2023-10-05T10:51:00+00:00",
+      "endAt": "2023-10-08T10:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 75,
+      "createdAt": "2023-10-15T12:28:06.851643+00:00",
+      "startAt": "2023-10-15T12:27:00+00:00",
+      "endAt": "2023-10-15T12:29:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 83,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-11-29T08:00:00+00:00",
+      "endAt": "2023-11-30T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 84,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-12-06T08:00:00+00:00",
+      "endAt": "2023-12-09T06:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 78,
+      "createdAt": "2023-11-01T09:42:53.504409+00:00",
+      "startAt": "2023-11-01T09:41:00+00:00",
+      "endAt": "2023-11-19T05:30:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 77,
+      "createdAt": "2023-10-31T10:53:37.901616+00:00",
+      "startAt": "2023-10-12T10:52:00+00:00",
+      "endAt": "2023-11-12T13:55:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 76,
+      "createdAt": "2023-10-24T10:49:05.130412+00:00",
+      "startAt": "2023-10-24T10:46:00+00:00",
+      "endAt": "2023-11-07T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 91,
+      "createdAt": "2023-12-06T08:17:08.154209+00:00",
+      "startAt": "2023-12-06T08:16:00+00:00",
+      "endAt": "2023-12-09T11:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 79,
+      "createdAt": "2023-11-08T07:39:21.2028+00:00",
+      "startAt": "2023-11-08T10:37:00+00:00",
+      "endAt": "2023-11-14T14:08:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 85,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-12-06T08:00:00.018+00:00",
+      "endAt": "2023-12-07T20:00:00.018+00:00",
+      "objectId": 100183,
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "campus": "bahrain"
+    },
+    {
+      "id": 86,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-11-17T18:00:00.018+00:00",
+      "endAt": "2023-11-19T06:00:00.018+00:00",
+      "objectId": 100112,
+      "path": "/bahrain/bh-piscine/final-checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 92,
+      "createdAt": "2023-12-11T10:22:45.228311+00:00",
+      "startAt": "2023-12-11T10:22:00+00:00",
+      "endAt": "2023-12-11T10:22:00+00:00",
+      "objectId": 100764,
+      "path": "/bahrain/bh-piscine/retest",
+      "campus": "bahrain"
+    },
+    {
+      "id": 81,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-11-22T08:00:00+00:00",
+      "endAt": "2023-11-23T18:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 80,
+      "createdAt": "2023-11-19T07:00:00.019279+00:00",
+      "startAt": "2023-11-21T08:00:00+00:00",
+      "endAt": "2023-11-23T06:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 94,
+      "createdAt": "2024-01-07T07:57:34.672117+00:00",
+      "startAt": "2024-01-07T07:56:00+00:00",
+      "endAt": "2024-01-14T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 95,
+      "createdAt": "2024-01-14T09:24:19.061693+00:00",
+      "startAt": "2024-01-14T09:24:00+00:00",
+      "endAt": "2024-01-14T09:24:00+00:00",
+      "objectId": 100236,
+      "path": "/bahrain/bh-module",
+      "campus": "bahrain"
+    },
+    {
+      "id": 87,
+      "createdAt": "2023-11-21T15:02:51.923295+00:00",
+      "startAt": "2023-11-21T15:01:00+00:00",
+      "endAt": "2023-11-23T13:51:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 88,
+      "createdAt": "2023-11-26T07:00:00.531052+00:00",
+      "startAt": "2023-11-29T14:00:00.53+00:00",
+      "endAt": "2023-12-01T02:00:00.53+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 96,
+      "createdAt": "2024-01-14T09:25:00.236512+00:00",
+      "startAt": "2024-01-12T20:25:00.235+00:00",
+      "endAt": "2024-01-14T08:25:00.235+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 283,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-07-10T08:00:00.34+00:00",
+      "endAt": "2024-07-11T20:00:00.34+00:00",
+      "objectId": 100183,
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "campus": "bahrain"
+    },
+    {
+      "id": 93,
+      "createdAt": "2024-01-07T07:55:12.404014+00:00",
+      "startAt": "2024-01-07T07:53:00+00:00",
+      "endAt": "2024-01-28T06:55:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 163,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-02-16T18:00:00.942+00:00",
+      "endAt": "2024-02-18T06:00:00.942+00:00",
+      "objectId": 100112,
+      "path": "/bahrain/bh-piscine/final-checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 284,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-06-21T18:00:00.34+00:00",
+      "endAt": "2024-06-23T06:00:00.34+00:00",
+      "objectId": 100112,
+      "path": "/bahrain/bh-piscine/final-checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 111,
+      "createdAt": "2024-01-21T10:28:44.702346+00:00",
+      "startAt": "2024-01-21T02:30:00+00:00",
+      "endAt": "2024-01-30T13:52:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 157,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-02-21T08:00:00+00:00",
+      "endAt": "2024-02-22T07:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 158,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-02-21T08:00:00+00:00",
+      "endAt": "2024-02-22T20:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 159,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-02-28T08:00:00+00:00",
+      "endAt": "2024-02-29T06:50:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 160,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-02-28T08:00:00+00:00",
+      "endAt": "2024-02-29T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 114,
+      "createdAt": "2024-01-24T10:55:07.431466+00:00",
+      "startAt": "2024-01-24T10:54:00+00:00",
+      "endAt": "2024-01-24T10:54:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 113,
+      "createdAt": "2024-01-22T07:38:26.79555+00:00",
+      "startAt": "2024-01-21T07:00:00+00:00",
+      "endAt": "2024-01-25T11:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 115,
+      "createdAt": "2024-01-28T07:00:00.859426+00:00",
+      "startAt": "2024-01-31T14:00:00.858+00:00",
+      "endAt": "2024-02-02T02:00:00.858+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 116,
+      "createdAt": "2024-01-28T07:00:00.859426+00:00",
+      "startAt": "2024-02-07T08:00:00.858+00:00",
+      "endAt": "2024-02-08T20:00:00.858+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 117,
+      "createdAt": "2024-01-28T07:00:00.859426+00:00",
+      "startAt": "2024-02-14T08:00:00.858+00:00",
+      "endAt": "2024-02-15T20:00:00.858+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 161,
+      "createdAt": "2024-02-18T07:00:00.943093+00:00",
+      "startAt": "2024-03-06T08:00:00+00:00",
+      "endAt": "2024-03-09T07:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 120,
+      "createdAt": "2024-02-06T11:05:34.340778+00:00",
+      "startAt": "2024-02-06T11:03:00+00:00",
+      "endAt": "2024-02-12T11:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 133,
+      "createdAt": "2024-02-13T12:09:35.52211+00:00",
+      "startAt": "2024-02-13T12:09:00+00:00",
+      "endAt": "2024-02-13T12:09:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 119,
+      "createdAt": "2024-01-31T07:59:20.614443+00:00",
+      "startAt": "2024-01-31T08:00:00+00:00",
+      "endAt": "2024-02-13T14:01:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 102,
+      "createdAt": "2024-01-15T11:05:46.351412+00:00",
+      "startAt": "2024-01-15T11:04:00+00:00",
+      "endAt": "2024-02-18T06:59:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 213,
+      "createdAt": "2024-04-07T11:33:20.375012+00:00",
+      "startAt": "2024-04-07T11:00:00+00:00",
+      "endAt": "2024-04-07T11:52:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 193,
+      "createdAt": "2024-03-06T13:36:52.366156+00:00",
+      "startAt": "2024-03-06T13:36:00+00:00",
+      "endAt": "2024-03-06T13:36:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 195,
+      "createdAt": "2024-03-12T09:48:57.824595+00:00",
+      "startAt": "2024-03-12T09:48:00+00:00",
+      "endAt": "2024-03-17T08:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 196,
+      "createdAt": "2024-03-12T09:49:34.146931+00:00",
+      "startAt": "2024-03-12T09:49:00+00:00",
+      "endAt": "2024-03-17T08:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 198,
+      "createdAt": "2024-03-16T16:40:10.541527+00:00",
+      "startAt": "2024-03-16T16:39:00+00:00",
+      "endAt": "2024-03-16T16:39:00+00:00",
+      "objectId": 100764,
+      "path": "/bahrain/bh-piscine/retest",
+      "campus": "bahrain"
+    },
+    {
+      "id": 199,
+      "createdAt": "2024-03-21T08:42:12.303604+00:00",
+      "startAt": "2024-03-21T08:41:00+00:00",
+      "endAt": "2024-03-21T08:41:00+00:00",
+      "objectId": 100764,
+      "path": "/bahrain/bh-piscine/retest",
+      "campus": "bahrain"
+    },
+    {
+      "id": 215,
+      "createdAt": "2024-04-18T14:41:23.802048+00:00",
+      "startAt": "2024-04-18T14:43:00+00:00",
+      "endAt": "2024-04-18T14:47:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 216,
+      "createdAt": "2024-04-22T08:14:05.740164+00:00",
+      "startAt": "2024-04-22T08:13:00+00:00",
+      "endAt": "2024-04-28T13:13:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 217,
+      "createdAt": "2024-04-22T08:15:03.006541+00:00",
+      "startAt": "2024-04-22T08:14:00+00:00",
+      "endAt": "2024-04-28T13:14:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 236,
+      "createdAt": "2024-05-07T10:41:23.133109+00:00",
+      "startAt": "2024-05-07T10:39:00+00:00",
+      "endAt": "2024-05-12T13:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 237,
+      "createdAt": "2024-05-07T10:42:24.740711+00:00",
+      "startAt": "2024-05-07T10:41:00+00:00",
+      "endAt": "2024-05-12T13:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 239,
+      "createdAt": "2024-05-19T16:17:53.659582+00:00",
+      "startAt": "2024-05-19T16:20:00+00:00",
+      "endAt": "2024-05-19T16:22:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 264,
+      "createdAt": "2024-06-09T08:06:09.475382+00:00",
+      "startAt": "2024-06-09T08:05:00+00:00",
+      "endAt": "2024-06-23T06:00:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 240,
+      "createdAt": "2024-05-22T14:15:22.685931+00:00",
+      "startAt": "2024-05-22T14:14:00+00:00",
+      "endAt": "2024-05-26T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 241,
+      "createdAt": "2024-05-22T14:18:13.373821+00:00",
+      "startAt": "2024-05-22T14:17:00+00:00",
+      "endAt": "2024-05-26T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 242,
+      "createdAt": "2024-06-02T13:40:54.501411+00:00",
+      "startAt": "2024-06-02T13:40:00+00:00",
+      "endAt": "2024-06-02T13:40:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 243,
+      "createdAt": "2024-06-03T10:32:31.63874+00:00",
+      "startAt": "2024-06-03T10:31:00+00:00",
+      "endAt": "2024-06-09T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 244,
+      "createdAt": "2024-06-03T10:33:07.207297+00:00",
+      "startAt": "2024-06-03T10:32:00+00:00",
+      "endAt": "2024-06-09T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 238,
+      "createdAt": "2024-05-14T07:50:35.645127+00:00",
+      "startAt": "2024-05-14T07:49:00+00:00",
+      "endAt": "2024-06-05T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 263,
+      "createdAt": "2024-06-09T08:03:53.676735+00:00",
+      "startAt": "2024-06-09T08:02:00+00:00",
+      "endAt": "2024-06-23T06:00:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 262,
+      "createdAt": "2024-06-06T06:22:23.006518+00:00",
+      "startAt": "2024-06-06T06:21:00+00:00",
+      "endAt": "2024-06-12T14:30:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 266,
+      "createdAt": "2024-06-13T10:21:25.507344+00:00",
+      "startAt": "2024-06-13T10:21:00+00:00",
+      "endAt": "2024-06-13T10:25:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 267,
+      "createdAt": "2024-06-15T07:59:30.065492+00:00",
+      "startAt": "2024-06-15T07:59:00+00:00",
+      "endAt": "2024-06-15T07:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 268,
+      "createdAt": "2024-06-19T08:52:34.950276+00:00",
+      "startAt": "2024-06-19T08:51:00+00:00",
+      "endAt": "2024-06-20T08:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 269,
+      "createdAt": "2024-06-19T08:53:24.423598+00:00",
+      "startAt": "2024-06-19T08:52:00+00:00",
+      "endAt": "2024-06-20T08:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 265,
+      "createdAt": "2024-06-13T09:19:46.316971+00:00",
+      "startAt": "2024-06-13T09:19:00+00:00",
+      "endAt": "2024-06-19T14:20:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 270,
+      "createdAt": "2024-06-22T17:09:46.877135+00:00",
+      "startAt": "2024-06-22T17:09:00+00:00",
+      "endAt": "2024-06-22T17:09:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 271,
+      "createdAt": "2024-06-22T17:29:41.989446+00:00",
+      "startAt": "2024-06-22T17:29:00+00:00",
+      "endAt": "2024-06-22T17:29:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 272,
+      "createdAt": "2024-06-23T06:00:00.412929+00:00",
+      "startAt": "2024-06-26T13:00:00.411+00:00",
+      "endAt": "2024-06-28T01:00:00.411+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 273,
+      "createdAt": "2024-06-23T06:00:00.412929+00:00",
+      "startAt": "2024-07-03T07:00:00.411+00:00",
+      "endAt": "2024-07-04T19:00:00.411+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 261,
+      "createdAt": "2024-06-05T14:34:09.862352+00:00",
+      "startAt": "2024-06-05T14:33:00+00:00",
+      "endAt": "2024-06-23T06:00:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 406,
+      "createdAt": "2024-08-26T10:09:41.627971+00:00",
+      "startAt": "2024-08-26T10:09:00+00:00",
+      "endAt": "2024-08-26T10:09:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 285,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-06-21T19:00:00.34+00:00",
+      "endAt": "2024-06-23T07:00:00.34+00:00",
+      "objectId": 100764,
+      "path": "/bahrain/bh-piscine/retest",
+      "campus": "bahrain"
+    },
+    {
+      "id": 286,
+      "createdAt": "2024-06-25T13:27:36.082793+00:00",
+      "startAt": "2024-06-25T11:00:00+00:00",
+      "endAt": "2024-07-01T10:55:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 287,
+      "createdAt": "2024-06-25T13:28:39.191222+00:00",
+      "startAt": "2024-06-25T11:00:00+00:00",
+      "endAt": "2024-07-01T10:55:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 278,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-06-26T08:00:00+00:00",
+      "endAt": "2024-06-27T06:55:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 209,
+      "createdAt": "2024-03-24T11:41:48.273266+00:00",
+      "startAt": "2024-03-24T11:41:00+00:00",
+      "endAt": "2024-03-30T20:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 210,
+      "createdAt": "2024-03-31T07:00:00.80948+00:00",
+      "startAt": "2024-04-03T14:00:00.808+00:00",
+      "endAt": "2024-04-05T02:00:00.808+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 211,
+      "createdAt": "2024-03-31T07:00:00.80948+00:00",
+      "startAt": "2024-04-10T08:00:00.808+00:00",
+      "endAt": "2024-04-11T20:00:00.808+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 212,
+      "createdAt": "2024-03-31T07:00:00.80948+00:00",
+      "startAt": "2024-04-17T08:00:00.808+00:00",
+      "endAt": "2024-04-18T20:00:00.808+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 405,
+      "createdAt": "2024-08-26T10:08:21.37103+00:00",
+      "startAt": "2024-08-26T10:08:00+00:00",
+      "endAt": "2024-08-26T10:08:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 407,
+      "createdAt": "2024-08-26T11:19:11.595266+00:00",
+      "startAt": "2024-08-26T11:18:00+00:00",
+      "endAt": "2024-08-26T11:20:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 408,
+      "createdAt": "2024-08-26T14:01:54.441424+00:00",
+      "startAt": "2024-08-26T14:02:00+00:00",
+      "endAt": "2024-08-26T14:02:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 274,
+      "createdAt": "2024-06-23T06:00:00.412929+00:00",
+      "startAt": "2024-07-10T07:00:00.411+00:00",
+      "endAt": "2024-07-11T19:00:00.411+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 275,
+      "createdAt": "2024-06-23T06:00:00.449798+00:00",
+      "startAt": "2024-06-26T13:00:00.417+00:00",
+      "endAt": "2024-06-28T01:00:00.417+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 276,
+      "createdAt": "2024-06-23T06:00:00.449798+00:00",
+      "startAt": "2024-07-03T07:00:00.417+00:00",
+      "endAt": "2024-07-04T19:00:00.417+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 277,
+      "createdAt": "2024-06-23T06:00:00.449798+00:00",
+      "startAt": "2024-07-10T07:00:00.417+00:00",
+      "endAt": "2024-07-11T19:00:00.417+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 710,
+      "createdAt": "2025-01-13T16:28:24.427333+00:00",
+      "startAt": "2025-01-13T17:00:00+00:00",
+      "endAt": "2025-01-16T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 409,
+      "createdAt": "2024-08-27T11:17:35.462539+00:00",
+      "startAt": "2024-08-27T11:20:00+00:00",
+      "endAt": "2024-08-27T11:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 486,
+      "createdAt": "2024-09-03T14:02:33.015118+00:00",
+      "startAt": "2024-09-03T14:02:00+00:00",
+      "endAt": "2024-09-03T14:05:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 487,
+      "createdAt": "2024-09-03T14:03:11.412148+00:00",
+      "startAt": "2024-09-03T14:02:00+00:00",
+      "endAt": "2024-09-03T14:05:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 410,
+      "createdAt": "2024-08-27T14:44:37.307436+00:00",
+      "startAt": "2024-08-27T14:45:00+00:00",
+      "endAt": "2024-08-27T14:45:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 622,
+      "createdAt": "2024-11-17T07:02:16.153658+00:00",
+      "startAt": "2024-11-17T07:02:00+00:00",
+      "endAt": "2024-11-19T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 413,
+      "createdAt": "2024-08-28T13:26:39.970503+00:00",
+      "startAt": "2024-08-28T13:27:00+00:00",
+      "endAt": "2024-08-28T13:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 699,
+      "createdAt": "2025-01-05T12:10:45.38888+00:00",
+      "startAt": "2025-01-05T12:10:00+00:00",
+      "endAt": "2025-01-05T12:10:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 703,
+      "createdAt": "2025-01-06T06:40:00.044274+00:00",
+      "startAt": "2025-01-06T06:37:00+00:00",
+      "endAt": "2025-01-06T07:00:00+00:00",
+      "objectId": 101433,
+      "path": "/bahrain/bh-module/piscine-ux",
+      "campus": "bahrain"
+    },
+    {
+      "id": 704,
+      "createdAt": "2025-01-06T06:43:03.176974+00:00",
+      "startAt": "2025-01-06T06:42:00+00:00",
+      "endAt": "2025-01-06T07:00:00+00:00",
+      "objectId": 101433,
+      "path": "/bahrain/bh-module/piscine-ux",
+      "campus": "bahrain"
+    },
+    {
+      "id": 705,
+      "createdAt": "2025-01-07T10:38:59.644824+00:00",
+      "startAt": "2025-01-07T10:38:00+00:00",
+      "endAt": "2025-01-07T10:38:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 706,
+      "createdAt": "2025-01-09T09:29:21.525127+00:00",
+      "startAt": "2025-01-09T09:29:00+00:00",
+      "endAt": "2025-01-09T09:29:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 692,
+      "createdAt": "2025-01-05T12:07:51.914471+00:00",
+      "startAt": "2025-01-08T19:07:00+00:00",
+      "endAt": "2025-01-10T07:07:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 700,
+      "createdAt": "2025-01-05T12:10:45.38888+00:00",
+      "startAt": "2025-01-08T19:10:00+00:00",
+      "endAt": "2025-01-10T07:10:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 709,
+      "createdAt": "2025-01-13T16:25:35.451172+00:00",
+      "startAt": "2025-01-13T17:00:00+00:00",
+      "endAt": "2025-01-16T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 708,
+      "createdAt": "2025-01-13T12:35:21.068859+00:00",
+      "startAt": "2025-01-13T12:35:00+00:00",
+      "endAt": "2025-01-13T12:35:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 711,
+      "createdAt": "2025-01-13T16:41:01.001617+00:00",
+      "startAt": "2025-01-13T17:00:00+00:00",
+      "endAt": "2025-01-16T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 701,
+      "createdAt": "2025-01-05T12:10:45.38888+00:00",
+      "startAt": "2025-01-15T13:10:00+00:00",
+      "endAt": "2025-01-17T01:10:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 712,
+      "createdAt": "2025-01-19T15:38:23.728915+00:00",
+      "startAt": "2025-01-19T05:59:00+00:00",
+      "endAt": "2025-01-19T06:00:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 716,
+      "createdAt": "2025-01-19T16:40:52.649901+00:00",
+      "startAt": "2025-01-19T06:40:00+00:00",
+      "endAt": "2025-01-19T06:40:00+00:00",
+      "objectId": 101433,
+      "path": "/bahrain/bh-module/piscine-ux",
+      "campus": "bahrain"
+    },
+    {
+      "id": 717,
+      "createdAt": "2025-01-19T17:07:58.902344+00:00",
+      "startAt": "2025-01-19T06:59:00+00:00",
+      "endAt": "2025-01-19T07:00:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 713,
+      "createdAt": "2025-01-19T15:38:23.728915+00:00",
+      "startAt": "2025-01-22T13:00:00+00:00",
+      "endAt": "2025-01-24T01:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 698,
+      "createdAt": "2025-01-05T12:09:02.638862+00:00",
+      "startAt": "2025-01-22T13:09:00+00:00",
+      "endAt": "2025-01-24T01:09:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 721,
+      "createdAt": "2025-01-22T11:27:58.992771+00:00",
+      "startAt": "2025-01-22T11:30:00+00:00",
+      "endAt": "2025-01-23T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 702,
+      "createdAt": "2025-01-05T12:10:45.38888+00:00",
+      "startAt": "2025-01-22T13:10:00+00:00",
+      "endAt": "2025-01-24T01:10:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 718,
+      "createdAt": "2025-01-19T17:07:58.902344+00:00",
+      "startAt": "2025-01-22T14:00:00+00:00",
+      "endAt": "2025-01-24T02:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 724,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-01-22T14:45:00+00:00",
+      "endAt": "2025-01-22T14:45:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 726,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-01-28T08:00:00+00:00",
+      "endAt": "2025-01-30T17:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 714,
+      "createdAt": "2025-01-19T15:38:23.728915+00:00",
+      "startAt": "2025-01-29T07:00:00+00:00",
+      "endAt": "2025-01-30T19:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 719,
+      "createdAt": "2025-01-19T17:07:58.902344+00:00",
+      "startAt": "2025-01-29T08:00:00+00:00",
+      "endAt": "2025-01-30T20:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 725,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-01-28T08:00:00+00:00",
+      "endAt": "2025-02-01T12:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 17,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-20T07:00:00+00:00",
+      "endAt": "2023-03-20T19:00:00+00:00",
+      "objectId": 100183,
+      "path": "/bahrain/bh-piscine/quadchecker",
+      "campus": "bahrain"
+    },
+    {
+      "id": 14,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-15T07:00:00+00:00",
+      "endAt": "2023-03-18T06:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 20,
+      "createdAt": "2023-03-29T13:10:09.877587+00:00",
+      "startAt": "2023-03-29T21:00:00+00:00",
+      "endAt": "2023-04-10T16:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1,
+      "createdAt": "2023-02-19T11:17:35.004267+00:00",
+      "startAt": "2023-02-19T11:11:00+00:00",
+      "endAt": "2023-02-21T19:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 2,
+      "createdAt": "2023-02-19T11:22:43.110659+00:00",
+      "startAt": "2023-02-22T06:00:00+00:00",
+      "endAt": "2023-02-25T20:55:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 279,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-06-26T08:00:00+00:00",
+      "endAt": "2024-06-27T20:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 281,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-07-03T08:00:00+00:00",
+      "endAt": "2024-07-04T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 15,
+      "createdAt": "2023-02-26T06:00:00.545001+00:00",
+      "startAt": "2023-03-22T01:00:00.543+00:00",
+      "endAt": "2023-03-23T13:00:00.543+00:00",
+      "objectId": 100112,
+      "path": "/bahrain/bh-piscine/final-checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 22,
+      "createdAt": "2023-04-16T10:38:00.277915+00:00",
+      "startAt": "2023-04-16T11:00:00+00:00",
+      "endAt": "2023-05-03T14:30:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 31,
+      "createdAt": "2023-05-14T06:00:00.836316+00:00",
+      "startAt": "2023-05-31T07:00:00+00:00",
+      "endAt": "2023-06-03T06:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 488,
+      "createdAt": "2024-09-03T14:05:35.560577+00:00",
+      "startAt": "2024-09-03T14:05:00+00:00",
+      "endAt": "2024-09-03T14:05:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 411,
+      "createdAt": "2024-08-27T14:48:14.754996+00:00",
+      "startAt": "2024-08-27T14:47:00+00:00",
+      "endAt": "2024-08-27T14:49:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 535,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-09-20T15:00:00+00:00",
+      "endAt": "2024-09-22T03:00:00+00:00",
+      "objectId": 100112,
+      "path": "/bahrain/bh-piscine/final-checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 489,
+      "createdAt": "2024-09-04T07:10:56.099468+00:00",
+      "startAt": "2024-09-04T07:15:00+00:00",
+      "endAt": "2024-09-08T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 493,
+      "createdAt": "2024-09-04T07:12:14.53561+00:00",
+      "startAt": "2024-09-04T07:15:00+00:00",
+      "endAt": "2024-09-08T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 543,
+      "createdAt": "2024-09-17T06:09:58.084692+00:00",
+      "startAt": "2024-09-17T06:15:00+00:00",
+      "endAt": "2024-09-17T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 538,
+      "createdAt": "2024-09-08T15:30:54.655609+00:00",
+      "startAt": "2024-09-08T15:30:00+00:00",
+      "endAt": "2024-09-08T15:35:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 541,
+      "createdAt": "2024-09-17T06:07:44.209763+00:00",
+      "startAt": "2024-09-17T06:15:00+00:00",
+      "endAt": "2024-09-17T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 539,
+      "createdAt": "2024-09-08T15:55:33.5131+00:00",
+      "startAt": "2024-09-08T15:55:00+00:00",
+      "endAt": "2024-09-08T15:57:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 728,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-02-04T08:00:00+00:00",
+      "endAt": "2025-02-06T17:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 720,
+      "createdAt": "2025-01-19T17:07:58.902344+00:00",
+      "startAt": "2025-02-05T08:00:00+00:00",
+      "endAt": "2025-02-06T20:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 729,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-02-11T08:00:00+00:00",
+      "endAt": "2025-02-13T12:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 730,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-02-11T08:00:00+00:00",
+      "endAt": "2025-02-13T17:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 490,
+      "createdAt": "2024-09-04T07:10:56.099468+00:00",
+      "startAt": "2024-09-11T11:00:00+00:00",
+      "endAt": "2024-09-12T23:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 494,
+      "createdAt": "2024-09-04T07:12:14.53561+00:00",
+      "startAt": "2024-09-11T11:00:00+00:00",
+      "endAt": "2024-09-12T23:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 542,
+      "createdAt": "2024-09-17T06:08:55.417342+00:00",
+      "startAt": "2024-09-17T06:15:00+00:00",
+      "endAt": "2024-09-17T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 540,
+      "createdAt": "2024-09-16T07:02:46.911833+00:00",
+      "startAt": "2024-09-16T07:04:00+00:00",
+      "endAt": "2024-09-16T07:05:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 536,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-09-20T16:00:00+00:00",
+      "endAt": "2024-09-22T04:00:00+00:00",
+      "objectId": 101119,
+      "path": "/bahrain/bh-piscine/re-test",
+      "campus": "bahrain"
+    },
+    {
+      "id": 545,
+      "createdAt": "2024-09-19T14:41:07.423076+00:00",
+      "startAt": "2024-09-19T14:43:00+00:00",
+      "endAt": "2024-09-19T14:43:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 544,
+      "createdAt": "2024-09-18T07:13:45.987186+00:00",
+      "startAt": "2024-09-18T07:13:00+00:00",
+      "endAt": "2024-09-18T07:15:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 546,
+      "createdAt": "2024-09-19T14:42:15.51664+00:00",
+      "startAt": "2024-09-19T14:43:00+00:00",
+      "endAt": "2024-09-19T14:45:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 491,
+      "createdAt": "2024-09-04T07:10:56.099468+00:00",
+      "startAt": "2024-09-18T05:00:00+00:00",
+      "endAt": "2024-09-19T17:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 537,
+      "createdAt": "2024-09-05T07:17:26.271359+00:00",
+      "startAt": "2024-09-05T07:16:00+00:00",
+      "endAt": "2024-09-18T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 495,
+      "createdAt": "2024-09-04T07:12:14.53561+00:00",
+      "startAt": "2024-09-18T05:00:00+00:00",
+      "endAt": "2024-09-19T17:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 528,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-09-04T13:53:00+00:00",
+      "endAt": "2024-09-22T07:00:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 497,
+      "createdAt": "2024-09-04T08:52:33.903381+00:00",
+      "startAt": "2024-09-09T07:00:00+00:00",
+      "endAt": "2024-09-22T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 547,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-09-22T06:31:00+00:00",
+      "endAt": "2024-09-22T06:31:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 492,
+      "createdAt": "2024-09-04T07:10:56.099468+00:00",
+      "startAt": "2024-09-25T05:00:00+00:00",
+      "endAt": "2024-09-26T17:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 500,
+      "createdAt": "2024-09-04T08:52:33.903381+00:00",
+      "startAt": "2024-10-09T05:00:00+00:00",
+      "endAt": "2024-10-10T17:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 531,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-10-02T05:00:00+00:00",
+      "endAt": "2024-10-03T06:59:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 555,
+      "createdAt": "2024-09-24T15:55:30.767991+00:00",
+      "startAt": "2024-09-24T15:56:00+00:00",
+      "endAt": "2024-09-24T15:57:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 530,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-09-25T05:00:00+00:00",
+      "endAt": "2024-09-26T17:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 556,
+      "createdAt": "2024-09-24T16:00:44.936469+00:00",
+      "startAt": "2024-09-24T16:00:00+00:00",
+      "endAt": "2024-09-24T16:02:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 496,
+      "createdAt": "2024-09-04T07:12:14.53561+00:00",
+      "startAt": "2024-09-25T05:00:00+00:00",
+      "endAt": "2024-09-26T17:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 549,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-09-25T05:00:00+00:00",
+      "endAt": "2024-09-26T17:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 498,
+      "createdAt": "2024-09-04T08:52:33.903381+00:00",
+      "startAt": "2024-09-25T11:00:00+00:00",
+      "endAt": "2024-09-26T23:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 548,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-09-25T05:00:00+00:00",
+      "endAt": "2024-09-26T05:59:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 532,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-10-02T05:00:00+00:00",
+      "endAt": "2024-10-03T19:59:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 499,
+      "createdAt": "2024-09-04T08:52:33.903381+00:00",
+      "startAt": "2024-10-02T05:00:00+00:00",
+      "endAt": "2024-10-03T17:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 551,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-10-02T05:00:00+00:00",
+      "endAt": "2024-10-03T17:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 550,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-10-02T05:00:00+00:00",
+      "endAt": "2024-10-03T06:59:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 553,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-10-09T05:00:00+00:00",
+      "endAt": "2024-10-10T17:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 533,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-10-10T05:00:00+00:00",
+      "endAt": "2024-10-12T06:59:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 552,
+      "createdAt": "2024-09-22T06:31:58.07498+00:00",
+      "startAt": "2024-10-09T05:00:00+00:00",
+      "endAt": "2024-10-12T06:59:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 393,
+      "createdAt": "2024-08-22T14:41:11.366081+00:00",
+      "startAt": "2024-08-22T14:45:00+00:00",
+      "endAt": "2024-08-26T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 394,
+      "createdAt": "2024-08-22T14:41:11.366081+00:00",
+      "startAt": "2024-08-29T11:00:00+00:00",
+      "endAt": "2024-08-30T23:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 623,
+      "createdAt": "2024-11-17T07:02:53.168184+00:00",
+      "startAt": "2024-11-17T07:03:00+00:00",
+      "endAt": "2024-11-19T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 624,
+      "createdAt": "2024-11-17T07:03:38.996356+00:00",
+      "startAt": "2024-11-17T07:04:00+00:00",
+      "endAt": "2024-11-19T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 401,
+      "createdAt": "2024-08-25T06:28:39.6496+00:00",
+      "startAt": "2024-08-25T06:25:00+00:00",
+      "endAt": "2024-09-04T13:59:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 395,
+      "createdAt": "2024-08-22T14:41:11.366081+00:00",
+      "startAt": "2024-09-05T05:00:00+00:00",
+      "endAt": "2024-09-06T17:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 396,
+      "createdAt": "2024-08-22T14:41:11.366081+00:00",
+      "startAt": "2024-09-12T05:00:00+00:00",
+      "endAt": "2024-09-13T17:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 501,
+      "createdAt": "2024-09-04T08:54:40.870757+00:00",
+      "startAt": "2024-09-09T07:00:00+00:00",
+      "endAt": "2024-09-22T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 529,
+      "createdAt": "2024-09-04T13:54:11.805236+00:00",
+      "startAt": "2024-09-25T05:00:00+00:00",
+      "endAt": "2024-09-26T06:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 557,
+      "createdAt": "2024-09-26T06:53:33.64845+00:00",
+      "startAt": "2024-09-26T06:55:00+00:00",
+      "endAt": "2024-09-26T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 558,
+      "createdAt": "2024-09-26T06:54:33.989522+00:00",
+      "startAt": "2024-09-26T06:55:00+00:00",
+      "endAt": "2024-09-26T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 559,
+      "createdAt": "2024-09-26T06:55:20.591999+00:00",
+      "startAt": "2024-09-26T06:56:00+00:00",
+      "endAt": "2024-09-26T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 333,
+      "createdAt": "2024-08-05T08:24:20.03305+00:00",
+      "startAt": "2024-08-03T16:24:00+00:00",
+      "endAt": "2024-08-05T04:24:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 378,
+      "createdAt": "2024-08-05T11:17:38.446211+00:00",
+      "startAt": "2024-08-05T11:17:00+00:00",
+      "endAt": "2024-08-06T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 380,
+      "createdAt": "2024-08-10T09:02:06.63493+00:00",
+      "startAt": "2024-08-10T09:01:00+00:00",
+      "endAt": "2024-08-10T09:01:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 502,
+      "createdAt": "2024-09-04T08:54:40.870757+00:00",
+      "startAt": "2024-09-25T11:00:00+00:00",
+      "endAt": "2024-09-26T23:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 381,
+      "createdAt": "2024-08-11T11:06:49.520818+00:00",
+      "startAt": "2024-08-11T11:06:00+00:00",
+      "endAt": "2024-08-12T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 386,
+      "createdAt": "2024-08-15T07:01:16.399794+00:00",
+      "startAt": "2024-08-15T07:00:00+00:00",
+      "endAt": "2024-08-15T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 387,
+      "createdAt": "2024-08-17T07:21:31.541882+00:00",
+      "startAt": "2024-08-17T07:21:00+00:00",
+      "endAt": "2024-08-17T07:21:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 503,
+      "createdAt": "2024-09-04T08:54:40.870757+00:00",
+      "startAt": "2024-10-02T05:00:00+00:00",
+      "endAt": "2024-10-03T17:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 504,
+      "createdAt": "2024-09-04T08:54:40.870757+00:00",
+      "startAt": "2024-10-09T05:00:00+00:00",
+      "endAt": "2024-10-10T17:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 390,
+      "createdAt": "2024-08-18T14:03:11.781843+00:00",
+      "startAt": "2024-08-18T14:05:00+00:00",
+      "endAt": "2024-08-18T14:06:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 391,
+      "createdAt": "2024-08-19T09:57:10.78874+00:00",
+      "startAt": "2024-08-19T09:56:00+00:00",
+      "endAt": "2024-08-20T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 402,
+      "createdAt": "2024-08-25T06:48:54.784118+00:00",
+      "startAt": "2024-08-25T06:48:00+00:00",
+      "endAt": "2024-08-25T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 641,
+      "createdAt": "2024-12-01T06:50:35.58514+00:00",
+      "startAt": "2024-12-11T08:00:00+00:00",
+      "endAt": "2024-12-12T20:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 636,
+      "createdAt": "2024-11-25T12:43:00.059356+00:00",
+      "startAt": "2024-11-25T12:42:00+00:00",
+      "endAt": "2024-11-27T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 637,
+      "createdAt": "2024-11-25T12:43:48.987101+00:00",
+      "startAt": "2024-11-25T12:44:00+00:00",
+      "endAt": "2024-11-27T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 638,
+      "createdAt": "2024-11-25T12:44:23.509053+00:00",
+      "startAt": "2024-11-25T12:44:00+00:00",
+      "endAt": "2024-11-27T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 639,
+      "createdAt": "2024-12-01T06:50:35.58514+00:00",
+      "startAt": "2024-12-01T06:50:00+00:00",
+      "endAt": "2024-12-01T06:50:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 643,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-01T06:53:00+00:00",
+      "endAt": "2024-12-01T06:53:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 651,
+      "createdAt": "2024-12-01T07:18:46.536118+00:00",
+      "startAt": "2024-12-01T07:18:00+00:00",
+      "endAt": "2024-12-01T07:18:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 655,
+      "createdAt": "2024-12-01T10:35:17.455991+00:00",
+      "startAt": "2024-12-01T10:34:00+00:00",
+      "endAt": "2024-12-03T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 657,
+      "createdAt": "2024-12-01T10:36:12.603719+00:00",
+      "startAt": "2024-12-01T10:35:00+00:00",
+      "endAt": "2024-12-03T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 642,
+      "createdAt": "2024-12-01T06:50:35.58514+00:00",
+      "startAt": "2024-12-18T08:00:00+00:00",
+      "endAt": "2024-12-19T20:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 645,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-04T08:00:00+00:00",
+      "endAt": "2024-12-05T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 650,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-25T02:00:00+00:00",
+      "endAt": "2024-12-28T07:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 640,
+      "createdAt": "2024-12-01T06:50:35.58514+00:00",
+      "startAt": "2024-12-04T14:00:00+00:00",
+      "endAt": "2024-12-06T02:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 652,
+      "createdAt": "2024-12-01T07:18:46.536118+00:00",
+      "startAt": "2024-12-04T14:20:00+00:00",
+      "endAt": "2024-12-06T02:20:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 644,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-04T08:00:00+00:00",
+      "endAt": "2024-12-07T07:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 658,
+      "createdAt": "2024-12-07T07:05:33.022326+00:00",
+      "startAt": "2024-12-07T07:05:00+00:00",
+      "endAt": "2024-12-07T07:05:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 659,
+      "createdAt": "2024-12-10T14:09:54.507459+00:00",
+      "startAt": "2024-12-10T14:09:00+00:00",
+      "endAt": "2024-12-10T14:09:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 660,
+      "createdAt": "2024-12-10T14:27:50.166213+00:00",
+      "startAt": "2024-12-10T14:27:00+00:00",
+      "endAt": "2024-12-10T14:27:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 647,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-11T08:00:00+00:00",
+      "endAt": "2024-12-12T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 653,
+      "createdAt": "2024-12-01T07:18:46.536118+00:00",
+      "startAt": "2024-12-11T08:20:00+00:00",
+      "endAt": "2024-12-12T20:20:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 646,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-11T08:00:00+00:00",
+      "endAt": "2024-12-14T07:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 649,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-18T08:00:00+00:00",
+      "endAt": "2024-12-19T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 654,
+      "createdAt": "2024-12-01T07:18:46.536118+00:00",
+      "startAt": "2024-12-18T08:20:00+00:00",
+      "endAt": "2024-12-19T20:20:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 648,
+      "createdAt": "2024-12-01T06:53:18.664568+00:00",
+      "startAt": "2024-12-18T08:00:00+00:00",
+      "endAt": "2024-12-21T07:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 397,
+      "createdAt": "2024-08-22T14:43:59.231478+00:00",
+      "startAt": "2024-08-22T14:45:00+00:00",
+      "endAt": "2024-08-26T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 398,
+      "createdAt": "2024-08-22T14:43:59.231478+00:00",
+      "startAt": "2024-08-29T11:00:00+00:00",
+      "endAt": "2024-08-30T23:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 399,
+      "createdAt": "2024-08-22T14:43:59.231478+00:00",
+      "startAt": "2024-09-05T05:00:00+00:00",
+      "endAt": "2024-09-06T17:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 400,
+      "createdAt": "2024-08-22T14:43:59.231478+00:00",
+      "startAt": "2024-09-12T05:00:00+00:00",
+      "endAt": "2024-09-13T17:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 560,
+      "createdAt": "2024-09-29T14:46:10.30306+00:00",
+      "startAt": "2024-09-29T14:45:00+00:00",
+      "endAt": "2024-09-29T14:48:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 561,
+      "createdAt": "2024-09-29T15:01:35.864261+00:00",
+      "startAt": "2024-09-29T15:01:00+00:00",
+      "endAt": "2024-09-29T15:02:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 562,
+      "createdAt": "2024-09-30T08:35:40.429773+00:00",
+      "startAt": "2024-09-30T08:40:00+00:00",
+      "endAt": "2024-10-03T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 563,
+      "createdAt": "2024-09-30T08:36:39.399148+00:00",
+      "startAt": "2024-09-30T08:40:00+00:00",
+      "endAt": "2024-10-03T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 564,
+      "createdAt": "2024-09-30T08:37:43.379607+00:00",
+      "startAt": "2024-09-30T08:40:00+00:00",
+      "endAt": "2024-10-03T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 577,
+      "createdAt": "2024-10-15T13:53:01.494367+00:00",
+      "startAt": "2024-10-15T14:00:00+00:00",
+      "endAt": "2024-10-17T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 579,
+      "createdAt": "2024-10-15T13:54:28.430142+00:00",
+      "startAt": "2024-10-15T14:00:00+00:00",
+      "endAt": "2024-10-17T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 592,
+      "createdAt": "2024-10-23T07:33:43.764514+00:00",
+      "startAt": "2024-10-23T07:35:00+00:00",
+      "endAt": "2024-10-30T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 584,
+      "createdAt": "2024-10-15T13:57:33.503291+00:00",
+      "startAt": "2024-10-15T14:00:00+00:00",
+      "endAt": "2024-10-20T06:59:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 379,
+      "createdAt": "2024-08-05T11:18:27.550415+00:00",
+      "startAt": "2024-08-05T11:18:00+00:00",
+      "endAt": "2024-08-06T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 567,
+      "createdAt": "2024-10-09T16:52:55.925029+00:00",
+      "startAt": "2024-10-09T17:00:00+00:00",
+      "endAt": "2024-10-12T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 565,
+      "createdAt": "2024-10-09T16:50:13.235559+00:00",
+      "startAt": "2024-10-09T17:00:00+00:00",
+      "endAt": "2024-10-12T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 566,
+      "createdAt": "2024-10-09T16:51:13.206794+00:00",
+      "startAt": "2024-10-09T17:00:00+00:00",
+      "endAt": "2024-10-12T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 382,
+      "createdAt": "2024-08-11T11:08:30.428508+00:00",
+      "startAt": "2024-08-11T11:07:00+00:00",
+      "endAt": "2024-08-12T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 392,
+      "createdAt": "2024-08-19T09:57:49.678428+00:00",
+      "startAt": "2024-08-19T09:57:00+00:00",
+      "endAt": "2024-08-20T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 403,
+      "createdAt": "2024-08-25T06:50:32.534086+00:00",
+      "startAt": "2024-08-25T06:49:00+00:00",
+      "endAt": "2024-08-25T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 593,
+      "createdAt": "2024-10-23T07:33:46.450971+00:00",
+      "startAt": "2024-10-23T07:35:00+00:00",
+      "endAt": "2024-10-30T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 588,
+      "createdAt": "2024-10-21T07:06:22.763105+00:00",
+      "startAt": "2024-10-13T07:05:00+00:00",
+      "endAt": "2024-10-19T07:05:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 585,
+      "createdAt": "2024-10-15T13:57:33.503291+00:00",
+      "startAt": "2024-10-23T14:00:00+00:00",
+      "endAt": "2024-10-25T02:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 589,
+      "createdAt": "2024-10-21T07:06:22.763105+00:00",
+      "startAt": "2024-10-23T14:00:00+00:00",
+      "endAt": "2024-10-25T02:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 586,
+      "createdAt": "2024-10-15T13:57:33.503291+00:00",
+      "startAt": "2024-10-30T08:00:00+00:00",
+      "endAt": "2024-10-31T20:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 590,
+      "createdAt": "2024-10-21T07:06:22.763105+00:00",
+      "startAt": "2024-10-30T08:00:00+00:00",
+      "endAt": "2024-10-31T20:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 612,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-11-20T08:00:00+00:00",
+      "endAt": "2024-11-21T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 596,
+      "createdAt": "2024-11-04T08:03:14.93433+00:00",
+      "startAt": "2024-11-04T08:14:00+00:00",
+      "endAt": "2024-11-05T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 597,
+      "createdAt": "2024-11-04T08:03:19.342656+00:00",
+      "startAt": "2024-11-04T08:05:00+00:00",
+      "endAt": "2024-11-05T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 587,
+      "createdAt": "2024-10-15T13:57:33.503291+00:00",
+      "startAt": "2024-11-06T08:00:00+00:00",
+      "endAt": "2024-11-07T20:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 591,
+      "createdAt": "2024-10-21T07:06:22.763105+00:00",
+      "startAt": "2024-11-06T08:00:00+00:00",
+      "endAt": "2024-11-07T20:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 607,
+      "createdAt": "2024-11-11T13:47:02.092458+00:00",
+      "startAt": "2024-11-11T13:46:00+00:00",
+      "endAt": "2024-11-11T13:46:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 608,
+      "createdAt": "2024-11-11T13:47:29.518998+00:00",
+      "startAt": "2024-11-11T13:47:00+00:00",
+      "endAt": "2024-11-11T13:47:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 609,
+      "createdAt": "2024-11-11T13:47:54.520793+00:00",
+      "startAt": "2024-11-11T13:47:00+00:00",
+      "endAt": "2024-11-11T13:47:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 613,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-11-27T08:00:00+00:00",
+      "endAt": "2024-11-30T07:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 610,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-11-17T06:53:00+00:00",
+      "endAt": "2024-11-17T06:53:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 611,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-11-20T08:00:00+00:00",
+      "endAt": "2024-11-21T20:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 656,
+      "createdAt": "2024-12-01T10:35:44.746466+00:00",
+      "startAt": "2024-12-01T10:35:00+00:00",
+      "endAt": "2024-12-03T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 614,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-11-27T08:00:00+00:00",
+      "endAt": "2024-11-28T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 615,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-12-04T08:00:00+00:00",
+      "endAt": "2024-12-07T07:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 635,
+      "createdAt": "2024-11-21T07:15:24.949103+00:00",
+      "startAt": "2024-11-21T07:13:00+00:00",
+      "endAt": "2024-12-11T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 691,
+      "createdAt": "2025-01-05T12:07:51.914471+00:00",
+      "startAt": "2025-01-05T12:07:00+00:00",
+      "endAt": "2025-01-05T12:07:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 696,
+      "createdAt": "2025-01-05T12:09:02.638862+00:00",
+      "startAt": "2025-01-08T19:09:00+00:00",
+      "endAt": "2025-01-10T07:09:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 693,
+      "createdAt": "2025-01-05T12:07:51.914471+00:00",
+      "startAt": "2025-01-15T13:07:00+00:00",
+      "endAt": "2025-01-17T01:07:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 697,
+      "createdAt": "2025-01-05T12:09:02.638862+00:00",
+      "startAt": "2025-01-15T13:09:00+00:00",
+      "endAt": "2025-01-17T01:09:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 694,
+      "createdAt": "2025-01-05T12:07:51.914471+00:00",
+      "startAt": "2025-01-22T13:07:00+00:00",
+      "endAt": "2025-01-24T01:07:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 298,
+      "createdAt": "2024-06-26T16:04:32.524437+00:00",
+      "startAt": "2024-06-26T16:04:00+00:00",
+      "endAt": "2024-06-26T16:04:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 300,
+      "createdAt": "2024-07-01T19:37:00.853869+00:00",
+      "startAt": "2024-07-02T04:30:00+00:00",
+      "endAt": "2024-07-02T04:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 303,
+      "createdAt": "2024-07-02T04:51:08.32955+00:00",
+      "startAt": "2024-07-02T04:00:00+00:00",
+      "endAt": "2024-07-02T04:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 302,
+      "createdAt": "2024-07-01T19:40:34.155324+00:00",
+      "startAt": "2024-07-02T10:00:00+00:00",
+      "endAt": "2024-07-02T15:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 301,
+      "createdAt": "2024-07-01T19:38:13.842096+00:00",
+      "startAt": "2024-07-02T10:00:00+00:00",
+      "endAt": "2024-07-02T15:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 280,
+      "createdAt": "2024-06-23T07:00:00.341977+00:00",
+      "startAt": "2024-07-03T08:00:00+00:00",
+      "endAt": "2024-07-04T07:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 304,
+      "createdAt": "2024-07-04T13:02:02.586018+00:00",
+      "startAt": "2024-07-04T13:10:00+00:00",
+      "endAt": "2024-07-04T13:15:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 305,
+      "createdAt": "2024-07-04T13:02:41.300779+00:00",
+      "startAt": "2024-07-04T13:10:00+00:00",
+      "endAt": "2024-07-04T13:15:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 306,
+      "createdAt": "2024-07-09T05:08:57.715786+00:00",
+      "startAt": "2024-07-09T05:08:00+00:00",
+      "endAt": "2024-07-09T05:15:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 307,
+      "createdAt": "2024-07-09T05:14:59.829987+00:00",
+      "startAt": "2024-07-09T05:14:00+00:00",
+      "endAt": "2024-07-09T05:14:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 308,
+      "createdAt": "2024-07-09T05:35:35.506375+00:00",
+      "startAt": "2024-07-09T05:35:00+00:00",
+      "endAt": "2024-07-09T05:35:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 309,
+      "createdAt": "2024-07-09T05:36:04.597081+00:00",
+      "startAt": "2024-07-09T05:35:00+00:00",
+      "endAt": "2024-07-09T05:35:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 310,
+      "createdAt": "2024-07-09T05:36:36.789793+00:00",
+      "startAt": "2024-07-09T05:36:00+00:00",
+      "endAt": "2024-07-09T05:36:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 311,
+      "createdAt": "2024-07-09T05:37:01.201657+00:00",
+      "startAt": "2024-07-09T05:36:00+00:00",
+      "endAt": "2024-07-09T05:36:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 312,
+      "createdAt": "2024-07-11T21:15:35.998839+00:00",
+      "startAt": "2024-07-11T21:15:00+00:00",
+      "endAt": "2024-07-13T07:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 313,
+      "createdAt": "2024-07-13T07:28:19.009375+00:00",
+      "startAt": "2024-07-13T07:27:00+00:00",
+      "endAt": "2024-07-13T07:29:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 314,
+      "createdAt": "2024-07-21T10:36:15.938991+00:00",
+      "startAt": "2024-07-21T10:35:00+00:00",
+      "endAt": "2024-07-23T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 315,
+      "createdAt": "2024-07-21T10:36:44.390603+00:00",
+      "startAt": "2024-07-21T10:36:00+00:00",
+      "endAt": "2024-07-23T13:58:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 316,
+      "createdAt": "2024-07-23T12:34:03.81928+00:00",
+      "startAt": "2024-07-23T12:33:00+00:00",
+      "endAt": "2024-07-23T12:33:00+00:00",
+      "objectId": 101119,
+      "path": "/bahrain/bh-piscine/re-test",
+      "campus": "bahrain"
+    },
+    {
+      "id": 679,
+      "createdAt": "2024-12-22T08:01:42.28106+00:00",
+      "startAt": "2025-01-08T09:01:00+00:00",
+      "endAt": "2025-01-09T21:01:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 578,
+      "createdAt": "2024-10-15T13:53:44.721823+00:00",
+      "startAt": "2024-10-15T14:00:00+00:00",
+      "endAt": "2024-10-17T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 404,
+      "createdAt": "2024-08-25T06:52:18.963558+00:00",
+      "startAt": "2024-08-25T06:51:00+00:00",
+      "endAt": "2024-08-25T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 594,
+      "createdAt": "2024-10-23T07:33:48.330335+00:00",
+      "startAt": "2024-10-23T07:35:00+00:00",
+      "endAt": "2024-10-30T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 598,
+      "createdAt": "2024-11-04T08:03:22.137302+00:00",
+      "startAt": "2024-11-04T08:05:00+00:00",
+      "endAt": "2024-11-05T13:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 618,
+      "createdAt": "2024-11-17T06:55:37.320267+00:00",
+      "startAt": "2024-11-17T06:55:00+00:00",
+      "endAt": "2024-11-17T06:55:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 619,
+      "createdAt": "2024-11-17T06:55:37.320267+00:00",
+      "startAt": "2024-11-20T14:00:00+00:00",
+      "endAt": "2024-11-22T02:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 617,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-12-11T02:00:00+00:00",
+      "endAt": "2024-12-14T07:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 620,
+      "createdAt": "2024-11-17T06:55:37.320267+00:00",
+      "startAt": "2024-11-27T08:00:00+00:00",
+      "endAt": "2024-11-28T20:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 616,
+      "createdAt": "2024-11-17T06:53:29.382511+00:00",
+      "startAt": "2024-12-04T08:00:00+00:00",
+      "endAt": "2024-12-05T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 621,
+      "createdAt": "2024-11-17T06:55:37.320267+00:00",
+      "startAt": "2024-12-04T08:00:00+00:00",
+      "endAt": "2024-12-05T20:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 670,
+      "createdAt": "2024-12-12T07:36:06.640933+00:00",
+      "startAt": "2024-12-12T07:35:00+00:00",
+      "endAt": "2024-12-12T08:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 671,
+      "createdAt": "2024-12-12T07:37:11.755626+00:00",
+      "startAt": "2024-12-12T07:36:00+00:00",
+      "endAt": "2024-12-12T08:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 673,
+      "createdAt": "2024-12-14T07:12:27.452124+00:00",
+      "startAt": "2024-12-14T07:12:00+00:00",
+      "endAt": "2024-12-14T07:12:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 674,
+      "createdAt": "2024-12-14T07:15:33.904962+00:00",
+      "startAt": "2024-12-14T07:15:00+00:00",
+      "endAt": "2024-12-14T07:15:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 675,
+      "createdAt": "2024-12-14T07:25:43.857327+00:00",
+      "startAt": "2024-12-14T07:25:00+00:00",
+      "endAt": "2024-12-14T07:25:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 676,
+      "createdAt": "2024-12-22T08:01:42.28106+00:00",
+      "startAt": "2024-12-22T08:01:00+00:00",
+      "endAt": "2024-12-22T08:01:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 680,
+      "createdAt": "2024-12-24T14:03:56.710012+00:00",
+      "startAt": "2024-12-24T14:03:00+00:00",
+      "endAt": "2024-12-24T14:03:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 677,
+      "createdAt": "2024-12-22T08:01:42.28106+00:00",
+      "startAt": "2024-12-25T15:01:00+00:00",
+      "endAt": "2024-12-27T03:01:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 672,
+      "createdAt": "2024-12-12T17:11:11.814151+00:00",
+      "startAt": "2024-12-12T17:10:00+00:00",
+      "endAt": "2024-12-25T13:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 682,
+      "createdAt": "2024-12-28T14:37:26.083166+00:00",
+      "startAt": "2024-12-28T14:37:00+00:00",
+      "endAt": "2024-12-28T14:37:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 683,
+      "createdAt": "2024-12-29T09:18:32.916757+00:00",
+      "startAt": "2024-12-29T09:18:00+00:00",
+      "endAt": "2024-12-29T09:18:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 678,
+      "createdAt": "2024-12-22T08:01:42.28106+00:00",
+      "startAt": "2025-01-01T09:01:00+00:00",
+      "endAt": "2025-01-02T21:01:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 684,
+      "createdAt": "2024-12-29T09:18:32.916757+00:00",
+      "startAt": "2025-01-01T16:18:00+00:00",
+      "endAt": "2025-01-03T04:18:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 695,
+      "createdAt": "2025-01-05T12:09:02.638862+00:00",
+      "startAt": "2025-01-05T12:08:00+00:00",
+      "endAt": "2025-01-05T12:08:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 685,
+      "createdAt": "2024-12-29T09:18:32.916757+00:00",
+      "startAt": "2025-01-08T10:18:00+00:00",
+      "endAt": "2025-01-09T22:18:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 681,
+      "createdAt": "2024-12-26T10:15:39.092314+00:00",
+      "startAt": "2024-12-26T10:15:00+00:00",
+      "endAt": "2025-01-08T14:09:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 661,
+      "createdAt": "2024-12-11T15:15:06.436096+00:00",
+      "startAt": "2024-12-11T15:15:00+00:00",
+      "endAt": "2025-01-12T07:00:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 663,
+      "createdAt": "2024-12-11T15:15:06.436096+00:00",
+      "startAt": "2025-01-15T07:00:00+00:00",
+      "endAt": "2025-01-16T20:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 686,
+      "createdAt": "2024-12-29T09:18:32.916757+00:00",
+      "startAt": "2025-01-15T10:18:00+00:00",
+      "endAt": "2025-01-16T22:18:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 665,
+      "createdAt": "2024-12-11T15:15:06.436096+00:00",
+      "startAt": "2025-01-22T07:00:00+00:00",
+      "endAt": "2025-01-23T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 662,
+      "createdAt": "2024-12-11T15:15:06.436096+00:00",
+      "startAt": "2025-01-15T07:00:00+00:00",
+      "endAt": "2025-01-16T07:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 722,
+      "createdAt": "2025-01-22T11:29:30.89134+00:00",
+      "startAt": "2025-01-22T11:29:00+00:00",
+      "endAt": "2025-01-23T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 723,
+      "createdAt": "2025-01-22T11:32:41.246466+00:00",
+      "startAt": "2025-01-22T11:32:00+00:00",
+      "endAt": "2025-01-23T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 664,
+      "createdAt": "2024-12-11T15:15:06.436096+00:00",
+      "startAt": "2025-01-22T07:00:00+00:00",
+      "endAt": "2025-01-23T07:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 666,
+      "createdAt": "2024-12-11T15:15:06.436096+00:00",
+      "startAt": "2025-01-29T07:00:00+00:00",
+      "endAt": "2025-02-01T07:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 732,
+      "createdAt": "2025-01-28T12:06:58.283691+00:00",
+      "startAt": "2025-01-28T12:15:00+00:00",
+      "endAt": "2025-02-01T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 733,
+      "createdAt": "2025-01-28T12:09:40.301961+00:00",
+      "startAt": "2025-01-28T12:15:00+00:00",
+      "endAt": "2025-02-01T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 734,
+      "createdAt": "2025-01-28T12:11:40.63762+00:00",
+      "startAt": "2025-01-28T12:15:00+00:00",
+      "endAt": "2025-02-01T07:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 735,
+      "createdAt": "2025-02-04T07:48:17.005333+00:00",
+      "startAt": "2025-02-04T07:50:00+00:00",
+      "endAt": "2025-02-04T07:50:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 736,
+      "createdAt": "2025-02-04T07:48:17.005333+00:00",
+      "startAt": "2025-02-12T14:00:00+00:00",
+      "endAt": "2025-02-14T02:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 737,
+      "createdAt": "2025-02-04T07:48:17.005333+00:00",
+      "startAt": "2025-02-19T08:00:00+00:00",
+      "endAt": "2025-02-20T20:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 738,
+      "createdAt": "2025-02-04T07:48:17.005333+00:00",
+      "startAt": "2025-02-26T08:00:00+00:00",
+      "endAt": "2025-02-27T20:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 727,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-02-04T08:00:00+00:00",
+      "endAt": "2025-02-06T12:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 739,
+      "createdAt": "2025-02-05T12:35:50.755393+00:00",
+      "startAt": "2025-02-05T12:35:00+00:00",
+      "endAt": "2025-02-05T12:35:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 715,
+      "createdAt": "2025-01-19T15:38:23.728915+00:00",
+      "startAt": "2025-02-05T07:00:00+00:00",
+      "endAt": "2025-02-06T19:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 740,
+      "createdAt": "2025-02-09T10:32:11.270235+00:00",
+      "startAt": "2025-02-09T10:35:00+00:00",
+      "endAt": "2025-02-09T10:35:00+00:00",
+      "objectId": 101119,
+      "path": "/bahrain/bh-piscine/re-test",
+      "campus": "bahrain"
+    },
+    {
+      "id": 741,
+      "createdAt": "2025-02-17T07:05:50.439445+00:00",
+      "startAt": "2025-02-17T07:05:00+00:00",
+      "endAt": "2025-02-17T07:05:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 742,
+      "createdAt": "2025-02-17T07:05:50.439445+00:00",
+      "startAt": "2025-02-20T14:05:00+00:00",
+      "endAt": "2025-02-22T02:05:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 731,
+      "createdAt": "2025-01-22T11:44:29.967873+00:00",
+      "startAt": "2025-02-18T02:00:00+00:00",
+      "endAt": "2025-02-23T10:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 745,
+      "createdAt": "2025-02-23T14:49:22.231094+00:00",
+      "startAt": "2025-02-23T14:51:00+00:00",
+      "endAt": "2025-02-23T14:52:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 746,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-02-24T06:54:00+00:00",
+      "endAt": "2025-02-24T06:54:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 754,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-02-24T06:55:00+00:00",
+      "endAt": "2025-02-24T06:55:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 762,
+      "createdAt": "2025-02-27T07:20:40.975769+00:00",
+      "startAt": "2025-02-27T07:20:00+00:00",
+      "endAt": "2025-02-27T07:20:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 773,
+      "createdAt": "2025-03-10T09:48:29.859313+00:00",
+      "startAt": "2025-03-10T09:48:00+00:00",
+      "endAt": "2025-03-10T09:48:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 748,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-02-27T08:00:00+00:00",
+      "endAt": "2025-02-28T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 756,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-02-27T08:00:00+00:00",
+      "endAt": "2025-02-28T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 743,
+      "createdAt": "2025-02-17T07:05:50.439445+00:00",
+      "startAt": "2025-02-27T08:05:00+00:00",
+      "endAt": "2025-02-28T20:05:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 774,
+      "createdAt": "2025-03-10T11:31:07.475503+00:00",
+      "startAt": "2025-03-10T11:31:00+00:00",
+      "endAt": "2025-03-10T11:32:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 770,
+      "createdAt": "2025-03-06T10:05:08.943083+00:00",
+      "startAt": "2025-03-09T17:05:00+00:00",
+      "endAt": "2025-03-11T05:05:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 763,
+      "createdAt": "2025-03-01T07:55:49.322991+00:00",
+      "startAt": "2025-03-01T08:00:00+00:00",
+      "endAt": "2025-03-02T09:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 764,
+      "createdAt": "2025-03-01T07:56:59.248702+00:00",
+      "startAt": "2025-03-01T08:00:00+00:00",
+      "endAt": "2025-03-02T09:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 779,
+      "createdAt": "2025-03-17T08:56:50.531364+00:00",
+      "startAt": "2025-03-17T08:56:00+00:00",
+      "endAt": "2025-03-17T09:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 765,
+      "createdAt": "2025-03-02T10:10:12.888578+00:00",
+      "startAt": "2025-03-02T10:10:00+00:00",
+      "endAt": "2025-03-02T10:10:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 769,
+      "createdAt": "2025-03-06T10:05:08.943083+00:00",
+      "startAt": "2025-03-06T10:05:00+00:00",
+      "endAt": "2025-03-06T10:05:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 766,
+      "createdAt": "2025-03-02T10:10:12.888578+00:00",
+      "startAt": "2025-03-05T17:10:00+00:00",
+      "endAt": "2025-03-07T05:10:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 750,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-03-06T08:00:00+00:00",
+      "endAt": "2025-03-07T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 758,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-03-06T08:00:00+00:00",
+      "endAt": "2025-03-07T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 744,
+      "createdAt": "2025-02-17T07:05:50.439445+00:00",
+      "startAt": "2025-03-06T08:05:00+00:00",
+      "endAt": "2025-03-07T20:05:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 775,
+      "createdAt": "2025-03-12T11:02:22.346417+00:00",
+      "startAt": "2025-03-12T11:03:00+00:00",
+      "endAt": "2025-03-12T11:04:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 757,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-03-06T21:00:00+00:00",
+      "endAt": "2025-03-09T08:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 749,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-03-07T21:00:00+00:00",
+      "endAt": "2025-03-09T09:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 767,
+      "createdAt": "2025-03-02T10:10:12.888578+00:00",
+      "startAt": "2025-03-12T11:10:00+00:00",
+      "endAt": "2025-03-13T23:10:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 752,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-03-13T08:00:00+00:00",
+      "endAt": "2025-03-14T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 760,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-03-13T08:00:00+00:00",
+      "endAt": "2025-03-14T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 751,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-03-14T21:00:00+00:00",
+      "endAt": "2025-03-16T09:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 759,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-03-14T21:00:00+00:00",
+      "endAt": "2025-03-16T09:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 776,
+      "createdAt": "2025-03-16T12:12:38.387813+00:00",
+      "startAt": "2025-03-16T12:12:00+00:00",
+      "endAt": "2025-03-16T12:20:00+00:00",
+      "objectId": 100550,
+      "path": "/bahrain/bh-module/piscine-ai",
+      "campus": "bahrain"
+    },
+    {
+      "id": 780,
+      "createdAt": "2025-03-17T09:34:03.073931+00:00",
+      "startAt": "2025-03-17T09:34:00+00:00",
+      "endAt": "2025-03-17T09:35:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 781,
+      "createdAt": "2025-03-17T09:42:52.090242+00:00",
+      "startAt": "2025-03-17T09:43:00+00:00",
+      "endAt": "2025-03-17T09:44:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 771,
+      "createdAt": "2025-03-06T10:05:08.943083+00:00",
+      "startAt": "2025-03-16T11:05:00+00:00",
+      "endAt": "2025-03-17T23:05:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 768,
+      "createdAt": "2025-03-02T10:10:12.888578+00:00",
+      "startAt": "2025-03-19T11:10:00+00:00",
+      "endAt": "2025-03-20T23:10:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 777,
+      "createdAt": "2025-03-16T12:12:38.387813+00:00",
+      "startAt": "2025-03-19T19:20:00+00:00",
+      "endAt": "2025-03-21T07:20:00+00:00",
+      "objectId": 100556,
+      "path": "/bahrain/bh-module/piscine-ai/backtesting-sp500",
+      "campus": "bahrain"
+    },
+    {
+      "id": 753,
+      "createdAt": "2025-02-24T06:54:20.37189+00:00",
+      "startAt": "2025-03-19T05:00:00+00:00",
+      "endAt": "2025-03-23T05:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 761,
+      "createdAt": "2025-02-24T06:55:17.739094+00:00",
+      "startAt": "2025-03-19T05:00:00+00:00",
+      "endAt": "2025-03-23T05:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 772,
+      "createdAt": "2025-03-06T10:05:08.943083+00:00",
+      "startAt": "2025-03-23T11:05:00+00:00",
+      "endAt": "2025-03-24T23:05:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 778,
+      "createdAt": "2025-03-16T12:12:38.387813+00:00",
+      "startAt": "2025-03-26T13:20:00+00:00",
+      "endAt": "2025-03-28T01:20:00+00:00",
+      "objectId": 100562,
+      "path": "/bahrain/bh-module/piscine-ai/forest-prediction",
+      "campus": "bahrain"
+    },
+    {
+      "id": 783,
+      "createdAt": "2025-03-23T12:08:29.4225+00:00",
+      "startAt": "2025-03-23T12:09:00+00:00",
+      "endAt": "2025-03-23T12:10:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 793,
+      "createdAt": "2025-03-25T11:46:30.798359+00:00",
+      "startAt": "2025-03-25T11:47:00+00:00",
+      "endAt": "2025-03-25T11:48:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 800,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-24T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 794,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-06T06:49:00+00:00",
+      "endAt": "2025-04-06T06:49:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 802,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-06T06:50:00+00:00",
+      "endAt": "2025-04-06T06:50:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 824,
+      "createdAt": "2025-04-09T13:36:38.991042+00:00",
+      "startAt": "2025-05-07T07:00:00+00:00",
+      "endAt": "2025-05-10T07:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 810,
+      "createdAt": "2025-04-06T16:06:13.739035+00:00",
+      "startAt": "2025-04-06T16:06:00+00:00",
+      "endAt": "2025-04-06T16:06:00+00:00",
+      "objectId": 100237,
+      "path": "/bahrain/bh-module/piscine-flutter",
+      "campus": "bahrain"
+    },
+    {
+      "id": 817,
+      "createdAt": "2025-04-09T11:13:50.202125+00:00",
+      "startAt": "2025-04-09T11:13:00+00:00",
+      "endAt": "2025-04-09T11:14:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 808,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-24T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 782,
+      "createdAt": "2025-03-23T09:24:57.41203+00:00",
+      "startAt": "2025-03-23T09:24:00+00:00",
+      "endAt": "2025-04-09T14:08:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 842,
+      "createdAt": "2025-04-13T12:16:21.234445+00:00",
+      "startAt": "2025-04-23T13:16:00+00:00",
+      "endAt": "2025-04-25T01:16:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 798,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-16T08:00:00+00:00",
+      "endAt": "2025-04-17T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 821,
+      "createdAt": "2025-04-09T13:36:38.991042+00:00",
+      "startAt": "2025-04-23T07:00:00+00:00",
+      "endAt": "2025-04-24T20:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 812,
+      "createdAt": "2025-04-06T16:06:13.739035+00:00",
+      "startAt": "2025-04-16T17:10:00+00:00",
+      "endAt": "2025-04-18T05:10:00+00:00",
+      "objectId": 100258,
+      "path": "/bahrain/bh-module/piscine-flutter/secure-notes",
+      "campus": "bahrain"
+    },
+    {
+      "id": 806,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-16T08:00:00+00:00",
+      "endAt": "2025-04-17T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 823,
+      "createdAt": "2025-04-09T13:36:38.991042+00:00",
+      "startAt": "2025-04-30T07:00:00+00:00",
+      "endAt": "2025-05-01T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 834,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-27T08:00:00+00:00",
+      "endAt": "2025-05-01T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 841,
+      "createdAt": "2025-04-13T12:16:21.234445+00:00",
+      "startAt": "2025-04-16T19:16:00+00:00",
+      "endAt": "2025-04-18T07:16:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 830,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-15T08:00:00+00:00",
+      "endAt": "2025-04-17T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 843,
+      "createdAt": "2025-04-13T12:16:21.234445+00:00",
+      "startAt": "2025-04-30T13:16:00+00:00",
+      "endAt": "2025-05-02T01:16:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 832,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-24T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 811,
+      "createdAt": "2025-04-06T16:06:13.739035+00:00",
+      "startAt": "2025-04-09T23:10:00+00:00",
+      "endAt": "2025-04-11T11:10:00+00:00",
+      "objectId": 100254,
+      "path": "/bahrain/bh-module/piscine-flutter/hacker-news",
+      "campus": "bahrain"
+    },
+    {
+      "id": 801,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-30T02:00:00+00:00",
+      "endAt": "2025-04-30T21:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 828,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-09T15:07:00+00:00",
+      "endAt": "2025-04-09T15:07:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 795,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-09T08:00:00+00:00",
+      "endAt": "2025-04-13T07:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 803,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-09T08:00:00+00:00",
+      "endAt": "2025-04-13T07:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 840,
+      "createdAt": "2025-04-13T12:16:21.234445+00:00",
+      "startAt": "2025-04-13T12:16:00+00:00",
+      "endAt": "2025-04-13T12:16:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 844,
+      "createdAt": "2025-04-13T16:32:09.813404+00:00",
+      "startAt": "2025-04-13T16:32:00+00:00",
+      "endAt": "2025-04-13T16:32:00+00:00",
+      "objectId": 101433,
+      "path": "/bahrain/bh-module/piscine-ux",
+      "campus": "bahrain"
+    },
+    {
+      "id": 796,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-09T08:00:00+00:00",
+      "endAt": "2025-04-13T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 804,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-09T08:00:00+00:00",
+      "endAt": "2025-04-13T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 809,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-30T02:00:00+00:00",
+      "endAt": "2025-05-01T07:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 818,
+      "createdAt": "2025-04-09T13:33:49.042509+00:00",
+      "startAt": "2025-04-09T13:34:00+00:00",
+      "endAt": "2025-04-16T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 797,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-16T08:00:00+00:00",
+      "endAt": "2025-04-17T07:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 805,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-16T08:00:00+00:00",
+      "endAt": "2025-04-17T07:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 829,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-15T08:00:00+00:00",
+      "endAt": "2025-04-16T21:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 835,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-05-05T02:00:00+00:00",
+      "endAt": "2025-05-06T14:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 822,
+      "createdAt": "2025-04-09T13:36:38.991042+00:00",
+      "startAt": "2025-04-30T07:00:00+00:00",
+      "endAt": "2025-05-01T07:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 819,
+      "createdAt": "2025-04-09T13:36:38.991042+00:00",
+      "startAt": "2025-04-09T14:05:00+00:00",
+      "endAt": "2025-04-17T18:30:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 799,
+      "createdAt": "2025-04-06T06:49:29.93394+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-24T07:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 807,
+      "createdAt": "2025-04-06T06:50:31.245102+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-24T07:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 820,
+      "createdAt": "2025-04-09T13:36:38.991042+00:00",
+      "startAt": "2025-04-23T07:00:00+00:00",
+      "endAt": "2025-04-24T07:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 831,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-24T07:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 833,
+      "createdAt": "2025-04-09T15:07:05.937035+00:00",
+      "startAt": "2025-04-29T15:00:00+00:00",
+      "endAt": "2025-05-01T07:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 332,
+      "createdAt": "2024-08-05T08:24:20.03305+00:00",
+      "startAt": "2024-08-05T08:24:00+00:00",
+      "endAt": "2024-08-05T08:24:00+00:00",
+      "objectId": 100236,
+      "path": "/bahrain/bh-module",
+      "campus": "bahrain"
+    },
+    {
+      "id": 952,
+      "createdAt": "2025-06-15T15:37:56.086811+00:00",
+      "startAt": "2025-06-15T15:37:00+00:00",
+      "endAt": "2025-06-15T15:37:00+00:00",
+      "objectId": 101294,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 949,
+      "createdAt": "2025-06-15T07:06:53.072676+00:00",
+      "startAt": "2025-06-15T07:06:00+00:00",
+      "endAt": "2025-06-17T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 950,
+      "createdAt": "2025-06-15T07:10:29.626737+00:00",
+      "startAt": "2025-06-15T07:10:00+00:00",
+      "endAt": "2025-06-17T14:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 940,
+      "createdAt": "2025-05-31T16:41:28.607569+00:00",
+      "startAt": "2025-05-31T16:42:00+00:00",
+      "endAt": "2025-05-31T16:42:00+00:00",
+      "objectId": 101293,
+      "path": "/bahrain/bh-module/piscine-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 947,
+      "createdAt": "2025-06-01T06:59:03.516172+00:00",
+      "startAt": "2025-06-01T07:00:00+00:00",
+      "endAt": "2025-06-01T17:00:00+00:00",
+      "objectId": 100236,
+      "path": "/bahrain/bh-module",
+      "campus": "bahrain"
+    },
+    {
+      "id": 953,
+      "createdAt": "2025-06-17T14:06:58.522354+00:00",
+      "startAt": "2025-06-17T14:07:00+00:00",
+      "endAt": "2025-06-17T14:08:00+00:00",
+      "objectId": 101294,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 946,
+      "createdAt": "2025-05-31T16:41:28.607569+00:00",
+      "startAt": "2025-06-18T03:00:00+00:00",
+      "endAt": "2025-06-19T15:00:00+00:00",
+      "objectId": 101371,
+      "path": "/bahrain/bh-module/piscine-java/jraffic",
+      "campus": "bahrain"
+    },
+    {
+      "id": 939,
+      "createdAt": "2025-05-31T16:25:52.617398+00:00",
+      "startAt": "2025-05-31T17:00:00+00:00",
+      "endAt": "2025-06-04T10:30:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 941,
+      "createdAt": "2025-05-31T16:41:28.607569+00:00",
+      "startAt": "2025-06-03T03:00:00+00:00",
+      "endAt": "2025-06-04T14:30:00+00:00",
+      "objectId": 101400,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 942,
+      "createdAt": "2025-05-31T16:41:28.607569+00:00",
+      "startAt": "2025-06-04T03:00:00+00:00",
+      "endAt": "2025-06-05T15:00:00+00:00",
+      "objectId": 101369,
+      "path": "/bahrain/bh-module/piscine-java/jart",
+      "campus": "bahrain"
+    },
+    {
+      "id": 944,
+      "createdAt": "2025-05-31T16:41:28.607569+00:00",
+      "startAt": "2025-06-11T03:00:00+00:00",
+      "endAt": "2025-06-12T15:00:00+00:00",
+      "objectId": 101370,
+      "path": "/bahrain/bh-module/piscine-java/jaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 931,
+      "createdAt": "2025-05-25T07:18:12.220858+00:00",
+      "startAt": "2025-06-11T08:18:00+00:00",
+      "endAt": "2025-06-12T20:18:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 957,
+      "createdAt": "2025-06-22T09:45:01.898233+00:00",
+      "startAt": "2025-06-22T10:00:00+00:00",
+      "endAt": "2025-06-22T11:00:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1001,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-27T02:00:00+00:00",
+      "endAt": "2025-08-02T12:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 978,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-07-16T07:00:00+00:00",
+      "endAt": "2025-07-17T20:00:00+00:00",
+      "objectId": 100184,
+      "path": "/bahrain/bh-piscine/quad",
+      "campus": "bahrain"
+    },
+    {
+      "id": 990,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-13T08:00:00+00:00",
+      "endAt": "2025-07-14T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 958,
+      "createdAt": "2025-06-22T09:45:01.898233+00:00",
+      "startAt": "2025-06-25T19:00:00+00:00",
+      "endAt": "2025-06-27T07:00:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 956,
+      "createdAt": "2025-06-22T07:03:59.036066+00:00",
+      "startAt": "2025-06-22T07:05:00+00:00",
+      "endAt": "2025-07-01T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1002,
+      "createdAt": "2025-07-02T07:39:41.989313+00:00",
+      "startAt": "2025-07-02T07:39:00+00:00",
+      "endAt": "2025-07-02T07:39:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1003,
+      "createdAt": "2025-07-02T16:43:10.639604+00:00",
+      "startAt": "2025-07-02T16:43:00+00:00",
+      "endAt": "2025-07-02T16:43:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 960,
+      "createdAt": "2025-06-22T09:45:01.898233+00:00",
+      "startAt": "2025-07-02T13:00:00+00:00",
+      "endAt": "2025-07-04T01:00:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 986,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-01T12:30:00+00:00",
+      "endAt": "2025-07-04T07:00:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 994,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-01T12:30:00+00:00",
+      "endAt": "2025-07-04T07:00:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 999,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-20T08:00:00+00:00",
+      "endAt": "2025-07-24T14:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 959,
+      "createdAt": "2025-06-22T09:45:01.898233+00:00",
+      "startAt": "2025-07-09T13:00:00+00:00",
+      "endAt": "2025-07-11T01:00:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1013,
+      "createdAt": "2025-07-08T06:44:16.037095+00:00",
+      "startAt": "2025-07-18T08:00:00+00:00",
+      "endAt": "2025-07-19T20:00:00+00:00",
+      "objectId": 100562,
+      "path": "/bahrain/bh-module/piscine-ai/forest-prediction",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1023,
+      "createdAt": "2025-07-09T09:23:31.48629+00:00",
+      "startAt": "2025-07-10T16:23:00+00:00",
+      "endAt": "2025-07-12T04:23:00+00:00",
+      "objectId": 101665,
+      "path": "/bahrain/ai-forge/robots-harmony",
+      "campus": "bahrain"
+    },
+    {
+      "id": 988,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-06T08:00:00+00:00",
+      "endAt": "2025-07-07T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 991,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-20T08:00:00+00:00",
+      "endAt": "2025-07-24T14:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 993,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-27T02:00:00+00:00",
+      "endAt": "2025-08-02T12:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 996,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-06T08:00:00+00:00",
+      "endAt": "2025-07-07T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1011,
+      "createdAt": "2025-07-08T06:44:16.037095+00:00",
+      "startAt": "2025-07-08T06:44:00+00:00",
+      "endAt": "2025-07-08T06:44:00+00:00",
+      "objectId": 100550,
+      "path": "/bahrain/bh-module/piscine-ai",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1022,
+      "createdAt": "2025-07-09T09:23:31.48629+00:00",
+      "startAt": "2025-07-09T09:23:00+00:00",
+      "endAt": "2025-07-09T09:23:00+00:00",
+      "objectId": 101664,
+      "path": "/bahrain/ai-forge",
+      "campus": "bahrain"
+    },
+    {
+      "id": 985,
+      "createdAt": "2025-06-25T16:45:17.965639+00:00",
+      "startAt": "2025-06-25T16:45:00+00:00",
+      "endAt": "2025-07-09T14:00:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 984,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-08-10T10:00:00+00:00",
+      "endAt": "2025-08-10T10:00:00+00:00",
+      "objectId": 101119,
+      "path": "/bahrain/bh-piscine/re-test",
+      "campus": "bahrain"
+    },
+    {
+      "id": 981,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-07-29T07:00:00+00:00",
+      "endAt": "2025-08-02T07:00:00+00:00",
+      "objectId": 100225,
+      "path": "/bahrain/bh-piscine/checkpoint-03",
+      "campus": "bahrain"
+    },
+    {
+      "id": 979,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-07-22T07:00:00+00:00",
+      "endAt": "2025-07-24T07:00:00+00:00",
+      "objectId": 100209,
+      "path": "/bahrain/bh-piscine/checkpoint-02",
+      "campus": "bahrain"
+    },
+    {
+      "id": 989,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-13T08:00:00+00:00",
+      "endAt": "2025-07-17T14:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 992,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-20T08:00:00+00:00",
+      "endAt": "2025-07-21T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 980,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-07-23T07:00:00+00:00",
+      "endAt": "2025-07-24T20:00:00+00:00",
+      "objectId": 100235,
+      "path": "/bahrain/bh-piscine/sudoku",
+      "campus": "bahrain"
+    },
+    {
+      "id": 987,
+      "createdAt": "2025-07-01T12:20:48.335207+00:00",
+      "startAt": "2025-07-06T08:00:00+00:00",
+      "endAt": "2025-07-10T14:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 995,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-06T08:00:00+00:00",
+      "endAt": "2025-07-10T14:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1014,
+      "createdAt": "2025-07-08T07:08:12.15173+00:00",
+      "startAt": "2025-07-08T07:08:00+00:00",
+      "endAt": "2025-07-10T14:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 976,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-06-25T14:45:00+00:00",
+      "endAt": "2025-06-25T16:00:00+00:00",
+      "objectId": 100019,
+      "path": "/bahrain/bh-piscine",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1012,
+      "createdAt": "2025-07-08T06:44:16.037095+00:00",
+      "startAt": "2025-07-11T14:00:00+00:00",
+      "endAt": "2025-07-13T02:00:00+00:00",
+      "objectId": 100556,
+      "path": "/bahrain/bh-module/piscine-ai/backtesting-sp500",
+      "campus": "bahrain"
+    },
+    {
+      "id": 998,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-13T08:00:00+00:00",
+      "endAt": "2025-07-14T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 977,
+      "createdAt": "2025-06-25T13:47:58.606035+00:00",
+      "startAt": "2025-07-15T07:00:00+00:00",
+      "endAt": "2025-07-17T07:00:00+00:00",
+      "objectId": 100219,
+      "path": "/bahrain/bh-piscine/checkpoint-01",
+      "campus": "bahrain"
+    },
+    {
+      "id": 997,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-13T08:00:00+00:00",
+      "endAt": "2025-07-17T14:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1000,
+      "createdAt": "2025-07-01T12:20:50.324298+00:00",
+      "startAt": "2025-07-20T08:00:00+00:00",
+      "endAt": "2025-07-21T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 845,
+      "createdAt": "2025-04-14T07:01:24.27951+00:00",
+      "startAt": "2025-04-14T07:01:00+00:00",
+      "endAt": "2025-04-14T07:01:00+00:00",
+      "objectId": 100236,
+      "path": "/bahrain/bh-module",
+      "campus": "bahrain"
+    },
+    {
+      "id": 951,
+      "createdAt": "2025-06-15T07:11:26.650671+00:00",
+      "startAt": "2025-06-15T07:11:00+00:00",
+      "endAt": "2025-06-17T14:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1015,
+      "createdAt": "2025-07-08T07:09:12.600906+00:00",
+      "startAt": "2025-07-08T07:09:00+00:00",
+      "endAt": "2025-07-08T07:09:00+00:00",
+      "objectId": 101293,
+      "path": "/bahrain/bh-module/piscine-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1020,
+      "createdAt": "2025-07-08T07:09:12.600906+00:00",
+      "startAt": "2025-07-08T08:09:00+00:00",
+      "endAt": "2025-07-10T14:00:00+00:00",
+      "objectId": 101310,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1016,
+      "createdAt": "2025-07-08T07:09:12.600906+00:00",
+      "startAt": "2025-07-11T08:09:00+00:00",
+      "endAt": "2025-07-12T20:09:00+00:00",
+      "objectId": 101400,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-01-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1018,
+      "createdAt": "2025-07-08T07:09:12.600906+00:00",
+      "startAt": "2025-07-11T08:09:00+00:00",
+      "endAt": "2025-07-12T20:09:00+00:00",
+      "objectId": 101294,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-02-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 877,
+      "createdAt": "2025-04-14T12:34:17.698256+00:00",
+      "startAt": "2025-04-14T12:34:00+00:00",
+      "endAt": "2025-04-14T12:35:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 902,
+      "createdAt": "2025-05-10T13:16:12.489285+00:00",
+      "startAt": "2025-05-10T13:17:00+00:00",
+      "endAt": "2025-05-10T13:17:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 903,
+      "createdAt": "2025-05-10T13:55:55.961403+00:00",
+      "startAt": "2025-05-10T13:56:00+00:00",
+      "endAt": "2025-05-10T13:56:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 904,
+      "createdAt": "2025-05-10T17:11:39.349842+00:00",
+      "startAt": "2025-05-10T17:12:00+00:00",
+      "endAt": "2025-05-10T17:12:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 893,
+      "createdAt": "2025-04-29T14:30:27.733522+00:00",
+      "startAt": "2025-05-09T15:30:00+00:00",
+      "endAt": "2025-05-11T03:30:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 914,
+      "createdAt": "2025-05-18T11:03:00.599334+00:00",
+      "startAt": "2025-06-14T08:00:00+00:00",
+      "endAt": "2025-06-15T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 886,
+      "createdAt": "2025-04-17T06:21:13.850898+00:00",
+      "startAt": "2025-04-17T06:21:00+00:00",
+      "endAt": "2025-04-17T06:21:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 878,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-04-16T09:39:00+00:00",
+      "endAt": "2025-04-16T09:39:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 887,
+      "createdAt": "2025-04-22T07:59:38.533987+00:00",
+      "startAt": "2025-04-22T07:59:00+00:00",
+      "endAt": "2025-04-22T07:59:00+00:00",
+      "objectId": 100237,
+      "path": "/bahrain/bh-module/piscine-flutter",
+      "campus": "bahrain"
+    },
+    {
+      "id": 879,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-23T20:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 890,
+      "createdAt": "2025-04-24T16:35:20.866321+00:00",
+      "startAt": "2025-04-24T16:35:00+00:00",
+      "endAt": "2025-04-24T16:35:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 880,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-04-22T08:00:00+00:00",
+      "endAt": "2025-04-23T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 888,
+      "createdAt": "2025-04-22T07:59:38.533987+00:00",
+      "startAt": "2025-04-25T14:59:00+00:00",
+      "endAt": "2025-04-27T02:59:00+00:00",
+      "objectId": 100254,
+      "path": "/bahrain/bh-module/piscine-flutter/hacker-news",
+      "campus": "bahrain"
+    },
+    {
+      "id": 891,
+      "createdAt": "2025-04-29T14:30:27.733522+00:00",
+      "startAt": "2025-04-29T14:30:00+00:00",
+      "endAt": "2025-04-29T14:30:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 881,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-04-29T08:00:00+00:00",
+      "endAt": "2025-04-30T20:00:00+00:00",
+      "objectId": 100346,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-02-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 882,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-04-29T08:00:00+00:00",
+      "endAt": "2025-04-30T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 889,
+      "createdAt": "2025-04-22T07:59:38.533987+00:00",
+      "startAt": "2025-05-02T08:59:00+00:00",
+      "endAt": "2025-05-03T20:59:00+00:00",
+      "objectId": 100258,
+      "path": "/bahrain/bh-module/piscine-flutter/secure-notes",
+      "campus": "bahrain"
+    },
+    {
+      "id": 892,
+      "createdAt": "2025-04-29T14:30:27.733522+00:00",
+      "startAt": "2025-05-02T21:30:00+00:00",
+      "endAt": "2025-05-04T09:30:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 23,
+      "createdAt": "2023-05-03T12:37:03.185813+00:00",
+      "startAt": "2023-05-17T07:00:00+00:00",
+      "endAt": "2023-05-21T04:00:00+00:00",
+      "objectId": 100236,
+      "path": "/bahrain/bh-module",
+      "campus": "bahrain"
+    },
+    {
+      "id": 895,
+      "createdAt": "2025-05-08T09:15:13.562216+00:00",
+      "startAt": "2025-05-08T09:15:00+00:00",
+      "endAt": "2025-05-08T09:15:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 884,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-05-06T08:00:00+00:00",
+      "endAt": "2025-05-07T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 883,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-05-06T08:00:00+00:00",
+      "endAt": "2025-05-07T20:00:00+00:00",
+      "objectId": 100373,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-03-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 899,
+      "createdAt": "2025-05-09T09:31:54.789214+00:00",
+      "startAt": "2025-05-09T09:35:00+00:00",
+      "endAt": "2025-05-10T06:59:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 900,
+      "createdAt": "2025-05-10T07:12:15.940194+00:00",
+      "startAt": "2025-05-10T07:12:00+00:00",
+      "endAt": "2025-05-10T07:12:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 901,
+      "createdAt": "2025-05-10T07:16:52.100352+00:00",
+      "startAt": "2025-05-10T07:16:00+00:00",
+      "endAt": "2025-05-10T07:16:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 906,
+      "createdAt": "2025-05-18T08:18:22.034306+00:00",
+      "startAt": "2025-05-21T15:18:00+00:00",
+      "endAt": "2025-05-23T03:18:00+00:00",
+      "objectId": 100556,
+      "path": "/bahrain/bh-module/piscine-ai/backtesting-sp500",
+      "campus": "bahrain"
+    },
+    {
+      "id": 896,
+      "createdAt": "2025-05-08T09:15:13.562216+00:00",
+      "startAt": "2025-05-11T16:15:00+00:00",
+      "endAt": "2025-05-13T04:15:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 905,
+      "createdAt": "2025-05-18T08:18:22.034306+00:00",
+      "startAt": "2025-05-18T08:18:00+00:00",
+      "endAt": "2025-05-18T08:18:00+00:00",
+      "objectId": 100550,
+      "path": "/bahrain/bh-module/piscine-ai",
+      "campus": "bahrain"
+    },
+    {
+      "id": 894,
+      "createdAt": "2025-04-29T14:30:27.733522+00:00",
+      "startAt": "2025-05-16T15:30:00+00:00",
+      "endAt": "2025-05-18T03:30:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 930,
+      "createdAt": "2025-05-25T07:18:12.220858+00:00",
+      "startAt": "2025-06-04T08:18:00+00:00",
+      "endAt": "2025-06-05T20:18:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 885,
+      "createdAt": "2025-04-16T09:40:00.034617+00:00",
+      "startAt": "2025-05-13T02:00:00+00:00",
+      "endAt": "2025-05-18T13:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 924,
+      "createdAt": "2025-05-18T12:49:36.636294+00:00",
+      "startAt": "2025-05-18T12:50:00+00:00",
+      "endAt": "2025-05-18T12:50:00+00:00",
+      "objectId": 101119,
+      "path": "/bahrain/bh-piscine/re-test",
+      "campus": "bahrain"
+    },
+    {
+      "id": 925,
+      "createdAt": "2025-05-18T15:24:41.510282+00:00",
+      "startAt": "2025-05-18T15:24:00+00:00",
+      "endAt": "2025-05-18T15:24:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 926,
+      "createdAt": "2025-05-19T06:15:10.036262+00:00",
+      "startAt": "2025-05-19T06:17:00+00:00",
+      "endAt": "2025-06-25T13:55:00+00:00",
+      "objectId": 100009,
+      "path": "/bahrain/bh-onboarding/check-in",
+      "campus": "bahrain"
+    },
+    {
+      "id": 897,
+      "createdAt": "2025-05-08T09:15:13.562216+00:00",
+      "startAt": "2025-05-18T10:15:00+00:00",
+      "endAt": "2025-05-19T22:15:00+00:00",
+      "objectId": 100671,
+      "path": "/bahrain/bh-module/piscine-js/sortable",
+      "campus": "bahrain"
+    },
+    {
+      "id": 927,
+      "createdAt": "2025-05-22T07:49:00.654242+00:00",
+      "startAt": "2025-05-22T07:48:00+00:00",
+      "endAt": "2025-05-22T07:48:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 928,
+      "createdAt": "2025-05-25T07:18:12.220858+00:00",
+      "startAt": "2025-05-25T07:18:00+00:00",
+      "endAt": "2025-05-25T07:18:00+00:00",
+      "objectId": 100569,
+      "path": "/bahrain/bh-module/piscine-js",
+      "campus": "bahrain"
+    },
+    {
+      "id": 898,
+      "createdAt": "2025-05-08T09:15:13.562216+00:00",
+      "startAt": "2025-05-25T10:15:00+00:00",
+      "endAt": "2025-05-26T22:15:00+00:00",
+      "objectId": 100672,
+      "path": "/bahrain/bh-module/piscine-js/clonernews",
+      "campus": "bahrain"
+    },
+    {
+      "id": 932,
+      "createdAt": "2025-05-27T14:29:42.972207+00:00",
+      "startAt": "2025-05-27T14:30:00+00:00",
+      "endAt": "2025-05-27T15:00:00+00:00",
+      "objectId": 100237,
+      "path": "/bahrain/bh-module/piscine-flutter",
+      "campus": "bahrain"
+    },
+    {
+      "id": 935,
+      "createdAt": "2025-05-27T16:23:14.518382+00:00",
+      "startAt": "2025-05-27T16:23:00+00:00",
+      "endAt": "2025-05-27T16:24:00+00:00",
+      "objectId": 100703,
+      "path": "/bahrain/bh-module/piscine-blockchain",
+      "campus": "bahrain"
+    },
+    {
+      "id": 908,
+      "createdAt": "2025-05-18T11:03:00.599334+00:00",
+      "startAt": "2025-05-18T11:05:00+00:00",
+      "endAt": "2025-05-28T07:00:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 907,
+      "createdAt": "2025-05-18T08:18:22.034306+00:00",
+      "startAt": "2025-05-28T09:18:00+00:00",
+      "endAt": "2025-05-29T21:18:00+00:00",
+      "objectId": 100562,
+      "path": "/bahrain/bh-module/piscine-ai/forest-prediction",
+      "campus": "bahrain"
+    },
+    {
+      "id": 929,
+      "createdAt": "2025-05-25T07:18:12.220858+00:00",
+      "startAt": "2025-05-28T14:18:00+00:00",
+      "endAt": "2025-05-30T02:18:00+00:00",
+      "objectId": 100692,
+      "path": "/bahrain/bh-module/piscine-js/crossword",
+      "campus": "bahrain"
+    },
+    {
+      "id": 933,
+      "createdAt": "2025-05-27T14:29:42.972207+00:00",
+      "startAt": "2025-05-30T22:05:00+00:00",
+      "endAt": "2025-06-01T10:05:00+00:00",
+      "objectId": 100254,
+      "path": "/bahrain/bh-module/piscine-flutter/hacker-news",
+      "campus": "bahrain"
+    },
+    {
+      "id": 936,
+      "createdAt": "2025-05-27T16:23:14.518382+00:00",
+      "startAt": "2025-05-30T23:30:00+00:00",
+      "endAt": "2025-06-01T11:30:00+00:00",
+      "objectId": 100749,
+      "path": "/bahrain/bh-module/piscine-blockchain/sign-service",
+      "campus": "bahrain"
+    },
+    {
+      "id": 910,
+      "createdAt": "2025-05-18T11:03:00.599334+00:00",
+      "startAt": "2025-05-31T08:00:00+00:00",
+      "endAt": "2025-06-01T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 909,
+      "createdAt": "2025-05-18T11:03:00.599334+00:00",
+      "startAt": "2025-06-02T23:00:00+00:00",
+      "endAt": "2025-06-04T11:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 934,
+      "createdAt": "2025-05-27T14:29:42.972207+00:00",
+      "startAt": "2025-06-06T16:05:00+00:00",
+      "endAt": "2025-06-08T04:05:00+00:00",
+      "objectId": 100258,
+      "path": "/bahrain/bh-module/piscine-flutter/secure-notes",
+      "campus": "bahrain"
+    },
+    {
+      "id": 937,
+      "createdAt": "2025-05-27T16:23:14.518382+00:00",
+      "startAt": "2025-06-06T17:30:00+00:00",
+      "endAt": "2025-06-08T05:30:00+00:00",
+      "objectId": 100753,
+      "path": "/bahrain/bh-module/piscine-blockchain/tracking-network",
+      "campus": "bahrain"
+    },
+    {
+      "id": 912,
+      "createdAt": "2025-05-18T11:03:00.599334+00:00",
+      "startAt": "2025-06-07T08:00:00+00:00",
+      "endAt": "2025-06-08T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 915,
+      "createdAt": "2025-05-18T11:03:00.599334+00:00",
+      "startAt": "2025-06-27T23:00:00+00:00",
+      "endAt": "2025-07-01T12:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1038,
+      "createdAt": "2025-07-14T14:45:03.82589+00:00",
+      "startAt": "2025-07-17T21:50:00+00:00",
+      "endAt": "2025-07-19T09:50:00+00:00",
+      "objectId": 100556,
+      "path": "/bahrain/bh-module/piscine-ai/backtesting-sp500",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1040,
+      "createdAt": "2025-07-15T09:59:29.376286+00:00",
+      "startAt": "2025-07-15T10:00:00+00:00",
+      "endAt": "2025-07-24T11:00:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 916,
+      "createdAt": "2025-05-18T11:03:34.930167+00:00",
+      "startAt": "2025-05-18T11:05:00+00:00",
+      "endAt": "2025-05-28T07:00:00+00:00",
+      "objectId": 100334,
+      "path": "/bahrain/bh-module/piscine-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 938,
+      "createdAt": "2025-05-28T15:37:23.671063+00:00",
+      "startAt": "2025-05-28T15:38:00+00:00",
+      "endAt": "2025-05-28T15:39:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 918,
+      "createdAt": "2025-05-18T11:03:34.930167+00:00",
+      "startAt": "2025-05-31T08:00:00+00:00",
+      "endAt": "2025-06-01T20:00:00+00:00",
+      "objectId": 100477,
+      "path": "/bahrain/bh-module/piscine-rust/drawing",
+      "campus": "bahrain"
+    },
+    {
+      "id": 917,
+      "createdAt": "2025-05-18T11:03:34.930167+00:00",
+      "startAt": "2025-06-02T23:00:00+00:00",
+      "endAt": "2025-06-04T11:00:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 920,
+      "createdAt": "2025-05-18T11:03:34.930167+00:00",
+      "startAt": "2025-06-07T08:00:00+00:00",
+      "endAt": "2025-06-08T20:00:00+00:00",
+      "objectId": 100476,
+      "path": "/bahrain/bh-module/piscine-rust/chaikin",
+      "campus": "bahrain"
+    },
+    {
+      "id": 922,
+      "createdAt": "2025-05-18T11:03:34.930167+00:00",
+      "startAt": "2025-06-14T08:00:00+00:00",
+      "endAt": "2025-06-15T20:00:00+00:00",
+      "objectId": 100478,
+      "path": "/bahrain/bh-module/piscine-rust/road-intersection",
+      "campus": "bahrain"
+    },
+    {
+      "id": 923,
+      "createdAt": "2025-05-18T11:03:34.930167+00:00",
+      "startAt": "2025-06-27T23:00:00+00:00",
+      "endAt": "2025-07-01T12:00:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1033,
+      "createdAt": "2025-07-10T10:57:19.338935+00:00",
+      "startAt": "2025-07-10T10:57:00+00:00",
+      "endAt": "2025-07-10T10:57:00+00:00",
+      "objectId": 100261,
+      "path": "/bahrain/bh-module/checkpoint",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1034,
+      "createdAt": "2025-07-10T11:02:21.849453+00:00",
+      "startAt": "2025-07-10T11:02:00+00:00",
+      "endAt": "2025-07-10T11:02:00+00:00",
+      "objectId": 100335,
+      "path": "/bahrain/bh-module/piscine-rust/checkpoint-01-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1035,
+      "createdAt": "2025-07-10T11:04:47.487299+00:00",
+      "startAt": "2025-07-10T11:04:00+00:00",
+      "endAt": "2025-07-10T11:04:00+00:00",
+      "objectId": 101310,
+      "path": "/bahrain/bh-module/piscine-java/checkpoint-03-java",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1036,
+      "createdAt": "2025-07-10T13:32:12.5017+00:00",
+      "startAt": "2025-07-10T13:32:00+00:00",
+      "endAt": "2025-07-10T13:32:00+00:00",
+      "objectId": 100361,
+      "path": "/bahrain/bh-module/piscine-rust/final-checkpoint-rust",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1039,
+      "createdAt": "2025-07-14T14:45:03.82589+00:00",
+      "startAt": "2025-07-24T15:50:00+00:00",
+      "endAt": "2025-07-26T03:50:00+00:00",
+      "objectId": 100562,
+      "path": "/bahrain/bh-module/piscine-ai/forest-prediction",
+      "campus": "bahrain"
+    },
+    {
+      "id": 1037,
+      "createdAt": "2025-07-14T14:45:03.82589+00:00",
+      "startAt": "2025-07-14T14:45:00+00:00",
+      "endAt": "2025-07-14T14:48:00+00:00",
+      "objectId": 100550,
+      "path": "/bahrain/bh-module/piscine-ai",
+      "campus": "bahrain"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetAllRegistrations {
+      registration {
+        id
+        createdAt
+        startAt
+        endAt
+        objectId
+        path
+        campus
+      }
+    }
+  

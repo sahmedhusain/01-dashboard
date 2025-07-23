@@ -1,0 +1,54 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_MATCHES
+Timestamp: 2025-07-23T01:18:16.385Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: None
+Record Count: 0
+Data Summary: No data
+
+============================================================
+GRAPHQL ENDPOINT ERROR MESSAGES:
+============================================================
+
+Error 1:
+  Message: field 'attrs' not found in type: 'match'
+  Extensions: {
+  "path": "$.selectionSet.match.selectionSet.attrs",
+  "code": "validation-failed"
+}
+  Full Error Object: {
+  "message": "field 'attrs' not found in type: 'match'",
+  "extensions": {
+    "path": "$.selectionSet.match.selectionSet.attrs",
+    "code": "validation-failed"
+  }
+}
+============================================================
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+NO DATA RETURNED FROM GRAPHQL ENDPOINT
+This usually means:
+1. The query has syntax errors
+2. The fields don't exist in the schema
+3. Permission issues with the JWT token
+4. The endpoint returned only errors (see above)
+
+==================================================
+
+Query:
+
+    query GetAllMatches {
+      match {
+        id
+        createdAt
+        updatedAt
+        attrs
+        status
+        type
+      }
+    }
+  

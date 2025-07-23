@@ -1,0 +1,87 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_OBJECT_TYPES
+Timestamp: 2025-07-23T01:18:13.552Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: object_type
+Record Count: 20
+Data Summary: object_type: Array[20]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "object_type": [
+    {
+      "type": "onboarding"
+    },
+    {
+      "type": "campus"
+    },
+    {
+      "type": "exercise"
+    },
+    {
+      "type": "quest"
+    },
+    {
+      "type": "signup"
+    },
+    {
+      "type": "exam"
+    },
+    {
+      "type": "raid"
+    },
+    {
+      "type": "project"
+    },
+    {
+      "type": "piscine"
+    },
+    {
+      "type": "module"
+    },
+    {
+      "type": "games"
+    },
+    {
+      "type": "administration"
+    },
+    {
+      "type": "interview"
+    },
+    {
+      "type": "piscine-registration"
+    },
+    {
+      "type": "module-registration"
+    },
+    {
+      "type": "form-step"
+    },
+    {
+      "type": "sign-step"
+    },
+    {
+      "type": "upload-step"
+    },
+    {
+      "type": "contact-validation-step"
+    },
+    {
+      "type": "avatar-step"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetObjectTypes {
+      object_type {
+        type
+      }
+    }
+  

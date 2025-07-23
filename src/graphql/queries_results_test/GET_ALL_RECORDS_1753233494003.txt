@@ -1,0 +1,30 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_RECORDS
+Timestamp: 2025-07-23T01:18:14.003Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: record
+Record Count: 0
+Data Summary: record: Array[0]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "record": []
+}
+==================================================
+
+Query:
+
+    query GetAllRecords {
+      record {
+        id
+        message
+        createdAt
+        authorId
+        userId
+      }
+    }
+  

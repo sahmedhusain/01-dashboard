@@ -1,0 +1,53 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_ALL_LABEL_USERS
+Timestamp: 2025-07-23T01:18:16.267Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: None
+Record Count: 0
+Data Summary: No data
+
+============================================================
+GRAPHQL ENDPOINT ERROR MESSAGES:
+============================================================
+
+Error 1:
+  Message: field 'updatedAt' not found in type: 'label_user'
+  Extensions: {
+  "path": "$.selectionSet.label_user.selectionSet.updatedAt",
+  "code": "validation-failed"
+}
+  Full Error Object: {
+  "message": "field 'updatedAt' not found in type: 'label_user'",
+  "extensions": {
+    "path": "$.selectionSet.label_user.selectionSet.updatedAt",
+    "code": "validation-failed"
+  }
+}
+============================================================
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+NO DATA RETURNED FROM GRAPHQL ENDPOINT
+This usually means:
+1. The query has syntax errors
+2. The fields don't exist in the schema
+3. Permission issues with the JWT token
+4. The endpoint returned only errors (see above)
+
+==================================================
+
+Query:
+
+    query GetAllLabelUsers {
+      label_user {
+        id
+        labelId
+        userId
+        createdAt
+        updatedAt
+      }
+    }
+  

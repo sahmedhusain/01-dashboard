@@ -1,0 +1,31 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_TRANSACTION_BY_PK
+Timestamp: 2025-07-23T01:18:15.534Z
+Status: SUCCESS
+Variables: {"id":1599}
+
+Data Keys: transaction_by_pk
+Record Count: 0
+Data Summary: transaction_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "transaction_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetTransactionByPk($id: Int!) {
+      transaction_by_pk(id: $id) {
+        id
+        type
+        amount
+        userId
+        createdAt
+        path
+      }
+    }
+  

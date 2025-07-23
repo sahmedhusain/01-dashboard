@@ -1,0 +1,30 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_LABEL_BY_PK
+Timestamp: 2025-07-23T01:18:16.244Z
+Status: SUCCESS
+Variables: {"id":1599}
+
+Data Keys: label_by_pk
+Record Count: 0
+Data Summary: label_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "label_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetLabelByPk($id: Int!) {
+      label_by_pk(id: $id) {
+        id
+        name
+        description
+        createdAt
+        updatedAt
+      }
+    }
+  

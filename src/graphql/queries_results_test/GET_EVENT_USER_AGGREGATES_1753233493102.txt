@@ -1,0 +1,50 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_EVENT_USER_AGGREGATES
+Timestamp: 2025-07-23T01:18:13.102Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: event_user_aggregate
+Record Count: 1
+Data Summary: event_user_aggregate: Aggregate({"count":11804,"avg":{"level":3.536089461199593},"max":{"level":71},"min":{"level":0}})
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "event_user_aggregate": {
+    "aggregate": {
+      "count": 11804,
+      "avg": {
+        "level": 3.536089461199593
+      },
+      "max": {
+        "level": 71
+      },
+      "min": {
+        "level": 0
+      }
+    }
+  }
+}
+==================================================
+
+Query:
+
+    query GetEventUserAggregates {
+      event_user_aggregate {
+        aggregate {
+          count
+          avg {
+            level
+          }
+          max {
+            level
+          }
+          min {
+            level
+          }
+        }
+      }
+    }
+  

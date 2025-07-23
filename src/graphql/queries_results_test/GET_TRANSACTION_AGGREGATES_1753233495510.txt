@@ -1,0 +1,56 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_TRANSACTION_AGGREGATES
+Timestamp: 2025-07-23T01:18:15.510Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: transaction_aggregate
+Record Count: 1
+Data Summary: transaction_aggregate: Aggregate({"count":462,"sum":{"amount":5636865.916666667},"avg":{"amount":12201.008477633477},"max":{"amount":480000},"min":{"amount":-9200}})
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "transaction_aggregate": {
+    "aggregate": {
+      "count": 462,
+      "sum": {
+        "amount": 5636865.916666667
+      },
+      "avg": {
+        "amount": 12201.008477633477
+      },
+      "max": {
+        "amount": 480000
+      },
+      "min": {
+        "amount": -9200
+      }
+    }
+  }
+}
+==================================================
+
+Query:
+
+    query GetTransactionAggregates {
+      transaction_aggregate {
+        aggregate {
+          count
+          sum {
+            amount
+          }
+          avg {
+            amount
+          }
+          max {
+            amount
+          }
+          min {
+            amount
+          }
+        }
+      }
+    }
+  

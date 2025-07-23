@@ -1,0 +1,28 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_OBJECT_TYPE_BY_PK
+Timestamp: 2025-07-23T01:18:13.599Z
+Status: SUCCESS
+Variables: {"type":"project"}
+
+Data Keys: object_type_by_pk
+Record Count: 1
+Data Summary: object_type_by_pk: Object
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "object_type_by_pk": {
+    "type": "project"
+  }
+}
+==================================================
+
+Query:
+
+    query GetObjectTypeByPk($type: String!) {
+      object_type_by_pk(type: $type) {
+        type
+      }
+    }
+  

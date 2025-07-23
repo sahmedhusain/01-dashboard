@@ -1,0 +1,32 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_REGISTRATION_BY_PK
+Timestamp: 2025-07-23T01:18:14.200Z
+Status: SUCCESS
+Variables: {"id":1599}
+
+Data Keys: registration_by_pk
+Record Count: 0
+Data Summary: registration_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "registration_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetRegistrationByPk($id: Int!) {
+      registration_by_pk(id: $id) {
+        id
+        createdAt
+        startAt
+        endAt
+        objectId
+        path
+        campus
+      }
+    }
+  

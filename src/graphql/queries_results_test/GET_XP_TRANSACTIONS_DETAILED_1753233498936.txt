@@ -1,0 +1,1095 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_XP_TRANSACTIONS_DETAILED
+Timestamp: 2025-07-23T01:18:18.936Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: transaction
+Record Count: 152
+Data Summary: transaction: Array[152]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "transaction": [
+    {
+      "id": 228974,
+      "amount": 147000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/make-your-game",
+      "createdAt": "2025-02-14T15:13:30.949519+00:00"
+    },
+    {
+      "id": 290520,
+      "amount": 103500,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/real-time-forum",
+      "createdAt": "2025-07-13T19:11:58.325293+00:00"
+    },
+    {
+      "id": 217965,
+      "amount": 76250,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/forum",
+      "createdAt": "2025-01-20T16:48:56.151995+00:00"
+    },
+    {
+      "id": 222604,
+      "amount": 70000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js",
+      "createdAt": "2025-01-27T11:54:29.277787+00:00"
+    },
+    {
+      "id": 296252,
+      "amount": 51750,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/typing-in-progress",
+      "createdAt": "2025-07-16T17:16:32.347068+00:00"
+    },
+    {
+      "id": 100561,
+      "amount": 44000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-02/concatslice",
+      "createdAt": "2024-02-29T13:14:49.985666+00:00"
+    },
+    {
+      "id": 100534,
+      "amount": 35200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-02/iscapitalized",
+      "createdAt": "2024-02-29T13:05:13.676655+00:00"
+    },
+    {
+      "id": 197806,
+      "amount": 34375,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/lem-in",
+      "createdAt": "2024-11-11T16:31:20.320525+00:00"
+    },
+    {
+      "id": 105274,
+      "amount": 32700,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-03/digitlen",
+      "createdAt": "2024-03-09T09:03:01.786042+00:00"
+    },
+    {
+      "id": 95271,
+      "amount": 30500,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-01/concatslice",
+      "createdAt": "2024-02-22T16:06:59.502697+00:00"
+    },
+    {
+      "id": 100467,
+      "amount": 26400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-02/countcharacter",
+      "createdAt": "2024-02-29T12:21:20.78372+00:00"
+    },
+    {
+      "id": 150906,
+      "amount": 24500,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/groupie-tracker",
+      "createdAt": "2024-07-31T14:45:59.2461+00:00"
+    },
+    {
+      "id": 94982,
+      "amount": 24400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printcomb",
+      "createdAt": "2024-02-22T13:42:53.927381+00:00"
+    },
+    {
+      "id": 105258,
+      "amount": 21800,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-03/deprecated-19-06-2024-printreversealphabet",
+      "createdAt": "2024-03-09T08:31:20.888338+00:00"
+    },
+    {
+      "id": 258095,
+      "amount": 19100,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/image-upload",
+      "createdAt": "2025-05-20T13:07:47.508319+00:00"
+    },
+    {
+      "id": 169583,
+      "amount": 18375,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/push-swap",
+      "createdAt": "2024-09-11T15:23:36.643438+00:00"
+    },
+    {
+      "id": 94899,
+      "amount": 18300,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-swap",
+      "createdAt": "2024-02-22T13:07:34.913812+00:00"
+    },
+    {
+      "id": 100449,
+      "amount": 17600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-02/deprecated-19-06-2024-printreversealphabet",
+      "createdAt": "2024-02-29T12:01:32.500097+00:00"
+    },
+    {
+      "id": 151673,
+      "amount": 12250,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/visualizations",
+      "createdAt": "2024-08-04T17:12:35.173265+00:00"
+    },
+    {
+      "id": 194186,
+      "amount": 12250,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/net-cat",
+      "createdAt": "2024-10-15T17:53:53.163198+00:00"
+    },
+    {
+      "id": 164631,
+      "amount": 12250,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/search-bar",
+      "createdAt": "2024-09-02T14:20:29.121488+00:00"
+    },
+    {
+      "id": 94862,
+      "amount": 12200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-01/deprecated-19-06-2024-printalphabet",
+      "createdAt": "2024-02-22T12:47:51.94084+00:00"
+    },
+    {
+      "id": 105256,
+      "amount": 10900,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-03/onlyz",
+      "createdAt": "2024-03-09T08:28:53.236647+00:00"
+    },
+    {
+      "id": 238297,
+      "amount": 10000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/linear-stats",
+      "createdAt": "2025-04-14T18:49:00.248338+00:00"
+    },
+    {
+      "id": 148285,
+      "amount": 10000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/math-skills",
+      "createdAt": "2024-07-21T13:34:07.589492+00:00"
+    },
+    {
+      "id": 143420,
+      "amount": 9200,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/exportfile",
+      "createdAt": "2024-07-09T12:43:35.031838+00:00"
+    },
+    {
+      "id": 137563,
+      "amount": 9200,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/dockerize",
+      "createdAt": "2024-07-02T14:50:28.338162+00:00"
+    },
+    {
+      "id": 142180,
+      "amount": 9200,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/stylize",
+      "createdAt": "2024-07-08T11:35:14.618412+00:00"
+    },
+    {
+      "id": 125826,
+      "amount": 9200,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/ascii-art-web",
+      "createdAt": "2024-06-24T17:51:22.532971+00:00"
+    },
+    {
+      "id": 100444,
+      "amount": 8800,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-02/onlyz",
+      "createdAt": "2024-02-29T11:55:48.459157+00:00"
+    },
+    {
+      "id": 101825,
+      "amount": 7700,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-08/point",
+      "createdAt": "2024-03-03T13:25:45.515103+00:00"
+    },
+    {
+      "id": 103683,
+      "amount": 6825,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/advancedsortwordarr",
+      "createdAt": "2024-03-05T12:55:38.035333+00:00"
+    },
+    {
+      "id": 104866,
+      "amount": 6825,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/unmatch",
+      "createdAt": "2024-03-06T21:21:07.994785+00:00"
+    },
+    {
+      "id": 104921,
+      "amount": 6825,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/fooddeliverytime",
+      "createdAt": "2024-03-06T22:00:39.836475+00:00"
+    },
+    {
+      "id": 101758,
+      "amount": 6600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/convertbase",
+      "createdAt": "2024-03-03T11:13:57.251539+00:00"
+    },
+    {
+      "id": 115534,
+      "amount": 6125,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/output",
+      "createdAt": "2024-05-19T14:44:53.428063+00:00"
+    },
+    {
+      "id": 115264,
+      "amount": 6125,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/ascii-art",
+      "createdAt": "2024-05-14T15:06:38.409158+00:00"
+    },
+    {
+      "id": 115659,
+      "amount": 6125,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/fs",
+      "createdAt": "2024-05-19T17:45:22.998941+00:00"
+    },
+    {
+      "id": 115739,
+      "amount": 6125,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/justify",
+      "createdAt": "2024-05-20T13:44:47.361988+00:00"
+    },
+    {
+      "id": 117067,
+      "amount": 6125,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/color",
+      "createdAt": "2024-05-30T15:30:23.536272+00:00"
+    },
+    {
+      "id": 98562,
+      "amount": 6125,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-06/flags",
+      "createdAt": "2024-02-26T23:42:16.328865+00:00"
+    },
+    {
+      "id": 94852,
+      "amount": 6100,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/checkpoint-01/onlyz",
+      "createdAt": "2024-02-22T12:44:17.150495+00:00"
+    },
+    {
+      "id": 104252,
+      "amount": 5875,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/join",
+      "createdAt": "2024-03-06T10:56:56.516499+00:00"
+    },
+    {
+      "id": 104846,
+      "amount": 5688,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/descendcomb",
+      "createdAt": "2024-03-06T20:55:15.947074+00:00"
+    },
+    {
+      "id": 103645,
+      "amount": 5688,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/sortwordarr",
+      "createdAt": "2024-03-05T12:13:11.542517+00:00"
+    },
+    {
+      "id": 104947,
+      "amount": 5688,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/collatzcountdown",
+      "createdAt": "2024-03-06T22:25:43.425589+00:00"
+    },
+    {
+      "id": 103311,
+      "amount": 5688,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/issorted",
+      "createdAt": "2024-03-04T18:49:21.598951+00:00"
+    },
+    {
+      "id": 103633,
+      "amount": 5688,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/doop",
+      "createdAt": "2024-03-05T11:58:09.123937+00:00"
+    },
+    {
+      "id": 104355,
+      "amount": 5688,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/rot14",
+      "createdAt": "2024-03-06T13:28:40.613646+00:00"
+    },
+    {
+      "id": 101414,
+      "amount": 5500,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/split",
+      "createdAt": "2024-03-02T16:32:00.406526+00:00"
+    },
+    {
+      "id": 101411,
+      "amount": 5500,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/splitwhitespaces",
+      "createdAt": "2024-03-02T16:23:13.44481+00:00"
+    },
+    {
+      "id": 101842,
+      "amount": 5500,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-08/displayfile",
+      "createdAt": "2024-03-03T13:30:53.885714+00:00"
+    },
+    {
+      "id": 101407,
+      "amount": 5500,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/concatparams",
+      "createdAt": "2024-03-02T16:16:46.291103+00:00"
+    },
+    {
+      "id": 229711,
+      "amount": 5000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/guess-it-1",
+      "createdAt": "2025-02-18T19:02:06.724477+00:00"
+    },
+    {
+      "id": 279614,
+      "amount": 5000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/guess-it-2",
+      "createdAt": "2025-06-22T16:16:12.644345+00:00"
+    },
+    {
+      "id": 167218,
+      "amount": 5000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/git",
+      "createdAt": "2024-09-06T17:53:06.039106+00:00"
+    },
+    {
+      "id": 113211,
+      "amount": 5000,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/go-reloaded",
+      "createdAt": "2024-05-02T22:37:06.952346+00:00"
+    },
+    {
+      "id": 103279,
+      "amount": 4550,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/countif",
+      "createdAt": "2024-03-04T18:21:13.679586+00:00"
+    },
+    {
+      "id": 104972,
+      "amount": 4550,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-10/abort",
+      "createdAt": "2024-03-06T22:48:42.915453+00:00"
+    },
+    {
+      "id": 103193,
+      "amount": 4550,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/map",
+      "createdAt": "2024-03-04T17:24:33.680048+00:00"
+    },
+    {
+      "id": 103263,
+      "amount": 4550,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/any",
+      "createdAt": "2024-03-04T18:05:01.006216+00:00"
+    },
+    {
+      "id": 101413,
+      "amount": 4400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/printwordstables",
+      "createdAt": "2024-03-02T16:27:00.266466+00:00"
+    },
+    {
+      "id": 103145,
+      "amount": 4400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-09/foreach",
+      "createdAt": "2024-03-04T17:04:36.5836+00:00"
+    },
+    {
+      "id": 101817,
+      "amount": 4400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-08/boolean",
+      "createdAt": "2024-03-03T13:05:30.468629+00:00"
+    },
+    {
+      "id": 101404,
+      "amount": 4400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/appendrange",
+      "createdAt": "2024-03-02T16:05:46.141092+00:00"
+    },
+    {
+      "id": 101405,
+      "amount": 4400,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-07/makerange",
+      "createdAt": "2024-03-02T16:11:13.907187+00:00"
+    },
+    {
+      "id": 97646,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/basicjoin",
+      "createdAt": "2024-02-26T12:49:02.380894+00:00"
+    },
+    {
+      "id": 98199,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-06/nbrconvertalpha",
+      "createdAt": "2024-02-26T17:23:21.89217+00:00"
+    },
+    {
+      "id": 98181,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-06/sortparams",
+      "createdAt": "2024-02-26T17:15:42.991662+00:00"
+    },
+    {
+      "id": 97607,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/isnumeric",
+      "createdAt": "2024-02-26T12:23:01.31894+00:00"
+    },
+    {
+      "id": 97614,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/isprintable",
+      "createdAt": "2024-02-26T12:28:18.752364+00:00"
+    },
+    {
+      "id": 97619,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/toupper",
+      "createdAt": "2024-02-26T12:30:45.038533+00:00"
+    },
+    {
+      "id": 97628,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/tolower",
+      "createdAt": "2024-02-26T12:32:56.618248+00:00"
+    },
+    {
+      "id": 97637,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/trimatoi",
+      "createdAt": "2024-02-26T12:40:31.588377+00:00"
+    },
+    {
+      "id": 97632,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/printnbrinorder",
+      "createdAt": "2024-02-26T12:36:32.465969+00:00"
+    },
+    {
+      "id": 97642,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/capitalize",
+      "createdAt": "2024-02-26T12:45:43.994352+00:00"
+    },
+    {
+      "id": 97655,
+      "amount": 4188,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/join",
+      "createdAt": "2024-02-26T12:57:07.958659+00:00"
+    },
+    {
+      "id": 97590,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/concat",
+      "createdAt": "2024-02-26T12:13:16.819381+00:00"
+    },
+    {
+      "id": 97602,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/isalpha",
+      "createdAt": "2024-02-26T12:21:01.495678+00:00"
+    },
+    {
+      "id": 97593,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/isupper",
+      "createdAt": "2024-02-26T12:16:01.514198+00:00"
+    },
+    {
+      "id": 95991,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/sqrt",
+      "createdAt": "2024-02-25T01:08:54.902127+00:00"
+    },
+    {
+      "id": 95990,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/fibonacci",
+      "createdAt": "2024-02-25T00:31:39.619095+00:00"
+    },
+    {
+      "id": 95992,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/isprime",
+      "createdAt": "2024-02-25T01:18:59.942241+00:00"
+    },
+    {
+      "id": 96423,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/findnextprime",
+      "createdAt": "2024-02-25T11:55:34.48103+00:00"
+    },
+    {
+      "id": 97600,
+      "amount": 4000,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/islower",
+      "createdAt": "2024-02-26T12:18:06.205389+00:00"
+    },
+    {
+      "id": 97992,
+      "amount": 3350,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-06/printprogramname",
+      "createdAt": "2024-02-26T15:54:46.839714+00:00"
+    },
+    {
+      "id": 98094,
+      "amount": 3350,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-06/revparams",
+      "createdAt": "2024-02-26T16:28:30.990979+00:00"
+    },
+    {
+      "id": 98066,
+      "amount": 3350,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-06/printparams",
+      "createdAt": "2024-02-26T16:18:58.622975+00:00"
+    },
+    {
+      "id": 97583,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/index",
+      "createdAt": "2024-02-26T12:07:56.999882+00:00"
+    },
+    {
+      "id": 95988,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/iterativepower",
+      "createdAt": "2024-02-25T00:06:06.534039+00:00"
+    },
+    {
+      "id": 95989,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/recursivepower",
+      "createdAt": "2024-02-25T00:16:06.975257+00:00"
+    },
+    {
+      "id": 97574,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/compare",
+      "createdAt": "2024-02-26T12:01:37.649514+00:00"
+    },
+    {
+      "id": 97578,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/alphacount",
+      "createdAt": "2024-02-26T12:03:35.372972+00:00"
+    },
+    {
+      "id": 96480,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/firstrune",
+      "createdAt": "2024-02-25T13:03:01.465992+00:00"
+    },
+    {
+      "id": 96484,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/lastrune",
+      "createdAt": "2024-02-25T13:07:21.582569+00:00"
+    },
+    {
+      "id": 96597,
+      "amount": 3200,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-05/nrune",
+      "createdAt": "2024-02-25T14:23:40.307851+00:00"
+    },
+    {
+      "id": 95987,
+      "amount": 3050,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/recursivefactorial",
+      "createdAt": "2024-02-24T23:53:59.922592+00:00"
+    },
+    {
+      "id": 95985,
+      "amount": 3050,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-04/iterativefactorial",
+      "createdAt": "2024-02-24T23:47:49.857398+00:00"
+    },
+    {
+      "id": 98960,
+      "amount": 3050,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quad",
+      "createdAt": "2024-02-27T14:35:30.328731+00:00"
+    },
+    {
+      "id": 216679,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco",
+      "createdAt": "2025-01-20T02:09:57.775594+00:00"
+    },
+    {
+      "id": 216682,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-forever",
+      "createdAt": "2025-01-20T02:11:34.926155+00:00"
+    },
+    {
+      "id": 216685,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/verydisco-reverso",
+      "createdAt": "2025-01-20T02:13:36.053941+00:00"
+    },
+    {
+      "id": 216686,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-how-many",
+      "createdAt": "2025-01-20T02:15:59.074367+00:00"
+    },
+    {
+      "id": 216688,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-who",
+      "createdAt": "2025-01-20T02:23:18.881143+00:00"
+    },
+    {
+      "id": 218202,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-me-vip",
+      "createdAt": "2025-01-20T18:15:45.833593+00:00"
+    },
+    {
+      "id": 218208,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/tell-it-cypher",
+      "createdAt": "2025-01-20T18:18:07.205692+00:00"
+    },
+    {
+      "id": 218250,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/friend-support",
+      "createdAt": "2025-01-20T18:45:29.246122+00:00"
+    },
+    {
+      "id": 218265,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/uninvited",
+      "createdAt": "2025-01-20T18:55:01.919941+00:00"
+    },
+    {
+      "id": 218278,
+      "amount": 2600,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/piscine-js/node/gatecrashers",
+      "createdAt": "2025-01-20T19:06:41.850112+00:00"
+    },
+    {
+      "id": 94074,
+      "amount": 2100,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/sortintegertable",
+      "createdAt": "2024-02-21T22:30:40.812838+00:00"
+    },
+    {
+      "id": 93248,
+      "amount": 1750,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/atoi",
+      "createdAt": "2024-02-20T23:37:54.234545+00:00"
+    },
+    {
+      "id": 95964,
+      "amount": 1650,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printcombn",
+      "createdAt": "2024-02-24T21:04:24.620434+00:00"
+    },
+    {
+      "id": 93149,
+      "amount": 1375,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printnbr",
+      "createdAt": "2024-02-20T19:06:42.3545+00:00"
+    },
+    {
+      "id": 93008,
+      "amount": 1250,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/swap",
+      "createdAt": "2024-02-20T18:11:54.207817+00:00"
+    },
+    {
+      "id": 93246,
+      "amount": 1250,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi2",
+      "createdAt": "2024-02-20T23:29:05.287867+00:00"
+    },
+    {
+      "id": 92992,
+      "amount": 1250,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/strlen",
+      "createdAt": "2024-02-20T18:05:09.772451+00:00"
+    },
+    {
+      "id": 93018,
+      "amount": 1250,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/strrev",
+      "createdAt": "2024-02-20T18:15:13.10196+00:00"
+    },
+    {
+      "id": 93036,
+      "amount": 1250,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/basicatoi",
+      "createdAt": "2024-02-20T18:22:27.712108+00:00"
+    },
+    {
+      "id": 92916,
+      "amount": 1100,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/printstr",
+      "createdAt": "2024-02-20T17:38:31.531637+00:00"
+    },
+    {
+      "id": 92489,
+      "amount": 1100,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/divmod",
+      "createdAt": "2024-02-20T15:38:09.522673+00:00"
+    },
+    {
+      "id": 92533,
+      "amount": 1100,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/ultimatedivmod",
+      "createdAt": "2024-02-20T15:51:02.313158+00:00"
+    },
+    {
+      "id": 93060,
+      "amount": 950,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printcomb2",
+      "createdAt": "2024-02-20T18:35:50.448218+00:00"
+    },
+    {
+      "id": 91247,
+      "amount": 950,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printcomb",
+      "createdAt": "2024-02-19T18:16:33.126962+00:00"
+    },
+    {
+      "id": 92410,
+      "amount": 825,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/ultimatepointone",
+      "createdAt": "2024-02-20T15:05:35.524725+00:00"
+    },
+    {
+      "id": 91056,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/isnegative",
+      "createdAt": "2024-02-19T17:13:54.511488+00:00"
+    },
+    {
+      "id": 90468,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printreversealphabet",
+      "createdAt": "2024-02-19T14:01:00.929754+00:00"
+    },
+    {
+      "id": 90558,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printdigits",
+      "createdAt": "2024-02-19T14:26:11.846838+00:00"
+    },
+    {
+      "id": 93267,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp8",
+      "createdAt": "2024-02-21T01:24:41.080986+00:00"
+    },
+    {
+      "id": 93258,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp7",
+      "createdAt": "2024-02-21T00:56:24.892905+00:00"
+    },
+    {
+      "id": 93250,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp6",
+      "createdAt": "2024-02-21T00:10:44.671115+00:00"
+    },
+    {
+      "id": 92379,
+      "amount": 713,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-03/pointone",
+      "createdAt": "2024-02-20T14:52:03.022229+00:00"
+    },
+    {
+      "id": 88508,
+      "amount": 650,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/to-git-or-not-to-git",
+      "createdAt": "2024-02-18T11:59:27.304228+00:00"
+    },
+    {
+      "id": 88621,
+      "amount": 600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp2",
+      "createdAt": "2024-02-18T13:13:24.686382+00:00"
+    },
+    {
+      "id": 88673,
+      "amount": 600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp4",
+      "createdAt": "2024-02-18T14:09:27.711054+00:00"
+    },
+    {
+      "id": 93249,
+      "amount": 600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp5",
+      "createdAt": "2024-02-21T00:08:21.806342+00:00"
+    },
+    {
+      "id": 88638,
+      "amount": 600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp3",
+      "createdAt": "2024-02-18T13:49:21.170911+00:00"
+    },
+    {
+      "id": 90440,
+      "amount": 600,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-02/printalphabet",
+      "createdAt": "2024-02-19T13:45:49.215957+00:00"
+    },
+    {
+      "id": 88611,
+      "amount": 488,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/cl-camp1",
+      "createdAt": "2024-02-18T13:00:24.238436+00:00"
+    },
+    {
+      "id": 88455,
+      "amount": 375,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/who-are-you",
+      "createdAt": "2024-02-18T11:28:11.76196+00:00"
+    },
+    {
+      "id": 88324,
+      "amount": 263,
+      "userId": 1599,
+      "path": "/bahrain/bh-piscine/quest-01/introduction",
+      "createdAt": "2024-02-18T10:27:53.955054+00:00"
+    },
+    {
+      "id": 180684,
+      "amount": 250,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/union",
+      "createdAt": "2024-09-26T18:31:11.697897+00:00"
+    },
+    {
+      "id": 116696,
+      "amount": 200,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-strlen",
+      "createdAt": "2024-05-26T16:23:51.157436+00:00"
+    },
+    {
+      "id": 180528,
+      "amount": 200,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/thirdtimeisacharm",
+      "createdAt": "2024-09-26T16:44:42.066048+00:00"
+    },
+    {
+      "id": 180512,
+      "amount": 150,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/hashcode",
+      "createdAt": "2024-09-26T16:30:44.189685+00:00"
+    },
+    {
+      "id": 152511,
+      "amount": 150,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/lastword",
+      "createdAt": "2024-08-06T16:19:27.859328+00:00"
+    },
+    {
+      "id": 152278,
+      "amount": 100,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "createdAt": "2024-08-06T14:16:56.666111+00:00"
+    },
+    {
+      "id": 116674,
+      "amount": 100,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/deprecated-19-06-2024-paramcount",
+      "createdAt": "2024-05-26T16:11:10.749843+00:00"
+    },
+    {
+      "id": 156372,
+      "amount": 100,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/rectperimeter",
+      "createdAt": "2024-08-20T14:20:49.747558+00:00"
+    },
+    {
+      "id": 180413,
+      "amount": 100,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/countcharacter",
+      "createdAt": "2024-09-26T15:41:43.637013+00:00"
+    },
+    {
+      "id": 156340,
+      "amount": 50,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/onlyb",
+      "createdAt": "2024-08-20T14:12:28.541238+00:00"
+    },
+    {
+      "id": 180409,
+      "amount": 50,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/onlyz",
+      "createdAt": "2024-09-26T15:39:46.554216+00:00"
+    },
+    {
+      "id": 152254,
+      "amount": 50,
+      "userId": 1599,
+      "path": "/bahrain/bh-module/checkpoint/onlyf",
+      "createdAt": "2024-08-06T14:11:13.968074+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetXPTransactionsDetailed {
+      transaction(where: {type: {_eq: "xp"}}, order_by: {amount: desc}) {
+        id
+        amount
+        userId
+        path
+        createdAt
+      }
+    }
+  

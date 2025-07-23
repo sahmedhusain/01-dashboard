@@ -1,0 +1,26 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_TRANSACTION_TYPE_BY_PK
+Timestamp: 2025-07-23T01:18:15.609Z
+Status: SUCCESS
+Variables: {"type":"project"}
+
+Data Keys: transaction_type_by_pk
+Record Count: 0
+Data Summary: transaction_type_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "transaction_type_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetTransactionTypeByPk($type: String!) {
+      transaction_type_by_pk(type: $type) {
+        type
+      }
+    }
+  

@@ -1,0 +1,50 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_RECORD_PUBLIC_VIEW
+Timestamp: 2025-07-23T01:18:14.050Z
+Status: SUCCESS
+Variables: {}
+
+Data Keys: None
+Record Count: 0
+Data Summary: No data
+
+============================================================
+GRAPHQL ENDPOINT ERROR MESSAGES:
+============================================================
+
+Error 1:
+  Message: field 'authorLogin' not found in type: 'record_public_view'
+  Extensions: {
+  "path": "$.selectionSet.record_public_view.selectionSet.authorLogin",
+  "code": "validation-failed"
+}
+  Full Error Object: {
+  "message": "field 'authorLogin' not found in type: 'record_public_view'",
+  "extensions": {
+    "path": "$.selectionSet.record_public_view.selectionSet.authorLogin",
+    "code": "validation-failed"
+  }
+}
+============================================================
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+NO DATA RETURNED FROM GRAPHQL ENDPOINT
+This usually means:
+1. The query has syntax errors
+2. The fields don't exist in the schema
+3. Permission issues with the JWT token
+4. The endpoint returned only errors (see above)
+
+==================================================
+
+Query:
+
+    query GetRecordPublicView {
+      record_public_view {
+        authorLogin
+        userLogin
+      }
+    }
+  

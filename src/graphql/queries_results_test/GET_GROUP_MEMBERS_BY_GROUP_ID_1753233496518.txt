@@ -1,0 +1,52 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_GROUP_MEMBERS_BY_GROUP_ID
+Timestamp: 2025-07-23T01:18:16.518Z
+Status: SUCCESS
+Variables: {"groupId":1}
+
+Data Keys: group_user
+Record Count: 3
+Data Summary: group_user: Array[3]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "group_user": [
+    {
+      "id": 1,
+      "userId": 890,
+      "groupId": 1,
+      "createdAt": "2023-03-02T18:00:00.511533+00:00",
+      "updatedAt": "2024-10-29T20:39:54.628655+00:00"
+    },
+    {
+      "id": 100,
+      "userId": 940,
+      "groupId": 1,
+      "createdAt": "2023-03-02T18:00:00.527298+00:00",
+      "updatedAt": "2024-10-29T20:39:54.628655+00:00"
+    },
+    {
+      "id": 68,
+      "userId": 995,
+      "groupId": 1,
+      "createdAt": "2023-03-02T18:00:00.527298+00:00",
+      "updatedAt": "2024-10-29T20:39:54.628655+00:00"
+    }
+  ]
+}
+==================================================
+
+Query:
+
+    query GetGroupMembersByGroupId($groupId: Int!) {
+      group_user(where: {groupId: {_eq: $groupId}}) {
+        id
+        userId
+        groupId
+        createdAt
+        updatedAt
+      }
+    }
+  

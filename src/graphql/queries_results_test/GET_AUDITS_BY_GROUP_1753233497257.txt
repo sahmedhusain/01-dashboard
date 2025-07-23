@@ -1,0 +1,32 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_AUDITS_BY_GROUP
+Timestamp: 2025-07-23T01:18:17.257Z
+Status: SUCCESS
+Variables: {"groupId":1}
+
+Data Keys: audit
+Record Count: 0
+Data Summary: audit: Array[0]
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "audit": []
+}
+==================================================
+
+Query:
+
+    query GetAuditsByGroup($groupId: Int!) {
+      audit(where: {groupId: {_eq: $groupId}}) {
+        id
+        auditorId
+        grade
+        createdAt
+        updatedAt
+        version
+        endAt
+      }
+    }
+  

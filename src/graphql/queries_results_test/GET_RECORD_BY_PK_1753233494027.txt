@@ -1,0 +1,30 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_RECORD_BY_PK
+Timestamp: 2025-07-23T01:18:14.027Z
+Status: SUCCESS
+Variables: {"id":1599}
+
+Data Keys: record_by_pk
+Record Count: 0
+Data Summary: record_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "record_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetRecordByPk($id: Int!) {
+      record_by_pk(id: $id) {
+        id
+        message
+        createdAt
+        authorId
+        userId
+      }
+    }
+  

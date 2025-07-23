@@ -1,0 +1,29 @@
+=== GraphQL Query Test Result ===
+Query Name: GET_OBJECT_HIERARCHY
+Timestamp: 2025-07-23T01:18:19.085Z
+Status: SUCCESS
+Variables: {"objectId":1}
+
+Data Keys: object_by_pk
+Record Count: 0
+Data Summary: object_by_pk: null
+
+==================================================
+ACTUAL QUERY OUTPUT:
+==================================================
+{
+  "object_by_pk": null
+}
+==================================================
+
+Query:
+
+    query GetObjectHierarchy($objectId: Int!) {
+      object_by_pk(id: $objectId) {
+        id
+        name
+        type
+        attrs
+      }
+    }
+  

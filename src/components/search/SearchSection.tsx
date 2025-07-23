@@ -1,19 +1,210 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, X, User as UserIcon, Award, TrendingUp } from 'lucide-react'
+import {
+  Search,
+  Filter,
+  X,
+  User as UserIcon,
+  Award,
+  TrendingUp,
+  Database,
+  Calendar,
+  Users,
+  Activity,
+  Target,
+  BookOpen,
+  Zap,
+  FileText,
+  Settings
+} from 'lucide-react'
 import { useLazyQuery, gql } from '@apollo/client'
-import { SEARCH_USERS, GET_USER_XP_TRANSACTIONS, GET_USER_PROGRESS } from '../../graphql/queries'
 import { User } from '../../types'
 import Card from '../ui/Card'
 import Avatar from '../ui/Avatar'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import { debounce } from 'lodash'
+import { formatDate, formatTotalXP } from '../../utils/dataFormatting'
 
 interface SearchSectionProps {
   user: User
 }
 
-type SearchType = 'users' | 'projects' | 'audits'
+type SearchType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results'
+
+// Comprehensive search queries using our tested queries
+const SEARCH_USERS_COMPREHENSIVE = gql`
+  query SearchUsersComprehensive($searchTerm: String!) {
+    user(
+      where: {
+        _or: [
+          { login: { _ilike: $searchTerm } }
+          { firstName: { _ilike: $searchTerm } }
+          { lastName: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { totalUp: desc }
+    ) {
+      id
+      login
+      firstName
+      lastName
+      campus
+      auditRatio
+      totalUp
+      totalDown
+      createdAt
+    }
+  }
+`;
+
+const SEARCH_OBJECTS = gql`
+  query SearchObjects($searchTerm: String!) {
+    object(
+      where: {
+        _or: [
+          { name: { _ilike: $searchTerm } }
+          { type: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      name
+      type
+      attrs
+      createdAt
+      campus
+      authorId
+    }
+  }
+`;
+
+const SEARCH_EVENTS = gql`
+  query SearchEvents($searchTerm: String!) {
+    event(
+      where: {
+        _or: [
+          { path: { _ilike: $searchTerm } }
+          { campus: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      path
+      campus
+      createdAt
+      endAt
+      objectId
+    }
+  }
+`;
+
+const SEARCH_GROUPS = gql`
+  query SearchGroups($searchTerm: String!) {
+    group(
+      where: {
+        _or: [
+          { path: { _ilike: $searchTerm } }
+          { campus: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      path
+      campus
+      createdAt
+      updatedAt
+      objectId
+      eventId
+    }
+  }
+`;
+
+const SEARCH_TRANSACTIONS = gql`
+  query SearchTransactions($searchTerm: String!) {
+    transaction(
+      where: {
+        _or: [
+          { type: { _ilike: $searchTerm } }
+          { path: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      type
+      amount
+      createdAt
+      path
+      userId
+      objectId
+      eventId
+      campus
+    }
+  }
+`;
+
+const SEARCH_PROGRESS = gql`
+  query SearchProgress($searchTerm: String!) {
+    progress(
+      where: {
+        _or: [
+          { path: { _ilike: $searchTerm } }
+          { campus: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      userId
+      objectId
+      grade
+      path
+      campus
+      createdAt
+      isDone
+    }
+  }
+`;
+
+const SEARCH_AUDITS = gql`
+  query SearchAudits($searchTerm: String!) {
+    audit(
+      order_by: { createdAt: desc }
+    ) {
+      id
+      auditorId
+      groupId
+      grade
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const SEARCH_RESULTS = gql`
+  query SearchResults($searchTerm: String!) {
+    result(
+      where: {
+        _or: [
+          { path: { _ilike: $searchTerm } }
+          { type: { _ilike: $searchTerm } }
+        ]
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      userId
+      objectId
+      grade
+      type
+      path
+      createdAt
+    }
+  }
+`;
 
 const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -21,8 +212,10 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
   const [results, setResults] = useState<any[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [campusFilter, setCampusFilter] = useState<string>('all')
 
-  const [searchUsers] = useLazyQuery(SEARCH_USERS, {
+  // Comprehensive search queries
+  const [searchUsers] = useLazyQuery(SEARCH_USERS_COMPREHENSIVE, {
     errorPolicy: 'all',
     onCompleted: (data) => {
       setResults(data.user || [])
@@ -34,7 +227,43 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     }
   })
 
-  const [searchTransactions] = useLazyQuery(GET_USER_XP_TRANSACTIONS, {
+  const [searchObjects] = useLazyQuery(SEARCH_OBJECTS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      setResults(data.object || [])
+      setIsSearching(false)
+    },
+    onError: () => {
+      setResults([])
+      setIsSearching(false)
+    }
+  })
+
+  const [searchEvents] = useLazyQuery(SEARCH_EVENTS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      setResults(data.event || [])
+      setIsSearching(false)
+    },
+    onError: () => {
+      setResults([])
+      setIsSearching(false)
+    }
+  })
+
+  const [searchGroups] = useLazyQuery(SEARCH_GROUPS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      setResults(data.group || [])
+      setIsSearching(false)
+    },
+    onError: () => {
+      setResults([])
+      setIsSearching(false)
+    }
+  })
+
+  const [searchTransactions] = useLazyQuery(SEARCH_TRANSACTIONS, {
     errorPolicy: 'all',
     onCompleted: (data) => {
       setResults(data.transaction || [])
@@ -46,10 +275,34 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     }
   })
 
-  const [searchProgress] = useLazyQuery(GET_USER_PROGRESS, {
+  const [searchProgress] = useLazyQuery(SEARCH_PROGRESS, {
     errorPolicy: 'all',
     onCompleted: (data) => {
       setResults(data.progress || [])
+      setIsSearching(false)
+    },
+    onError: () => {
+      setResults([])
+      setIsSearching(false)
+    }
+  })
+
+  const [searchAudits] = useLazyQuery(SEARCH_AUDITS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      setResults(data.audit || [])
+      setIsSearching(false)
+    },
+    onError: () => {
+      setResults([])
+      setIsSearching(false)
+    }
+  })
+
+  const [searchResults] = useLazyQuery(SEARCH_RESULTS, {
+    errorPolicy: 'all',
+    onCompleted: (data) => {
+      setResults(data.result || [])
       setIsSearching(false)
     },
     onError: () => {
@@ -68,36 +321,56 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
       }
 
       setIsSearching(true)
+      const searchTerm = `%${term}%`
 
       switch (type) {
         case 'users':
           searchUsers({
-            variables: {
-              searchTerm: `%${term}%`,
-              campus: user.campus,
-              limit: 20
-            }
+            variables: { searchTerm }
           })
           break
-        case 'projects':
+        case 'objects':
+          searchObjects({
+            variables: { searchTerm }
+          })
+          break
+        case 'events':
+          searchEvents({
+            variables: { searchTerm }
+          })
+          break
+        case 'groups':
+          searchGroups({
+            variables: { searchTerm }
+          })
+          break
+        case 'transactions':
           searchTransactions({
-            variables: {
-              userLogin: user.login,
-              limit: 50
-            }
+            variables: { searchTerm }
+          })
+          break
+        case 'progress':
+          searchProgress({
+            variables: { searchTerm }
           })
           break
         case 'audits':
-          searchProgress({
-            variables: {
-              userId: user.id,
-              limit: 50
-            }
+          searchAudits({
+            variables: { searchTerm }
           })
+          break
+        case 'results':
+          searchResults({
+            variables: { searchTerm }
+          })
+          break
+        default:
+          setResults([])
+          setIsSearching(false)
           break
       }
     }, 300),
-    [searchUsers, searchTransactions, searchProgress, user]
+    [searchUsers, searchObjects, searchEvents, searchGroups, searchTransactions, searchProgress, searchAudits, searchResults]
   )
 
   const handleSearch = (term: string) => {
@@ -118,143 +391,214 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     setIsSearching(false)
   }
 
-  // Filter results based on search term for local filtering
+  // Filter results based on campus filter
   const filteredResults = useMemo(() => {
-    if (!searchTerm.trim()) return results
+    let filtered = results
 
-    return results.filter((item: any) => {
-      switch (searchType) {
-        case 'users':
-          return (
-            item.login?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        case 'projects':
-          return (
-            item.object?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.path?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        case 'audits':
-          return (
-            item.object?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.path?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        default:
-          return true
-      }
-    })
-  }, [results, searchTerm, searchType])
+    // Apply campus filter if applicable
+    if (campusFilter !== 'all') {
+      filtered = filtered.filter((item: any) => item.campus === campusFilter)
+    }
 
-  const searchTypes = [
-    { id: 'users' as SearchType, label: 'Users', icon: UserIcon },
-    { id: 'projects' as SearchType, label: 'Projects', icon: TrendingUp },
-    { id: 'audits' as SearchType, label: 'Audits', icon: Award },
+    return filtered
+  }, [results, campusFilter])
+
+  // Get search type icon
+  const getSearchTypeIcon = (type: SearchType) => {
+    switch (type) {
+      case 'users': return UserIcon
+      case 'objects': return Database
+      case 'events': return Calendar
+      case 'groups': return Users
+      case 'transactions': return Activity
+      case 'progress': return Target
+      case 'audits': return Award
+      case 'results': return TrendingUp
+      default: return Search
+    }
+  }
+
+  // Get search type label
+  const getSearchTypeLabel = (type: SearchType) => {
+    switch (type) {
+      case 'users': return 'Users'
+      case 'objects': return 'Learning Objects'
+      case 'events': return 'Events'
+      case 'groups': return 'Groups'
+      case 'transactions': return 'Transactions'
+      case 'progress': return 'Progress'
+      case 'audits': return 'Audits'
+      case 'results': return 'Results'
+      default: return 'Search'
+    }
+  }
+
+  // Get unique campuses from results for filter
+  const uniqueCampuses = [...new Set(results.map((item: any) => item.campus).filter(Boolean))]
+  // Search type options
+  const searchTypes: { id: SearchType; label: string; icon: any }[] = [
+    { id: 'users', label: 'Users', icon: UserIcon },
+    { id: 'objects', label: 'Learning Objects', icon: Database },
+    { id: 'events', label: 'Events', icon: Calendar },
+    { id: 'groups', label: 'Groups', icon: Users },
+    { id: 'transactions', label: 'Transactions', icon: Activity },
+    { id: 'progress', label: 'Progress', icon: Target },
+    { id: 'audits', label: 'Audits', icon: Award },
+    { id: 'results', label: 'Results', icon: TrendingUp },
   ]
 
   const renderResult = (item: any, index: number) => {
-    switch (searchType) {
-      case 'users':
-        return (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <div className="flex items-center space-x-3">
-              <Avatar user={item} size="sm" />
-              <div>
-                <p className="text-white font-medium">
-                  {item.firstName && item.lastName 
-                    ? `${item.firstName} ${item.lastName}`
-                    : item.login
-                  }
-                </p>
-                <p className="text-white/60 text-sm">@{item.login}</p>
-                <p className="text-white/50 text-xs">{item.campus}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-primary-400 font-bold">
-                {item.auditRatio?.toFixed(2) || '0.00'}
-              </p>
-              <p className="text-white/60 text-xs">Audit Ratio</p>
-            </div>
-          </motion.div>
-        )
-      
-      case 'projects':
-        return (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
-          >
+    const Icon = getSearchTypeIcon(searchType)
+
+    return (
+      <motion.div
+        key={item.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="p-2 rounded-lg bg-primary-500/20">
+            <Icon className="w-4 h-4 text-primary-400" />
+          </div>
+          <div className="flex-1">
+            {searchType === 'users' && (
+              <>
+                <div className="flex items-center space-x-2">
+                  <Avatar user={item} size="sm" />
+                  <div>
+                    <p className="text-white font-medium">
+                      {item.firstName && item.lastName
+                        ? `${item.firstName} ${item.lastName}`
+                        : item.login
+                      }
+                    </p>
+                    <p className="text-white/60 text-sm">@{item.login}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4 text-xs text-white/50 mt-1">
+                  <span>Campus: {item.campus}</span>
+                  <span>XP: {formatTotalXP(item.totalUp || 0)}</span>
+                  <span>Audit: {(item.auditRatio || 0).toFixed(2)}</span>
+                </div>
+              </>
+            )}
+
+            {searchType === 'objects' && (
+              <>
+                <p className="text-white font-medium">{item.name}</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>Type: {item.type}</span>
+                  <span>ID: {item.id}</span>
+                  {item.campus && <span>Campus: {item.campus}</span>}
+                  <span>Created: {formatDate(item.createdAt)}</span>
+                </div>
+              </>
+            )}
+
+            {searchType === 'events' && (
+              <>
+                <p className="text-white font-medium">{item.path}</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>ID: {item.id}</span>
+                  {item.campus && <span>Campus: {item.campus}</span>}
+                  <span>Created: {formatDate(item.createdAt)}</span>
+                  {item.endAt && <span>Ends: {formatDate(item.endAt)}</span>}
+                </div>
+              </>
+            )}
+
+            {searchType === 'groups' && (
+              <>
+                <p className="text-white font-medium">{item.path}</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>ID: {item.id}</span>
+                  {item.campus && <span>Campus: {item.campus}</span>}
+                  <span>Created: {formatDate(item.createdAt)}</span>
+                  {item.objectId && <span>Object: {item.objectId}</span>}
+                </div>
+              </>
+            )}
+
+            {searchType === 'transactions' && (
+              <>
+                <p className="text-white font-medium">{item.type} Transaction</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>Amount: {item.amount}</span>
+                  <span>User: {item.userId}</span>
+                  {item.path && <span>Path: {item.path}</span>}
+                  <span>Date: {formatDate(item.createdAt)}</span>
+                </div>
+              </>
+            )}
+
+            {searchType === 'progress' && (
+              <>
+                <p className="text-white font-medium">{item.path}</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>Grade: {item.grade}%</span>
+                  <span>User: {item.userId}</span>
+                  {item.campus && <span>Campus: {item.campus}</span>}
+                  <span>Status: {item.isDone ? 'Complete' : 'In Progress'}</span>
+                </div>
+              </>
+            )}
+
+            {searchType === 'audits' && (
+              <>
+                <p className="text-white font-medium">Audit #{item.id}</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>Grade: {item.grade}%</span>
+                  <span>Auditor: {item.auditorId}</span>
+                  <span>Group: {item.groupId}</span>
+                  <span>Date: {formatDate(item.createdAt)}</span>
+                </div>
+              </>
+            )}
+
+            {searchType === 'results' && (
+              <>
+                <p className="text-white font-medium">{item.path || `Result #${item.id}`}</p>
+                <div className="flex items-center space-x-4 text-xs text-white/60">
+                  <span>Grade: {item.grade}%</span>
+                  <span>Type: {item.type}</span>
+                  <span>User: {item.userId}</span>
+                  <span>Date: {formatDate(item.createdAt)}</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="text-right">
+          {searchType === 'users' && (
             <div>
-              <p className="text-white font-medium">
-                {item.object?.name || 'Unknown Project'}
-              </p>
-              <p className="text-white/60 text-sm">{item.path}</p>
-              <p className="text-white/50 text-xs">
-                {new Date(item.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div className="text-right">
               <p className="text-primary-400 font-bold">
-                +{Math.round(item.amount / 1000)}kB
+                {formatTotalXP(item.totalUp || 0)}
               </p>
-              <p className="text-white/60 text-xs">XP</p>
+              <p className="text-white/60 text-xs">Total XP</p>
             </div>
-          </motion.div>
-        )
-      
-      case 'audits':
-        return (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
-          >
+          )}
+          {(searchType === 'progress' || searchType === 'audits' || searchType === 'results') && (
             <div>
-              <p className="text-white font-medium">
-                {item.object?.name || 'Unknown Project'}
+              <p className="text-primary-400 font-bold">
+                {item.grade}%
               </p>
-              <p className="text-white/60 text-sm">{item.path}</p>
-              <p className="text-white/50 text-xs">
-                {new Date(item.createdAt).toLocaleDateString()}
+              <p className="text-white/60 text-xs">Grade</p>
+            </div>
+          )}
+          {searchType === 'transactions' && (
+            <div>
+              <p className={`font-bold ${item.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {item.amount > 0 ? '+' : ''}{item.amount}
               </p>
+              <p className="text-white/60 text-xs">Amount</p>
             </div>
-            <div className="text-right">
-              <div className={`px-2 py-1 rounded text-sm font-medium ${
-                item.isDone
-                  ? item.grade >= 1 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-red-500/20 text-red-400'
-                  : 'bg-yellow-500/20 text-yellow-400'
-              }`}>
-                {item.isDone 
-                  ? (item.grade >= 1 ? 'PASSED' : 'FAILED')
-                  : 'IN PROGRESS'
-                }
-              </div>
-              {item.isDone && (
-                <p className="text-white/60 text-xs mt-1">
-                  Grade: {item.grade?.toFixed(2) || 'N/A'}
-                </p>
-              )}
-            </div>
-          </motion.div>
-        )
-      
-      default:
-        return null
-    }
+          )}
+        </div>
+      </motion.div>
+    )
   }
 
   return (

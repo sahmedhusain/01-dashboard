@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, Target, TrendingUp, Award } from 'lucide-react'
-import { useQuery } from '@apollo/client'
-import { GET_ALL_USER_CHECKPOINT_DATA } from '../../graphql/queries'
+import { useQuery, gql } from '@apollo/client'
+import { GET_ALL_USERS } from '../../graphql/allQueries'
 import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -21,7 +21,22 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
   const [activeCheckpointTab, setActiveCheckpointTab] = useState<string>('main')
 
   // Query all checkpoint data
-  const { data: checkpointData, loading, error } = useQuery(GET_ALL_USER_CHECKPOINT_DATA, {
+  const { data: checkpointData, loading, error } = useQuery(gql`
+    query GetCheckpointData {
+      user {
+        id
+        login
+        firstName
+        lastName
+        campus
+        totalUp
+        totalDown
+        auditRatio
+        createdAt
+        updatedAt
+      }
+    }
+  `, {
     variables: { userId: user.id },
     errorPolicy: 'all'
   })

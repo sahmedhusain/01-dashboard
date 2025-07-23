@@ -2,7 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 
-interface Props {
+export interface Props {
   children: ReactNode
   fallback?: ReactNode
   onError?: (error: Error, errorInfo: ErrorInfo) => void
@@ -127,6 +127,22 @@ class ErrorBoundary extends Component<Props, State> {
 
     return this.props.children
   }
+}
+
+// Higher-order component for easier usage
+export const withErrorBoundary = <P extends object>(
+  Component: React.ComponentType<P>,
+  errorBoundaryProps?: Omit<Props, 'children'>
+) => {
+  const WrappedComponent = (props: P) => (
+    <ErrorBoundary {...errorBoundaryProps}>
+      <Component {...props} />
+    </ErrorBoundary>
+  )
+  
+  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`
+  
+  return WrappedComponent
 }
 
 export default ErrorBoundary

@@ -184,11 +184,11 @@ export const fetchUserData = async (userId, token) => {
       throw new Error(`GraphQL errors: ${result.errors.map(e => e.message).join(', ')}`);
     }
 
-    if (!result.data?.user_by_pk) {
+    if (!result.data?.user || result.data.user.length === 0) {
       throw new Error('User not found');
     }
 
-    return result.data.user_by_pk;
+    return result.data.user[0];
   } catch (error) {
     console.error('Failed to fetch user data:', error);
     throw error;

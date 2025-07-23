@@ -51,9 +51,15 @@ const mockLink = new ApolloLink((operation, forward) => {
         let mockData = {};
 
         // Handle different query types
-        if (operation.query.definitions[0]?.name?.value === 'GetUserById') {
+        const operationName = operation.operationName;
+        if (operationName === 'GetUserById' || operationName === 'GET_USER_BY_PK') {
           mockData = {
-            user_by_pk: createMockUserData(variables.userId)
+            user_by_pk: createMockUserData(variables.userId || variables.id || 1599)
+          };
+        } else if (operationName?.includes('USER')) {
+          mockData = {
+            user_by_pk: createMockUserData(1599),
+            user_public_view: [createMockUserData(1599)]
           };
         } else {
           // Default mock response
@@ -134,27 +140,59 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
-// Enhanced cache configuration aligned with reference patterns
+// Enhanced cache configuration for comprehensive data support
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
+        // User-related caching
         user: {
           merge(_, incoming) {
             return incoming;
           },
         },
+        user_public_view: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        user_by_pk: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Transaction and XP caching
         transaction: {
           merge(_, incoming) {
             return incoming;
           },
         },
+        xp_view: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Audit system caching
         audit: {
           merge(_, incoming) {
             return incoming;
           },
         },
+        audit_private: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Progress and results caching
         progress: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        progress_by_path_view: {
           merge(_, incoming) {
             return incoming;
           },
@@ -164,11 +202,109 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
+
+        // Group and collaboration caching
+        group: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        group_user: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Event management caching
+        event: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        event_user: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        event_user_view: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Object and curriculum caching
+        object: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        object_child: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        object_availability: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Registration system caching
+        registration: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        registration_user: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        registration_user_view: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Path and learning structure caching
+        path: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        path_archive: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+
+        // Additional system entities
+        role: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        user_role: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        label: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
+        markdown: {
+          merge(_, incoming) {
+            return incoming;
+          },
+        },
       },
     },
+
+    // Enhanced type policies for better normalization
     User: {
       fields: {
-        // Cache user data by login for efficient lookups
         login: {
           read(login) {
             return login;
@@ -176,22 +312,71 @@ const cache = new InMemoryCache({
         },
       },
     },
+
+    Group: {
+      keyFields: ["id"],
+    },
+
+    Event: {
+      keyFields: ["id"],
+    },
+
+    Object: {
+      keyFields: ["id"],
+    },
+
+    Progress: {
+      keyFields: ["id"],
+    },
+
+    Result: {
+      keyFields: ["id"],
+    },
+
+    Transaction: {
+      keyFields: ["id"],
+    },
+
+    Audit: {
+      keyFields: ["id"],
+    },
   },
-  // Enable result caching for better performance
+
+  // Enable result caching for better performance with large datasets
   resultCaching: true,
-  // Add data ID from object for better normalization
+
+  // Enhanced data ID generation for comprehensive entity support
   dataIdFromObject: (object) => {
+    // Handle all major entity types
     if (object.__typename && object.id) {
       return `${object.__typename}:${object.id}`;
     }
+
+    // Handle user entities by login
     if (object.__typename && object.login) {
       return `${object.__typename}:${object.login}`;
     }
+
+    // Handle path entities
+    if (object.__typename === 'Path' && object.path) {
+      return `Path:${object.path}`;
+    }
+
+    // Handle type entities
+    if (object.__typename && object.type && !object.id) {
+      return `${object.__typename}:${object.type}`;
+    }
+
+    // Handle name-based entities
+    if (object.__typename && object.name && !object.id) {
+      return `${object.__typename}:${object.name}`;
+    }
+
     return null;
   },
 });
 
-// Apollo Client configuration - simplified
+// Apollo Client configuration - optimized for comprehensive data
 const client = new ApolloClient({
   link: from([errorLink, authLink, mockLink, httpLink]),
   cache,
@@ -200,13 +385,29 @@ const client = new ApolloClient({
       errorPolicy: 'all',
       fetchPolicy: 'cache-first',
       notifyOnNetworkStatusChange: true,
+      // Optimize for large datasets
+      returnPartialData: true,
     },
     query: {
       errorPolicy: 'all',
       fetchPolicy: 'cache-first',
+      // Allow partial data for better UX with large datasets
+      returnPartialData: true,
+    },
+    mutate: {
+      errorPolicy: 'all',
     },
   },
+  // Enhanced dev tools for debugging comprehensive queries
   connectToDevTools: import.meta.env.DEV,
+
+  // Add query deduplication for performance
+  queryDeduplication: true,
+
+  // Set reasonable timeout for large queries
+  defaultContext: {
+    timeout: 30000, // 30 seconds for large dataset queries
+  },
 });
 
 export default client;

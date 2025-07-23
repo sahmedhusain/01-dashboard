@@ -1,5 +1,6 @@
 import React from 'react'
-import ErrorBoundary, { Props } from './ErrorBoundary'
+import ErrorBoundary from '../ErrorBoundary'
+import type { Props } from '../ErrorBoundary'
 
 // Higher-order component for easier usage
 export const withErrorBoundary = <P extends object>(

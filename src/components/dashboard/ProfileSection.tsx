@@ -1,8 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User as UserIcon, MapPin, Calendar, Mail, Phone, Award, Star, Trophy } from 'lucide-react'
+import {
+  User as UserIcon,
+  MapPin,
+  Calendar,
+  Mail,
+  Phone,
+  Award,
+  Star,
+  Trophy,
+  Activity,
+  TrendingUp,
+  Users,
+  BookOpen,
+  Target,
+  Zap,
+  Clock,
+  GitBranch,
+  BarChart3
+} from 'lucide-react'
 import { useQuery, gql } from '@apollo/client'
-import { GET_USER_BY_ID } from '../../graphql/coreQueries'
 import { User } from '../../types'
 import Avatar from '../ui/Avatar'
 import Card from '../ui/Card'
@@ -19,25 +36,200 @@ interface ProfileSectionProps {
   user: User
 }
 
-const ProfileSection: React.FC<ProfileSectionProps> = ({ user }) => {
-  const { data, loading, error } = useQuery(gql(GET_USER_BY_ID), {
-    variables: { userId: user.id },
-    errorPolicy: 'all'
-  })
+// Comprehensive user profile queries using our tested queries
+const USER_PROFILE_QUERY = gql`
+  query GetUserProfile($userId: Int!) {
+    user_by_pk(id: $userId) {
+      id
+      login
+      firstName
+      lastName
+      profile
+      attrs
+      createdAt
+      updatedAt
+      campus
+      auditRatio
+      totalUp
+      totalDown
+    }
+  }
+`;
 
-  if (loading) return <LoadingSpinner />
-  if (error) {
+const USER_TRANSACTIONS_QUERY = gql`
+  query GetUserTransactions($userId: Int!) {
+    transaction(where: {userId: {_eq: $userId}}, order_by: {createdAt: desc}, limit: 10) {
+      id
+      type
+      amount
+      createdAt
+      path
+      attrs
+    }
+
+    transaction_aggregate(where: {userId: {_eq: $userId}}) {
+      aggregate {
+        count
+        sum {
+          amount
+        }
+      }
+    }
+  }
+`;
+
+const USER_PROGRESS_QUERY = gql`
+  query GetUserProgress($userId: Int!) {
+    progress(where: {userId: {_eq: $userId}}, order_by: {createdAt: desc}, limit: 10) {
+      id
+      grade
+      isDone
+      path
+      createdAt
+      updatedAt
+      version
+    }
+
+    progress_aggregate(where: {userId: {_eq: $userId}}) {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+  }
+`;
+
+const USER_RESULTS_QUERY = gql`
+  query GetUserResults($userId: Int!) {
+    result(where: {userId: {_eq: $userId}}, order_by: {createdAt: desc}, limit: 10) {
+      id
+      grade
+      type
+      path
+      createdAt
+      isLast
+    }
+
+    result_aggregate(where: {userId: {_eq: $userId}}) {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+  }
+`;
+
+const USER_AUDITS_QUERY = gql`
+  query GetUserAudits($userId: Int!) {
+    audit(where: {auditorId: {_eq: $userId}}, order_by: {createdAt: desc}, limit: 5) {
+      id
+      grade
+      createdAt
+      attrs
+    }
+
+    audit_aggregate(where: {auditorId: {_eq: $userId}}) {
+      aggregate {
+        count
+        avg {
+          grade
+        }
+      }
+    }
+  }
+`;
+
+const USER_GROUPS_QUERY = gql`
+  query GetUserGroups($userId: Int!) {
+    group_user(where: {userId: {_eq: $userId}}) {
+      id
+      groupId
+      createdAt
+    }
+  }
+`;
+
+const USER_EVENTS_QUERY = gql`
+  query GetUserEvents($userId: Int!) {
+    event_user(where: {userId: {_eq: $userId}}) {
+      id
+      eventId
+      level
+      createdAt
+    }
+  }
+`;
+
+const ProfileSection: React.FC<ProfileSectionProps> = ({ user }) => {
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'progress' | 'transactions' | 'audits'>('overview');
+
+  // Query user profile data
+  const { data: profileData, loading: profileLoading, error: profileError } = useQuery(USER_PROFILE_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Query user transactions
+  const { data: transactionsData, loading: transactionsLoading } = useQuery(USER_TRANSACTIONS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Query user progress
+  const { data: progressData, loading: progressLoading } = useQuery(USER_PROGRESS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Query user results
+  const { data: resultsData, loading: resultsLoading } = useQuery(USER_RESULTS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Query user audits
+  const { data: auditsData, loading: auditsLoading } = useQuery(USER_AUDITS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Query user groups
+  const { data: groupsData } = useQuery(USER_GROUPS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Query user events
+  const { data: eventsData } = useQuery(USER_EVENTS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  if (profileLoading) return <LoadingSpinner />
+
+  if (profileError) {
     return (
       <Card className="p-6">
         <div className="text-center text-red-400">
           <p>Error loading profile data</p>
-          <p className="text-sm text-white/60 mt-2">{error.message}</p>
+          <p className="text-sm text-white/60 mt-2">{profileError.message}</p>
         </div>
       </Card>
     )
   }
 
-  const userData = data?.user?.[0]
+  const userData = profileData?.user_by_pk;
   if (!userData) {
     return (
       <Card className="p-6">
@@ -55,8 +247,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user }) => {
 
   return (
     <div className="space-y-6">
-      {/* Debug Component */}
-      <GraphQLTest userId={user.id} />
       {/* Main Profile Card */}
       <Card className="p-6">
         <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
@@ -200,6 +390,274 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user }) => {
           </div>
         </Card>
       </div>
+
+      {/* Comprehensive Statistics Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2 text-primary-400" />
+            Comprehensive Learning Analytics
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Total XP */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500">
+                  <Zap className="w-4 h-4 text-white" />
+                </div>
+                {transactionsLoading && (
+                  <div className="animate-pulse w-6 h-6 bg-white/20 rounded"></div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Total XP</h4>
+                <p className="text-xl font-bold text-white">
+                  {transactionsData?.transaction_aggregate?.aggregate?.sum?.amount?.toLocaleString() || '0'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Progress Records */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500">
+                  <TrendingUp className="w-4 h-4 text-white" />
+                </div>
+                {progressLoading && (
+                  <div className="animate-pulse w-6 h-6 bg-white/20 rounded"></div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Progress Records</h4>
+                <p className="text-xl font-bold text-white">
+                  {progressData?.progress_aggregate?.aggregate?.count || '0'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Average Grade */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500">
+                  <Star className="w-4 h-4 text-white" />
+                </div>
+                {progressLoading && (
+                  <div className="animate-pulse w-6 h-6 bg-white/20 rounded"></div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Average Grade</h4>
+                <p className="text-xl font-bold text-white">
+                  {progressData?.progress_aggregate?.aggregate?.avg?.grade?.toFixed(1) || '0'}%
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Results */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
+                  <Trophy className="w-4 h-4 text-white" />
+                </div>
+                {resultsLoading && (
+                  <div className="animate-pulse w-6 h-6 bg-white/20 rounded"></div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Results</h4>
+                <p className="text-xl font-bold text-white">
+                  {resultsData?.result_aggregate?.aggregate?.count || '0'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Audits Given */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-500">
+                  <Award className="w-4 h-4 text-white" />
+                </div>
+                {auditsLoading && (
+                  <div className="animate-pulse w-6 h-6 bg-white/20 rounded"></div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Audits Given</h4>
+                <p className="text-xl font-bold text-white">
+                  {auditsData?.audit_aggregate?.aggregate?.count || '0'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Groups */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.6 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500">
+                  <Users className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Groups</h4>
+                <p className="text-xl font-bold text-white">
+                  {groupsData?.group_user?.length || '0'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Events */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.7 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500">
+                  <Calendar className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Events</h4>
+                <p className="text-xl font-bold text-white">
+                  {eventsData?.event_user?.length || '0'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Transactions */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.8 }}
+              className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500">
+                  <Activity className="w-4 h-4 text-white" />
+                </div>
+                {transactionsLoading && (
+                  <div className="animate-pulse w-6 h-6 bg-white/20 rounded"></div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-white/90 font-medium text-sm">Transactions</h4>
+                <p className="text-xl font-bold text-white">
+                  {transactionsData?.transaction_aggregate?.aggregate?.count || '0'}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </Card>
+      </motion.div>
+
+      {/* Recent Activity Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
+            <Clock className="w-5 h-5 mr-2 text-primary-400" />
+            Recent Activity
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Progress */}
+            <div>
+              <h4 className="text-white font-medium mb-3 flex items-center">
+                <GitBranch className="w-4 h-4 mr-2 text-green-400" />
+                Recent Progress ({progressData?.progress?.length || 0})
+              </h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {progressData?.progress?.slice(0, 5).map((progress: any) => (
+                  <div key={progress.id} className="bg-white/5 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-white/80 text-sm truncate">{progress.path}</span>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        progress.isDone ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {progress.isDone ? 'Complete' : 'In Progress'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/60 text-xs">Grade: {progress.grade}%</span>
+                      <span className="text-white/60 text-xs">{formatDate(progress.createdAt)}</span>
+                    </div>
+                  </div>
+                ))}
+                {(!progressData?.progress || progressData.progress.length === 0) && (
+                  <p className="text-white/50 text-sm">No recent progress available</p>
+                )}
+              </div>
+            </div>
+
+            {/* Recent Transactions */}
+            <div>
+              <h4 className="text-white font-medium mb-3 flex items-center">
+                <Zap className="w-4 h-4 mr-2 text-yellow-400" />
+                Recent Transactions ({transactionsData?.transaction?.length || 0})
+              </h4>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {transactionsData?.transaction?.slice(0, 5).map((transaction: any) => (
+                  <div key={transaction.id} className="bg-white/5 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-white/80 text-sm">{transaction.type}</span>
+                      <span className={`text-sm font-medium ${
+                        transaction.amount > 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {transaction.amount > 0 ? '+' : ''}{transaction.amount}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/60 text-xs truncate">{transaction.path}</span>
+                      <span className="text-white/60 text-xs">{formatDate(transaction.createdAt)}</span>
+                    </div>
+                  </div>
+                ))}
+                {(!transactionsData?.transaction || transactionsData.transaction.length === 0) && (
+                  <p className="text-white/50 text-sm">No recent transactions available</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </motion.div>
     </div>
   )
 }

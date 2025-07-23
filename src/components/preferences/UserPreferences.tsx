@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Settings, Palette, Eye, Save, RotateCcw } from 'lucide-react'
+import { Settings, Palette, Eye, Save, RotateCcw, RefreshCw, Database } from 'lucide-react'
 import Card from '../ui/Card'
+import RefreshControl from '../ui/RefreshControl'
 
 interface UserPreferencesProps {
   userId: number
@@ -41,7 +42,7 @@ const defaultPreferences: Preferences = {
 const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) => {
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences)
   const [hasChanges, setHasChanges] = useState(false)
-  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'privacy'>('appearance')
+  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'privacy' | 'data'>('appearance')
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -82,7 +83,8 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) =>
   const sections = [
     { id: 'appearance' as const, label: 'Appearance', icon: Palette },
     { id: 'dashboard' as const, label: 'Dashboard', icon: Settings },
-    { id: 'privacy' as const, label: 'Privacy', icon: Eye }
+    { id: 'privacy' as const, label: 'Privacy', icon: Eye },
+    { id: 'data' as const, label: 'Data Refresh', icon: Database }
   ]
 
   return (
@@ -252,6 +254,19 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) =>
                     ))}
                   </div>
                 </Card>
+              </div>
+            )}
+
+            {activeSection === 'data' && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-white">Data Refresh Settings</h3>
+
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-white/70 text-sm mb-4">
+                    Manage data refresh settings, cache, and synchronization options.
+                  </p>
+                  <RefreshControl showStats={true} showAutoRefreshToggle={true} />
+                </div>
               </div>
             )}
           </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Award, TrendingUp, TrendingDown, Users } from 'lucide-react'
 import { useQuery, gql } from '@apollo/client'
-import { GET_USER_AUDITS, GET_AUDIT_STATS } from '../../graphql/coreQueries'
+import { GET_ALL_AUDITS } from '../../graphql/allQueries'
 import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -17,7 +17,6 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
       audit(
         where: { auditorId: { _eq: $userId } }
         order_by: { createdAt: desc }
-        limit: 50
       ) {
         id
         grade
@@ -28,6 +27,11 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
           object {
             name
             type
+          }
+          group_users {
+            user {
+              login
+            }
           }
         }
       }
@@ -52,7 +56,9 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
       audits_received: audit_aggregate(
         where: {
           group: {
-            captainId: { _eq: $userId }
+            group_users: {
+              userId: { _eq: $userId }
+            }
           }
         }
       ) {
@@ -73,11 +79,11 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
 
   if (loading) return <LoadingSpinner />
 
-  const audits = auditsData?.audit || []
-  const auditsGiven = statsData?.audits_given?.aggregate?.count || 0
-  const auditsReceived = statsData?.audits_received?.aggregate?.count || 0
-  const avgGradeGiven = statsData?.audits_given?.aggregate?.avg?.grade || 0
-  const avgGradeReceived = statsData?.audits_received?.aggregate?.avg?.grade || 0
+  const audits: any[] = auditsData?.audit || []
+  const auditsGiven: number = statsData?.audits_given?.aggregate?.count || 0
+  const auditsReceived: number = statsData?.audits_received?.aggregate?.count || 0
+  const avgGradeGiven: number = statsData?.audits_given?.aggregate?.avg?.grade || 0
+  const avgGradeReceived: number = statsData?.audits_received?.aggregate?.avg?.grade || 0
 
   // Calculate audit ratio (user preference: show ratio instead of given)
   const auditRatio = auditsReceived > 0 ? auditsGiven / auditsReceived : 0
@@ -205,9 +211,9 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
                   <p className="text-white/60 text-sm">
                     {new Date(audit.createdAt).toLocaleDateString()}
                   </p>
-                  {audit.group?.path && (
+                  {audit.group?.group_users && (
                     <p className="text-white/50 text-xs">
-                      Project: {audit.group.path.split('/').pop()}
+                      Team: {audit.group.group_users.map((gu: any) => gu.user.login).join(', ')}
                     </p>
                   )}
                 </div>

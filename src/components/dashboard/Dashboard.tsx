@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
-import { LogOut, User as UserIcon, BarChart3, Trophy, Search, Download, BookOpen, Settings, CheckCircle } from 'lucide-react'
+import { LogOut, User as UserIcon, BarChart3, Trophy, Search, Download, BookOpen, Settings, CheckCircle, Users, Calendar, Award } from 'lucide-react'
 import { useQuery, gql } from '@apollo/client'
-import { useUser, useLogout, useDashboardTab, useSetDashboardTab } from '../../store'
+import { useUser, useLogout } from '../../store'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
+import { useDashboardRouting } from '../../utils/routing'
 
 // Lazy load components for better performance
 const ProfileSection = lazy(() => import('./ProfileSection'))
@@ -16,17 +17,24 @@ const ExportSection = lazy(() => import('../export/ExportSection'))
 const PiscineSection = lazy(() => import('./PiscineSection'))
 const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
 
+// New comprehensive dashboard sections
+const GroupSection = lazy(() => import('./GroupSection'))
+const EventSection = lazy(() => import('./EventSection'))
+const ResultSection = lazy(() => import('./ResultSection'))
+
 const UserPreferences = lazy(() => import('../preferences/UserPreferences'))
 
-type TabType = 'profile' | 'statistics' | 'piscines' | 'checkpoints' | 'leaderboard' | 'search' | 'export' | string // Allow dynamic piscine tabs
+type TabType = 'profile' | 'statistics' | 'groups' | 'events' | 'results' | 'analytics' | 'piscines' | 'checkpoints' | 'leaderboard' | 'search' | 'export' | string // Allow dynamic piscine tabs
 
 const Dashboard: React.FC = () => {
   const user = useUser()
   const logout = useLogout()
-  const activeTab = useDashboardTab()
-  const setActiveTab = useSetDashboardTab()
+  const { getCurrentTab, navigateToTab } = useDashboardRouting()
   const [piscineTypes, setPiscineTypes] = useState<string[]>([])
   const [showPreferences, setShowPreferences] = useState(false)
+
+  const activeTab = getCurrentTab()
+  const setActiveTab = navigateToTab
 
   // Redirect if no user (shouldn't happen with routing, but safety check)
   if (!user) {
@@ -90,10 +98,13 @@ const Dashboard: React.FC = () => {
     logout()
   }, [logout])
 
-  // Base tabs - restructured based on screenshots analysis
+  // Base tabs - merged statistics and analytics into one comprehensive tab
   const baseTabs = [
     { id: 'profile' as TabType, label: 'Profile Info', icon: UserIcon },
-    { id: 'statistics' as TabType, label: 'Statistics', icon: BarChart3 },
+    { id: 'statistics' as TabType, label: 'Statistics & Analytics', icon: BarChart3 },
+    { id: 'groups' as TabType, label: 'Groups', icon: Users },
+    { id: 'events' as TabType, label: 'Events', icon: Calendar },
+    { id: 'results' as TabType, label: 'Results', icon: Award },
     { id: 'piscines' as TabType, label: 'Piscines Dashboard', icon: BookOpen },
     { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
     { id: 'leaderboard' as TabType, label: 'Leaderboard', icon: Trophy },
@@ -117,6 +128,12 @@ const Dashboard: React.FC = () => {
         return <ProfileSection user={user} />
       case 'statistics':
         return <StatisticsSection user={user} />
+      case 'groups':
+        return <GroupSection user={user} />
+      case 'events':
+        return <EventSection user={user} />
+      case 'results':
+        return <ResultSection user={user} />
       case 'piscines':
         return <PiscinesDashboard user={user} piscineTypes={piscineTypes} />
       case 'checkpoints':

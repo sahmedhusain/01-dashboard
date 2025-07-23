@@ -10,39 +10,51 @@ import config from '../config/appConfig';
 // ============================================================================
 
 /**
- * Format XP values for display (rounded KB integers without 'XP' suffix per user preference)
+ * Format XP values for display (rounded kB integers without 'XP' suffix per user preference)
  * @param xp - XP value to format
  * @returns Formatted XP string
  */
-export const formatXP = (xp: number | null | undefined): string => {
-  if (!xp || isNaN(xp)) return '0';
-
-  // XP values are already in bytes, format as KB (rounded integer) per user preference
-  if (xp >= 1000000) {
-    return `${Math.round(xp / 1000000)}M`;
-  } else if (xp >= 1000) {
-    return `${Math.round(xp / 1000)}K`;
-  } else {
-    return `${Math.round(xp)}`;
-  }
+// TOTAL XP: Always in kB format (e.g., 1300 kB)
+export const formatTotalXP = (xp: number | null | undefined): string => {
+  if (!xp || isNaN(xp)) return '0 kB';
+  const kbValue = Math.round(xp / 1000);
+  return `${kbValue} kB`;
 };
 
+// MODULE/PISCINE XP: Always in kB format (e.g., 621 kB, 680 kB) - NOT MB!
+export const formatModuleXP = (xp: number | null | undefined): string => {
+  if (!xp || isNaN(xp)) return '0 kB';
+  const kbValue = Math.round(xp / 1000);
+  return `${kbValue} kB`;
+};
+
+// AUDIT VALUES: Always in MB format (e.g., 2.8 MB, 1.5 MB)
+export const formatAuditMB = (auditValue: number | null | undefined): string => {
+  if (!auditValue || isNaN(auditValue)) return '0.0 MB';
+  const mbValue = (auditValue / 1000000).toFixed(1);
+  return `${mbValue} MB`;
+};
+
+// Legacy formatXP for backward compatibility - use formatModuleXP instead
+export const formatXP = formatModuleXP;
+
 /**
- * Format XP values for quick stats (KB format, no decimals, no "XP" word)
+ * Format XP values for quick stats (kB format, no decimals, no "XP" word)
  * @param xp - XP value to format
  * @returns Formatted XP string for quick stats
  */
 export const formatXPForQuickStats = (xp: number | null | undefined): string => {
-  if (!xp || isNaN(xp)) return '0';
+  if (!xp || isNaN(xp)) return '0 kB';
 
-  // Always format as KB (never show M) - user preference
-  // Convert to KB and round to integer
-  if (xp >= 1000) {
-    return `${Math.round(xp / 1000)}K`;
-  } else {
-    return `${Math.round(xp)}`;
-  }
+  // ALWAYS format as kB (never show M) - user preference
+  // Convert to kB and round to integer
+  const kbValue = Math.round(xp / 1000);
+  return `${kbValue} kB`;
 };
+
+
+
+
 
 /**
  * Get XP progress percentage for level progression
@@ -415,7 +427,7 @@ export const formatProjectName = (path) => {
  */
 export const formatAuditRatio = (ratio: number | null | undefined): string => {
   if (ratio == null || isNaN(ratio)) return '0.0';
-  return ratio.toFixed(1);
+  return ratio.toFixed(1); // 1 decimal place as per requirements
 };
 
 /**
@@ -457,18 +469,18 @@ export const truncateText = (text, maxLength = 50) => {
 };
 
 /**
- * Format large numbers with K/M suffixes
+ * Format large numbers with kB/MB suffixes
  * @param {number} num - Number to format
  * @returns {string} Formatted number string
  */
 export const formatNumber = (num) => {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
+    return (num / 1000000).toFixed(1) + ' MB';
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+    return (num / 1000).toFixed(1) + ' kB';
   }
-  return num.toString();
+  return num.toString() + ' B';
 };
 
 /**
@@ -560,3 +572,292 @@ export const getBadgeVariant = (value: number, thresholds: Thresholds = {}): str
   if (value >= medium) return 'primary';
   return 'warning';
 };
+
+// ============================================================================
+// DYNAMIC MODULE DATA SEPARATION
+// ============================================================================
+
+/**
+ * CORRECTLY separate piscine data from main BH module data
+ * Handles ALL piscine types with correct path detection:
+ * - BH Module: /bahrain/bh-module/{{project}} (NOT piscine)
+ * - Standard Piscines: /bahrain/bh-module/piscine-{{name}}/{{project}}
+ * - Go Piscine: /bahrain/bh-piscine/{{project}}
+ * @param data - Array of data records with path property
+ * @returns Object with separated data by module type
+ */
+export const separateModuleData = (data: any[]) => {
+  if (!data || !Array.isArray(data)) {
+    return {
+      mainModule: [],
+      piscines: {},
+      allPiscines: [],
+      all: []
+    };
+  }
+
+  const mainModule: any[] = [];
+  const piscines: { [key: string]: any[] } = {};
+  const allPiscines: any[] = [];
+
+  data.forEach(item => {
+    if (!item.path) {
+      mainModule.push(item);
+      return;
+    }
+
+    // CORRECT PISCINE DETECTION:
+    if (item.path.includes('/bh-piscine/')) {
+      // Go Piscine: /bahrain/bh-piscine/{{project}}
+      const piscineType = 'go';
+      if (!piscines[piscineType]) {
+        piscines[piscineType] = [];
+      }
+      piscines[piscineType].push(item);
+      allPiscines.push(item);
+    } else if (item.path.includes('/bh-module/piscine-')) {
+      // Standard Piscines: /bahrain/bh-module/piscine-{{name}}/{{project}}
+      const piscineMatch = item.path.match(/piscine-(\w+)/);
+      if (piscineMatch) {
+        const piscineType = piscineMatch[1]; // js, rust, flutter, etc.
+        if (!piscines[piscineType]) {
+          piscines[piscineType] = [];
+        }
+        piscines[piscineType].push(item);
+        allPiscines.push(item);
+      }
+    } else {
+      // BH Module: /bahrain/bh-module/{{project}} (main module)
+      mainModule.push(item);
+    }
+  });
+
+  return {
+    mainModule,
+    piscines,
+    allPiscines,
+    all: data
+  };
+};
+
+/**
+ * Calculate CORRECT XP totals by module type (BH Module vs Piscines)
+ * Based on actual data analysis: Total=1300K, BH=0.62MB, Piscine=0.68MB
+ * @param transactions - Array of XP transactions
+ * @returns Object with XP totals by module
+ */
+export const calculateModuleXPTotals = (transactions: any[]) => {
+  if (!transactions || !Array.isArray(transactions)) {
+    return {
+      total: 0,
+      bhModule: 0,
+      piscines: {} as { [key: string]: number },
+      allPiscines: 0
+    };
+  }
+
+  const xpTransactions = transactions.filter(t => t.type === 'xp');
+
+  const totals = {
+    total: 0,
+    bhModule: 0,
+    piscines: {} as { [key: string]: number },
+    allPiscines: 0
+  };
+
+  // Separate BH Module from Piscines
+  xpTransactions.forEach(t => {
+    const amount = t.amount || 0;
+    totals.total += amount;
+
+    if (t.path && t.path.includes('piscine')) {
+      // This is a piscine transaction
+      const piscineMatch = t.path.match(/piscine-(\w+)/);
+      if (piscineMatch) {
+        const piscineType = piscineMatch[1];
+        if (!totals.piscines[piscineType]) {
+          totals.piscines[piscineType] = 0;
+        }
+        totals.piscines[piscineType] += amount;
+        totals.allPiscines += amount;
+      }
+    } else {
+      // This is BH Module transaction
+      totals.bhModule += amount;
+    }
+  });
+
+  return totals;
+};
+
+/**
+ * Calculate correct level from total XP (in bytes)
+ * Formula: floor(sqrt(totalXP / 1000)) + 1
+ * @param totalXP - Total XP in bytes
+ * @returns User level
+ */
+export const calculateLevel = (totalXP: number): number => {
+  if (!totalXP || totalXP <= 0) return 1;
+  return Math.floor(Math.sqrt(totalXP / 1000)) + 1;
+};
+
+/**
+ * Calculate unique project statistics (avoiding double counting)
+ * @param progresses - Array of progress records
+ * @returns Object with project statistics
+ */
+export const calculateProjectStats = (progresses: any[]) => {
+  const projectsByPath: { [key: string]: any[] } = {};
+
+  // Group by path to handle multiple attempts
+  progresses.forEach(p => {
+    if (!projectsByPath[p.path]) {
+      projectsByPath[p.path] = [];
+    }
+    projectsByPath[p.path].push(p);
+  });
+
+  let totalProjects = 0;
+  let passedProjects = 0;
+  let failedProjects = 0;
+
+  // Analyze each unique project
+  Object.keys(projectsByPath).forEach(path => {
+    const projectVersions = projectsByPath[path];
+    // Get the latest version (most recent attempt)
+    const latestVersion = projectVersions.reduce((latest, current) =>
+      new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+    );
+
+    totalProjects++;
+    if (latestVersion.isDone && latestVersion.grade >= 1) {
+      passedProjects++;
+    } else {
+      failedProjects++;
+    }
+  });
+
+  return {
+    total: totalProjects,
+    passed: passedProjects,
+    failed: failedProjects,
+    passRate: totalProjects > 0 ? Math.round((passedProjects / totalProjects) * 100) : 0
+  };
+};
+
+/**
+ * Get user performance notation based on audit ratio and other metrics
+ * @param auditRatio - User's audit ratio
+ * @param totalXP - User's total XP
+ * @param completedProjects - Number of completed projects
+ * @returns Performance notation object
+ */
+export const getPerformanceNotation = (auditRatio: number, totalXP: number = 0, completedProjects: number = 0) => {
+  // Primary factor: audit ratio
+  if (auditRatio >= 2.0) {
+    return {
+      notation: "Exceptional Developer",
+      description: "Outstanding audit performance",
+      color: "text-purple-400",
+      badge: "🏆"
+    };
+  } else if (auditRatio >= 1.8) {
+    return {
+      notation: "Advanced Developer",
+      description: "Excellent audit skills",
+      color: "text-blue-400",
+      badge: "⭐"
+    };
+  } else if (auditRatio >= 1.5) {
+    return {
+      notation: "Skilled Developer",
+      description: "Strong audit performance",
+      color: "text-green-400",
+      badge: "✨"
+    };
+  } else if (auditRatio >= 1.2) {
+    return {
+      notation: "Developing Skills",
+      description: "Good audit progress",
+      color: "text-yellow-400",
+      badge: "📈"
+    };
+  } else if (auditRatio >= 1.0) {
+    return {
+      notation: "Meeting Standards",
+      description: "Audit requirements met",
+      color: "text-orange-400",
+      badge: "✅"
+    };
+  } else if (auditRatio >= 0.8) {
+    return {
+      notation: "Aspiring Developer",
+      description: "Building audit skills",
+      color: "text-orange-500",
+      badge: "🚀"
+    };
+  } else {
+    return {
+      notation: "Needs Work",
+      description: "Focus on audit improvement",
+      color: "text-red-400",
+      badge: "📚"
+    };
+  }
+};
+
+/**
+ * Extract complete contact information from user attributes
+ * @param attrs - User attributes object
+ * @returns Complete contact information object
+ */
+export const extractContactInfo = (attrs: any) => {
+  if (!attrs) return null;
+
+  return {
+    personal: {
+      email: attrs.email || null,
+      phone: attrs.Phone || attrs.PhoneNumber || null,
+      dateOfBirth: attrs.dateOfBirth || null,
+      placeOfBirth: attrs.placeOfBirth || null,
+      nationality: attrs.countryOfBirth || attrs.addressCountry || null,
+      cprNumber: attrs.CPRnumber || null,
+      gender: attrs.gender || attrs.genders || null
+    },
+    address: {
+      street: attrs.addressStreet || null,
+      complement: attrs.addressComplementStreet || null,
+      city: attrs.addressCity || null,
+      country: attrs.addressCountry || null,
+      postalCode: attrs.addressPostalCode || null
+    },
+    emergency: {
+      firstName: attrs.emergencyFirstName || null,
+      lastName: attrs.emergencyLastName || null,
+      fullName: `${attrs.emergencyFirstName || ''} ${attrs.emergencyLastName || ''}`.trim() || null,
+      phone: attrs.emergencyTel || null,
+      relation: attrs.emergencyAffiliation || null
+    },
+    education: {
+      degree: attrs.Degree || attrs.schoolanddegree || null,
+      qualification: attrs.qualification || attrs.qualifica || null,
+      graduationDate: attrs.graddate || null
+    },
+    employment: {
+      status: attrs.employment || null,
+      jobTitle: attrs.jobtitle || null,
+      other: attrs.otheremp || null
+    },
+    uploads: {
+      profilePicture: attrs['pro-picUploadId'] || null,
+      idCard: attrs['id-cardUploadId'] || null
+    },
+    other: {
+      medicalInfo: attrs.medicalInfo || null,
+      howDidYouHear: attrs.howdidyou || null,
+      conditionsAccepted: attrs['general-conditionsAccepted'] || false
+    }
+  };
+};
+
+

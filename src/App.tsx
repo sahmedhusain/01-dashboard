@@ -1,53 +1,96 @@
+import React, { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { ApolloProvider } from '@apollo/client'
+import client from './graphql/client'
+import { LoginPage, DashboardPage, ProfilePage, NotFoundPage } from './pages'
+import { useIsAuthenticated, useLogin, useSetLoading } from './store'
+import { getStoredAuthData, fetchUserData } from './utils/auth'
+import LoadingSpinner from './components/ui/LoadingSpinner'
+import ErrorBoundary from './components/ErrorBoundary'
 
-import React from 'react';
-import { ApolloProvider } from '@apollo/client';
-import { AuthProvider } from './contexts/AuthContext';
-import { DataProvider } from './contexts/DataContext';
-import { useAuth } from './contexts/authUtils';
-import client from './graphql/client';
-import LoginPage from './components/auth/LoginPage';
-import Dashboard from './components/dashboard/Dashboard';
-import Loading from './components/ui/Loading';
-import ErrorBoundary from './components/ui/ErrorBoundary';
-import ErrorFeedback from './components/feedback/ErrorFeedback';
+const AppContent: React.FC = () => {
+  const isAuthenticated = useIsAuthenticated()
+  const login = useLogin()
+  const setLoading = useSetLoading()
+  const [isInitializing, setIsInitializing] = React.useState(true)
 
-// Import debug utilities in development
-if (import.meta.env.DEV) {
-  import('./utils/debugAuth');
+  useEffect(() => {
+    const initializeAuth = async () => {
+      setLoading(true)
+      try {
+        const storedData = getStoredAuthData()
+        if (storedData.user && storedData.token) {
+          // Check if user data is complete (has login field)
+          if (storedData.user.login) {
+            // User data is complete, use it directly
+            login(storedData.user, storedData.token)
+          } else if (storedData.user.id) {
+            // User data is incomplete (only has ID), fetch complete data
+            try {
+              const completeUser = await fetchUserData(storedData.user.id, storedData.token)
+              login(completeUser, storedData.token)
+            } catch (fetchError) {
+              console.error('Failed to fetch complete user data:', fetchError)
+              // If fetching fails, clear auth data and let user re-login
+              localStorage.clear()
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to initialize auth:', error)
+      } finally {
+        setLoading(false)
+        setIsInitializing(false)
+      }
+    }
+    initializeAuth()
+  }, [login, setLoading])
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Root route - redirect based on auth status */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        {/* Public routes */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected routes */}
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/profile/:userId" element={<ProfilePage />} />
+
+        {/* 404 route */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
-// Main app component that handles authentication state
-const AppContent: React.FC = () => {
-  const { isAuthenticated, isInitialized } = useAuth();
-
-  // Show loading while initializing auth state
-  if (!isInitialized) {
-    return <Loading fullScreen size="lg" text="Initializing..." />;
-  }
-
-  // Show login page if not authenticated
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
-  // Show dashboard if authenticated
-  return <Dashboard />;
-};
-
-// Root app component with providers
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <ApolloProvider client={client}>
-        <AuthProvider>
-          <DataProvider>
-            <AppContent />
-            <ErrorFeedback />
-          </DataProvider>
-        </AuthProvider>
+        <AppContent />
       </ApolloProvider>
     </ErrorBoundary>
-  );
-};
+  )
+}
 
-export default App;
+export default App

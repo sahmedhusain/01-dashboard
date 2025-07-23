@@ -1,317 +1,246 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { LogOut, Search, User, BarChart3, TrendingUp, Award, Trophy, Users, Menu, X } from 'lucide-react';
-import { useAuth } from '../../contexts/authUtils';
-import { useData } from '../../hooks/useData';
-import { useTabRouting, NavigationHistory } from '../../utils/routing';
-import {
-  processDashboardTabs,
-  processDashboardState
-} from '../../utils/componentDataProcessors/dashboardProcessors';
-import Card from '../ui/Card';
-import Button from '../ui/Button';
-import Loading from '../ui/Loading';
-import ErrorBoundary from '../ui/ErrorBoundary';
-import MobileNavigation from '../ui/MobileNavigation';
-import ProfileSection from './ProfileSection';
-import SearchSection from './SearchSection';
-import StatsSection from './StatsSection';
-import AuditsSection from './AuditsSection';
-import TechnologiesSection from './TechnologiesSection';
-import ProgressTrackingSection from './ProgressTrackingSection';
-import ComparativeAnalyticsSection from './ComparativeAnalyticsSection';
-import AchievementsSection from './AchievementsSection';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react'
+import { motion } from 'framer-motion'
+import { LogOut, User as UserIcon, BarChart3, Trophy, Search, Download, BookOpen, Settings, CheckCircle } from 'lucide-react'
+import { useQuery, gql } from '@apollo/client'
+import { useUser, useLogout, useDashboardTab, useSetDashboardTab } from '../../store'
+import { User } from '../../types'
+import LoadingSpinner from '../ui/LoadingSpinner'
 
-// Development: Routing tests available via window.testRouting in console
-const Dashboard = () => {
-  const { logout } = useAuth();
-  const { userStatistics, loading, error, refetchAll } = useData();
-  const { currentTab, navigateToTab, pathname } = useTabRouting();
+// Lazy load components for better performance
+const ProfileSection = lazy(() => import('./ProfileSection'))
+const StatisticsSection = lazy(() => import('./StatisticsSection'))
+const PiscinesDashboard = lazy(() => import('./PiscinesDashboard'))
+const LeaderboardSection = lazy(() => import('./LeaderboardSection'))
+const SearchSection = lazy(() => import('../search/SearchSection'))
+const ExportSection = lazy(() => import('../export/ExportSection'))
+const PiscineSection = lazy(() => import('./PiscineSection'))
+const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
 
-  // Track navigation history
-  useEffect(() => {
-    NavigationHistory.push(pathname);
-  }, [pathname]);
+const UserPreferences = lazy(() => import('../preferences/UserPreferences'))
 
-  // Process dashboard data using utility functions
-  const tabs = processDashboardTabs();
-  const dashboardState = processDashboardState(loading, error, userStatistics);
+type TabType = 'profile' | 'statistics' | 'piscines' | 'checkpoints' | 'leaderboard' | 'search' | 'export' | string // Allow dynamic piscine tabs
 
-  // Icon mapping for dynamic icon rendering
-  const iconMap = {
-    User,
-    Search,
-    BarChart3,
-    TrendingUp,
-    Award,
-    Trophy,
-    Users
-  };
+const Dashboard: React.FC = () => {
+  const user = useUser()
+  const logout = useLogout()
+  const activeTab = useDashboardTab()
+  const setActiveTab = useSetDashboardTab()
+  const [piscineTypes, setPiscineTypes] = useState<string[]>([])
+  const [showPreferences, setShowPreferences] = useState(false)
 
-  // Enhanced tabs with actual icon components
-  const tabsWithIcons = tabs.map(tab => ({
-    ...tab,
-    icon: iconMap[tab.iconName] || User
-  }));
-
-  // Mobile menu state (still needed for UI)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Close mobile menu when tab changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [currentTab]);
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  // Convert Error to LoadingError format
-  const loadingError = error ? { userMessage: error.message } : null;
-
-  // Use processed dashboard state for loading and error handling
-  if (dashboardState.shouldShowLoading) {
-    return (
-      <div className="min-h-screen bg-surface-900 flex items-center justify-center">
-        <Loading
-          size="lg"
-          text="Loading your dashboard..."
-          variant="dots"
-          error={loadingError}
-          retry={refetchAll}
-        />
-      </div>
-    );
+  // Redirect if no user (shouldn't happen with routing, but safety check)
+  if (!user) {
+    return null
   }
 
-  // Show error state if there's an error and no data
-  if (dashboardState.shouldShowError) {
-    return (
-      <div className="min-h-screen bg-surface-900 flex items-center justify-center">
-        <Loading
-          error={loadingError}
-          retry={refetchAll}
-          text="Failed to load dashboard"
-        />
-      </div>
-    );
-  }
+  // Query to detect user's piscine types dynamically (CORRECTED)
+  const { data: piscineData } = useQuery(gql`
+    query GetUserPiscineTypes($userId: Int!) {
+      # Standard piscines: /bahrain/bh-module/piscine-{{name}}/
+      standard_piscines: transaction(
+        where: {
+          userId: { _eq: $userId }
+          path: { _regex: "bh-module/piscine-" }
+        }
+        distinct_on: path
+      ) {
+        path
+      }
+      # Go piscine: /bahrain/bh-piscine/
+      go_piscine: transaction(
+        where: {
+          userId: { _eq: $userId }
+          path: { _regex: "bh-piscine/" }
+        }
+        limit: 1
+      ) {
+        path
+      }
+    }
+  `, {
+    variables: { userId: user.id },
+    errorPolicy: 'all'
+  })
 
-  if (error) {
-    console.error('Dashboard error:', error);
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="max-w-md text-center">
-          <Card.Header>
-            <Card.Title className="text-red-400">Error Loading Dashboard</Card.Title>
-            <Card.Description>
-              {error.message || 'Failed to load dashboard data'}
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <div className="space-y-3">
-              <Button onClick={() => window.location.reload()} className="w-full">
-                Reload Page
-              </Button>
-              {import.meta.env.DEV && (
-                <details className="text-left text-xs">
-                  <summary className="cursor-pointer text-surface-400 hover:text-surface-200">
-                    Error Details (Development)
-                  </summary>
-                  <pre className="mt-2 p-2 bg-surface-800/50 rounded text-red-400 overflow-auto">
-                    {JSON.stringify(error, null, 2)}
-                  </pre>
-                </details>
-              )}
-            </div>
-          </Card.Content>
-        </Card>
-      </div>
-    );
+  // Extract piscine types from transaction paths (CORRECTED)
+  useEffect(() => {
+    if (piscineData) {
+      const types = new Set<string>()
+
+      // Standard piscines
+      if (piscineData.standard_piscines) {
+        piscineData.standard_piscines.forEach((t: any) => {
+          const match = t.path?.match(/piscine-(\w+)/)
+          if (match) {
+            types.add(match[1])
+          }
+        })
+      }
+
+      // Go piscine
+      if (piscineData.go_piscine && piscineData.go_piscine.length > 0) {
+        types.add('go')
+      }
+
+      setPiscineTypes(Array.from(types))
+    }
+  }, [piscineData])
+
+  const handleLogout = useCallback(() => {
+    logout()
+  }, [logout])
+
+  // Base tabs - restructured based on screenshots analysis
+  const baseTabs = [
+    { id: 'profile' as TabType, label: 'Profile Info', icon: UserIcon },
+    { id: 'statistics' as TabType, label: 'Statistics', icon: BarChart3 },
+    { id: 'piscines' as TabType, label: 'Piscines Dashboard', icon: BookOpen },
+    { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
+    { id: 'leaderboard' as TabType, label: 'Leaderboard', icon: Trophy },
+    { id: 'search' as TabType, label: 'Search', icon: Search },
+    { id: 'export' as TabType, label: 'Export', icon: Download },
+  ]
+
+  // Show only base tabs - piscine sub-tabs are handled within PiscinesDashboard
+  const tabs = baseTabs
+
+  const renderContent = () => {
+    // Handle piscine sub-tabs dynamically
+    if (activeTab.startsWith('piscine-')) {
+      const piscineType = activeTab.replace('piscine-', '')
+      return <PiscineSection user={user} piscineType={piscineType} />
+    }
+
+    // Handle main tabs
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileSection user={user} />
+      case 'statistics':
+        return <StatisticsSection user={user} />
+      case 'piscines':
+        return <PiscinesDashboard user={user} piscineTypes={piscineTypes} />
+      case 'checkpoints':
+        return <CheckpointDashboard user={user} />
+      case 'leaderboard':
+        return <LeaderboardSection user={user} />
+      case 'search':
+        return <SearchSection user={user} />
+      case 'export':
+        return <ExportSection user={user} />
+      default:
+        return <ProfileSection user={user} />
+    }
   }
 
   return (
-    <ErrorBoundary showDetails={import.meta.env.DEV}>
-      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 pb-20 md:pb-0 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, #14b8a6 0%, transparent 50%),
-                             radial-gradient(circle at 75% 75%, #8b5cf6 0%, transparent 50%)`
-          }} />
-        </div>
-      {/* Enhanced Header */}
-      <header className="sticky top-0 z-40 bg-surface-900/90 backdrop-blur-xl border-b border-white/10 shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900">
+      {/* Header */}
+      <header className="bg-white/10 backdrop-blur-lg border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Enhanced Logo/Title */}
-            <motion.div
-              className="flex items-center"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            {/* Responsive Logo/Title */}
+            <div className="flex items-center min-w-0">
               <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.6, type: "spring", stiffness: 200 }}
-                className="w-10 h-10 bg-gradient-to-r from-primary-400 via-accent-400 to-primary-500 rounded-xl flex items-center justify-center mr-3 shadow-lg"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200 }}
+                className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0"
               >
-                <BarChart3 className="w-6 h-6 text-white" />
+                <UserIcon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </motion.div>
-              <div>
-                <h1 className="text-lg md:text-xl font-bold gradient-text">
-                  Student Dashboard
-                </h1>
-                <p className="text-xs text-surface-400 hidden md:block">
-                  Professional Analytics Platform
-                </p>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold text-white truncate">Student Dashboard</h1>
+                <p className="text-xs sm:text-sm text-white/70 truncate">#{user.id}</p>
               </div>
-            </motion.div>
-
-            {/* Desktop: User info and logout */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
             </div>
 
-            {/* Mobile: Menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-surface-300"
+            {/* Actions: Preferences and Logout */}
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <motion.button
+                onClick={() => setShowPreferences(true)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Open preferences"
+                title="Preferences"
               >
-                {isMobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </Button>
+                <Settings className="w-5 h-5" />
+              </motion.button>
+              <motion.button
+                onClick={handleLogout}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center px-3 sm:px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded-lg transition-colors"
+                aria-label="Logout from dashboard"
+                title="Logout"
+              >
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Logout</span>
+              </motion.button>
             </div>
           </div>
-
-          {/* Mobile menu */}
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-white/10 py-4"
-            >
-              <div className="flex items-center justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
-            </motion.div>
-          )}
         </div>
       </header>
 
-      {/* Enhanced Desktop Navigation Tabs */}
-      <nav className="sticky top-16 z-30 bg-surface-800/90 backdrop-blur-xl border-b border-white/10 hidden md:block shadow-sm">
+      {/* Navigation Tabs */}
+      <nav className="bg-white/5 backdrop-blur-sm border-b border-white/10" role="navigation" aria-label="Dashboard navigation">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-1 overflow-x-auto">
-            {tabsWithIcons.map((tab, index) => {
-              const Icon = tab.icon;
-              const isActive = currentTab === tab.id;
-
+          <div className="flex space-x-2 sm:space-x-4 lg:space-x-8 overflow-x-auto scrollbar-hide" role="tablist">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              
               return (
                 <motion.button
                   key={tab.id}
-                  onClick={() => navigateToTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-4 rounded-t-lg transition-all duration-300 whitespace-nowrap relative group ${
+                  onClick={() => setActiveTab(tab.id)}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ y: 0 }}
+                  className={`flex items-center px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-all whitespace-nowrap min-w-0 ${
                     isActive
-                      ? 'bg-gradient-to-b from-primary-500/20 to-transparent text-primary-300 border-b-2 border-primary-400'
-                      : 'text-surface-400 hover:text-surface-200 hover:bg-surface-700/50'
+                      ? 'border-primary-500 text-primary-400'
+                      : 'border-transparent text-white/70 hover:text-white hover:border-white/30'
                   }`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  whileHover={{ y: -2, scale: 1.02 }}
-                  whileTap={{ y: 0, scale: 0.98 }}
+                  aria-label={`Switch to ${tab.label} tab`}
+                  aria-current={isActive ? 'page' : undefined}
+                  role="tab"
+                  tabIndex={0}
                 >
-                  <Icon className={`w-4 h-4 transition-all duration-300 ${
-                    isActive ? 'text-primary-400' : 'group-hover:text-accent-400'
-                  }`} />
-                  <span className="text-sm font-medium">{tab.label}</span>
-
-                  {/* Enhanced active indicator */}
-                  {isActive && (
-                    <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-400 to-accent-400 rounded-full"
-                      layoutId="activeTabIndicator"
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  )}
-
-                  {/* Hover glow effect */}
-                  {!isActive && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-accent-500/10 rounded-t-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                  )}
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </motion.button>
-              );
+              )
             })}
           </div>
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
-      <MobileNavigation
-        tabs={tabsWithIcons}
-        activeTab={currentTab}
-        onTabChange={navigateToTab}
-      />
-
-      {/* Enhanced Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main" aria-label="Dashboard content">
         <motion.div
-          key={currentTab}
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -30, scale: 0.95 }}
-          transition={{
-            duration: 0.4,
-            type: "spring",
-            stiffness: 300,
-            damping: 30
-          }}
-          className="relative"
+          key={activeTab}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <Routes>
-            <Route path="/" element={<ProfileSection />} />
-            <Route path="/search" element={<SearchSection />} />
-            <Route path="/stats" element={<StatsSection />} />
-            <Route path="/progress" element={<ProgressTrackingSection />} />
-            <Route path="/analytics" element={<ComparativeAnalyticsSection />} />
-            <Route path="/achievements" element={<AchievementsSection />} />
-            <Route path="/audits" element={<AuditsSection />} />
-            <Route path="/technologies" element={<TechnologiesSection />} />
-
-          </Routes>
+          <Suspense fallback={<LoadingSpinner />}>
+            {renderContent()}
+          </Suspense>
         </motion.div>
       </main>
-      </div>
-    </ErrorBoundary>
-  );
-};
 
-export default Dashboard;
+      {/* User Preferences Modal */}
+      {showPreferences && (
+        <Suspense fallback={null}>
+          <UserPreferences
+            userId={user.id}
+            onClose={() => setShowPreferences(false)}
+          />
+        </Suspense>
+      )}
+    </div>
+  )
+}
+
+export default Dashboard

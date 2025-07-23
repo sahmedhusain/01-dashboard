@@ -1,281 +1,295 @@
-import { BarChart3, TrendingUp, PieChart, Activity, Clock, Target, Award, Zap } from 'lucide-react';
-import { useData } from '../../hooks/useData';
-import Card from '../ui/Card';
-import { CardSkeleton } from '../ui/Loading';
-import Badge from '../ui/Badge';
-import XPProgressChart from '../charts/XPProgressChart';
-import ProjectSuccessChart from '../charts/ProjectSuccessChart';
-import AuditStatsChart from '../charts/AuditStatsChart';
-import XPByProjectChart from '../charts/XPByProjectChart';
-import XPTimelineChart from '../charts/XPTimelineChart';
-import AdvancedChartsGrid from '../charts/AdvancedChartsGrid';
-import {
-  processStatsSectionData,
-  processStatsOverviewCards,
-  processChartConfigurations
-} from '../../utils/componentDataProcessors/statsProcessors';
+import React from 'react'
+import { motion } from 'framer-motion'
+import { BarChart3, PieChart, TrendingUp, Target } from 'lucide-react'
+import { useQuery, gql } from '@apollo/client'
+import { GET_USER_PROGRESS, GET_USER_PROJECT_STATS } from '../../graphql/queries'
+import { User } from '../../types'
+import Card from '../ui/Card'
+import LoadingSpinner from '../ui/LoadingSpinner'
+import ProjectSuccessChart from '../charts/ProjectSuccessChart'
+import SkillsRadarChart from '../charts/SkillsRadarChart'
 
-const StatsSection = () => {
-  const rawData = useData();
+interface StatsSectionProps {
+  user: User
+}
 
-  // Process all stats data using utility functions
-  const statsData = processStatsSectionData(rawData);
-  const overviewCards = processStatsOverviewCards(statsData);
-  const chartConfigs = processChartConfigurations(statsData);
-
-  // Transform statsData to match AdvancedChartsGrid expected structure
-  const analyticsData = {
-    xpTimeline: rawData.userStatistics?.xpTimeline || [],
-    projectAnalytics: rawData.userStatistics?.projectResults || [],
-    skills: rawData.userStatistics?.skills || [],
-    techSkills: rawData.userStatistics?.techSkills || rawData.userStatistics?.skills || [],
-    auditData: {
-      auditRatio: typeof rawData.userStatistics?.auditRatio === 'string'
-        ? parseFloat(rawData.userStatistics.auditRatio) || 0
-        : rawData.userStatistics?.auditRatio || 0,
-      totalUp: rawData.auditStatistics?.auditsGiven || 0,
-      totalDown: rawData.auditStatistics?.auditsReceived || 0,
+const StatsSection: React.FC<StatsSectionProps> = ({ user }) => {
+  const { data: progressData, loading: progressLoading } = useQuery(gql`
+    query GetUserProgress($userId: Int!) {
+      progress(
+        where: { userId: { _eq: $userId } }
+        order_by: { createdAt: desc }
+      ) {
+        id
+        grade
+        isDone
+        path
+        createdAt
+        object {
+          name
+          type
+        }
+      }
     }
-  };
+  `, {
+    variables: { userId: user.id },
+    errorPolicy: 'all'
+  })
 
-  // Icon mapping for dynamic icon rendering
-  const iconMap = {
-    TrendingUp,
-    Target,
-    Award,
-    BarChart3,
-    PieChart,
-    Activity,
-    Clock,
-    Zap
-  };
+  const { data: statsData, loading: statsLoading } = useQuery(gql`
+    query GetProgressStats($userId: Int!) {
+      total_progress: progress_aggregate(
+        where: { userId: { _eq: $userId } }
+      ) {
+        aggregate {
+          count
+        }
+      }
+      completed_progress: progress_aggregate(
+        where: {
+          userId: { _eq: $userId }
+          isDone: { _eq: true }
+        }
+      ) {
+        aggregate {
+          count
+          avg {
+            grade
+          }
+        }
+      }
+      project_progress: progress_aggregate(
+        where: {
+          userId: { _eq: $userId }
+          object: { type: { _eq: "project" } }
+        }
+      ) {
+        aggregate {
+          count
+        }
+      }
+    }
+  `, {
+    variables: { userId: user.id },
+    errorPolicy: 'all'
+  })
 
-  if (statsData.loading) {
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-        <div className="lg:col-span-2 xl:col-span-3">
-          <CardSkeleton />
-        </div>
-        <div className="lg:col-span-2">
-          <CardSkeleton />
-        </div>
-        <CardSkeleton />
-      </div>
-    );
-  }
+  const loading = progressLoading || statsLoading
+
+  if (loading) return <LoadingSpinner />
+
+  const progress = progressData?.progress || []
+  const totalProgress = statsData?.total_progress?.aggregate?.count || 0
+  const completedProgress = statsData?.completed_progress?.aggregate?.count || 0
+  const projectProgress = statsData?.project_progress?.aggregate?.count || 0
+  const avgGrade = statsData?.completed_progress?.aggregate?.avg?.grade || 0
+
+  // Calculate project success rate
+  const passedProjects = progress.filter((p: any) => p.isDone && p.grade >= 1).length
+  const failedProjects = progress.filter((p: any) => p.isDone && p.grade < 1).length
+  const inProgressProjects = progress.filter((p: any) => !p.isDone).length
+
+  const successRate = passedProjects + failedProjects > 0 
+    ? (passedProjects / (passedProjects + failedProjects)) * 100 
+    : 0
+
+  // Process skills data from progress
+  const skillsMap = new Map()
+  progress.forEach((p: any) => {
+    if (p.object?.type === 'project' && p.isDone) {
+      const projectName = p.object.name || 'Unknown'
+      // Extract technology from project name or path
+      const tech = extractTechnology(projectName, p.path)
+      if (tech) {
+        const current = skillsMap.get(tech) || { count: 0, totalGrade: 0 }
+        skillsMap.set(tech, {
+          count: current.count + 1,
+          totalGrade: current.totalGrade + (p.grade || 0)
+        })
+      }
+    }
+  })
+
+  const skillsData = Array.from(skillsMap.entries()).map(([skill, data]) => ({
+    skill,
+    level: data.totalGrade / data.count,
+    maxLevel: 2, // Assuming max grade is 2
+    category: getCategoryForSkill(skill),
+    projects: data.count
+  }))
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-      {/* Statistics Overview Cards */}
-      {overviewCards.map((card, index) => {
-        const Icon = iconMap[card.icon] || TrendingUp;
-
-        return (
-          <Card key={index}>
-            <Card.Header>
-              <Card.Title className="flex items-center">
-                <Icon className="w-5 h-5 mr-2" />
-                {card.title}
-              </Card.Title>
-            </Card.Header>
-            <Card.Content>
-              <div className="space-y-4">
-                {card.items.map((item, itemIndex) => (
-                  <div key={itemIndex} className="flex justify-between items-center">
-                    <span className="text-surface-300">{item.label}</span>
-                    <Badge variant={item.variant}>{item.value}</Badge>
-                  </div>
-                ))}
-              </div>
-            </Card.Content>
-          </Card>
-        );
-      })}
-
-      {/* XP Timeline Chart - Full width */}
-      <div className="lg:col-span-2 xl:col-span-3">
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <Clock className="w-5 h-5 mr-2" />
-              XP Progression Timeline
-            </Card.Title>
-            <Card.Description>
-              Your cumulative experience points growth over time
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <div className="flex justify-center">
-              <XPTimelineChart
-                data={chartConfigs.xpTimeline.data}
-                width={chartConfigs.xpTimeline.width}
-                height={chartConfigs.xpTimeline.height}
-              />
+    <div className="space-y-6">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/60 text-sm">Projects Passed</p>
+              <p className="text-3xl font-bold text-green-400">{passedProjects}</p>
             </div>
-          </Card.Content>
-        </Card>
-      </div>
-
-      {/* XP by Project Chart */}
-      <div className="lg:col-span-2">
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2" />
-              XP by Project
-            </Card.Title>
-            <Card.Description>
-              Top projects ranked by experience points earned
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <div className="flex justify-center">
-              <XPByProjectChart
-                data={chartConfigs.xpByProject.data}
-                width={chartConfigs.xpByProject.width}
-                height={chartConfigs.xpByProject.height}
-                maxBars={chartConfigs.xpByProject.maxBars}
-              />
+            <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+              <Target className="w-6 h-6 text-green-400" />
             </div>
-          </Card.Content>
-        </Card>
-      </div>
-
-      {/* TODO: Implement Piscine Performance section with piscine-specific queries */}
-
-      {/* Skills Development Tracking */}
-      {statsData.skillsData.hasSkills && (
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <Zap className="w-5 h-5 mr-2" />
-              Skill Development
-            </Card.Title>
-            <Card.Description>
-              Top technologies and programming languages
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <div className="space-y-3">
-              {statsData.skillsData.topSkills.map((skill, index) => (
-                <div key={skill.name || index} className="flex justify-between items-center">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 rounded-full bg-primary-400"></div>
-                    <span className="text-surface-200 text-sm capitalize">
-                      {skill.displayName}
-                    </span>
-                  </div>
-                  <Badge variant="primary" size="sm">
-                    {skill.formattedPercentage}
-                  </Badge>
-                </div>
-              ))}
-              {!statsData.skillsData.hasSkills && (
-                <div className="text-center text-surface-400 py-4">
-                  <Zap className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p>No skill data available yet</p>
-                </div>
-              )}
-            </div>
-          </Card.Content>
-        </Card>
-      )}
-
-      {/* Original XP Progress Chart */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2" />
-            XP Progress Overview
-          </Card.Title>
-          <Card.Description>
-            Your experience points progression summary
-          </Card.Description>
-        </Card.Header>
-        <Card.Content>
-          <div className="flex justify-center">
-            <XPProgressChart
-              data={chartConfigs.xpProgress.data}
-              width={chartConfigs.xpProgress.width}
-              height={chartConfigs.xpProgress.height}
-            />
           </div>
-        </Card.Content>
-      </Card>
+        </Card>
 
-      {/* Project Success Chart */}
-      <Card>
-        <Card.Header>
-          <Card.Title className="flex items-center">
-            <PieChart className="w-5 h-5 mr-2" />
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/60 text-sm">Success Rate</p>
+              <p className="text-3xl font-bold text-blue-400">{successRate.toFixed(1)}%</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-blue-400" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/60 text-sm">Avg Grade</p>
+              <p className="text-3xl font-bold text-purple-400">{avgGrade.toFixed(2)}</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-purple-400" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/60 text-sm">In Progress</p>
+              <p className="text-3xl font-bold text-yellow-400">{inProgressProjects}</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+              <PieChart className="w-6 h-6 text-yellow-400" />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Project Success Chart */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <PieChart className="w-5 h-5 mr-2 text-primary-400" />
             Project Success Rate
-          </Card.Title>
-          <Card.Description>
-            Pass/Fail ratio for your projects
-          </Card.Description>
-        </Card.Header>
-        <Card.Content>
-          <div className="flex justify-center py-8">
-            <ProjectSuccessChart
-              passedProjects={chartConfigs.projectSuccess.passedProjects}
-              failedProjects={chartConfigs.projectSuccess.failedProjects}
-              size={chartConfigs.projectSuccess.size}
-            />
-          </div>
-        </Card.Content>
-      </Card>
+          </h3>
+          <ProjectSuccessChart 
+            data={{
+              passed: passedProjects,
+              failed: failedProjects,
+              inProgress: inProgressProjects,
+              total: passedProjects + failedProjects + inProgressProjects
+            }}
+          />
+        </Card>
 
-      {/* Audit Statistics Chart */}
-      <div className="lg:col-span-2 xl:col-span-3">
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <Activity className="w-5 h-5 mr-2" />
-              Audit Performance Analytics
-            </Card.Title>
-            <Card.Description>
-              Comprehensive audit statistics and performance metrics
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <div className="flex justify-center">
-              <AuditStatsChart
-                auditsGiven={chartConfigs.auditStats.auditsGiven}
-                auditsReceived={chartConfigs.auditStats.auditsReceived}
-                width={chartConfigs.auditStats.width}
-                height={chartConfigs.auditStats.height}
-              />
+        {/* Skills Radar Chart */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2 text-primary-400" />
+            Technology Skills
+          </h3>
+          {skillsData.length > 0 ? (
+            <SkillsRadarChart data={skillsData} />
+          ) : (
+            <div className="text-center text-white/60 py-8">
+              <p>No skills data available</p>
             </div>
-          </Card.Content>
+          )}
         </Card>
       </div>
 
-      {/* Advanced SVG Charts Grid - Professional Dashboard */}
-      <div className="lg:col-span-2 xl:col-span-3">
-        <Card>
-          <Card.Header>
-            <Card.Title className="flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2" />
-              Advanced Analytics Dashboard
-            </Card.Title>
-            <Card.Description>
-              Comprehensive SVG-based statistical visualizations including XP progress, project success rates, skills radar, and audit performance
-            </Card.Description>
-          </Card.Header>
-          <Card.Content>
-            <AdvancedChartsGrid
-              analyticsData={analyticsData}
-              className="mt-4"
-              chartSize={{ width: 350, height: 250 }}
-            />
-          </Card.Content>
-        </Card>
-      </div>
+      {/* Progress Timeline */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Recent Progress</h3>
+        <div className="space-y-3">
+          {progress.slice(0, 10).map((item: any, index: number) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+            >
+              <div className="flex-1">
+                <p className="text-white font-medium">
+                  {item.object?.name || 'Unknown Project'}
+                </p>
+                <p className="text-white/60 text-sm">
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </p>
+                <p className="text-white/50 text-xs">
+                  Type: {item.object?.type || 'Unknown'}
+                </p>
+              </div>
+              <div className="text-right">
+                <div className={`px-2 py-1 rounded text-sm font-medium ${
+                  item.isDone
+                    ? item.grade >= 1 
+                      ? 'bg-green-500/20 text-green-400' 
+                      : 'bg-red-500/20 text-red-400'
+                    : 'bg-yellow-500/20 text-yellow-400'
+                }`}>
+                  {item.isDone 
+                    ? (item.grade >= 1 ? 'PASSED' : 'FAILED')
+                    : 'IN PROGRESS'
+                  }
+                </div>
+                {item.isDone && (
+                  <p className="text-white/60 text-xs mt-1">
+                    Grade: {item.grade?.toFixed(2) || 'N/A'}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </Card>
     </div>
-  );
-};
+  )
+}
 
-export default StatsSection;
+// Helper functions
+const extractTechnology = (projectName: string, path: string): string | null => {
+  const name = projectName.toLowerCase()
+  const pathStr = path?.toLowerCase() || ''
+  
+  // Common technologies
+  if (name.includes('go') || pathStr.includes('go')) return 'Go'
+  if (name.includes('js') || name.includes('javascript') || pathStr.includes('js')) return 'JavaScript'
+  if (name.includes('python') || pathStr.includes('python')) return 'Python'
+  if (name.includes('rust') || pathStr.includes('rust')) return 'Rust'
+  if (name.includes('c++') || pathStr.includes('cpp')) return 'C++'
+  if (name.includes('java') || pathStr.includes('java')) return 'Java'
+  if (name.includes('docker') || pathStr.includes('docker')) return 'Docker'
+  if (name.includes('sql') || pathStr.includes('sql')) return 'SQL'
+  if (name.includes('html') || pathStr.includes('html')) return 'HTML/CSS'
+  if (name.includes('react') || pathStr.includes('react')) return 'React'
+  
+  return null
+}
+
+const getCategoryForSkill = (skill: string): string => {
+  const categories: { [key: string]: string } = {
+    'Go': 'Backend',
+    'JavaScript': 'Frontend',
+    'Python': 'Backend',
+    'Rust': 'Systems',
+    'C++': 'Systems',
+    'Java': 'Backend',
+    'Docker': 'DevOps',
+    'SQL': 'Database',
+    'HTML/CSS': 'Frontend',
+    'React': 'Frontend'
+  }
+  
+  return categories[skill] || 'General'
+}
+
+export default StatsSection

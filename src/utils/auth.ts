@@ -1,5 +1,35 @@
+/**
+ * Get both stored token and user data
+ * @returns {{ token: string | null, user: object | null }}
+ */
+export const getStoredAuthData = () => {
+  return {
+    token: getStoredToken(),
+    user: getStoredUser(),
+  };
+};
 import { jwtDecode } from 'jwt-decode';
 import config from '../config/appConfig';
+
+// GraphQL query to fetch user by ID
+const GET_USER_BY_ID = `
+  query GetUserById($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+      id
+      login
+      firstName
+      lastName
+      auditRatio
+      totalUp
+      totalDown
+      campus
+      profile
+      attrs
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
 // Dynamic API endpoints from configuration
 export const API_BASE_URL = config.api.baseURL;
@@ -79,18 +109,19 @@ export const authenticateUser = async (identifier, password) => {
       throw new Error('Token format validation failed');
     }
 
-    // Decode JWT to get user information
-    const decodedToken = jwtDecode(cleanToken);
+    // Decode JWT to get user ID only
+    const decodedToken = jwtDecode(cleanToken) as any;
+    const userId = parseInt(decodedToken.sub, 10);
+
+    // Create minimal user object with just ID and token metadata
+    // The actual user data should be fetched separately using GraphQL
     const user = {
-      id: parseInt(decodedToken.sub, 10), // Convert string to integer for GraphQL
-      // Note: JWT doesn't contain username/login - will be fetched via GraphQL
-      username: null, // Will be populated after GraphQL fetch
-      email: null, // Not available in JWT
+      id: userId,
       exp: decodedToken.exp,
       iat: decodedToken.iat,
     };
 
-    return { token: cleanToken, user };
+    return { success: true, token: cleanToken, user };
   } catch (error) {
     if (error.name === 'InvalidTokenError') {
       throw new Error('Invalid token received from server');
@@ -100,12 +131,88 @@ export const authenticateUser = async (identifier, password) => {
 };
 
 /**
- * Store authentication data in localStorage
+ * Complete authentication with user data fetching
+ * @param {string} identifier - Username or email
+ * @param {string} password - User password
+ * @returns {Promise<{token: string, user: object}>} Authentication result with complete user data
+ */
+export const authenticateUserComplete = async (identifier, password) => {
+  try {
+    // First, authenticate and get token
+    const authResult = await authenticateUser(identifier, password);
+
+    // Then fetch complete user data
+    const completeUser = await fetchUserData(authResult.user.id, authResult.token);
+
+    return {
+      success: true,
+      token: authResult.token,
+      user: completeUser
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Fetch complete user data from GraphQL API
+ * @param {number} userId - User ID
+ * @param {string} token - JWT token for authorization
+ * @returns {Promise<object>} Complete user data
+ */
+export const fetchUserData = async (userId, token) => {
+  try {
+    const response = await fetch(GRAPHQL_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        query: GET_USER_BY_ID,
+        variables: { userId },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`GraphQL request failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (result.errors) {
+      throw new Error(`GraphQL errors: ${result.errors.map(e => e.message).join(', ')}`);
+    }
+
+    if (!result.data?.user_by_pk) {
+      throw new Error('User not found');
+    }
+
+    return result.data.user_by_pk;
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+    throw error;
+  }
+};
+
+/**
+ * Store authentication data in localStorage (compatible with Zustand persist)
  * @param {string} token - JWT token
  * @param {object} user - User data
  */
 export const storeAuthData = (token, user) => {
-  localStorage.setItem(TOKEN_KEY, token);
+  // Store in Zustand persist format for compatibility
+  const zustandData = {
+    state: {
+      token,
+      user,
+      isAuthenticated: true
+    },
+    version: 0
+  };
+  localStorage.setItem(TOKEN_KEY, JSON.stringify(zustandData));
+
+  // Also store separately for backward compatibility
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
@@ -114,7 +221,23 @@ export const storeAuthData = (token, user) => {
  * @returns {string|null} JWT token or null if not found
  */
 export const getStoredToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
+  try {
+    // First try to get from direct storage (new format)
+    const directToken = localStorage.getItem(TOKEN_KEY);
+    if (directToken && !directToken.startsWith('{')) {
+      return directToken;
+    }
+
+    // Then try Zustand persist format (legacy)
+    if (directToken) {
+      const data = JSON.parse(directToken);
+      return data.state?.token ?? null;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
 };
 
 /**
@@ -122,15 +245,23 @@ export const getStoredToken = () => {
  * @returns {object|null} User data or null if not found
  */
 export const getStoredUser = () => {
-  const userData = localStorage.getItem(USER_KEY);
-  if (!userData) return null;
-
   try {
-    return JSON.parse(userData);
+    // First try to get from direct storage (new format)
+    const directUser = localStorage.getItem(USER_KEY);
+    if (directUser) {
+      return JSON.parse(directUser);
+    }
+
+    // Then try Zustand persist format (legacy) - check TOKEN_KEY for combined storage
+    const persisted = localStorage.getItem(TOKEN_KEY);
+    if (persisted && persisted.startsWith('{')) {
+      const data = JSON.parse(persisted);
+      return data.state?.user ?? null;
+    }
+
+    return null;
   } catch (e) {
-    console.warn('Error parsing stored user data:', e);
-    // Clear corrupted data
-    localStorage.removeItem(USER_KEY);
+    console.warn('Error parsing persisted user data:', e);
     return null;
   }
 };
@@ -194,6 +325,9 @@ export const isAuthenticated = () => {
 export const clearAuthData = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  // Also clear any other auth-related keys
+  localStorage.removeItem('auth-storage');
+  localStorage.removeItem('dashboard-preferences');
 };
 
 /**
@@ -202,12 +336,20 @@ export const clearAuthData = () => {
  */
 export const getAuthHeader = () => {
   const token = getStoredToken();
-  if (!token || !isValidTokenFormat(token) || isTokenExpired(token)) {
-    // Clear invalid token
-    if (token) {
-      console.warn('Clearing invalid or expired token');
-      clearAuthData();
-    }
+
+  if (!token) {
+    return {};
+  }
+
+  if (!isValidTokenFormat(token)) {
+    console.warn('Invalid token format, clearing auth data');
+    clearAuthData();
+    return {};
+  }
+
+  if (isTokenExpired(token)) {
+    console.warn('Token expired, clearing auth data');
+    clearAuthData();
     return {};
   }
 

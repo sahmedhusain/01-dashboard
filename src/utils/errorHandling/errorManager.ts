@@ -32,7 +32,7 @@ export class AppError extends Error {
   public severity: string;
   public timestamp: string;
   public userMessage: string;
-  public recoveryActions: string[];
+  public recoveryActions: Array<{ label: string; action: string }>;
   public context: Record<string, unknown>;
   public retryable: boolean;
   public reportable: boolean;
@@ -43,9 +43,9 @@ export class AppError extends Error {
     this.type = type;
     this.severity = severity;
     this.timestamp = new Date().toISOString();
-    this.userMessage = options.userMessage || this.generateUserMessage();
-    this.recoveryActions = options.recoveryActions || this.generateRecoveryActions();
-    this.context = options.context || {};
+    this.userMessage = (options.userMessage as string) || this.generateUserMessage();
+    this.recoveryActions = (options.recoveryActions as Array<{ label: string; action: string }>) || this.generateRecoveryActions();
+    this.context = (options.context as Record<string, unknown>) || {};
     this.retryable = options.retryable !== false;
     this.reportable = options.reportable !== false;
   }

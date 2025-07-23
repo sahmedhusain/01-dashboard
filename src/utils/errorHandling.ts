@@ -260,8 +260,18 @@ const getUserFriendlyMessage = (technicalMessage) => {
 // INPUT VALIDATION
 // ============================================================================
 
+interface ValidationRule {
+  required?: boolean
+  type?: string
+  validate?: (value: any) => string | null
+}
+
+interface ValidationSchema {
+  [field: string]: ValidationRule
+}
+
 // Validate GraphQL query variables
-export const validateQueryVariables = (variables, schema) => {
+export const validateQueryVariables = (variables: any, schema?: ValidationSchema) => {
   const errors = [];
 
   if (!variables || typeof variables !== 'object') {
@@ -395,7 +405,7 @@ export const retryWithBackoff = async (operation, config = RETRY_CONFIG) => {
 // ============================================================================
 
 // Log error for debugging and monitoring
-export const logError = (error, context = {}) => {
+export const logError = (error: any, context: Record<string, any> = {}) => {
   const processedError = processGraphQLError(error);
   
   const logEntry = {

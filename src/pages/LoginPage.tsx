@@ -1,0 +1,254 @@
+import React, { useState } from 'react'
+import { Navigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { useIsAuthenticated, useLogin, useSetLoading, useSetError, useClearError, useIsLoading, useAuthError } from '../store'
+import { authenticateUserComplete } from '../utils/auth'
+
+const LoginPage: React.FC = () => {
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  
+  const isAuthenticated = useIsAuthenticated()
+  const login = useLogin()
+  const setLoading = useSetLoading()
+  const setError = useSetError()
+  const clearError = useClearError()
+  const isLoading = useIsLoading()
+  const error = useAuthError()
+
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  const isEmail = identifier.includes('@')
+
+  // Test login functionality for development
+  const handleTestLogin = async () => {
+    if ((import.meta.env as any).VITE_USE_TEST_AUTH !== 'true') return
+
+    clearError()
+    setLoading(true)
+
+    try {
+      // Create mock user data for development (since test token is expired)
+      const mockUserData = {
+        id: 1599,
+        login: 'sayedahmed',
+        firstName: 'Sayed',
+        lastName: 'Ahmed',
+        campus: 'bahrain',
+        auditRatio: 1.2,
+        totalUp: 2800000,
+        totalDown: 1500000,
+        profile: JSON.stringify({
+          bio: 'Test user for development',
+          location: 'Bahrain'
+        }),
+        attrs: {
+          country: 'Bahrain',
+          degree: 'Computer Science',
+          personal: {
+            email: 'sayedahmed97.sad@gmail.com',
+            phone: '+973-12345678'
+          }
+        },
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: new Date().toISOString()
+      }
+
+      // Create a mock token (not for real API calls, just for UI state)
+      const mockToken = 'mock-dev-token-' + Date.now()
+
+      console.log('Test login - Using mock data:', mockUserData)
+      login(mockUserData, mockToken)
+
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Test authentication failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!identifier.trim() || !password.trim()) {
+      setError('Please fill in all fields')
+      return
+    }
+
+    clearError()
+    setLoading(true)
+
+    try {
+      const result = await authenticateUserComplete(identifier, password)
+
+      if (result.success && result.user && result.token) {
+        login(result.user, result.token)
+      } else {
+        throw new Error('Failed to fetch user data')
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Authentication failed. Please check your credentials.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        {/* Header */}
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+            className="w-20 h-20 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+          >
+            <LogIn className="w-10 h-10 text-white" />
+          </motion.div>
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-white/70">Sign in to your Reboot01 account</p>
+        </div>
+
+        {/* Login Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-white/20"
+        >
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 flex items-center space-x-3"
+              >
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <p className="text-red-200 text-sm">{error}</p>
+              </motion.div>
+            )}
+
+            {/* Email/Login Field */}
+            <div className="space-y-2">
+              <label htmlFor="identifier" className="block text-sm font-medium text-white/80">
+                {isEmail ? 'Email Address' : 'Login'}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-white/40" />
+                </div>
+                <input
+                  id="identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="Enter your email or login"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium text-white/80">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-white/40" />
+                </div>
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="Enter your password"
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/40 hover:text-white/60 transition-colors"
+                  disabled={isLoading}
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              disabled={isLoading}
+              whileHover={{ scale: isLoading ? 1 : 1.02 }}
+              whileTap={{ scale: isLoading ? 1 : 0.98 }}
+              className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            >
+              {isLoading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <LogIn className="w-5 h-5" />
+                  <span>Sign In</span>
+                </div>
+              )}
+            </motion.button>
+          </form>
+
+          {/* Test Login Button for development */}
+          {(import.meta.env as any).VITE_USE_TEST_AUTH === 'true' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mt-4 pt-4 border-t border-white/20"
+            >
+              <button
+                type="button"
+                onClick={handleTestLogin}
+                disabled={isLoading}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                🧪 Test Login (Development)
+              </button>
+              <p className="text-xs text-white/50 mt-2 text-center">
+                Uses test credentials for development
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-center mt-8"
+        >
+          <p className="text-white/50 text-sm">
+            Reboot01 Student Dashboard
+          </p>
+        </motion.div>
+      </motion.div>
+    </div>
+  )
+}
+
+export default LoginPage

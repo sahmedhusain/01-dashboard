@@ -181,7 +181,6 @@ export const FEATURE_FLAGS = {
   // UI features
   enableDarkMode: getEnvBoolean('VITE_FEATURE_DARK_MODE', true),
   enableAnimations: getEnvBoolean('VITE_FEATURE_ANIMATIONS', true),
-  enableNotifications: getEnvBoolean('VITE_FEATURE_NOTIFICATIONS', true),
   enableKeyboardShortcuts: getEnvBoolean('VITE_FEATURE_KEYBOARD_SHORTCUTS', true),
 };
 

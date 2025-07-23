@@ -1,248 +1,205 @@
-import React, { useState } from 'react';
-import { User as UserIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { cn } from '../../utils/cn';
-import { getAvatarUrl, getUserDisplayName } from '../../utils/dataFormatting';
-import config from '../../config/appConfig';
-
-interface AvatarUser {
-  id?: number;
-  login?: string;
-  firstName?: string;
-  lastName?: string;
-  profile?: {
-    avatar?: string;
-    avatarUrl?: string;
-    picture?: string;
-  };
-  avatar?: string;
-}
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { User } from 'lucide-react'
 
 interface AvatarProps {
-  user: AvatarUser | null;
-  size?: string;
-  className?: string;
-  showBorder?: boolean;
-  animate?: boolean;
-  onClick?: () => void;
-  style?: React.CSSProperties;
-  key?: React.Key;
+  user: any
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  className?: string
+  showBorder?: boolean
+  animate?: boolean
+  onClick?: () => void
 }
 
-/**
- * Avatar component with fallback support
- * Displays user avatar image with fallback to gradient background and user icon
- */
-const Avatar = ({
-  user,
-  size = 'md',
-  className = '',
+const Avatar: React.FC<AvatarProps> = ({ 
+  user, 
+  size = 'md', 
+  className = '', 
   showBorder = false,
   animate = true,
-  onClick = () => {},
-  ...props
-}: AvatarProps) => {
-  const [imageError, setImageError] = useState(false);
+  onClick,
+  ...props 
+}) => {
+  const [imageError, setImageError] = useState(false)
   
-  const avatarUrl = getAvatarUrl(user);
-  const displayName = getUserDisplayName(user);
-
-  // Debug avatar URL
-  console.log('🎨 Avatar Component Debug:', {
-    user: user?.login,
-    avatarUrl,
-    hasUser: Boolean(user),
-    userKeys: user ? Object.keys(user) : []
-  });
-  
-  // Size configurations from dynamic config
+  // Size configurations
   const sizeClasses = {
-    xs: config.ui.sizes.avatar.xs,
-    sm: config.ui.sizes.avatar.sm,
-    md: config.ui.sizes.avatar.md,
-    lg: config.ui.sizes.avatar.lg,
-    xl: config.ui.sizes.avatar.xl,
-    '2xl': config.ui.sizes.avatar['2xl'],
-  };
+    xs: 'w-6 h-6',
+    sm: 'w-8 h-8',
+    md: 'w-12 h-12',
+    lg: 'w-16 h-16',
+    xl: 'w-24 h-24',
+    '2xl': 'w-32 h-32',
+  }
   
   const iconSizes = {
-    xs: config.ui.sizes.avatarIcon.xs,
-    sm: config.ui.sizes.avatarIcon.sm,
-    md: config.ui.sizes.avatarIcon.md,
-    lg: config.ui.sizes.avatarIcon.lg,
-    xl: config.ui.sizes.avatarIcon.xl,
-    '2xl': config.ui.sizes.avatarIcon['2xl'],
-  };
-  
-  const baseClasses = cn(
-    'rounded-full flex items-center justify-center overflow-hidden',
-    sizeClasses[size],
-    showBorder && 'border-2 border-primary-400',
-    onClick && 'cursor-pointer hover:opacity-80 transition-opacity',
-    className
-  );
-  
-  const Component = animate ? motion.div : 'div';
-  
-  const animationProps = animate ? {
-    initial: { scale: 0.8, opacity: 0 },
-    animate: { scale: 1, opacity: 1 },
-    transition: { duration: 0.2 },
-    whileHover: onClick ? { scale: 1.05 } : undefined,
-    whileTap: onClick ? { scale: 0.95 } : undefined,
-  } : {};
-  
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.error('Avatar image failed to load:', avatarUrl);
-    console.error('Error details:', e);
-    setImageError(true);
-  };
-  
-  return (
-    <Component
-      className={baseClasses}
-      onClick={onClick}
-      title={displayName}
-      {...animationProps}
-      {...props}
-    >
-      {avatarUrl && !imageError ? (
+    xs: 'w-3 h-3',
+    sm: 'w-4 h-4',
+    md: 'w-6 h-6',
+    lg: 'w-8 h-8',
+    xl: 'w-12 h-12',
+    '2xl': 'w-16 h-16',
+  }
+
+  // Enhanced avatar URL generation with better fallback logic
+  const getAvatarUrl = (user: any) => {
+    if (!user) return null
+
+    // Try different avatar sources in order of preference
+    const attrs = user.attrs || {}
+
+    // 1. Check for direct avatar URLs in attrs
+    if (attrs.avatar) {
+      // Handle base64 encoded images
+      if (typeof attrs.avatar === 'string') {
+        if (attrs.avatar.startsWith('data:image/')) {
+          return attrs.avatar
+        }
+        // Handle URL strings
+        if (attrs.avatar.startsWith('http')) {
+          return attrs.avatar
+        }
+        // Handle base64 without data prefix
+        if (attrs.avatar.length > 100 && !attrs.avatar.includes(' ')) {
+          return `data:image/jpeg;base64,${attrs.avatar}`
+        }
+      }
+    }
+
+    // 2. Check for other avatar fields
+    if (attrs.avatarUrl && typeof attrs.avatarUrl === 'string') {
+      return attrs.avatarUrl.startsWith('http') ? attrs.avatarUrl : null
+    }
+    if (attrs.picture && typeof attrs.picture === 'string') {
+      return attrs.picture.startsWith('http') ? attrs.picture : null
+    }
+    if (attrs.image && typeof attrs.image === 'string') {
+      return attrs.image.startsWith('http') ? attrs.image : null
+    }
+
+    // 3. Check user profile field
+    if (user.profile && typeof user.profile === 'string') {
+      if (user.profile.startsWith('data:image/') || user.profile.startsWith('http')) {
+        return user.profile
+      }
+    }
+
+    // 4. Generate GitHub avatar if available (fallback)
+    if (user.login && typeof user.login === 'string') {
+      return `https://github.com/${user.login}.png`
+    }
+
+    return null
+  }
+
+  // Enhanced display name generation with attrs support
+  const getDisplayName = (user: any) => {
+    if (!user) return 'U'
+
+    const attrs = user.attrs || {}
+
+    // Try to get name from user object first
+    const firstName = user.firstName || attrs.firstName || attrs.first_name
+    const lastName = user.lastName || attrs.lastName || attrs.last_name
+
+    if (firstName && lastName) {
+      return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`
+    }
+
+    if (firstName) return firstName[0].toUpperCase()
+    if (lastName) return lastName[0].toUpperCase()
+
+    // Try display name or full name from attrs
+    if (attrs.displayName) return attrs.displayName[0].toUpperCase()
+    if (attrs.fullName) return attrs.fullName[0].toUpperCase()
+    if (attrs.name) return attrs.name[0].toUpperCase()
+
+    // Fallback to login
+    if (user.login) return user.login[0].toUpperCase()
+
+    return 'U'
+  }
+
+  const avatarUrl = getAvatarUrl(user)
+  const displayName = getDisplayName(user)
+  const shouldShowImage = avatarUrl && !imageError
+
+  // Generate gradient colors based on user login
+  const getGradientColors = (login: string = 'default') => {
+    const colors = [
+      'from-blue-500 to-purple-600',
+      'from-green-500 to-teal-600',
+      'from-pink-500 to-rose-600',
+      'from-yellow-500 to-orange-600',
+      'from-indigo-500 to-blue-600',
+      'from-purple-500 to-pink-600',
+      'from-teal-500 to-green-600',
+      'from-orange-500 to-red-600',
+    ]
+    
+    const hash = login.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    
+    return colors[Math.abs(hash) % colors.length]
+  }
+
+  const gradientClass = getGradientColors(user?.login)
+
+  const baseClasses = `
+    ${sizeClasses[size]}
+    rounded-full
+    flex items-center justify-center
+    overflow-hidden
+    ${showBorder ? 'ring-2 ring-primary-500 ring-offset-2 ring-offset-transparent' : ''}
+    ${onClick ? 'cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all' : ''}
+    ${className}
+  `
+
+  const AvatarComponent = (
+    <div className={baseClasses} onClick={onClick} {...props}>
+      {shouldShowImage ? (
         <img
           src={avatarUrl}
-          alt={`${displayName}'s avatar`}
+          alt={`${user?.login || 'User'} avatar`}
           className="w-full h-full object-cover"
-          onError={handleImageError}
-          loading="lazy"
+          onError={() => setImageError(true)}
         />
       ) : (
-        <div className="w-full h-full bg-gradient-to-r from-primary-400 to-accent-400 flex items-center justify-center">
-          <UserIcon className={cn('text-white', iconSizes[size])} />
+        <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center`}>
+          {displayName.length > 1 ? (
+            <span className={`font-semibold text-white ${
+              size === 'xs' ? 'text-xs' :
+              size === 'sm' ? 'text-sm' :
+              size === 'md' ? 'text-base' :
+              size === 'lg' ? 'text-lg' :
+              size === 'xl' ? 'text-2xl' :
+              'text-3xl'
+            }`}>
+              {displayName}
+            </span>
+          ) : (
+            <User className={`${iconSizes[size]} text-white`} />
+          )}
         </div>
       )}
-    </Component>
-  );
-};
-
-/**
- * Avatar group component for displaying multiple avatars
- */
-export const AvatarGroup = ({ 
-  users = [], 
-  max = 3, 
-  size = 'md', 
-  className = '',
-  showMore = true,
-  onMoreClick,
-  ...props 
-}) => {
-  const displayUsers = users.slice(0, max);
-  const remainingCount = users.length - max;
-  
-  const sizeClasses = {
-    xs: 'w-6 h-6 text-xs',
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-12 h-12 text-sm',
-    lg: 'w-16 h-16 text-base',
-    xl: 'w-24 h-24 text-lg',
-    '2xl': 'w-32 h-32 text-xl',
-  };
-  
-  return (
-    <div className={cn('flex -space-x-2', className)} {...props}>
-      {displayUsers.map((user, index) => (
-        <Avatar
-          key={user?.id || index}
-          user={user}
-          size={size}
-          showBorder
-          className="relative z-10"
-          style={{ zIndex: displayUsers.length - index }}
-        />
-      ))}
-      
-      {showMore && remainingCount > 0 && (
-        <motion.div
-          className={cn(
-            'rounded-full bg-surface-600 border-2 border-primary-400 flex items-center justify-center text-white font-medium cursor-pointer hover:bg-surface-500 transition-colors',
-            sizeClasses[size]
-          )}
-          onClick={onMoreClick}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          title={`${remainingCount} more users`}
-        >
-          +{remainingCount}
-        </motion.div>
-      )}
     </div>
-  );
-};
+  )
 
-/**
- * Avatar with status indicator
- */
-export const AvatarWithStatus = ({ 
-  user, 
-  status = 'offline', 
-  size = 'md', 
-  className = '',
-  ...props 
-}) => {
-  const statusColors = {
-    online: 'bg-green-500',
-    offline: 'bg-surface-400',
-    away: 'bg-yellow-500',
-    busy: 'bg-red-500',
-  };
-  
-  const statusSizes = {
-    xs: config.ui.sizes.avatarStatus.xs,
-    sm: config.ui.sizes.avatarStatus.sm,
-    md: config.ui.sizes.avatarStatus.md,
-    lg: config.ui.sizes.avatarStatus.lg,
-    xl: config.ui.sizes.avatarStatus.xl,
-    '2xl': config.ui.sizes.avatarStatus['2xl'],
-  };
-  
-  return (
-    <div className={cn('relative inline-block', className)}>
-      <Avatar user={user} size={size} {...props} />
-      <div
-        className={cn(
-          'absolute bottom-0 right-0 rounded-full border-2 border-surface-800',
-          statusColors[status],
-          statusSizes[size]
-        )}
-        title={`Status: ${status}`}
-      />
-    </div>
-  );
-};
+  if (animate) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      >
+        {AvatarComponent}
+      </motion.div>
+    )
+  }
 
-/**
- * Clickable avatar with hover effects
- */
-export const ClickableAvatar = ({
-  user,
-  onClick,
-  size = 'md',
-  className = '',
-  showTooltip: _showTooltip = true,
-  ...props
-}) => {
-  return (
-    <Avatar
-      user={user}
-      size={size}
-      onClick={onClick}
-      className={cn(
-        'transition-all duration-200 hover:shadow-lg hover:shadow-primary-500/20',
-        className
-      )}
-      animate
-      {...props}
-    />
-  );
-};
+  return AvatarComponent
+}
 
-export default Avatar;
+export default Avatar

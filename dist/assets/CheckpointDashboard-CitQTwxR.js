@@ -1,4 +1,4 @@
-import{r as v,j as e,m as c}from"./animation-vendor-CTGg7XC5.js";import{L as k,C as a,b as r,g as C}from"./index-B61jjRdg.js";import{g as d,p as P,A}from"./ui-vendor-EbFLDUo2.js";import{d as T,e as M}from"./apollo-vendor-Dxrk3Lr4.js";import"./react-vendor-Csw2ODfV.js";const Y=({user:f})=>{const[s,w]=v.useState("main"),{data:i,loading:b,error:x}=T(M`
+import{r as v,j as e,m as c}from"./animation-vendor-CTGg7XC5.js";import{L as k,C as a,b as r,g as C}from"./index-CtirGXoP.js";import{g as d,l as P,A}from"./ui-vendor-CQLODBKU.js";import{d as T,e as M}from"./apollo-vendor-Dxrk3Lr4.js";import"./react-vendor-Csw2ODfV.js";const Y=({user:f})=>{const[s,w]=v.useState("main"),{data:i,loading:b,error:x}=T(M`
     query GetCheckpointData {
       user {
         id

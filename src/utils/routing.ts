@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 
-export type DashboardTab = 'profile' | 'statistics' | 'groups' | 'events' | 'results' | 'piscines' | 'checkpoints' | 'leaderboard' | 'search' | 'export' | string
+export type DashboardTab = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'export' | string
 
 export const useDashboardRouting = () => {
   const navigate = useNavigate()
@@ -12,7 +12,7 @@ export const useDashboardRouting = () => {
     const path = location.pathname
 
     // Handle root dashboard
-    if (path === '/dashboard') return 'profile'
+    if (path === '/dashboard') return 'dashboard'
 
     // Handle piscine sub-routes
     if (path.startsWith('/dashboard/piscines/')) {
@@ -26,14 +26,14 @@ export const useDashboardRouting = () => {
       return segments[2] as DashboardTab
     }
 
-    return 'profile'
+    return 'dashboard'
   }, [location.pathname, params.piscineType])
 
   const navigateToTab = useCallback((tab: DashboardTab) => {
     if (tab.startsWith('piscine-')) {
       const piscineType = tab.replace('piscine-', '')
       navigate(`/dashboard/piscines/${piscineType}`)
-    } else if (tab === 'profile') {
+    } else if (tab === 'dashboard') {
       navigate('/dashboard')
     } else {
       navigate(`/dashboard/${tab}`)
@@ -71,7 +71,7 @@ export const useDashboardRouting = () => {
     const currentTab = getCurrentTab()
     const breadcrumbs = [{ label: 'Dashboard', path: '/dashboard' }]
 
-    if (currentTab !== 'profile') {
+    if (currentTab !== 'dashboard') {
       if (currentTab.startsWith('piscine-')) {
         const piscineType = currentTab.replace('piscine-', '')
         breadcrumbs.push({ label: 'Piscines', path: '/dashboard/piscines' })

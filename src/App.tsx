@@ -78,16 +78,12 @@ const AppContent: React.FC = () => {
 
         {/* Protected routes */}
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/profile" element={<DashboardPage />} />
-        <Route path="/dashboard/statistics" element={<DashboardPage />} />
         <Route path="/dashboard/groups" element={<DashboardPage />} />
         <Route path="/dashboard/events" element={<DashboardPage />} />
-        <Route path="/dashboard/results" element={<DashboardPage />} />
         <Route path="/dashboard/piscines" element={<DashboardPage />} />
         <Route path="/dashboard/piscines/:piscineType" element={<DashboardPage />} />
         <Route path="/dashboard/checkpoints" element={<DashboardPage />} />
         <Route path="/dashboard/leaderboard" element={<DashboardPage />} />
-        <Route path="/dashboard/search" element={<DashboardPage />} />
         <Route path="/dashboard/export" element={<DashboardPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
 

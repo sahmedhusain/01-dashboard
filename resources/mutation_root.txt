@@ -1,0 +1,286 @@
+mutation root
+
+Fields
+delete_group(where: group_bool_exp!): group_mutation_response
+delete data from the table: "group"
+
+delete_group_by_pk(id: Int!): group
+delete single row from the table: "group"
+
+delete_group_user(where: group_user_bool_exp!): group_user_mutation_response
+delete data from the table: "group_user"
+
+delete_group_user_by_pk(id: Int!): group_user
+delete single row from the table: "group_user"
+
+delete_match(where: match_bool_exp!): match_mutation_response
+delete data from the table: "match"
+
+delete_match_by_pk(id: Int!): match
+delete single row from the table: "match"
+
+delete_registration_user(where: registration_user_bool_exp!): registration_user_mutation_response
+delete data from the table: "registration_user"
+
+delete_registration_user_by_pk(id: Int!): registration_user
+delete single row from the table: "registration_user"
+
+delete_toad_session_game_results(where: toad_session_game_results_bool_exp!): toad_session_game_results_mutation_response
+delete data from the table: "toad.session_game_results"
+
+delete_toad_session_game_results_by_pk(id: Int!): toad_session_game_results
+delete single row from the table: "toad.session_game_results"
+
+insert_group(
+objects: [group_insert_input!]!
+on_conflict: group_on_conflict
+): group_mutation_response
+insert data into the table: "group"
+
+insert_group_one(
+object: group_insert_input!
+on_conflict: group_on_conflict
+): group
+insert a single row into the table: "group"
+
+insert_group_user(
+objects: [group_user_insert_input!]!
+on_conflict: group_user_on_conflict
+): group_user_mutation_response
+insert data into the table: "group_user"
+
+insert_group_user_one(
+object: group_user_insert_input!
+on_conflict: group_user_on_conflict
+): group_user
+insert a single row into the table: "group_user"
+
+insert_match(
+objects: [match_insert_input!]!
+on_conflict: match_on_conflict
+): match_mutation_response
+insert data into the table: "match"
+
+insert_match_one(
+object: match_insert_input!
+on_conflict: match_on_conflict
+): match
+insert a single row into the table: "match"
+
+insert_registration_user(
+objects: [registration_user_insert_input!]!
+on_conflict: registration_user_on_conflict
+): registration_user_mutation_response
+insert data into the table: "registration_user"
+
+insert_registration_user_one(
+object: registration_user_insert_input!
+on_conflict: registration_user_on_conflict
+): registration_user
+insert a single row into the table: "registration_user"
+
+insert_result(
+objects: [result_insert_input!]!
+on_conflict: result_on_conflict
+): result_mutation_response
+insert data into the table: "result"
+
+insert_result_one(
+object: result_insert_input!
+on_conflict: result_on_conflict
+): result
+insert a single row into the table: "result"
+
+insert_toad_session_game_results(
+objects: [toad_session_game_results_insert_input!]!
+on_conflict: toad_session_game_results_on_conflict
+): toad_session_game_results_mutation_response
+insert data into the table: "toad.session_game_results"
+
+insert_toad_session_game_results_one(
+object: toad_session_game_results_insert_input!
+on_conflict: toad_session_game_results_on_conflict
+): toad_session_game_results
+insert a single row into the table: "toad.session_game_results"
+
+insert_toad_session_games(
+objects: [toad_session_games_insert_input!]!
+on_conflict: toad_session_games_on_conflict
+): toad_session_games_mutation_response
+insert data into the table: "toad.session_games"
+
+insert_toad_session_games_one(
+object: toad_session_games_insert_input!
+on_conflict: toad_session_games_on_conflict
+): toad_session_games
+insert a single row into the table: "toad.session_games"
+
+insert_toad_sessions(
+objects: [toad_sessions_insert_input!]!
+on_conflict: toad_sessions_on_conflict
+): toad_sessions_mutation_response
+insert data into the table: "toad.sessions"
+
+insert_toad_sessions_one(
+object: toad_sessions_insert_input!
+on_conflict: toad_sessions_on_conflict
+): toad_sessions
+insert a single row into the table: "toad.sessions"
+
+insert_toad_sessions_to_send(
+objects: [toad_sessions_to_send_insert_input!]!
+on_conflict: toad_sessions_to_send_on_conflict
+): toad_sessions_to_send_mutation_response
+insert data into the table: "toad.sessions_to_send"
+
+update_group(
+_set: group_set_input
+where: group_bool_exp!
+): group_mutation_response
+update data of the table: "group"
+
+update_group_by_pk(
+_set: group_set_input
+pk_columns: group_pk_columns_input!
+): group
+update single row of the table: "group"
+
+update_group_many(updates: [group_updates!]!): [group_mutation_response]
+update multiples rows of table: "group"
+
+update_group_user(
+_set: group_user_set_input
+where: group_user_bool_exp!
+): group_user_mutation_response
+update data of the table: "group_user"
+
+update_group_user_by_pk(
+_set: group_user_set_input
+pk_columns: group_user_pk_columns_input!
+): group_user
+update single row of the table: "group_user"
+
+update_group_user_many(updates: [group_user_updates!]!): [group_user_mutation_response]
+update multiples rows of table: "group_user"
+
+update_match(
+_set: match_set_input
+where: match_bool_exp!
+): match_mutation_response
+update data of the table: "match"
+
+update_match_by_pk(
+_set: match_set_input
+pk_columns: match_pk_columns_input!
+): match
+update single row of the table: "match"
+
+update_match_many(updates: [match_updates!]!): [match_mutation_response]
+update multiples rows of table: "match"
+
+update_result(
+_append: result_append_input
+_delete_at_path: result_delete_at_path_input
+_delete_elem: result_delete_elem_input
+_delete_key: result_delete_key_input
+_prepend: result_prepend_input
+_set: result_set_input
+where: result_bool_exp!
+): result_mutation_response
+update data of the table: "result"
+
+update_result_by_pk(
+_append: result_append_input
+_delete_at_path: result_delete_at_path_input
+_delete_elem: result_delete_elem_input
+_delete_key: result_delete_key_input
+_prepend: result_prepend_input
+_set: result_set_input
+pk_columns: result_pk_columns_input!
+): result
+update single row of the table: "result"
+
+update_result_many(updates: [result_updates!]!): [result_mutation_response]
+update multiples rows of table: "result"
+
+update_toad_session_game_results(where: toad_session_game_results_bool_exp!): toad_session_game_results_mutation_response
+update data of the table: "toad.session_game_results"
+
+update_toad_session_game_results_by_pk(pk_columns: toad_session_game_results_pk_columns_input!): toad_session_game_results
+update single row of the table: "toad.session_game_results"
+
+update_toad_session_game_results_many(updates: [toad_session_game_results_updates!]!): [toad_session_game_results_mutation_response]
+update multiples rows of table: "toad.session_game_results"
+
+update_toad_session_games(
+_set: toad_session_games_set_input
+where: toad_session_games_bool_exp!
+): toad_session_games_mutation_response
+update data of the table: "toad.session_games"
+
+update_toad_session_games_by_pk(
+_set: toad_session_games_set_input
+pk_columns: toad_session_games_pk_columns_input!
+): toad_session_games
+update single row of the table: "toad.session_games"
+
+update_toad_session_games_many(updates: [toad_session_games_updates!]!): [toad_session_games_mutation_response]
+update multiples rows of table: "toad.session_games"
+
+update_toad_sessions(
+_append: toad_sessions_append_input
+_delete_at_path: toad_sessions_delete_at_path_input
+_delete_elem: toad_sessions_delete_elem_input
+_delete_key: toad_sessions_delete_key_input
+_inc: toad_sessions_inc_input
+_prepend: toad_sessions_prepend_input
+_set: toad_sessions_set_input
+where: toad_sessions_bool_exp!
+): toad_sessions_mutation_response
+update data of the table: "toad.sessions"
+
+update_toad_sessions_by_pk(
+_append: toad_sessions_append_input
+_delete_at_path: toad_sessions_delete_at_path_input
+_delete_elem: toad_sessions_delete_elem_input
+_delete_key: toad_sessions_delete_key_input
+_inc: toad_sessions_inc_input
+_prepend: toad_sessions_prepend_input
+_set: toad_sessions_set_input
+pk_columns: toad_sessions_pk_columns_input!
+): toad_sessions
+update single row of the table: "toad.sessions"
+
+update_toad_sessions_many(updates: [toad_sessions_updates!]!): [toad_sessions_mutation_response]
+update multiples rows of table: "toad.sessions"
+
+update_toad_sessions_to_send(where: toad_sessions_to_send_bool_exp!): toad_sessions_to_send_mutation_response
+update data of the table: "toad.sessions_to_send"
+
+update_toad_sessions_to_send_many(updates: [toad_sessions_to_send_updates!]!): [toad_sessions_to_send_mutation_response]
+update multiples rows of table: "toad.sessions_to_send"
+
+update_user(
+_append: user_append_input
+_delete_at_path: user_delete_at_path_input
+_delete_elem: user_delete_elem_input
+_delete_key: user_delete_key_input
+_prepend: user_prepend_input
+_set: user_set_input
+where: user_bool_exp!
+): user_mutation_response
+update data of the table: "user"
+
+update_user_by_pk(
+_append: user_append_input
+_delete_at_path: user_delete_at_path_input
+_delete_elem: user_delete_elem_input
+_delete_key: user_delete_key_input
+_prepend: user_prepend_input
+_set: user_set_input
+pk_columns: user_pk_columns_input!
+): user
+update single row of the table: "user"
+
+update_user_many(updates: [user_updates!]!): [user_mutation_response]
+update multiples rows of table: "user"

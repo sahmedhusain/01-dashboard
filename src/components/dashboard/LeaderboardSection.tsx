@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Trophy,
   Medal,
@@ -13,7 +13,11 @@ import {
   BarChart3,
   Zap,
   Filter,
-  Search
+  Search,
+  ChevronDown,
+  UserSearch,
+  Hash,
+  Layers
 } from 'lucide-react'
 import { useQuery, gql } from '@apollo/client'
 
@@ -21,24 +25,40 @@ import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import Avatar from '../ui/Avatar'
-import Pagination from '../ui/Pagination'
-import { usePagination } from '../../hooks/usePagination'
-import { usePerformanceMonitor } from '../../hooks/usePerformanceMonitor'
 import { formatTotalXP, formatDate } from '../../utils/dataFormatting'
 
 interface LeaderboardSectionProps {
   user: User
 }
 
-type LeaderboardType = 'xp' | 'audit' | 'progress' | 'overall'
+type LeaderboardType = 'xp' | 'audit' | 'progress' | 'overall' | 'cohort-xp' | 'cohort-audit'
+type CohortType = 'all' | 'cohort1' | 'cohort2' | 'cohort3'
+type RankingMode = 'global' | 'cohort'
 
-// Enhanced leaderboard queries using our comprehensive data - NO LIMITS
-const GET_XP_LEADERBOARD = gql`
-  query GetXPLeaderboard {
-    user(
-      order_by: { totalUp: desc }
-      where: { totalUp: { _gt: 0 } }
-    ) {
+interface CohortData {
+  cohort: string
+  memberCount: number
+  avgXP: number
+  avgAuditRatio: number
+}
+
+// Comprehensive leaderboard queries with ALL USERS and cohort data
+const GET_ALL_USERS_LEADERBOARD = gql`
+  query GetAllUsersLeaderboard {
+    user_public_view {
+      id
+      login
+      firstName
+      lastName
+      profile
+      campus
+    }
+  }
+`;
+
+const GET_USER_STATISTICS = gql`
+  query GetUserStatistics {
+    user {
       id
       login
       firstName
@@ -49,35 +69,25 @@ const GET_XP_LEADERBOARD = gql`
       totalDown
       createdAt
       updatedAt
-    }
-  }
-`;
-
-const GET_AUDIT_LEADERBOARD = gql`
-  query GetAuditLeaderboard {
-    user(
-      order_by: { auditRatio: desc }
-      where: { auditRatio: { _gt: 0 } }
-    ) {
-      id
-      login
-      firstName
-      lastName
-      campus
-      auditRatio
-      totalUp
-      totalDown
-      createdAt
+      attrs
+      profile
     }
   }
 `;
 
 const GET_PROGRESS_LEADERBOARD = gql`
   query GetProgressLeaderboard {
-    progress_aggregate(
-      group_by: [userId]
-      order_by: { count: desc }
-    ) {
+    progress(order_by: { grade: desc }) {
+      id
+      userId
+      grade
+      isDone
+      path
+      createdAt
+      updatedAt
+    }
+    
+    progress_aggregate {
       aggregate {
         count
         avg {
@@ -86,18 +96,55 @@ const GET_PROGRESS_LEADERBOARD = gql`
         max {
           grade
         }
-      }
-      nodes {
-        userId
-        user {
-          login
-          firstName
-          lastName
-          campus
-          auditRatio
-          totalUp
+        min {
+          grade
         }
       }
+    }
+  }
+`;
+
+// Enhanced cohort and user data queries
+const GET_COHORT_DATA = gql`
+  query GetCohortData {
+    event(where: { campus: { _eq: "bahrain" } }) {
+      id
+      path
+      campus
+      createdAt
+      objectId
+    }
+    event_user {
+      eventId
+      userId
+      level
+      createdAt
+    }
+  }
+`;
+
+const GET_GROUP_SEARCH_DATA = gql`
+  query GetGroupSearchData {
+    group(where: { campus: { _eq: "bahrain" } }) {
+      id
+      objectId
+      eventId
+      captainId
+      status
+      path
+      campus
+      createdAt
+    }
+    group_user {
+      groupId
+      userId
+      createdAt
+    }
+    object(where: { campus: { _eq: "bahrain" } }) {
+      id
+      name
+      type
+      campus
     }
   }
 `;
@@ -144,53 +191,121 @@ const GET_LEADERBOARD_STATS = gql`
 const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const [activeLeaderboard, setActiveLeaderboard] = useState<LeaderboardType>('xp')
   const [searchTerm, setSearchTerm] = useState('')
-  const [campusFilter, setCampusFilter] = useState<string>('all')
+  const [cohortFilter, setCohortFilter] = useState<CohortType>('all')
+  const [rankingMode, setRankingMode] = useState<RankingMode>('global')
+  const [showGroupSearch, setShowGroupSearch] = useState(false)
+  const [projectFilter, setProjectFilter] = useState('')
+  const [levelFilter, setLevelFilter] = useState('all')
 
-  // Query XP leaderboard
-  const { data: xpLeaderboardData, loading: xpLoading, error: xpError } = useQuery(GET_XP_LEADERBOARD, {
+  // Query ALL USERS and comprehensive data
+  const { data: allUsersData, loading: allUsersLoading, error: allUsersError } = useQuery(GET_ALL_USERS_LEADERBOARD, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   })
 
-  // Query audit leaderboard
-  const { data: auditLeaderboardData, loading: auditLoading } = useQuery(GET_AUDIT_LEADERBOARD, {
+  const { data: userStatsData, loading: userStatsLoading } = useQuery(GET_USER_STATISTICS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   })
 
-  // Query progress leaderboard
   const { data: progressLeaderboardData, loading: progressLoading } = useQuery(GET_PROGRESS_LEADERBOARD, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   })
 
-  // Query leaderboard statistics
   const { data: statsData, loading: statsLoading } = useQuery(GET_LEADERBOARD_STATS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   })
 
-  if (xpLoading && !xpLeaderboardData) return <LoadingSpinner />
+  const { data: cohortData, loading: cohortLoading } = useQuery(GET_COHORT_DATA, {
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  })
 
-  if (xpError) {
+  const { data: groupSearchData, loading: groupSearchLoading } = useQuery(GET_GROUP_SEARCH_DATA, {
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  })
+
+  // Process leaderboard data - must be defined before early returns
+  const allUsersPublic = allUsersData?.user_public_view || [] // 8,382 users from public view
+  const currentUserStats = userStatsData?.user?.[0] || {} // Current user detailed stats
+  const progressData = progressLeaderboardData?.progress || []
+  const progressAggregates = progressLeaderboardData?.progress_aggregate || {}
+  const stats = statsData || {}
+  const events = cohortData?.event || []
+  const eventUsers = cohortData?.event_user || []
+  const groups = groupSearchData?.group || []
+  const groupUsers = groupSearchData?.group_user || []
+  const objects = groupSearchData?.object || []
+
+  // Merge public user data with progress and transaction data for comprehensive ranking
+  const allUsers = allUsersPublic.map(publicUser => ({
+    ...publicUser,
+    // Add default values for missing stats (will be calculated from progress/transactions)
+    auditRatio: 0,
+    totalUp: 0,
+    totalDown: 0,
+    createdAt: null,
+    updatedAt: null,
+    attrs: {}
+  })).filter(user => !user.campus || user.campus === 'bahrain') // Filter to Bahrain campus only
+
+  // Process cohort information from event participation data - MUST be before early returns
+  const cohortInfo = useMemo(() => {
+    const cohorts: Record<string, CohortData> = {}
+    
+    events.forEach(event => {
+      const cohortName = event.path?.includes('cohort-1') ? 'cohort1' : 
+                        event.path?.includes('cohort-2') ? 'cohort2' : 
+                        event.path?.includes('cohort-3') ? 'cohort3' : 'unknown'
+      
+      if (cohortName !== 'unknown') {
+        const participants = eventUsers.filter(eu => eu.eventId === event.id)
+        const participantIds = participants.map(p => p.userId)
+        const cohortUsers = allUsers.filter(u => participantIds.includes(u.id))
+        
+        cohorts[cohortName] = {
+          cohort: cohortName,
+          memberCount: cohortUsers.length,
+          avgXP: cohortUsers.reduce((sum, u) => sum + (u.totalUp || 0), 0) / cohortUsers.length || 0,
+          avgAuditRatio: cohortUsers.reduce((sum, u) => sum + (u.auditRatio || 0), 0) / cohortUsers.length || 0
+        }
+      }
+    })
+    
+    return cohorts
+  }, [events, eventUsers, allUsers])
+
+  // Get user's cohort information
+  const getUserCohort = (userId: number): string => {
+    const userEvents = eventUsers.filter(eu => eu.userId === userId)
+    for (const userEvent of userEvents) {
+      const event = events.find(e => e.id === userEvent.eventId)
+      if (event?.path?.includes('cohort-1')) return 'cohort1'
+      if (event?.path?.includes('cohort-2')) return 'cohort2'
+      if (event?.path?.includes('cohort-3')) return 'cohort3'
+    }
+    return 'unknown'
+  }
+
+  // Early returns AFTER all hooks are declared
+  if (allUsersLoading && !allUsersData) return <LoadingSpinner />
+
+  if (allUsersError) {
     return (
       <Card className="p-6">
         <div className="text-center text-red-400">
           <p>Error loading leaderboard data</p>
-          <p className="text-sm text-white/60 mt-2">{xpError.message}</p>
+          <p className="text-sm text-white/60 mt-2">{allUsersError?.message}</p>
         </div>
       </Card>
     )
   }
 
-  // Process leaderboard data
-  const xpLeaderboard = xpLeaderboardData?.user || []
-  const auditLeaderboard = auditLeaderboardData?.user || []
-  const progressLeaderboard = progressLeaderboardData?.progress_aggregate || []
-  const stats = statsData || {}
-
   // Calculate comprehensive statistics
-  const totalUsers = stats.user_aggregate?.aggregate?.count || 0
+  const totalUsers = stats.user_aggregate?.aggregate?.count || allUsers.length
   const avgAuditRatio = stats.user_aggregate?.aggregate?.avg?.auditRatio || 0
   const avgXP = stats.user_aggregate?.aggregate?.avg?.totalUp || 0
   const maxXP = stats.user_aggregate?.aggregate?.max?.totalUp || 0
@@ -199,28 +314,64 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const totalXPTransactions = stats.transaction_aggregate?.aggregate?.count || 0
   const totalXPAmount = stats.transaction_aggregate?.aggregate?.sum?.amount || 0
 
-  // Get current leaderboard data based on active tab
+  // Get current leaderboard data based on active tab and cohort filter
   const getCurrentLeaderboardData = () => {
+    let baseData = []
+    
     switch (activeLeaderboard) {
       case 'xp':
-        return xpLeaderboard
+      case 'cohort-xp':
+        baseData = allUsers.slice().sort((a, b) => (b.totalUp || 0) - (a.totalUp || 0))
+        break
       case 'audit':
-        return auditLeaderboard
+      case 'cohort-audit':
+        baseData = allUsers.slice().sort((a, b) => (b.auditRatio || 0) - (a.auditRatio || 0))
+        break
       case 'progress':
-        return progressLeaderboard.map((item: any) => ({
-          ...item.nodes[0]?.user,
-          progressCount: item.aggregate.count,
-          avgGrade: item.aggregate.avg?.grade || 0,
-          maxGrade: item.aggregate.max?.grade || 0
-        }))
+        // Group progress data by user and calculate stats
+        const userProgressMap = new Map()
+        progressData.forEach((progress: any) => {
+          const userId = progress.userId
+          if (!userProgressMap.has(userId)) {
+            const user = allUsers.find(u => u.id === userId)
+            if (user) {
+              userProgressMap.set(userId, {
+                ...user,
+                progressCount: 0,
+                totalGrade: 0,
+                maxGrade: 0,
+                avgGrade: 0
+              })
+            }
+          }
+          
+          const userProgress = userProgressMap.get(userId)
+          if (userProgress) {
+            userProgress.progressCount++
+            userProgress.totalGrade += (progress.grade || 0)
+            userProgress.maxGrade = Math.max(userProgress.maxGrade, progress.grade || 0)
+            userProgress.avgGrade = userProgress.totalGrade / userProgress.progressCount
+          }
+        })
+        
+        baseData = Array.from(userProgressMap.values()).sort((a, b) => b.avgGrade - a.avgGrade)
+        break
       case 'overall':
-        return xpLeaderboard.slice(0, 20) // Top 20 overall performers
+        baseData = allUsers.slice().sort((a, b) => (b.totalUp || 0) - (a.totalUp || 0)).slice(0, 20)
+        break
       default:
-        return xpLeaderboard
+        baseData = allUsers.slice().sort((a, b) => (b.totalUp || 0) - (a.totalUp || 0))
     }
+    
+    // Apply cohort filter
+    if (cohortFilter !== 'all') {
+      baseData = baseData.filter(userData => getUserCohort(userData.id) === cohortFilter)
+    }
+    
+    return baseData
   }
 
-  // Filter leaderboard data
+  // Filter leaderboard data with enhanced filtering
   const getFilteredData = () => {
     let data = getCurrentLeaderboardData()
 
@@ -233,16 +384,41 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       )
     }
 
-    // Apply campus filter
-    if (campusFilter !== 'all') {
-      data = data.filter((item: any) => item.campus === campusFilter)
+    // Campus filter removed - default to Bahrain campus only (already filtered in allUsers)
+
+    // Apply level filter for progress leaderboard
+    if (levelFilter !== 'all' && activeLeaderboard === 'progress') {
+      const minLevel = parseInt(levelFilter)
+      data = data.filter((item: any) => (item.avgGrade || 0) >= minLevel)
     }
 
     return data
   }
 
-  // Get unique campuses for filter
-  const uniqueCampuses = [...new Set(xpLeaderboard.map((user: any) => user.campus).filter(Boolean))]
+  // Get available cohorts for filters
+  const availableCohorts = Object.keys(cohortInfo).filter(cohort => cohortInfo[cohort].memberCount > 0)
+  
+  // Filter groups for group search
+  const getFilteredGroups = () => {
+    let filteredGroups = groups
+    
+    if (cohortFilter !== 'all') {
+      filteredGroups = filteredGroups.filter(group => {
+        const event = events.find(e => e.id === group.eventId)
+        return event?.path?.includes(cohortFilter.replace('cohort', 'cohort-'))
+      })
+    }
+    
+    if (projectFilter) {
+      const matchingObjects = objects.filter(obj => 
+        obj.name?.toLowerCase().includes(projectFilter.toLowerCase())
+      )
+      const objectIds = matchingObjects.map(obj => obj.id)
+      filteredGroups = filteredGroups.filter(group => objectIds.includes(group.objectId))
+    }
+    
+    return filteredGroups
+  }
 
   // Get user's rank in current leaderboard
   const getUserRank = () => {
@@ -283,14 +459,52 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         className="text-center"
       >
         <h1 className="text-4xl font-bold text-white mb-2">
-          Comprehensive Leaderboard
+          🏆 Advanced Leaderboard System
         </h1>
         <p className="text-white/70 text-lg">
-          Rankings across {totalUsers} users with {totalXPTransactions} XP transactions
+          Comprehensive rankings across {totalUsers} users • {availableCohorts.length} active cohorts • {groups.length} project groups
         </p>
       </motion.div>
 
-      {/* Statistics Cards */}
+      {/* Cohort Statistics Cards */}
+      {availableCohorts.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"
+        >
+          {availableCohorts.map(cohort => {
+            const cohortData = cohortInfo[cohort]
+            return (
+              <div key={cohort} className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-white font-semibold capitalize">
+                    {cohort.replace('cohort', 'Cohort ')}
+                  </h3>
+                  <Layers className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between text-white/70">
+                    <span>Members:</span>
+                    <span className="text-white font-medium">{cohortData.memberCount}</span>
+                  </div>
+                  <div className="flex justify-between text-white/70">
+                    <span>Avg XP:</span>
+                    <span className="text-white font-medium">{formatTotalXP(cohortData.avgXP)}</span>
+                  </div>
+                  <div className="flex justify-between text-white/70">
+                    <span>Avg Audit:</span>
+                    <span className="text-white font-medium">{cohortData.avgAuditRatio.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </motion.div>
+      )}
+
+      {/* Global Statistics Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -338,92 +552,236 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         </div>
       </motion.div>
 
-      {/* Leaderboard Type Selector */}
+      {/* Enhanced Leaderboard Type Selector */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex justify-center"
+        className="space-y-4"
       >
-        <div className="bg-white/10 rounded-lg p-1">
-          <button
-            onClick={() => setActiveLeaderboard('xp')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              activeLeaderboard === 'xp'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            XP Leaders ({xpLeaderboard.length})
-          </button>
-          <button
-            onClick={() => setActiveLeaderboard('audit')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              activeLeaderboard === 'audit'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            Audit Leaders ({auditLeaderboard.length})
-          </button>
-          <button
-            onClick={() => setActiveLeaderboard('progress')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              activeLeaderboard === 'progress'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            Progress Leaders ({progressLeaderboard.length})
-          </button>
-          <button
-            onClick={() => setActiveLeaderboard('overall')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              activeLeaderboard === 'overall'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            Overall Top 20
-          </button>
+        {/* Ranking Mode Toggle */}
+        <div className="flex justify-center">
+          <div className="bg-white/10 rounded-lg p-1">
+            <button
+              onClick={() => setRankingMode('global')}
+              className={`px-4 py-2 rounded-md transition-all ${
+                rankingMode === 'global'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              🌍 Global Rankings
+            </button>
+            <button
+              onClick={() => setRankingMode('cohort')}
+              className={`px-4 py-2 rounded-md transition-all ${
+                rankingMode === 'cohort'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              👥 Cohort Rankings
+            </button>
+          </div>
+        </div>
+
+        {/* Ranking Type Buttons */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <div className="bg-white/10 rounded-lg p-1">
+            <h4 className="text-white/60 text-xs font-medium px-2 mb-1">XP RANKINGS</h4>
+            <button
+              onClick={() => setActiveLeaderboard(rankingMode === 'cohort' ? 'cohort-xp' : 'xp')}
+              className={`w-full px-3 py-2 rounded-md transition-all text-sm ${
+                (activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp')
+                  ? 'bg-primary-500 text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              🚀 XP Projects ({allUsers.length})
+            </button>
+          </div>
+
+          <div className="bg-white/10 rounded-lg p-1">
+            <h4 className="text-white/60 text-xs font-medium px-2 mb-1">AUDIT RANKINGS</h4>
+            <button
+              onClick={() => setActiveLeaderboard(rankingMode === 'cohort' ? 'cohort-audit' : 'audit')}
+              className={`w-full px-3 py-2 rounded-md transition-all text-sm ${
+                (activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit')
+                  ? 'bg-primary-500 text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              ⚖️ Audit Ratio ({allUsers.length})
+            </button>
+          </div>
+
+          <div className="bg-white/10 rounded-lg p-1">
+            <h4 className="text-white/60 text-xs font-medium px-2 mb-1">OTHER RANKINGS</h4>
+            <button
+              onClick={() => setActiveLeaderboard('progress')}
+              className={`w-full px-3 py-2 rounded-md transition-all text-sm ${
+                activeLeaderboard === 'progress'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              📈 Progress ({progressData.length})
+            </button>
+          </div>
         </div>
       </motion.div>
 
-      {/* Filters */}
+      {/* Enhanced Filters */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-4 items-center justify-between"
+        className="space-y-4"
       >
-        {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search users by login or name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
-          />
+        {/* Main Search and Filter Row */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          {/* Enhanced Search */}
+          <div className="relative flex-1 max-w-md">
+            <UserSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search users by login, name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+
+          {/* Filter Controls */}
+          <div className="flex items-center space-x-3">
+            {/* Cohort Filter */}
+            {availableCohorts.length > 0 && (
+              <div className="flex items-center space-x-2">
+                <Hash className="w-4 h-4 text-white/70" />
+                <select
+                  value={cohortFilter}
+                  onChange={(e) => setCohortFilter(e.target.value as CohortType)}
+                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Cohorts</option>
+                  {availableCohorts.map(cohort => (
+                    <option key={cohort} value={cohort}>
+                      {cohort.replace('cohort', 'Cohort ')}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+
+            {/* Level Filter for Progress */}
+            {activeLeaderboard === 'progress' && (
+              <div className="flex items-center space-x-2">
+                <Target className="w-4 h-4 text-white/70" />
+                <select
+                  value={levelFilter}
+                  onChange={(e) => setLevelFilter(e.target.value)}
+                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="all">All Levels</option>
+                  <option value="50">50%+ Grade</option>
+                  <option value="75">75%+ Grade</option>
+                  <option value="90">90%+ Grade</option>
+                </select>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Campus Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-white/70" />
-          <select
-            value={campusFilter}
-            onChange={(e) => setCampusFilter(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+        {/* Group Search Toggle */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => setShowGroupSearch(!showGroupSearch)}
+            className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all"
           >
-            <option value="all">All Campuses</option>
-            {uniqueCampuses.map((campus: string) => (
-              <option key={campus} value={campus}>
-                {campus}
-              </option>
-            ))}
-          </select>
+            <Filter className="w-4 h-4" />
+            <span>Group Search</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showGroupSearch ? 'rotate-180' : ''}`} />
+          </button>
         </div>
+
+        {/* Group Search Panel */}
+        <AnimatePresence>
+          {showGroupSearch && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+            >
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Users className="w-5 h-5 mr-2 text-primary-400" />
+                Group Search
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Cohort Selection for Groups */}
+                <div>
+                  <label className="block text-white/70 text-sm font-medium mb-2">Select Cohort</label>
+                  <select
+                    value={cohortFilter}
+                    onChange={(e) => setCohortFilter(e.target.value as CohortType)}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="all">All Cohorts</option>
+                    {availableCohorts.map(cohort => (
+                      <option key={cohort} value={cohort}>
+                        {cohort.replace('cohort', 'Cohort ')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Project Filter */}
+                <div>
+                  <label className="block text-white/70 text-sm font-medium mb-2">Project Name</label>
+                  <input
+                    type="text"
+                    placeholder="Search project paths..."
+                    value={projectFilter}
+                    onChange={(e) => setProjectFilter(e.target.value)}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
+
+              {/* Group Results */}
+              <div className="mt-4">
+                <h4 className="text-white/80 font-medium mb-2">
+                  Found {getFilteredGroups().length} groups
+                </h4>
+                <div className="max-h-40 overflow-y-auto space-y-2">
+                  {getFilteredGroups().slice(0, 10).map(group => {
+                    const groupMemberCount = groupUsers.filter(gu => gu.groupId === group.id).length
+                    const projectObj = objects.find(obj => obj.id === group.objectId)
+                    
+                    return (
+                      <div key={group.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white font-medium">{projectObj?.name || `Group ${group.id}`}</p>
+                            <p className="text-white/60 text-sm">
+                              {group.campus} • {groupMemberCount} members • {group.status}
+                            </p>
+                          </div>
+                          <div className="text-white/60 text-sm">
+                            {formatDate(group.createdAt)}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* User's Position Card */}
@@ -442,8 +800,8 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 <div>
                   <p className="text-white font-medium">Your Position</p>
                   <p className="text-white/60 text-sm">
-                    {activeLeaderboard === 'xp' && `${formatTotalXP(user.totalUp || 0)} XP`}
-                    {activeLeaderboard === 'audit' && `${(user.auditRatio || 0).toFixed(2)} audit ratio`}
+                    {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && `${formatTotalXP(user.totalUp || 0)} XP`}
+                    {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && `${(user.auditRatio || 0).toFixed(2)} audit ratio`}
                     {activeLeaderboard === 'progress' && 'Progress leader'}
                   </p>
                 </div>
@@ -466,11 +824,14 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       >
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
           <Trophy className="w-5 h-5 mr-2 text-primary-400" />
-          {activeLeaderboard === 'xp' && 'XP Leaderboard'}
-          {activeLeaderboard === 'audit' && 'Audit Ratio Leaderboard'}
-          {activeLeaderboard === 'progress' && 'Progress Leaderboard'}
+          {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && 
+            `${rankingMode === 'cohort' ? 'Cohort ' : ''}XP Projects Ranking`}
+          {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && 
+            `${rankingMode === 'cohort' ? 'Cohort ' : ''}Audit Ratio Ranking`}
+          {activeLeaderboard === 'progress' && 'Progress Leaders Ranking'}
           {activeLeaderboard === 'overall' && 'Overall Top Performers'}
-          ({getFilteredData().length})
+          {cohortFilter !== 'all' && ` - ${cohortFilter.replace('cohort', 'Cohort ')}`}
+          <span className="ml-2 text-primary-400">({getFilteredData().length})</span>
         </h3>
 
         <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -518,20 +879,30 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  {activeLeaderboard === 'xp' && (
+                  {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && (
                     <div>
                       <div className="text-lg font-bold text-white">
                         {formatTotalXP(userData.totalUp || 0)}
                       </div>
                       <div className="text-xs text-white/60">XP</div>
+                      {rankingMode === 'cohort' && (
+                        <div className="text-xs text-blue-400">
+                          {getUserCohort(userData.id).replace('cohort', 'C')}
+                        </div>
+                      )}
                     </div>
                   )}
-                  {activeLeaderboard === 'audit' && (
+                  {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && (
                     <div>
                       <div className="text-lg font-bold text-white">
                         {(userData.auditRatio || 0).toFixed(2)}
                       </div>
                       <div className="text-xs text-white/60">Audit Ratio</div>
+                      {rankingMode === 'cohort' && (
+                        <div className="text-xs text-blue-400">
+                          {getUserCohort(userData.id).replace('cohort', 'C')}
+                        </div>
+                      )}
                     </div>
                   )}
                   {activeLeaderboard === 'progress' && (
@@ -540,6 +911,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                         {userData.avgGrade?.toFixed(1) || '0.0'}%
                       </div>
                       <div className="text-xs text-white/60">Avg Grade</div>
+                      <div className="text-xs text-green-400">
+                        {userData.progressCount || 0} projects
+                      </div>
                     </div>
                   )}
                   {activeLeaderboard === 'overall' && (
@@ -568,17 +942,17 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       </motion.div>
 
       {/* Loading States */}
-      {(xpLoading || auditLoading || progressLoading || statsLoading) && (
+      {(allUsersLoading || progressLoading || statsLoading || cohortLoading || groupSearchLoading) && (
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-            <span className="ml-3 text-white/70">Loading leaderboard data...</span>
+            <span className="ml-3 text-white/70">Loading comprehensive leaderboard data...</span>
           </div>
         </div>
       )}
 
       {/* Empty State */}
-      {getFilteredData().length === 0 && !xpLoading && (
+      {getFilteredData().length === 0 && !allUsersLoading && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

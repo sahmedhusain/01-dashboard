@@ -11,6 +11,7 @@ import {
   calculateProjectStats,
   getRelativeTime
 } from '../../utils/dataFormatting'
+import PiscineStats from './PiscineStats'
 
 interface PiscineSectionProps {
   user: User
@@ -91,55 +92,11 @@ const PiscineSection: React.FC<PiscineSectionProps> = ({ user, piscineType }) =>
   return (
     <div className="space-y-6">
       {/* Piscine Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/60 text-sm">Piscine {piscineType.toUpperCase()} XP</p>
-              <p className="text-3xl font-bold text-primary-400">{formatModuleXP(totalXP)}</p>
-            </div>
-            <div className="w-12 h-12 bg-primary-500/20 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-primary-400" />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/60 text-sm">Projects Passed</p>
-              <p className="text-3xl font-bold text-green-400">{projectStats.passed}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-              <Award className="w-6 h-6 text-green-400" />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/60 text-sm">Projects Failed</p>
-              <p className="text-3xl font-bold text-red-400">{projectStats.failed}</p>
-            </div>
-            <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
-              <Target className="w-6 h-6 text-red-400" />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/60 text-sm">Success Rate</p>
-              <p className="text-3xl font-bold text-blue-400">{projectStats.passRate}%</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-blue-400" />
-            </div>
-          </div>
-        </Card>
-      </div>
+      <PiscineStats
+        piscineType={piscineType}
+        totalXP={totalXP}
+        projectStats={projectStats}
+      />
 
       {/* Recent Piscine XP Gains */}
       <Card className="p-6">

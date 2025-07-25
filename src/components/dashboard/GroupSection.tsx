@@ -342,7 +342,6 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           >
             <option value="all">All Status</option>
             <option value="audit">Audit</option>
-            <option value="completed">Completed</option>
             <option value="setup">Setup</option>
             <option value="working">Working</option>
             <option value="finished">Finished</option>
@@ -372,7 +371,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                   <Users className="w-5 h-5 text-primary-400" />
                 </div>
                 <div>
-                  <span className="text-white font-semibold text-lg">Group #{extractProjectName(group.path)}</span>
+                  <span className="text-white font-semibold text-lg">#{extractProjectName(group.path)}</span>
                 </div>
               </div>
               <div className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(group.status)}`}>
@@ -382,17 +381,6 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
 
             {/* Group Details */}
             <div className="space-y-4">
-              {group.path && (
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <Activity className="w-4 h-4 text-blue-400" />
-                  </div>
-                  <div>
-                    <div className="text-white font-medium">{extractProjectName(group.path)}</div>
-                    <div className="text-slate-400 text-sm">Project</div>
-                  </div>
-                </div>
-              )}
 
               {group.captainId && (
                 <div className="flex items-center space-x-3">

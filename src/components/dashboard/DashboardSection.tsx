@@ -1,27 +1,24 @@
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  User, Award, TrendingUp, Target, Activity, BarChart3, PieChart, Clock, 
-  Zap, Code, Trophy, BookOpen, Users, GitBranch, Star, Flame,
-  ChevronUp, ChevronDown, Calendar, MapPin, Mail
-} from 'lucide-react'
 import { useQuery, gql } from '@apollo/client'
 import { User as UserType } from '../../types'
-import Card from '../ui/Card'
-import Avatar from '../ui/Avatar'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import { 
-  formatTotalXP, 
-  formatModuleXP, 
-  formatDate, 
-  formatPercentage, 
-  formatAuditRatio,
   separateModuleData,
   calculateModuleXPTotals,
   calculateLevel,
-  getPerformanceNotation,
+  getRankFromLevel,
   formatSkillName
 } from '../../utils/dataFormatting'
+
+// Dashboard Section Components
+import ProfileSection from './sections/ProfileSection'
+import AnalyticsSection from './sections/AnalyticsSection'
+import StatisticsSection from './sections/StatisticsSection'
+import TransactionsSection from './sections/TransactionsSection'
+
+// Navigation icons
+import { User, BarChart3, TrendingUp, Activity } from 'lucide-react'
 
 // Enhanced GraphQL query with proper BH Module data separation
 const COMPREHENSIVE_DASHBOARD_QUERY = gql`
@@ -52,6 +49,7 @@ const COMPREHENSIVE_DASHBOARD_QUERY = gql`
       attrs
       objectId
       eventId
+      campus
     }
     
     # User progress with full details
@@ -66,6 +64,7 @@ const COMPREHENSIVE_DASHBOARD_QUERY = gql`
       objectId
       groupId
       eventId
+      campus
     }
     
     # User results with full details
@@ -81,6 +80,7 @@ const COMPREHENSIVE_DASHBOARD_QUERY = gql`
       groupId
       eventId
       attrs
+      campus
     }
     
     # Audits given by user
@@ -94,6 +94,12 @@ const COMPREHENSIVE_DASHBOARD_QUERY = gql`
       endAt
       attrs
       resultId
+      group {
+        id
+        path
+        campus
+        objectId
+      }
     }
     
     # Groups where user is member or captain
@@ -110,6 +116,8 @@ const COMPREHENSIVE_DASHBOARD_QUERY = gql`
         campus
         objectId
         eventId
+        createdAt
+        updatedAt
       }
     }
     
@@ -128,6 +136,16 @@ const COMPREHENSIVE_DASHBOARD_QUERY = gql`
         objectId
       }
     }
+
+    # Objects for project/exercise details
+    objects: object(where: { id: { _in: [] } }) {
+      id
+      name
+      type
+      attrs
+      createdAt
+      updatedAt
+    }
   }
 `
 
@@ -135,20 +153,10 @@ interface DashboardSectionProps {
   user: UserType
 }
 
-// Professional color palette
-const COLORS = {
-  primary: '#3B82F6',
-  secondary: '#8B5CF6',
-  success: '#10B981',
-  warning: '#F59E0B',
-  danger: '#EF4444',
-  info: '#06B6D4',
-  dark: '#1F2937',
-  light: '#F8FAFC'
-}
+type DashboardTab = 'profile' | 'analytics' | 'statistics' | 'transactions'
 
 const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'activity'>('overview')
+  const [activeTab, setActiveTab] = useState<DashboardTab>('profile')
 
   const { data, loading, error } = useQuery(COMPREHENSIVE_DASHBOARD_QUERY, {
     variables: { 
@@ -168,9 +176,6 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   const allGroups = useMemo(() => data?.userGroups || [], [data])
   const allEvents = useMemo(() => data?.userEvents || [], [data])
   
-  // Remove unused variables for cleaner code
-  const _unused = { allEvents }
-
   // Enhanced data processing with proper BH Module separation
   const analytics = useMemo(() => {
     if (!userData) return null
@@ -180,7 +185,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const separatedProgress = separateModuleData(allProgress)
     const separatedResults = separateModuleData(allResults)
     const separatedAudits = separateModuleData(allAudits)
-    const separatedGroups = separateModuleData(allGroups)
+    const separatedGroups = separateModuleData(allGroups.map(ug => ({ ...ug.group, userId: ug.userId })))
     
     // Focus on BH Module data only (excluding piscines)
     const transactions = separatedTransactions.mainModule
@@ -225,7 +230,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const topSkills = Array.from(skillsMap.entries())
       .map(([name, points]) => ({ name, points }))
       .sort((a, b) => b.points - a.points)
-      .slice(0, 8)
+      .slice(0, 10)
       
     // Audit Analytics - comprehensive view
     const totalAuditsGiven = allAudits.length
@@ -259,7 +264,8 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const totalDown = downTransactions.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
 
     // Performance and Activity Analytics
-    const performanceData = getPerformanceNotation(userData?.auditRatio || 0, totalXP, completedProjects)
+    const level = calculateLevel(totalXP)
+    const performanceData = getRankFromLevel(level)
 
     // Activity Analytics (Last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -267,10 +273,10 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       new Date(t.createdAt) > thirtyDaysAgo
     ).length
 
-    // Performance trends (last 6 months)
+    // Performance trends (last 12 months)
     const monthlyData = []
     
-    for (let i = 5; i >= 0; i--) {
+    for (let i = 11; i >= 0; i--) {
       const monthStart = new Date(Date.now() - (i + 1) * 30 * 24 * 60 * 60 * 1000)
       const monthEnd = new Date(Date.now() - i * 30 * 24 * 60 * 60 * 1000)
       
@@ -287,14 +293,22 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
           return date >= monthStart && date < monthEnd && p.isDone
         }).length
 
+      const monthAudits = auditsGiven
+        .filter(a => {
+          const date = new Date(a.createdAt)
+          return date >= monthStart && date < monthEnd
+        }).length
+
       monthlyData.push({
-        month: monthStart.toLocaleDateString('en', { month: 'short' }),
+        month: monthStart.toLocaleDateString('en', { month: 'short', year: '2-digit' }),
         xp: monthXP,
-        projects: monthProjects
+        projects: monthProjects,
+        audits: monthAudits
       })
     }
 
     return {
+      user: userData,
       xp: {
         total: totalXP,
         bhModule: bhModuleXP,
@@ -302,7 +316,8 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         average: avgXPPerProject,
         recent: recentActivity,
         upTotal: totalUp,
-        downTotal: totalDown
+        downTotal: totalDown,
+        monthlyData
       },
       level: {
         current: currentLevel,
@@ -311,7 +326,8 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       },
       skills: {
         top: topSkills,
-        total: skillsMap.size
+        total: skillsMap.size,
+        transactions: skillTransactions
       },
       projects: {
         completed: completedProjects,
@@ -321,14 +337,17 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         inProgress: inProgressProjects,
         avgGrade: avgProjectGrade,
         completionRate: totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0,
-        passRate: completedProjects > 0 ? (passedProjects / completedProjects) * 100 : 0
+        passRate: completedProjects > 0 ? (passedProjects / completedProjects) * 100 : 0,
+        bhModule: separatedProgress.mainModule.length,
+        piscines: separatedProgress.allPiscines.length
       },
       audits: {
         given: totalAuditsGiven,
         completed: completedAudits,
         pending: pendingAudits,
         avgGrade: avgAuditGrade,
-        ratio: userData?.auditRatio || 0
+        ratio: userData?.auditRatio || 0,
+        monthlyData: monthlyData.map(m => ({ month: m.month, audits: m.audits }))
       },
       groups: {
         total: totalGroups,
@@ -348,219 +367,54 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         bhModule: separatedTransactions.mainModule.length,
         piscines: Object.keys(separatedTransactions.piscines).length,
         totalPiscineTransactions: separatedTransactions.allPiscines.length
+      },
+      // Raw data for detailed sections
+      rawData: {
+        transactions: allTransactions,
+        progress: allProgress,
+        results: allResults,
+        audits: allAudits,
+        groups: allGroups,
+        events: allEvents
       }
     }
-  }, [userData, allTransactions, allProgress, allResults, allAudits, allGroups, user.id])
+  }, [userData, allTransactions, allProgress, allResults, allAudits, allGroups, allEvents, user.id])
 
   if (loading) return <LoadingSpinner />
   if (error || !userData) {
     return (
-      <Card className="p-8 text-center">
-        <p className="text-gray-500">Unable to load dashboard data</p>
-      </Card>
-    )
-  }
-
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'analytics', label: 'Analytics', icon: PieChart },
-    { id: 'activity', label: 'Activity', icon: Activity }
-  ]
-
-  // Professional SVG Charts Components
-  const LevelProgressChart = ({ level, progress }: { level: number, progress: number }) => (
-    <div className="relative w-32 h-32">
-      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-        <circle
-          cx="60"
-          cy="60"
-          r="50"
-          fill="none"
-          stroke="#E5E7EB"
-          strokeWidth="8"
-        />
-        <circle
-          cx="60"
-          cy="60"
-          r="50"
-          fill="none"
-          stroke={COLORS.primary}
-          strokeWidth="8"
-          strokeDasharray={`${2 * Math.PI * 50}`}
-          strokeDashoffset={`${2 * Math.PI * 50 * (1 - progress / 100)}`}
-          className="transition-all duration-1000 ease-out"
-        />
-        <text
-          x="60"
-          y="65"
-          textAnchor="middle"
-          className="fill-current text-2xl font-bold transform rotate-90"
-          style={{ transformOrigin: '60px 60px' }}
-        >
-          {level}
-        </text>
-      </svg>
-    </div>
-  )
-
-  const SkillsRadarChart = ({ skills }: { skills: Array<{ name: string, points: number }> }) => {
-    const size = 200
-    const center = size / 2
-    const radius = 70
-    const maxPoints = Math.max(...skills.map(s => s.points), 100)
-
-    const getPointOnCircle = (angle: number, distance: number) => {
-      const x = center + Math.cos(angle - Math.PI / 2) * distance
-      const y = center + Math.sin(angle - Math.PI / 2) * distance
-      return { x, y }
-    }
-
-    return (
-      <svg width={size} height={size} className="mx-auto">
-        {/* Background grid */}
-        {[0.2, 0.4, 0.6, 0.8, 1].map((ratio, i) => (
-          <circle
-            key={i}
-            cx={center}
-            cy={center}
-            r={radius * ratio}
-            fill="none"
-            stroke="#E5E7EB"
-            strokeWidth="1"
-          />
-        ))}
-        
-        {/* Radar lines */}
-        {skills.map((_, i) => {
-          const angle = (2 * Math.PI * i) / skills.length
-          const point = getPointOnCircle(angle, radius)
-          return (
-            <line
-              key={i}
-              x1={center}
-              y1={center}
-              x2={point.x}
-              y2={point.y}
-              stroke="#E5E7EB"
-              strokeWidth="1"
-            />
-          )
-        })}
-        
-        {/* Data polygon */}
-        <path
-          d={skills.map((skill, i) => {
-            const angle = (2 * Math.PI * i) / skills.length
-            const distance = (skill.points / maxPoints) * radius
-            const point = getPointOnCircle(angle, distance)
-            return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
-          }).join(' ') + ' Z'}
-          fill={`${COLORS.primary}40`}
-          stroke={COLORS.primary}
-          strokeWidth="2"
-        />
-        
-        {/* Data points */}
-        {skills.map((skill, i) => {
-          const angle = (2 * Math.PI * i) / skills.length
-          const distance = (skill.points / maxPoints) * radius
-          const point = getPointOnCircle(angle, distance)
-          return (
-            <circle
-              key={i}
-              cx={point.x}
-              cy={point.y}
-              r="4"
-              fill={COLORS.primary}
-            />
-          )
-        })}
-        
-        {/* Labels */}
-        {skills.map((skill, i) => {
-          const angle = (2 * Math.PI * i) / skills.length
-          const labelDistance = radius + 20
-          const point = getPointOnCircle(angle, labelDistance)
-          return (
-            <text
-              key={i}
-              x={point.x}
-              y={point.y}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-xs font-medium fill-gray-600"
-            >
-              {skill.name}
-            </text>
-          )
-        })}
-      </svg>
-    )
-  }
-
-  const ActivityChart = ({ data }: { data: Array<{ month: string, xp: number, projects: number }> }) => {
-    const maxXP = Math.max(...data.map(d => d.xp), 1000)
-    const maxProjects = Math.max(...data.map(d => d.projects), 5)
-
-    return (
-      <div className="w-full h-64">
-        <svg viewBox="0 0 400 200" className="w-full h-full">
-          {/* Grid lines */}
-          {[0, 1, 2, 3, 4].map(i => (
-            <line
-              key={i}
-              x1="40"
-              y1={40 + i * 30}
-              x2="360"
-              y2={40 + i * 30}
-              stroke="#E5E7EB"
-              strokeWidth="1"
-            />
-          ))}
-          
-          {/* XP Bars */}
-          {data.map((item, i) => (
-            <rect
-              key={`xp-${i}`}
-              x={60 + i * 50}
-              y={160 - (item.xp / maxXP) * 120}
-              width="20"
-              height={(item.xp / maxXP) * 120}
-              fill={COLORS.primary}
-              className="opacity-80"
-            />
-          ))}
-          
-          {/* Projects Line */}
-          <path
-            d={data.map((item, i) => {
-              const x = 80 + i * 50
-              const y = 160 - (item.projects / maxProjects) * 120
-              return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
-            }).join(' ')}
-            fill="none"
-            stroke={COLORS.success}
-            strokeWidth="3"
-          />
-          
-          {/* Month labels */}
-          {data.map((item, i) => (
-            <text
-              key={i}
-              x={70 + i * 50}
-              y="180"
-              textAnchor="middle"
-              className="text-xs fill-gray-600"
-            >
-              {item.month}
-            </text>
-          ))}
-        </svg>
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20 text-center">
+        <p className="text-white/70">Unable to load dashboard data</p>
+        {error && <p className="text-red-400 text-sm mt-2">{error.message}</p>}
       </div>
     )
   }
 
-  const renderOverview = () => (
+  const tabs = [
+    { id: 'profile', label: 'Profile Info', icon: User, description: 'Personal information and achievements' },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Visual data analysis and trends' },
+    { id: 'statistics', label: 'Statistics', icon: TrendingUp, description: 'Key metrics and performance indicators' },
+    { id: 'transactions', label: 'Transactions', icon: Activity, description: 'Detailed activity history and records' }
+  ]
+
+  const renderTabContent = () => {
+    if (!analytics) return null
+
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileSection user={user} analytics={analytics} />
+      case 'analytics':
+        return <AnalyticsSection analytics={analytics} />
+      case 'statistics':
+        return <StatisticsSection analytics={analytics} />
+      case 'transactions':
+        return <TransactionsSection analytics={analytics} />
+      default:
+        return <ProfileSection user={user} analytics={analytics} />
+    }
+  }
+
+  return (
     <div className="space-y-6">
       {/* Header */}
       <motion.div
@@ -573,525 +427,55 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
           Comprehensive Student Dashboard
         </h1>
         <p className="text-white/70 text-lg">
-          Your complete learning journey with detailed analytics and progress tracking
+          Complete learning analytics with detailed insights and progress tracking
         </p>
       </motion.div>
 
-      {/* Statistics Cards */}
+      {/* Tab Navigation */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4"
+        className="bg-white/10 backdrop-blur-lg rounded-xl p-1 border border-white/20"
       >
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Zap className="w-8 h-8 text-blue-400" />
-            <div>
-              <p className="text-white font-medium">Total XP</p>
-              <p className="text-2xl font-bold text-white">{analytics ? formatTotalXP(analytics.xp.total) : '0'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Target className="w-8 h-8 text-green-400" />
-            <div>
-              <p className="text-white font-medium">Audit Ratio</p>
-              <p className="text-2xl font-bold text-white">{userData?.auditRatio?.toFixed(2) || '0.00'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <BookOpen className="w-8 h-8 text-purple-400" />
-            <div>
-              <p className="text-white font-medium">Projects</p>
-              <p className="text-2xl font-bold text-white">{analytics ? analytics.projects.completed : '0'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <TrendingUp className="w-8 h-8 text-orange-400" />
-            <div>
-              <p className="text-white font-medium">Level</p>
-              <p className="text-2xl font-bold text-white">{analytics ? analytics.level.current : userData?.level || 0}</p>
-            </div>
-          </div>
-        </div>
+        <nav className="grid grid-cols-2 lg:grid-cols-4 gap-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            const isActive = activeTab === tab.id
+            
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as DashboardTab)}
+                className={`
+                  flex flex-col items-center space-y-2 px-4 py-3 rounded-lg font-medium text-sm transition-all
+                  ${isActive
+                    ? 'bg-primary-500 text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }
+                `}
+              >
+                <Icon className="h-5 w-5" />
+                <div className="text-center">
+                  <div className="font-semibold">{tab.label}</div>
+                  <div className="text-xs opacity-80 hidden lg:block">{tab.description}</div>
+                </div>
+              </button>
+            )
+          })}
+        </nav>
       </motion.div>
 
-      {/* User Profile Section */}
+      {/* Tab Content */}
       <motion.div
+        key={activeTab}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+        transition={{ duration: 0.3 }}
+        className="min-h-[600px]"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Avatar
-              user={{
-                ...userData,
-                // Fix avatar URL using proper endpoint from attrs
-                avatarUrl: userData?.attrs?.['pro-picUploadId'] ? 
-                  `https://zone01.s3.us-east-1.amazonaws.com/avatar/${userData.attrs['pro-picUploadId']}` : 
-                  null
-              }}
-              size="lg"
-              className="ring-2 ring-white/20"
-            />
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-1">
-                {userData.attrs?.displayName || userData.attrs?.firstName || user.login}
-              </h2>
-              <p className="text-white/70 mb-2">@{user.login}</p>
-              {analytics?.performance && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg">{analytics.performance.badge}</span>
-                  <span className="text-white/80 text-sm font-medium">
-                    {analytics.performance.notation}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {analytics && (
-            <div className="text-right">
-              <div className="text-3xl font-bold text-white mb-1">
-                {analytics.level.current}
-              </div>
-              <div className="text-white/70 text-sm">
-                Level • {analytics.level.progress.toFixed(1)}% to next
-              </div>
-            </div>
-          )}
-        </div>
+        {renderTabContent()}
       </motion.div>
-      {/* Analytics Grid */}
-      {analytics && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* XP Breakdown Analysis */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-          >
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2 text-blue-400" />
-              XP Breakdown Analysis
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Module XP</span>
-                  <span className="text-blue-400 font-bold">{formatTotalXP(analytics.xp.bhModule)}</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div className="bg-blue-400 h-2 rounded-full" style={{width: `${(analytics.xp.bhModule / analytics.xp.total) * 100}%`}}></div>
-                </div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Piscines XP</span>
-                  <span className="text-green-400 font-bold">{formatTotalXP(analytics.xp.piscines)}</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div className="bg-green-400 h-2 rounded-full" style={{width: `${(analytics.xp.piscines / analytics.xp.total) * 100}%`}}></div>
-                </div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Average per Project</span>
-                  <span className="text-purple-400 font-bold">{formatTotalXP(analytics.xp.average)}</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Projects Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-          >
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <BookOpen className="w-5 h-5 mr-2 text-purple-400" />
-              Projects & Progress Analysis
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Completed</span>
-                  <span className="text-green-400 font-bold">{analytics.projects.completed}</span>
-                </div>
-                <div className="text-white/60 text-xs">Pass rate: {analytics.projects.passRate.toFixed(1)}%</div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">In Progress</span>
-                  <span className="text-yellow-400 font-bold">{analytics.projects.inProgress}</span>
-                </div>
-                <div className="text-white/60 text-xs">Currently working</div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Failed</span>
-                  <span className="text-red-400 font-bold">{analytics.projects.failed}</span>
-                </div>
-                <div className="text-white/60 text-xs">Avg grade: {analytics.projects.avgGrade.toFixed(2)}</div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Audits Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-          >
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <Target className="w-5 h-5 mr-2 text-green-400" />
-              Audit Analytics
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Given</span>
-                  <span className="text-blue-400 font-bold">{analytics.audits.given}</span>
-                </div>
-                <div className="text-white/60 text-xs">Total audits given</div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Completed</span>
-                  <span className="text-green-400 font-bold">{analytics.audits.completed}</span>
-                </div>
-                <div className="text-white/60 text-xs">Reviews completed</div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Ratio</span>
-                  <span className="text-purple-400 font-bold">{analytics.audits.ratio.toFixed(2)}</span>
-                </div>
-                <div className="text-white/60 text-xs">Overall audit performance</div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-      {/* Skills & Groups Analytics */}
-      {analytics && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Skills Analytics */}
-          {analytics.skills.top.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-            >
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <Code className="w-5 h-5 mr-2 text-orange-400" />
-                Skills & Learning Progress
-              </h3>
-              <div className="space-y-3 max-h-64 overflow-y-auto">
-                {analytics.skills.top.slice(0, 6).map((skill, index) => (
-                  <div key={skill.name} className="bg-white/5 rounded-lg p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-white/80 text-sm">{skill.name}</span>
-                      <span className="text-blue-400 font-bold">{skill.points.toFixed(0)}%</span>
-                    </div>
-                    <div className="w-full bg-white/10 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-orange-400 h-2 rounded-full transition-all duration-1000" 
-                        style={{width: `${Math.min(100, (skill.points / Math.max(...analytics.skills.top.map(s => s.points))) * 100)}%`}}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Groups Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-            className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-          >
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <Users className="w-5 h-5 mr-2 text-purple-400" />
-              Groups & Collaboration
-            </h3>
-            <div className="space-y-3">
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Captain of</span>
-                  <span className="text-yellow-400 font-bold">{analytics.groups.captained}</span>
-                </div>
-                <div className="text-white/60 text-xs">Leading groups</div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Member of</span>
-                  <span className="text-green-400 font-bold">{analytics.groups.member}</span>
-                </div>
-                <div className="text-white/60 text-xs">Participating in</div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm">Total Groups</span>
-                  <span className="text-blue-400 font-bold">{analytics.groups.total}</span>
-                </div>
-                <div className="text-white/60 text-xs">All group activities</div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </div>
-  )
-
-  const renderAnalytics = () => (
-    <div className="space-y-8">
-      {analytics && (
-        <>
-          {/* Performance Trends */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                <TrendingUp className="h-6 w-6 mr-3 text-green-600" />
-                Performance Trends (6 Months)
-              </h3>
-              <ActivityChart data={analytics.activity.monthlyData} />
-              <div className="mt-4 flex justify-center space-x-8 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                  <span>XP Earned</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-3 border-2 border-green-500 rounded"></div>
-                  <span>Projects Completed</span>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Detailed Analytics Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Level Progress Detail */}
-            <Card className="p-6">
-              <h4 className="text-lg font-semibold mb-4 flex items-center">
-                <Target className="h-5 w-5 mr-2 text-blue-600" />
-                Level Progress
-              </h4>
-              <div className="text-center mb-6">
-                <LevelProgressChart 
-                  level={analytics.level.current} 
-                  progress={analytics.level.progress} 
-                />
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Current Level</span>
-                  <span className="font-bold">{analytics.level.current}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total XP</span>
-                  <span className="font-bold">{formatTotalXP(analytics.xp.total)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Next Level XP</span>
-                  <span className="font-bold">{formatTotalXP(analytics.level.nextLevelXP)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Progress</span>
-                  <span className="font-bold text-blue-600">
-                    {analytics.level.progress.toFixed(1)}%
-                  </span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Project Analytics */}
-            <Card className="p-6">
-              <h4 className="text-lg font-semibold mb-4 flex items-center">
-                <BookOpen className="h-5 w-5 mr-2 text-purple-600" />
-                Project Analytics
-              </h4>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-                  <div>
-                    <div className="text-2xl font-bold text-purple-900">
-                      {analytics.projects.completed}
-                    </div>
-                    <div className="text-sm text-purple-600">Completed</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-gray-600">
-                      / {analytics.projects.total}
-                    </div>
-                    <div className="text-sm text-gray-500">Total</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Completion Rate</span>
-                    <span className="font-bold text-purple-600">
-                      {analytics.projects.completionRate.toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Average Grade</span>
-                    <span className="font-bold">
-                      {formatPercentage(analytics.projects.avgGrade)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">XP per Project</span>
-                    <span className="font-bold">
-                      {formatModuleXP(analytics.xp.average)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </>
-      )}
-    </div>
-  )
-
-  const renderActivity = () => (
-    <div className="space-y-6">
-      {/* Recent Transactions */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h3>
-        <div className="space-y-3">
-          {allTransactions?.filter((t: any) => {
-            const moduleData = separateModuleData([t])
-            return moduleData.mainModule.length > 0
-          }).slice(0, 10).map((transaction: any) => (
-            <motion.div
-              key={transaction.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center space-x-4">
-                <div className={`p-2 rounded-full ${
-                  transaction.type === 'xp' ? 'bg-blue-100 text-blue-600' :
-                  transaction.type === 'level' ? 'bg-purple-100 text-purple-600' :
-                  transaction.type?.startsWith('skill_') ? 'bg-green-100 text-green-600' :
-                  'bg-gray-100 text-gray-600'
-                }`}>
-                  {transaction.type === 'xp' ? <Zap className="h-4 w-4" /> :
-                   transaction.type === 'level' ? <Trophy className="h-4 w-4" /> :
-                   transaction.type?.startsWith('skill_') ? <Code className="h-4 w-4" /> :
-                   <Activity className="h-4 w-4" />}
-                </div>
-                <div>
-                  <div className="font-medium capitalize">
-                    {transaction.type?.replace('_', ' ')}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {transaction.object?.name || 'System Action'}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {formatDate(transaction.createdAt)}
-                  </div>
-                </div>
-              </div>
-              <div className={`text-right font-bold ${
-                transaction.type === 'xp' ? 'text-blue-600' :
-                transaction.type === 'level' ? 'text-purple-600' :
-                transaction.type?.startsWith('skill_') ? 'text-green-600' :
-                'text-gray-600'
-              }`}>
-                {transaction.type === 'xp' ? `+${formatModuleXP(transaction.amount)}` :
-                 transaction.type === 'level' ? `Level ${transaction.amount}` :
-                 `+${transaction.amount}`}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Recent Progress */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Progress</h3>
-        <div className="space-y-3">
-          {allProgress?.filter((p: any) => {
-            const moduleData = separateModuleData([p])
-            return moduleData.mainModule.length > 0
-          }).slice(0, 8).map((progress: any) => (
-            <motion.div
-              key={progress.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center space-x-4">
-                <div className={`p-2 rounded-full ${
-                  progress.isDone ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
-                }`}>
-                  {progress.isDone ? 
-                    <Trophy className="h-4 w-4" /> : 
-                    <Clock className="h-4 w-4" />
-                  }
-                </div>
-                <div>
-                  <div className="font-medium">
-                    {progress.object?.name || 'Project'}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {progress.isDone ? 'Completed' : 'In Progress'}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {formatDate(progress.createdAt)}
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold text-blue-600">
-                  {formatPercentage(progress.grade)}
-                </div>
-                <div className="text-xs text-gray-500">
-                  Grade
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </Card>
-    </div>
-  )
-
-  return (
-    <div className="space-y-6">
-      {renderOverview()}
     </div>
   )
 }

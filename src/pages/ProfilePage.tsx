@@ -1,21 +1,34 @@
-import React, { useEffect, Suspense } from 'react'
+import React, { Suspense } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, User as UserIcon } from 'lucide-react'
-import { useIsAuthenticated, useProfileData, useUserProfileActions } from '../store'
+import { useIsAuthenticated } from '../store'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
-import ProfileSection from '../components/dashboard/ProfileSection'
-import XPSection from '../components/dashboard/XPSection'
-import AuditSection from '../components/dashboard/AuditSection'
-import StatsSection from '../components/dashboard/StatsSection'
+import DashboardSection from '../components/dashboard/DashboardSection'
+import { useQuery, gql } from '@apollo/client'
+
+const USER_PROFILE_QUERY = gql`
+  query GetUserProfile($userId: Int!) {
+    user(where: { id: { _eq: $userId } }) {
+      id
+      login
+      firstName
+      lastName
+      attrs
+    }
+  }
+`
 
 const ProfilePage: React.FC = () => {
   const { userId } = useParams<{ userId: string }>()
   const isAuthenticated = useIsAuthenticated()
-  const { setCurrentProfile, setLoading, setError } = useUserProfileActions()
   
   const userIdNum = userId ? parseInt(userId, 10) : null
-  const { profile, isLoading, error, hasData } = useProfileData(userIdNum)
+
+  const { data, loading, error } = useQuery(USER_PROFILE_QUERY, {
+    variables: { userId: userIdNum },
+    skip: !userIdNum,
+  })
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
@@ -27,27 +40,7 @@ const ProfilePage: React.FC = () => {
     return <Navigate to="/dashboard" replace />
   }
 
-  useEffect(() => {
-    if (userIdNum) {
-      setCurrentProfile(userIdNum)
-      
-      // If we don't have data for this user, trigger loading
-      if (!hasData && !isLoading) {
-        setLoading(true)
-        // Here you would typically fetch the user data
-        // For now, we'll simulate an error or empty state
-        setTimeout(() => {
-          setError('User profile data not available')
-        }, 1000)
-      }
-    }
-
-    return () => {
-      setCurrentProfile(null)
-    }
-  }, [userIdNum, hasData, isLoading, setCurrentProfile, setLoading, setError])
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 flex items-center justify-center">
         <LoadingSpinner />
@@ -55,7 +48,9 @@ const ProfilePage: React.FC = () => {
     )
   }
 
-  if (error || !profile?.user) {
+  const user = data?.user?.[0]
+
+  if (error || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -77,7 +72,7 @@ const ProfilePage: React.FC = () => {
             </div>
             <h1 className="text-2xl font-bold text-white mb-4">User Profile Not Found</h1>
             <p className="text-white/60 mb-8">
-              {error || 'The requested user profile could not be loaded.'}
+              {error ? error.message : 'The requested user profile could not be loaded.'}
             </p>
             <Link
               to="/dashboard"
@@ -108,70 +103,12 @@ const ProfilePage: React.FC = () => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Dashboard
           </Link>
-          
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-2">
-              {profile.user.firstName && profile.user.lastName 
-                ? `${profile.user.firstName} ${profile.user.lastName}`
-                : profile.user.login
-              }
-            </h1>
-            <p className="text-white/70 text-lg">
-              Student Profile & Performance Analytics
-            </p>
-          </div>
         </motion.div>
 
-        {/* Profile Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-          {/* Profile Section */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-1 xl:col-span-1"
-          >
-            <Suspense fallback={<LoadingSpinner />}>
-              <ProfileSection user={profile.user} />
-            </Suspense>
-          </motion.div>
-
-          {/* XP Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-1 xl:col-span-1"
-          >
-            <Suspense fallback={<LoadingSpinner />}>
-              <XPSection user={profile.user} />
-            </Suspense>
-          </motion.div>
-
-          {/* Audit Section */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="lg:col-span-2 xl:col-span-1"
-          >
-            <Suspense fallback={<LoadingSpinner />}>
-              <AuditSection user={profile.user} />
-            </Suspense>
-          </motion.div>
-        </div>
-
-        {/* Statistics Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8"
-        >
-          <Suspense fallback={<LoadingSpinner />}>
-            <StatsSection user={profile.user} />
-          </Suspense>
-        </motion.div>
+        {/* Profile Content */}
+        <Suspense fallback={<LoadingSpinner />}>
+          <DashboardSection user={user} />
+        </Suspense>
       </div>
     </div>
   )

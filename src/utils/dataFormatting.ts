@@ -752,56 +752,62 @@ export const calculateProjectStats = (progresses: any[]) => {
  * @param completedProjects - Number of completed projects
  * @returns Performance notation object
  */
-export const getPerformanceNotation = (auditRatio: number, totalXP: number = 0, completedProjects: number = 0) => {
-  // Primary factor: audit ratio
-  if (auditRatio >= 2.0) {
+export const getRankFromLevel = (level: number) => {
+  if (level >= 60) {
     return {
-      notation: "Exceptional Developer",
-      description: "Outstanding audit performance",
+      notation: "Full-Stack Developer",
+      description: "Master of the digital realm",
       color: "text-purple-400",
       badge: "🏆"
     };
-  } else if (auditRatio >= 1.8) {
+  } else if (level >= 55) {
     return {
-      notation: "Advanced Developer",
-      description: "Excellent audit skills",
+      notation: "Confirmed Developer",
+      description: "Seasoned and reliable coder",
       color: "text-blue-400",
       badge: "⭐"
     };
-  } else if (auditRatio >= 1.5) {
+  } else if (level >= 50) {
     return {
-      notation: "Skilled Developer",
-      description: "Strong audit performance",
+      notation: "Junior Developer",
+      description: "Capable and growing",
+      color: "text-cyan-400",
+      badge: "🚀"
+    };
+  } else if (level >= 40) {
+    return {
+      notation: "Basic Developer",
+      description: "Solid foundational skills",
       color: "text-green-400",
       badge: "✨"
     };
-  } else if (auditRatio >= 1.2) {
+  } else if (level >= 30) {
     return {
-      notation: "Developing Skills",
-      description: "Good audit progress",
-      color: "text-yellow-400",
+      notation: "Assistant Developer",
+      description: "Assisting and learning",
+      color: "text-teal-400",
       badge: "📈"
     };
-  } else if (auditRatio >= 1.0) {
+  } else if (level >= 20) {
     return {
-      notation: "Meeting Standards",
-      description: "Audit requirements met",
-      color: "text-orange-400",
-      badge: "✅"
+      notation: "Apprentice Developer",
+      description: "On the path to mastery",
+      color: "text-yellow-400",
+      badge: "🛠️"
     };
-  } else if (auditRatio >= 0.8) {
+  } else if (level >= 10) {
     return {
-      notation: "Aspiring Developer",
-      description: "Building audit skills",
-      color: "text-orange-500",
-      badge: "🚀"
+      notation: "Beginner Developer",
+      description: "Starting the coding journey",
+      color: "text-orange-400",
+      badge: "🌱"
     };
   } else {
     return {
-      notation: "Needs Work",
-      description: "Focus on audit improvement",
-      color: "text-red-400",
-      badge: "📚"
+      notation: "Aspiring Developer",
+      description: "Eager to learn and grow",
+      color: "text-gray-400",
+      badge: "💡"
     };
   }
 };

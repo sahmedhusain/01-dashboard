@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Trophy, Code, Activity, Clock, CheckCircle, AlertTriangle } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
-import { formatModuleXP } from '../../utils/dataFormatting'
+import { formatXPValue, formatGrade } from '../../utils/dataFormatting'
 import Card from '../ui/Card'
 
 // Define a unified activity item type
@@ -31,7 +31,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
       id: t.id,
       type: t.type.startsWith('skill') ? 'skill' : t.type,
       title: t.type.startsWith('skill') ? `Skill: ${t.type.replace('skill_', '')}` : `XP: ${t.path.split('/').pop()}`,
-      details: `Received ${formatModuleXP(t.amount)} XP`,
+      details: `Received ${formatXPValue(t.amount)} XP`,
       timestamp: t.createdAt,
       amount: t.amount,
     })),
@@ -39,7 +39,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
       id: p.id,
       type: 'progress',
       title: `Project: ${p.path.split('/').pop()}`,
-      details: p.isDone ? `Completed with grade ${p.grade}%` : 'In Progress',
+      details: p.isDone ? `Completed with grade ${formatGrade(p.grade)}` : 'In Progress',
       timestamp: p.updatedAt,
       grade: p.grade,
       isDone: p.isDone,
@@ -48,7 +48,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
       id: a.id,
       type: 'audit',
       title: 'Audit',
-      details: `Completed audit with grade ${a.grade}`,
+      details: `Completed audit with grade ${formatGrade(a.grade)}`,
       timestamp: a.endAt,
       grade: a.grade,
     })),
@@ -66,7 +66,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
       case 'skill': return <Code className="h-4 w-4 text-green-400" />
       case 'progress':
         if (item.isDone) {
-          return item.grade && item.grade >= 100 ? <CheckCircle className="h-4 w-4 text-green-400" /> : <AlertTriangle className="h-4 w-4 text-red-400" />
+          return item.grade && item.grade >= 1 ? <CheckCircle className="h-4 w-4 text-green-400" /> : <AlertTriangle className="h-4 w-4 text-red-400" />
         }
         return <Clock className="h-4 w-4 text-white/60" />
       case 'audit': return <Activity className="h-4 w-4 text-purple-400" />
@@ -109,12 +109,12 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
             <div className="text-right">
               {item.type === 'xp' && (
                 <div className="text-sm font-bold text-blue-400">
-                  +{formatModuleXP(item.amount || 0)}
+                  +{formatXPValue(item.amount || 0)}
                 </div>
               )}
               {item.type === 'progress' && item.isDone && (
-                <div className={`text-sm font-bold ${item.grade && item.grade >= 100 ? 'text-green-400' : 'text-red-400'}`}>
-                  {item.grade}%
+                <div className={`text-sm font-bold ${item.grade && item.grade >= 1 ? 'text-green-400' : 'text-red-400'}`}>
+                  {formatGrade(item.grade)}
                 </div>
               )}
             </div>

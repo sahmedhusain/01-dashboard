@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { BookOpen, TrendingUp, Award, Target } from 'lucide-react'
 import Card from '../ui/Card'
-import { formatModuleXP } from '../../utils/dataFormatting'
+import { formatXPValue } from '../../utils/dataFormatting'
 
 interface PiscineStatsProps {
   piscineType: string
@@ -18,7 +18,7 @@ const PiscineStats: React.FC<PiscineStatsProps> = ({ piscineType, totalXP, proje
   const stats = [
     {
       label: `Piscine ${piscineType.toUpperCase()} XP`,
-      value: formatModuleXP(totalXP),
+      value: formatXPValue(totalXP),
       icon: BookOpen,
       color: 'primary',
     },

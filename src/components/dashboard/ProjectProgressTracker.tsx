@@ -23,7 +23,7 @@ import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import {
   calculateProjectStats,
-  formatModuleXP,
+  formatXPValue,
   getRelativeTime,
   formatDate
 } from '../../utils/dataFormatting'
@@ -32,7 +32,7 @@ interface ProjectProgressTrackerProps {
   user: User
 }
 
-// Comprehensive progress queries using our tested queries
+// Complete progress queries using our tested queries
 const GET_ALL_USER_PROGRESS = gql`
   query GetAllUserProgress($userId: Int!) {
     progress(
@@ -134,7 +134,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
     errorPolicy: 'all'
   });
 
-  // Query all user progress for comprehensive view
+  // Query all user progress for complete view
   const { data: allProgressData, loading: allProgressLoading } = useQuery(GET_ALL_USER_PROGRESS, {
     variables: { userId: user.id },
     errorPolicy: 'all',
@@ -155,13 +155,13 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
   const recentCompletions = data?.recent_completions || [];
   const projectStats = calculateProjectStats(progresses);
 
-  // Comprehensive progress data
+  // Complete progress data
   const allProgress = allProgressData?.progress || [];
   const progressStats = allProgressData?.progress_aggregate?.aggregate;
   const pathViewProgress = pathViewData?.progress_by_path_view || [];
 
   // Enhanced statistics
-  const comprehensiveStats = {
+  const completeStats = {
     totalProgress: progressStats?.count || 0,
     averageGrade: progressStats?.avg?.grade || 0,
     maxGrade: progressStats?.max?.grade || 0,
@@ -191,8 +191,8 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
         transition={{ duration: 0.5 }}
         className="text-center"
       >
-        <h3 className="text-2xl font-bold text-white mb-2">Comprehensive Progress Tracker</h3>
-        <p className="text-white/60">Your complete learning progress analytics with {comprehensiveStats.totalProgress} total records</p>
+        <h3 className="text-2xl font-bold text-white mb-2">Complete Progress Tracker</h3>
+        <p className="text-white/60">Your complete learning progress analytics with {completeStats.totalProgress} total records</p>
       </motion.div>
 
       {/* View Selector */}
@@ -221,7 +221,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
                 : 'text-white/70 hover:text-white'
             }`}
           >
-            All Progress ({comprehensiveStats.totalProgress})
+            All Progress ({completeStats.totalProgress})
           </button>
           <button
             onClick={() => setSelectedView('completed')}
@@ -231,12 +231,12 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
                 : 'text-white/70 hover:text-white'
             }`}
           >
-            Completed ({comprehensiveStats.completedCount})
+            Completed ({completeStats.completedCount})
           </button>
         </div>
       </motion.div>
 
-      {/* Comprehensive Statistics Grid */}
+      {/* Complete Statistics Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -247,7 +247,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/60 text-sm font-medium">Total Progress</p>
-              <p className="text-2xl font-bold text-blue-400">{comprehensiveStats.totalProgress}</p>
+              <p className="text-2xl font-bold text-blue-400">{completeStats.totalProgress}</p>
               <p className="text-white/50 text-xs mt-1">All learning records</p>
             </div>
             <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
@@ -260,7 +260,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/60 text-sm font-medium">Average Grade</p>
-              <p className="text-2xl font-bold text-green-400">{comprehensiveStats.averageGrade.toFixed(1)}%</p>
+              <p className="text-2xl font-bold text-green-400">{completeStats.averageGrade.toFixed(1)}%</p>
               <p className="text-white/50 text-xs mt-1">Overall performance</p>
             </div>
             <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -273,7 +273,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/60 text-sm font-medium">Completed</p>
-              <p className="text-2xl font-bold text-purple-400">{comprehensiveStats.completedCount}</p>
+              <p className="text-2xl font-bold text-purple-400">{completeStats.completedCount}</p>
               <p className="text-white/50 text-xs mt-1">Finished tasks</p>
             </div>
             <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
@@ -286,7 +286,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/60 text-sm font-medium">In Progress</p>
-              <p className="text-2xl font-bold text-orange-400">{comprehensiveStats.inProgressCount}</p>
+              <p className="text-2xl font-bold text-orange-400">{completeStats.inProgressCount}</p>
               <p className="text-white/50 text-xs mt-1">Active learning</p>
             </div>
             <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
@@ -432,7 +432,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
         </div>
       </Card>
 
-      {/* Comprehensive Progress View */}
+      {/* Complete Progress View */}
       {selectedView === 'all-progress' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -507,7 +507,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
           <Card className="p-6">
             <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
               <Trophy className="w-5 h-5 mr-2 text-primary-400" />
-              Completed Progress ({comprehensiveStats.completedCount})
+              Completed Progress ({completeStats.completedCount})
             </h4>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {allProgress.filter((p: any) => p.isDone).slice(0, 15).map((progress: any, index: number) => (
@@ -536,7 +536,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
                   </div>
                 </motion.div>
               ))}
-              {comprehensiveStats.completedCount === 0 && (
+              {completeStats.completedCount === 0 && (
                 <div className="text-center py-8">
                   <Trophy className="w-12 h-12 text-white/30 mx-auto mb-3" />
                   <p className="text-white/60">No completed progress yet</p>
@@ -553,7 +553,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
         <Card className="p-6">
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-            <span className="ml-3 text-white/70">Loading comprehensive progress data...</span>
+            <span className="ml-3 text-white/70">Loading complete progress data...</span>
           </div>
         </Card>
       )}

@@ -4,7 +4,7 @@ import {
   TrendingUp, Award, Target, Users, Code, BookOpen, Calendar, 
   Zap, Star, Trophy, Activity, BarChart3, Clock, CheckCircle
 } from 'lucide-react'
-import { formatTotalXP, formatDate } from '../../../utils/dataFormatting'
+import { formatXPValue, formatDate } from '../../../utils/dataFormatting'
 
 interface StatisticsSectionProps {
   analytics: any
@@ -31,7 +31,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         className="text-center"
       >
         <h2 className="text-2xl font-bold text-white mb-2">Performance Statistics</h2>
-        <p className="text-white/70">Comprehensive metrics and key performance indicators</p>
+        <p className="text-white/70">Complete metrics and key performance indicators</p>
       </motion.div>
 
       {/* Key Performance Indicators */}
@@ -43,7 +43,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
       >
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
           <Zap className="w-12 h-12 text-blue-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{formatTotalXP(analytics.xp.total)}</div>
+          <div className="text-3xl font-bold text-white mb-1">{formatXPValue(analytics.xp.total)}</div>
           <div className="text-white/70 text-sm">Total XP</div>
           <div className="text-blue-400 text-xs mt-2">
             Level {analytics.level.current} ({analytics.level.progress.toFixed(1)}% to next)
@@ -134,7 +134,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
                 <span className="text-white text-sm">XP per Project</span>
               </div>
               <div className="text-right">
-                <div className="text-blue-400 font-bold">{formatTotalXP(analytics.xp.average)}</div>
+                <div className="text-blue-400 font-bold">{formatXPValue(analytics.xp.average)}</div>
                 <div className="text-white/60 text-xs">Average earning</div>
               </div>
             </div>
@@ -195,7 +195,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
                 <span className="text-white text-sm">Monthly Average XP</span>
               </div>
               <div className="text-right">
-                <div className="text-yellow-400 font-bold">{formatTotalXP(averageXPPerMonth)}</div>
+                <div className="text-yellow-400 font-bold">{formatXPValue(averageXPPerMonth)}</div>
                 <div className="text-white/60 text-xs">
                   {trendDirection === 'improving' ? '↗' : '↘'} {trendDirection}
                 </div>
@@ -227,7 +227,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">XP Earned</span>
-                <span className="text-blue-400 font-bold">{formatTotalXP(analytics.xp.bhModule)}</span>
+                <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">Projects</span>
@@ -257,7 +257,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">XP Earned</span>
-                <span className="text-green-400 font-bold">{formatTotalXP(analytics.xp.piscines)}</span>
+                <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.piscines)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">Projects</span>
@@ -330,7 +330,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
           <div className="text-center p-4 bg-white/5 rounded-lg">
             <div className="text-2xl font-bold text-blue-400 mb-2">{mostActiveMonth.month}</div>
             <div className="text-white/70 text-sm mb-1">Most Active Month</div>
-            <div className="text-blue-400 text-xs">{formatTotalXP(mostActiveMonth.xp)} XP earned</div>
+            <div className="text-blue-400 text-xs">{formatXPValue(mostActiveMonth.xp)} XP earned</div>
           </div>
           
           <div className="text-center p-4 bg-white/5 rounded-lg">

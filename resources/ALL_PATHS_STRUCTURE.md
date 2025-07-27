@@ -1,3 +1,237 @@
+1. Projects in Each Piscine (in bh-module)
+piscine-js
+Subpaths:
+
+data
+node
+loop
+object
+call-me-maybe
+async
+dom
+sortable
+clonernews
+find
+time
+crossword
+(and all their subprojects)
+→ 151 projects, 151 paths
+piscine-flutter
+Subpaths:
+
+dart-intro
+bizz-card
+quizz-app
+movie-list
+hacker-news
+favorite-images
+bouncer
+map-markers
+secure-notes
+package
+bloc-counter
+→ 22 projects, 22 paths
+piscine-rust
+Subpaths:
+
+checkpoint-01-rust
+checkpoint-02-rust
+final-checkpoint-rust
+checkpoint-03-rust
+quest-06-rust
+quest-08-rust
+quest-10-rust
+quest-01-rust
+quest-03-rust
+quest-04-rust
+quest-07-rust
+quest-02-rust
+quest-09-rust
+chaikin
+drawing
+road-intersection
+quest-05-rust
+→ 99 projects, 99 paths
+piscine-ai
+Subpaths:
+
+numpy
+pandas
+visualizations
+data-wrangling
+time-series
+backtesting-sp500
+linear-regression
+classification
+pipeline
+training
+model-selection
+forest-prediction
+neural-networks
+keras
+keras-2
+nlp
+nlp-spacy
+→ 16 projects, 16 paths
+piscine-blockchain
+Subpaths:
+
+transactions
+crypto
+festival-smart-contract
+anchoring
+connect-interface
+simple-tokens
+sign-service
+non-fungible-cats
+decentralized-finance
+exploring-blockchains
+tracking-network
+→ 38 projects, 38 paths
+piscine-java
+Subpaths:
+
+checkpoint-02-java
+checkpoint-03-java
+java-intro
+io-args
+oop1
+oop2
+jart
+jaikin
+jraffic
+java-structures
+standard-lib
+design-patterns
+checkpoint-01-java
+→ 61 projects, 61 paths
+piscine-ux
+Subpaths:
+
+athlete-keep-hydrated
+going-on-holidays
+teenage-drama
+the-olympics
+music-on
+sunday-night-movie
+seamstress
+→ 7 projects, 7 paths
+piscine-ui
+Subpaths:
+
+colors-and-moodboard
+atomic-design
+rules
+building-an-interface
+heuristics
+→ 5 projects, 5 paths
+2. Projects in bh-module (excluding checkpoints and piscines)
+All direct subpaths of bh-module except those starting with checkpoint or piscine-
+→ 74 projects, 74 paths
+3. Projects in Each Checkpoint (in bh-module)
+checkpoint
+Subpaths:
+gcd, onlya, onlyz, onlyf, itoa, itoabase, hiddenp, searchreplace, rostring, revwstr, brackets, addprimesum, fprime, wdmatch, inter, options, union, piglatin, findprevprime, chunk, foldint, reduceint, printmemory, only1, onlyb, rectperimeter, countcharacter, checknumber, countalpha, printif, printifnot, retainfirsthalf, digitlen, fishandchips, cameltosnakecase, hashcode, lastword, firstword, repeatalpha, thirdtimeisacharm, printrevcomb, weareunique, iscapitalized, fromto, zipstring, expandstr, cleanstr, concatalternate, reversestrcap, concatslice, saveandmiss, notdecimal, slice, fifthandskip, revconcatalternate, wordflip, findpairs, romannumbers, rpncalc, grouping, brainfuck, (and deprecated/legacy tasks)
+→ 80 projects, 80 paths
+4. Projects in Each Piscine (in bh-piscine) (Go Piscine)
+Go Piscine (bh-piscine)
+Subpaths:
+quest-01, quest-02, quest-03, quest-04, quest-05, quest-06, quest-07, quest-08, quest-09, quest-10, quest-11, quest-12, quadchecker, quad, sudoku, final-checkpoint, checkpoint-01, checkpoint-02, checkpoint-03, retest, re-test, checkpoint-repeat
+(and all their subprojects)
+→ 260 projects, 260 paths
+5. Projects in Each Checkpoint (in bh-piscine)
+checkpoint-01: 70 projects, 70 paths
+checkpoint-02: 80 projects, 80 paths
+checkpoint-03: 80 projects, 80 paths
+final-checkpoint: 60 projects, 60 paths
+retest / re-test / checkpoint-repeat: 20 projects, 20 paths (combined)
+
+bh-module Projects (excluding piscines and checkpoints)
+git — /bahrain/bh-module/git
+firing-range — /bahrain/bh-module/firing-range
+kaggle-titanic — /bahrain/bh-module/kaggle-titanic
+nlp-scraper — /bahrain/bh-module/nlp-scraper
+emotions-detector — /bahrain/bh-module/emotions-detector
+sp500-strategies — /bahrain/bh-module/sp500-strategies
+credit-scoring — /bahrain/bh-module/credit-scoring
+nft-marketplace — /bahrain/bh-module/nft-marketplace
+payment-channel — /bahrain/bh-module/payment-channel
+node-dashboard — /bahrain/bh-module/node-dashboard
+financial-instruments — /bahrain/bh-module/financial-instruments
+sky-map — /bahrain/bh-module/sky-map
+stock-market — /bahrain/bh-module/stock-market
+kaquiz — /bahrain/bh-module/kaquiz
+secure-messenger — /bahrain/bh-module/secure-messenger
+passive — /bahrain/bh-module/passive
+inspector-image — /bahrain/bh-module/inspector-image
+active — /bahrain/bh-module/active
+local — /bahrain/bh-module/local
+web-hack — /bahrain/bh-module/web-hack
+injector — /bahrain/bh-module/injector
+social-network — /bahrain/bh-module/social-network
+mini-framework — /bahrain/bh-module/mini-framework
+make-your-own — /bahrain/bh-module/make-your-own
+hole-in-bin — /bahrain/bh-module/hole-in-bin
+mal-track — /bahrain/bh-module/mal-track
+evasion — /bahrain/bh-module/evasion
+obfuscator — /bahrain/bh-module/obfuscator
+malware — /bahrain/bh-module/malware
+twenty-forty-eight — /bahrain/bh-module/twenty-forty-eight
+chess — /bahrain/bh-module/chess
+linux — /bahrain/bh-module/linux
+login — /bahrain/bh-module/login
+add-vm — /bahrain/bh-module/add-vm
+connect — /bahrain/bh-module/connect
+remote — /bahrain/bh-module/remote
+scan — /bahrain/bh-module/scan
+output — /bahrain/bh-module/output
+fs — /bahrain/bh-module/fs
+justify — /bahrain/bh-module/justify
+reverse — /bahrain/bh-module/reverse
+stylize — /bahrain/bh-module/stylize
+dockerize — /bahrain/bh-module/dockerize
+exportfile — /bahrain/bh-module/exportfile
+filters — /bahrain/bh-module/filters
+geolocalization — /bahrain/bh-module/geolocalization
+visualizations — /bahrain/bh-module/visualizations
+search-bar — /bahrain/bh-module/search-bar
+history — /bahrain/bh-module/history
+different-maps — /bahrain/bh-module/different-maps
+typing-in-progress — /bahrain/bh-module/typing-in-progress
+color — /bahrain/bh-module/color
+score-handling — /bahrain/bh-module/score-handling
+tetris-optimizer — /bahrain/bh-module/tetris-optimizer
+ascii-art — /bahrain/bh-module/ascii-art
+go-reloaded — /bahrain/bh-module/go-reloaded
+filler — /bahrain/bh-module/filler
+push-swap — /bahrain/bh-module/push-swap
+ascii-art-web — /bahrain/bh-module/ascii-art-web
+my-ls-1 — /bahrain/bh-module/my-ls-1
+net-cat — /bahrain/bh-module/net-cat
+groupie-tracker — /bahrain/bh-module/groupie-tracker
+lem-in — /bahrain/bh-module/lem-in
+make-your-game — /bahrain/bh-module/make-your-game
+real-time-forum — /bahrain/bh-module/real-time-forum
+stock-exchange-sim — /bahrain/bh-module/stock-exchange-sim
+zappy — /bahrain/bh-module/zappy
+rt — /bahrain/bh-module/rt
+multiplayer-fps — /bahrain/bh-module/multiplayer-fps
+corewar — /bahrain/bh-module/corewar
+wget — /bahrain/bh-module/wget
+bomberman-dom — /bahrain/bh-module/bomberman-dom
+graphql — /bahrain/bh-module/graphql
+0-shell — /bahrain/bh-module/0-shell
+scripting — /bahrain/bh-module/scripting
+atm-management-system — /bahrain/bh-module/atm-management-system
+smart-road — /bahrain/bh-module/smart-road
+netfix — /bahrain/bh-module/netfix
+mister-quiz — /bahrain/bh-module/mister-quiz
+shop — /bahrain/bh-module/shop
+system-monitor — /bahrain/bh-module/system-monitor
+cross-platform-appimage — /bahrain/bh-module/cross-platform-appimage
+job-control — /bahrain/bh-module/job-control
+Total: 74 projects, 74 paths
+
 Below is a tree structure of all the available paths from the data query endpoint
 
 ```
@@ -3942,3 +4176,4 @@ Complete List of All Paths
 /bahrain/ai-forge/motion-magic/colorful-legs 
 
 /bahrain/bh-piscine/final-checkpoint 
+

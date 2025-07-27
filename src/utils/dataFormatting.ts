@@ -6,55 +6,54 @@
 import config from '../config/appConfig';
 
 // ============================================================================
-// XP FORMATTING
+// XP & NUMERIC FORMATTING
 // ============================================================================
 
 /**
- * Format XP values for display (rounded kB integers without 'XP' suffix per user preference)
- * @param xp - XP value to format
- * @returns Formatted XP string
+ * New universal formatter for XP and other large numbers.
+ * - < 1000: Displays as Bytes (B).
+ * - 1,000 to 999,999: Displays as Kilobytes (kB) with 2 decimal places.
+ * - >= 1,000,000: Displays as Megabytes (MB) with 2 decimal places.
+ * @param num - The number to format.
+ * @returns The formatted string (e.g., "950 B", "25.50 kB", "1.25 MB").
  */
-// TOTAL XP: Always in kB format (e.g., 1300 kB)
-export const formatTotalXP = (xp: number | null | undefined): string => {
-  if (!xp || isNaN(xp)) return '0 kB';
-  const kbValue = Math.round(xp / 1000);
-  return `${kbValue} kB`;
-};
+export const formatXPValue = (num: number | null | undefined): string => {
+  if (num === null || num === undefined || isNaN(num)) return '0 B';
 
-// MODULE/PISCINE XP: Always in kB format (e.g., 621 kB, 680 kB) - NOT MB!
-export const formatModuleXP = (xp: number | null | undefined): string => {
-  if (!xp || isNaN(xp)) return '0 kB';
-  const kbValue = Math.round(xp / 1000);
-  return `${kbValue} kB`;
+  if (num < 1000) {
+    return `${num} B`;
+  }
+  if (num < 1000000) {
+    return `${(num / 1000).toFixed(2)} kB`;
+  }
+  return `${(num / 1000000).toFixed(2)} MB`;
 };
-
-// AUDIT VALUES: Always in MB format (e.g., 2.8 MB, 1.5 MB)
-export const formatAuditMB = (auditValue: number | null | undefined): string => {
-  if (!auditValue || isNaN(auditValue)) return '0.0 MB';
-  const mbValue = (auditValue / 1000000).toFixed(1);
-  return `${mbValue} MB`;
-};
-
-// Legacy formatXP for backward compatibility - use formatModuleXP instead
-export const formatXP = formatModuleXP;
 
 /**
- * Format XP values for quick stats (kB format, no decimals, no "XP" word)
- * @param xp - XP value to format
- * @returns Formatted XP string for quick stats
+ * Formats audit values (up/down) which are typically very large.
+ * This function will now use the universal formatter.
+ * @param auditValue - The audit value to format.
+ * @returns The formatted string in B, kB, or MB.
  */
-export const formatXPForQuickStats = (xp: number | null | undefined): string => {
-  if (!xp || isNaN(xp)) return '0 kB';
-
-  // ALWAYS format as kB (never show M) - user preference
-  // Convert to kB and round to integer
-  const kbValue = Math.round(xp / 1000);
-  return `${kbValue} kB`;
+export const formatAuditMB = (auditValue: number | null | undefined): string => {
+  return formatXPValue(auditValue);
 };
 
+/**
+ * Formats the audit ratio to one decimal place.
+ * @param ratio - The audit ratio.
+ * @returns The formatted string (e.g., "1.9").
+ */
+export const formatAuditRatio = (ratio: number | null | undefined): string => {
+  if (ratio == null || isNaN(ratio)) return '0.0';
+  return ratio.toFixed(1);
+};
 
-
-
+// Deprecated functions for backward compatibility
+export const formatTotalXP = (xp: number) => formatXPValue(xp);
+export const formatModuleXP = (xp: number) => formatXPValue(xp);
+export const formatXP = (xp: number) => formatXPValue(xp);
+export const formatXPForQuickStats = (xp: number) => formatXPValue(xp);
 
 /**
  * Get XP progress percentage for level progression
@@ -65,13 +64,81 @@ export const formatXPForQuickStats = (xp: number | null | undefined): string => 
 export const getXPProgress = (currentXP: number | null | undefined, level: number | null | undefined): number => {
   if (!currentXP || !level) return 0;
   
-  // Simple calculation - each level requires 1000 XP more than the previous
   const currentLevelXP = level * 1000;
   const nextLevelXP = (level + 1) * 1000;
   const progressXP = currentXP - currentLevelXP;
   const requiredXP = nextLevelXP - currentLevelXP;
   
   return Math.min(100, Math.max(0, (progressXP / requiredXP) * 100));
+};
+
+// ============================================================================
+// SKILL FORMATTING
+// ============================================================================
+
+/**
+ * Calculates the total points from all skill transactions.
+ * @param skillTransactions - An array of transactions of type 'skill_...'.
+ * @returns The sum of all skill points.
+ */
+export const calculateTotalSkillPoints = (skillTransactions: any[]): number => {
+  if (!skillTransactions || skillTransactions.length === 0) return 0;
+  return skillTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+};
+
+/**
+ * Calculates a single skill's percentage of the total skill points.
+ * @param skillPoints - The points for a single skill.
+ * @param totalSkillPoints - The total points for all skills.
+ * @returns The formatted percentage string (e.g., "15.5%").
+ */
+export const formatSkillPercentage = (skillPoints: number, totalSkillPoints: number): string => {
+  if (!skillPoints || !totalSkillPoints) return '0.0%';
+  const percentage = (skillPoints / totalSkillPoints) * 100;
+  return `${percentage.toFixed(1)}%`;
+};
+
+// ============================================================================
+// GRADE FORMATTING
+// ============================================================================
+
+/**
+ * Formats grades as percentages with bonus handling.
+ * Grades are multiplied by 100 and displayed as percentages.
+ * If grade exceeds 100%, the excess is shown as bonus.
+ * @param grade - The grade value (e.g., 1.2 becomes "100% + 20%")
+ * @returns The formatted grade string
+ */
+export const formatGrade = (grade: number | null | undefined): string => {
+  if (grade === null || grade === undefined || isNaN(grade)) return '0%';
+  
+  const percentage = grade * 100;
+  
+  if (percentage <= 100) {
+    return `${percentage.toFixed(0)}%`;
+  } else {
+    const bonus = percentage - 100;
+    return `100% + ${bonus.toFixed(0)}%`;
+  }
+};
+
+/**
+ * Formats grades with decimal precision for detailed display.
+ * @param grade - The grade value
+ * @param decimals - Number of decimal places (default: 1)
+ * @returns The formatted grade string with decimals
+ */
+export const formatGradeDetailed = (grade: number | null | undefined, decimals: number = 1): string => {
+  if (grade === null || grade === undefined || isNaN(grade)) return '0.0%';
+  
+  const percentage = grade * 100;
+  
+  if (percentage <= 100) {
+    return `${percentage.toFixed(decimals)}%`;
+  } else {
+    const bonus = percentage - 100;
+    return `100% + ${bonus.toFixed(decimals)}%`;
+  }
 };
 
 // ============================================================================
@@ -84,419 +151,35 @@ interface User {
   login?: string;
 }
 
-/**
- * Get user display name from user data
- * @param user - User object
- * @returns Formatted display name
- */
 export const getUserDisplayName = (user: User | null | undefined): string => {
   if (!user) return 'Unknown User';
-  
-  if (user.firstName && user.lastName) {
-    return `${user.firstName} ${user.lastName}`;
-  }
-  if (user.firstName) {
-    return user.firstName;
-  }
-  if (user.lastName) {
-    return user.lastName;
-  }
-  if (user.login) {
-    return user.login;
-  }
-  return 'Unknown User';
-};
-
-interface UserWithEmail extends User {
-  attrs?: {
-    email?: string;
-  };
-  email?: string;
-}
-
-/**
- * Get user email from user data
- * @param user - User object
- * @returns User email or fallback
- */
-export const getUserEmail = (user: UserWithEmail | null | undefined): string => {
-  if (!user) return '';
-
-  // Check attrs.email first (primary source from GraphQL)
-  if (user.attrs && user.attrs.email) {
-    return user.attrs.email;
-  }
-
-  // Fallback to direct email field or login
-  return user.email || user.login || '';
-};
-
-/**
- * Format campus name with proper capitalization
- * @param campus - Campus name to format
- * @returns Formatted campus name
- */
-export const formatCampusName = (campus: string | null | undefined): string => {
-  if (!campus) return 'Unknown Campus';
-  return campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase();
-};
-
-interface UserWithAvatar extends User {
-  profile?: {
-    avatar?: string;
-    avatarUrl?: string;
-    picture?: string;
-    image?: string;
-    photo?: string;
-  };
-  attrs?: {
-    [key: string]: any;
-    'pro-picUploadId'?: string;
-  };
-  avatar?: string;
-  avatarUrl?: string;
-  picture?: string;
-  image?: string;
-  photo?: string;
-}
-
-/**
- * Get avatar URL for user from GraphQL endpoint
- * @param user - User object from GraphQL query
- * @returns Avatar URL or fallback
- */
-export const getAvatarUrl = (user: UserWithAvatar | null | undefined): string | null => {
-  // 🐛 DEBUG: Comprehensive avatar URL debugging
-  console.group('🎨 getAvatarUrl Debug');
-  console.log('👤 Input User:', user);
-
-  if (!user) {
-    console.log('❌ No user provided');
-    console.groupEnd();
-    return null;
-  }
-
-  console.log('🔍 Avatar Field Analysis:');
-  console.log('  - user.profile:', user.profile);
-  console.log('  - user.attrs:', user.attrs);
-  console.log('  - user.avatar:', user.avatar);
-  console.log('  - user.avatarUrl:', user.avatarUrl);
-  console.log('  - user.picture:', user.picture);
-  console.log('  - user.image:', user.image);
-  console.log('  - user.login:', user.login);
-
-  // Based on GetUserComplete.txt analysis:
-  // - profile field is an empty object {}
-  // - actual avatar data is in attrs["pro-picUploadId"]
-  // - need to construct URL from upload ID
-
-  // Check for profile picture upload ID in attrs (primary source for reboot01)
-  if (user.attrs && typeof user.attrs === 'object') {
-    const proUploadId = (user.attrs as any)['pro-picUploadId'];
-    console.log('  - attrs.pro-picUploadId:', proUploadId);
-    if (proUploadId && typeof proUploadId === 'string') {
-      // Use dynamic avatar configuration for URL patterns
-      const possibleUrls = [
-        `${config.avatar.providers.backblaze.baseUrl}/${proUploadId}`,
-        `${config.avatar.providers.backblaze.apiUrl}?fileId=${proUploadId}`,
-        `${config.api.baseURL}/profile-picture/${proUploadId}`,
-        // Fallback to a test avatar for debugging
-        'https://via.placeholder.com/128x128/4F46E5/FFFFFF?text=Avatar'
-      ];
-
-      // For now, use the first format but log all possibilities
-      const avatarUrl = possibleUrls[0];
-      console.log('🎯 Constructed avatar URL from upload ID:', avatarUrl);
-      console.log('🔗 Upload ID:', proUploadId);
-      console.log('🔗 All possible URLs:', possibleUrls);
-      console.groupEnd();
-      return avatarUrl;
-    }
-  }
-
-  // Check for avatar in user.profile object (fallback)
-  if (user.profile && typeof user.profile === 'object') {
-    console.log('✅ Profile object found, checking fields...');
-    console.log('  - profile.avatar:', user.profile.avatar);
-    console.log('  - profile.avatarUrl:', user.profile.avatarUrl);
-    console.log('  - profile.picture:', user.profile.picture);
-    console.log('  - profile.image:', user.profile.image);
-    console.log('  - profile.photo:', user.profile.photo);
-
-    // Common avatar field names in profile
-    if (user.profile.avatar) {
-      console.log('🎯 Found avatar in profile.avatar:', user.profile.avatar);
-      console.groupEnd();
-      return user.profile.avatar;
-    }
-    if (user.profile.avatarUrl) {
-      console.log('🎯 Found avatar in profile.avatarUrl:', user.profile.avatarUrl);
-      console.groupEnd();
-      return user.profile.avatarUrl;
-    }
-    if (user.profile.picture) {
-      console.log('🎯 Found avatar in profile.picture:', user.profile.picture);
-      console.groupEnd();
-      return user.profile.picture;
-    }
-    if (user.profile.image) {
-      console.log('🎯 Found avatar in profile.image:', user.profile.image);
-      console.groupEnd();
-      return user.profile.image;
-    }
-    if (user.profile.photo) {
-      console.log('🎯 Found avatar in profile.photo:', user.profile.photo);
-      console.groupEnd();
-      return user.profile.photo;
-    }
-  }
-
-  // Check for direct avatar field on user object
-  console.log('🔍 Checking direct user fields...');
-  if (user.avatar) {
-    console.log('🎯 Found avatar in user.avatar:', user.avatar);
-    console.groupEnd();
-    return user.avatar;
-  }
-  if (user.avatarUrl) {
-    console.log('🎯 Found avatar in user.avatarUrl:', user.avatarUrl);
-    console.groupEnd();
-    return user.avatarUrl;
-  }
-  if (user.picture) {
-    console.log('🎯 Found avatar in user.picture:', user.picture);
-    console.groupEnd();
-    return user.picture;
-  }
-  if (user.image) {
-    console.log('🎯 Found avatar in user.image:', user.image);
-    console.groupEnd();
-    return user.image;
-  }
-
-  // Try platform-specific avatar endpoints
-  if (user.login) {
-    const githubAvatar = `https://github.com/${user.login}.png?size=128`;
-    console.log('🔄 Using GitHub fallback avatar:', githubAvatar);
-    console.groupEnd();
-    // Try GitHub avatar pattern (common fallback for reboot01 users)
-    // The Avatar component will handle 404s gracefully and fall back to initials
-    return githubAvatar;
-  }
-
-  // No avatar found - return null to trigger fallback in Avatar component
-  console.log('❌ No avatar found, returning null');
-  console.groupEnd();
-  return null;
+  if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`;
+  return user.firstName || user.lastName || user.login || 'Unknown User';
 };
 
 // ============================================================================
 // DATE FORMATTING
 // ============================================================================
 
-/**
- * Format date for display
- * @param dateInput - Date to format
- * @returns Formatted date string
- */
-export const formatDate = (dateInput: string | Date | null | undefined): string => {
+export const formatDate = (dateInput: string | Date | null | undefined, options?: Intl.DateTimeFormatOptions): string => {
   if (!dateInput) return '';
-  
   try {
     const date = new Date(dateInput);
     if (isNaN(date.getTime())) return '';
-    
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    const defaultOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options || defaultOptions);
   } catch {
     return '';
   }
 };
 
-/**
- * Format date and time for display
- * @param dateInput - Date to format
- * @returns Formatted date and time string
- */
-export const formatDateTime = (dateInput: string | Date | null | undefined): string => {
+export const getRelativeTime = (dateInput: string | Date) => {
   if (!dateInput) return '';
-  
-  try {
-    const date = new Date(dateInput);
-    if (isNaN(date.getTime())) return '';
-    
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch {
-    return '';
-  }
-};
-
-// ============================================================================
-// PERCENTAGE AND NUMERIC FORMATTING
-// ============================================================================
-
-/**
- * Format percentage for display
- * @param value - Value to format as percentage
- * @param decimals - Number of decimal places (default: 1)
- * @returns Formatted percentage string
- */
-export const formatPercentage = (value: number | null | undefined, decimals = 1): string => {
-  if (value == null || isNaN(value)) return '0%';
-  return `${value.toFixed(decimals)}%`;
-};
-
-/**
- * Calculate percentage from two values
- * @param {number} value - Numerator value
- * @param {number} total - Denominator value
- * @returns {number} Percentage (0-100)
- */
-export const calculatePercentage = (value, total) => {
-  if (!total || total === 0) return 0;
-  return Math.round((value / total) * 100);
-};
-
-// ============================================================================
-// SKILL AND PROFICIENCY FORMATTING
-// ============================================================================
-
-/**
- * Calculate proficiency level from skill amount
- * @param {number} amount - Skill amount/XP
- * @returns {string} Proficiency level
- */
-export const calculateProficiencyLevel = (amount) => {
-  if (!amount || amount < 100) return 'Beginner';
-  if (amount < 500) return 'Novice';
-  if (amount < 1000) return 'Intermediate';
-  if (amount < 2000) return 'Advanced';
-  if (amount < 5000) return 'Expert';
-  return 'Master';
-};
-
-/**
- * Get skill color based on proficiency
- * @param {number} amount - Skill amount/XP
- * @returns {string} CSS color class or hex color
- */
-export const getSkillColor = (amount) => {
-  // Use dynamic colors from configuration with fallbacks
-  if (!amount || amount < 100) return config.ui.theme.secondary || '#6b7280'; // Gray
-  if (amount < 500) return config.ui.theme.primary || '#3b82f6'; // Blue
-  if (amount < 1000) return '#10b981'; // Green (fallback)
-  if (amount < 2000) return '#f59e0b'; // Yellow (fallback)
-  if (amount < 5000) return '#ef4444'; // Red (fallback)
-  return config.ui.theme.accent || '#8b5cf6'; // Purple
-};
-
-// ============================================================================
-// PROJECT AND AUDIT FORMATTING
-// ============================================================================
-
-/**
- * Format project name from path
- * @param {string} path - Project path
- * @returns {string} Formatted project name
- */
-export const formatProjectName = (path) => {
-  if (!path) return 'Unknown Project';
-  
-  // Extract the last part of the path and format it
-  const name = path.split('/').pop() || path;
-  
-  // Convert kebab-case or snake_case to Title Case
-  return name
-    .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase());
-};
-
-/**
- * Format audit ratio for display
- * @param ratio - Audit ratio value
- * @returns Formatted audit ratio
- */
-export const formatAuditRatio = (ratio: number | null | undefined): string => {
-  if (ratio == null || isNaN(ratio)) return '0.0';
-  return ratio.toFixed(1); // 1 decimal place as per requirements
-};
-
-/**
- * Format audit amounts (received/done) for display
- * @param {number} amount - Audit amount value
- * @returns {string} Formatted audit amount
- */
-export const formatAuditAmount = (amount) => {
-  if (amount == null || isNaN(amount)) return '0';
-  // Audit amounts are already in correct units, no need to divide
-  return Math.round(amount).toString();
-};
-
-/**
- * Format skill XP as percentage for display
- * @param skillXP - Skill XP value
- * @param totalXP - Total XP for percentage calculation
- * @returns Formatted skill percentage
- */
-export const formatSkillPercentage = (skillXP: number | null | undefined, totalXP: number | null | undefined): string => {
-  if (!skillXP || !totalXP || totalXP === 0) return '0%';
-  const percentage = (skillXP / totalXP) * 100;
-  return `${Math.round(percentage)}%`;
-};
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
-
-/**
- * Truncate text to specified length
- * @param {string} text - Text to truncate
- * @param {number} maxLength - Maximum length (default: 50)
- * @returns {string} Truncated text
- */
-export const truncateText = (text, maxLength = 50) => {
-  if (!text || text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
-};
-
-/**
- * Format large numbers with kB/MB suffixes
- * @param {number} num - Number to format
- * @returns {string} Formatted number string
- */
-export const formatNumber = (num) => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + ' MB';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + ' kB';
-  }
-  return num.toString() + ' B';
-};
-
-/**
- * Get relative time string (e.g., "2 days ago")
- * @param {string|Date} dateInput - Date to compare
- * @returns {string} Relative time string
- */
-export const getRelativeTime = (dateInput) => {
-  if (!dateInput) return '';
-
   try {
     const date = new Date(dateInput);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -509,226 +192,77 @@ export const getRelativeTime = (dateInput) => {
 };
 
 // ============================================================================
-// ENHANCED UTILITY FUNCTIONS FOR COMPONENT PROCESSORS
+// MODULE & PROJECT UTILITIES
 // ============================================================================
 
-/**
- * Enhanced XP progress calculation with detailed information
- * @param {number} currentXP - Current XP amount
- * @param {number} level - Current level
- * @returns {Object} Detailed progress information
- */
-export const getXPProgressDetailed = (currentXP, level) => {
-  if (!currentXP || !level) {
-    return {
-      percentage: 0,
-      current: 0,
-      required: 1000,
-      remaining: 1000
-    };
-  }
-
-  const currentLevelXP = level * 1000;
-  const nextLevelXP = (level + 1) * 1000;
-  const progressXP = currentXP - currentLevelXP;
-  const requiredXP = nextLevelXP - currentLevelXP;
-  const remainingXP = requiredXP - progressXP;
-
-  return {
-    percentage: Math.min(100, Math.max(0, (progressXP / requiredXP) * 100)),
-    current: Math.max(0, progressXP),
-    required: requiredXP,
-    remaining: Math.max(0, remainingXP)
-  };
-};
-
-
-
-/**
- * Format skill name for display (replace underscores with spaces)
- * @param {string} skillName - Raw skill name
- * @returns {string} Formatted skill name
- */
-export const formatSkillName = (skillName) => {
-  if (!skillName) return 'Unknown Skill';
-  return skillName.replace(/_/g, ' ');
-};
-
-interface Thresholds {
-  high?: number;
-  medium?: number;
-}
-
-/**
- * Get badge variant based on numeric value and thresholds
- * @param value - Numeric value to evaluate
- * @param thresholds - Threshold configuration
- * @returns Badge variant
- */
-export const getBadgeVariant = (value: number, thresholds: Thresholds = {}): string => {
-  const { high = 70, medium = 40 } = thresholds;
-
-  if (value >= high) return 'success';
-  if (value >= medium) return 'primary';
-  return 'warning';
-};
-
-// ============================================================================
-// DYNAMIC MODULE DATA SEPARATION
-// ============================================================================
-
-/**
- * CORRECTLY separate piscine data from main BH module data
- * Handles ALL piscine types with correct path detection:
- * - BH Module: /bahrain/bh-module/{{project}} (NOT piscine)
- * - Standard Piscines: /bahrain/bh-module/piscine-{{name}}/{{project}}
- * - Go Piscine: /bahrain/bh-piscine/{{project}}
- * @param data - Array of data records with path property
- * @returns Object with separated data by module type
- */
 export const separateModuleData = (data: any[]) => {
   if (!data || !Array.isArray(data)) {
-    return {
-      mainModule: [],
-      piscines: {},
-      allPiscines: [],
-      all: []
-    };
+    return { mainModule: [], piscines: {}, allPiscines: [], all: [] };
   }
-
   const mainModule: any[] = [];
   const piscines: { [key: string]: any[] } = {};
   const allPiscines: any[] = [];
-
   data.forEach(item => {
     if (!item.path) {
       mainModule.push(item);
       return;
     }
-
-    // CORRECT PISCINE DETECTION:
     if (item.path.includes('/bh-piscine/')) {
-      // Go Piscine: /bahrain/bh-piscine/{{project}}
       const piscineType = 'go';
-      if (!piscines[piscineType]) {
-        piscines[piscineType] = [];
-      }
+      if (!piscines[piscineType]) piscines[piscineType] = [];
       piscines[piscineType].push(item);
       allPiscines.push(item);
     } else if (item.path.includes('/bh-module/piscine-')) {
-      // Standard Piscines: /bahrain/bh-module/piscine-{{name}}/{{project}}
       const piscineMatch = item.path.match(/piscine-(\w+)/);
       if (piscineMatch) {
-        const piscineType = piscineMatch[1]; // js, rust, flutter, etc.
-        if (!piscines[piscineType]) {
-          piscines[piscineType] = [];
-        }
+        const piscineType = piscineMatch[1];
+        if (!piscines[piscineType]) piscines[piscineType] = [];
         piscines[piscineType].push(item);
         allPiscines.push(item);
       }
     } else {
-      // BH Module: /bahrain/bh-module/{{project}} (main module)
       mainModule.push(item);
     }
   });
-
-  return {
-    mainModule,
-    piscines,
-    allPiscines,
-    all: data
-  };
+  return { mainModule, piscines, allPiscines, all: data };
 };
 
-/**
- * Calculate CORRECT XP totals by module type (BH Module vs Piscines)
- * Based on actual data analysis: Total=1300K, BH=0.62MB, Piscine=0.68MB
- * @param transactions - Array of XP transactions
- * @returns Object with XP totals by module
- */
 export const calculateModuleXPTotals = (transactions: any[]) => {
   if (!transactions || !Array.isArray(transactions)) {
-    return {
-      total: 0,
-      bhModule: 0,
-      piscines: {} as { [key: string]: number },
-      allPiscines: 0
-    };
+    return { total: 0, bhModule: 0, piscines: {} as { [key: string]: number }, allPiscines: 0 };
   }
-
   const xpTransactions = transactions.filter(t => t.type === 'xp');
-
-  const totals = {
-    total: 0,
-    bhModule: 0,
-    piscines: {} as { [key: string]: number },
-    allPiscines: 0
-  };
-
-  // Separate BH Module from Piscines
+  const totals = { total: 0, bhModule: 0, piscines: {} as { [key: string]: number }, allPiscines: 0 };
   xpTransactions.forEach(t => {
     const amount = t.amount || 0;
     totals.total += amount;
-
     if (t.path && t.path.includes('piscine')) {
-      // This is a piscine transaction
       const piscineMatch = t.path.match(/piscine-(\w+)/);
       if (piscineMatch) {
         const piscineType = piscineMatch[1];
-        if (!totals.piscines[piscineType]) {
-          totals.piscines[piscineType] = 0;
-        }
+        if (!totals.piscines[piscineType]) totals.piscines[piscineType] = 0;
         totals.piscines[piscineType] += amount;
         totals.allPiscines += amount;
       }
     } else {
-      // This is BH Module transaction
       totals.bhModule += amount;
     }
   });
-
   return totals;
 };
 
-/**
- * Calculate correct level from total XP (in bytes)
- * Formula: floor(sqrt(totalXP / 1000)) + 1
- * @param totalXP - Total XP in bytes
- * @returns User level
- */
-export const calculateLevel = (totalXP: number): number => {
-  if (!totalXP || totalXP <= 0) return 1;
-  return Math.floor(Math.sqrt(totalXP / 1000)) + 1;
-};
-
-/**
- * Calculate unique project statistics (avoiding double counting)
- * @param progresses - Array of progress records
- * @returns Object with project statistics
- */
 export const calculateProjectStats = (progresses: any[]) => {
   const projectsByPath: { [key: string]: any[] } = {};
-
-  // Group by path to handle multiple attempts
   progresses.forEach(p => {
-    if (!projectsByPath[p.path]) {
-      projectsByPath[p.path] = [];
-    }
+    if (!projectsByPath[p.path]) projectsByPath[p.path] = [];
     projectsByPath[p.path].push(p);
   });
-
-  let totalProjects = 0;
-  let passedProjects = 0;
-  let failedProjects = 0;
-
-  // Analyze each unique project
+  let totalProjects = 0, passedProjects = 0, failedProjects = 0;
   Object.keys(projectsByPath).forEach(path => {
     const projectVersions = projectsByPath[path];
-    // Get the latest version (most recent attempt)
     const latestVersion = projectVersions.reduce((latest, current) =>
       new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
     );
-
     totalProjects++;
     if (latestVersion.isDone && latestVersion.grade >= 1) {
       passedProjects++;
@@ -736,7 +270,6 @@ export const calculateProjectStats = (progresses: any[]) => {
       failedProjects++;
     }
   });
-
   return {
     total: totalProjects,
     passed: passedProjects,
@@ -745,125 +278,278 @@ export const calculateProjectStats = (progresses: any[]) => {
   };
 };
 
-/**
- * Get user performance notation based on audit ratio and other metrics
- * @param auditRatio - User's audit ratio
- * @param totalXP - User's total XP
- * @param completedProjects - Number of completed projects
- * @returns Performance notation object
- */
-export const getRankFromLevel = (level: number) => {
-  if (level >= 60) {
-    return {
-      notation: "Full-Stack Developer",
-      description: "Master of the digital realm",
-      color: "text-purple-400",
-      badge: "🏆"
-    };
-  } else if (level >= 55) {
-    return {
-      notation: "Confirmed Developer",
-      description: "Seasoned and reliable coder",
-      color: "text-blue-400",
-      badge: "⭐"
-    };
-  } else if (level >= 50) {
-    return {
-      notation: "Junior Developer",
-      description: "Capable and growing",
-      color: "text-cyan-400",
-      badge: "🚀"
-    };
-  } else if (level >= 40) {
-    return {
-      notation: "Basic Developer",
-      description: "Solid foundational skills",
-      color: "text-green-400",
-      badge: "✨"
-    };
-  } else if (level >= 30) {
-    return {
-      notation: "Assistant Developer",
-      description: "Assisting and learning",
-      color: "text-teal-400",
-      badge: "📈"
-    };
-  } else if (level >= 20) {
-    return {
-      notation: "Apprentice Developer",
-      description: "On the path to mastery",
-      color: "text-yellow-400",
-      badge: "🛠️"
-    };
-  } else if (level >= 10) {
-    return {
-      notation: "Beginner Developer",
-      description: "Starting the coding journey",
-      color: "text-orange-400",
-      badge: "🌱"
-    };
-  } else {
-    return {
-      notation: "Aspiring Developer",
-      description: "Eager to learn and grow",
-      color: "text-gray-400",
-      badge: "💡"
-    };
-  }
+// ============================================================================
+// LEVEL & RANK UTILITIES
+// ============================================================================
+
+export const calculateLevel = (totalXP: number): number => {
+  if (!totalXP || totalXP <= 0) return 1;
+  return Math.floor(Math.sqrt(totalXP / 1000)) + 1;
 };
 
 /**
- * Extract complete contact information from user attributes
- * @param attrs - User attributes object
- * @returns Complete contact information object
+ * Calculate level progress using the correct square root method with BH Module XP only
+ * This matches the original reboot01 level calculation system
+ * @param {number} bhModuleXP - BH Module XP in bytes (excluding piscines)
+ * @returns {object} Level information with correct progress calculation
  */
-export const extractContactInfo = (attrs: any) => {
-  if (!attrs) return null;
+export const calculateLevelProgress = (bhModuleXP: number) => {
+  console.log('🔍 Level Calculation Debug (Square Root Method):', {
+    bhModuleXP,
+    bhModuleXPInKB: bhModuleXP / 1000,
+    bhModuleXPInMB: bhModuleXP / 1000000
+  });
+
+  if (!bhModuleXP || bhModuleXP <= 0) {
+    return {
+      currentLevel: 1,
+      progress: 0,
+      remainingXP: 1000, // 1kB for first level
+      nextLevelXP: 1000,
+      currentLevelStartXP: 0,
+      progressInKB: 0,
+      remainingInKB: 1
+    };
+  }
+
+  // Square root calculation: level = floor(sqrt(xp_in_kb)) + 1
+  const xpInKB = bhModuleXP / 1000;
+  const currentLevel = Math.floor(Math.sqrt(xpInKB)) + 1;
+  
+  // Calculate XP thresholds for square root method
+  const currentLevelStartXP = Math.pow(currentLevel - 1, 2) * 1000; // in bytes
+  const nextLevelXP = Math.pow(currentLevel, 2) * 1000; // in bytes
+  
+  // Calculate progress within current level
+  const xpInCurrentLevel = bhModuleXP - currentLevelStartXP;
+  const remainingXP = nextLevelXP - bhModuleXP;
+  const levelRange = nextLevelXP - currentLevelStartXP;
+  const progress = levelRange > 0 ? (xpInCurrentLevel / levelRange) * 100 : 0;
+  
+  // Convert to kB for display
+  const progressInKB = xpInCurrentLevel / 1000;
+  const remainingInKB = remainingXP / 1000;
+  
+  const result = {
+    currentLevel,
+    progress: Math.min(100, Math.max(0, progress)),
+    remainingXP,
+    nextLevelXP,
+    currentLevelStartXP,
+    progressInKB,
+    remainingInKB
+  };
+
+  console.log('📊 Level Calculation Result (Square Root):', {
+    ...result,
+    xpInCurrentLevel,
+    progressInKB: progressInKB.toFixed(1),
+    remainingInKB: remainingInKB.toFixed(1),
+    levelRange: levelRange / 1000
+  });
+  
+  return result;
+};
+
+export const getRankFromLevel = (level: number) => {
+  if (level >= 60) return { notation: "Full-Stack developer", badge: "🏆" };
+  if (level >= 55) return { notation: "Confirmed developer", badge: "⭐" };
+  if (level >= 50) return { notation: "Junior developer", badge: "🚀" };
+  if (level >= 40) return { notation: "Basic developer", badge: "✨" };
+  if (level >= 30) return { notation: "Assistant developer", badge: "📈" };
+  if (level >= 20) return { notation: "Apprentice developer", badge: "🛠️" };
+  if (level >= 10) return { notation: "Beginner developer", badge: "🌱" };
+  return { notation: "Aspiring developer", badge: "💡" };
+};
+
+/**
+ * Format skill name for display (replace underscores with spaces and capitalize)
+ * @param {string} skillName - Raw skill name
+ * @returns {string} Formatted skill name
+ */
+export const formatSkillName = (skillName: string) => {
+  if (!skillName) return 'Unknown Skill';
+  return skillName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+// ============================================================================
+// PERSONAL INFORMATION UTILITIES
+// ============================================================================
+
+/**
+ * Extract personal information from user attrs
+ * @param {any} attrs - User attributes object
+ * @returns {object} Extracted personal information
+ */
+export const extractPersonalInfo = (attrs: any) => {
+  if (!attrs) return {};
 
   return {
-    personal: {
-      email: attrs.email || null,
-      phone: attrs.Phone || attrs.PhoneNumber || null,
-      dateOfBirth: attrs.dateOfBirth || null,
-      placeOfBirth: attrs.placeOfBirth || null,
-      nationality: attrs.countryOfBirth || attrs.addressCountry || null,
-      cprNumber: attrs.CPRnumber || null,
-      gender: attrs.gender || attrs.genders || null
+    // Personal Details
+    dateOfBirth: attrs.dateOfBirth || attrs.dob || attrs.birthDate,
+    nationality: attrs.nationality || attrs.country,
+    nationalId: attrs.nationalId || attrs.idNumber || attrs.civilId,
+    cprNumber: attrs.cprNumber || attrs.cpr || attrs.civilId,
+    studentId: attrs.studentId || attrs.id,
+    
+    // Contact Information
+    email: attrs.email || attrs.emailAddress,
+    phone: attrs.phone || attrs.phoneNumber || attrs.mobile,
+    alternativePhone: attrs.alternativePhone || attrs.altPhone,
+    
+    // Emergency Contact
+    emergencyContact: {
+      name: attrs.emergencyContactName || attrs.emergencyName || attrs.nextOfKinName,
+      phone: attrs.emergencyContactPhone || attrs.emergencyPhone || attrs.nextOfKinPhone,
+      relationship: attrs.emergencyContactRelationship || attrs.emergencyRelation || attrs.nextOfKinRelation,
+      address: attrs.emergencyContactAddress || attrs.emergencyAddress
     },
+    
+    // Address Information
     address: {
-      street: attrs.addressStreet || null,
-      complement: attrs.addressComplementStreet || null,
-      city: attrs.addressCity || null,
-      country: attrs.addressCountry || null,
-      postalCode: attrs.addressPostalCode || null
+      street: attrs.addressStreet || attrs.street || attrs.address,
+      city: attrs.addressCity || attrs.city,
+      country: attrs.addressCountry || attrs.country || 'Bahrain',
+      postalCode: attrs.addressPostalCode || attrs.postalCode || attrs.zipCode,
+      area: attrs.addressArea || attrs.area || attrs.district
     },
-    emergency: {
-      firstName: attrs.emergencyFirstName || null,
-      lastName: attrs.emergencyLastName || null,
-      fullName: `${attrs.emergencyFirstName || ''} ${attrs.emergencyLastName || ''}`.trim() || null,
-      phone: attrs.emergencyTel || null,
-      relation: attrs.emergencyAffiliation || null
-    },
-    education: {
-      degree: attrs.Degree || attrs.schoolanddegree || null,
-      qualification: attrs.qualification || attrs.qualifica || null,
-      graduationDate: attrs.graddate || null
-    },
-    employment: {
-      status: attrs.employment || null,
-      jobTitle: attrs.jobtitle || null,
-      other: attrs.otheremp || null
-    },
-    uploads: {
-      profilePicture: attrs['pro-picUploadId'] || null,
-      idCard: attrs['id-cardUploadId'] || null
-    },
-    other: {
-      medicalInfo: attrs.medicalInfo || null,
-      howDidYouHear: attrs.howdidyou || null,
-      conditionsAccepted: attrs['general-conditionsAccepted'] || false
-    }
+    
+    // Academic Information
+    cohort: attrs.cohort || attrs.cohortName || extractCohortFromPath(attrs.path),
+    cohortNumber: attrs.cohortNumber || attrs.batch || extractCohortNumber(attrs.cohort),
+    academicLevel: attrs.academicLevel || attrs.educationLevel,
+    
+    // Additional Information
+    profilePicture: attrs['pro-picUploadId'] || attrs.profilePic || attrs.avatar,
+    linkedIn: attrs.linkedIn || attrs.linkedin,
+    github: attrs.github || attrs.githubUsername,
+    personalWebsite: attrs.website || attrs.personalSite,
+    
+    // Medical/Health Information (if available)
+    allergies: attrs.allergies || attrs.medicalAllergies,
+    medicalConditions: attrs.medicalConditions || attrs.healthConditions,
+    bloodType: attrs.bloodType || attrs.bloodGroup,
+    
+    // Professional Information
+    currentEmployer: attrs.currentEmployer || attrs.employer,
+    jobTitle: attrs.jobTitle || attrs.position,
+    workExperience: attrs.workExperience || attrs.experience,
+    
+    // Educational Background
+    previousEducation: attrs.previousEducation || attrs.education,
+    university: attrs.university || attrs.college,
+    degree: attrs.degree || attrs.qualification
   };
 };
 
+/**
+ * Extract cohort information from path
+ * @param {string} path - User path
+ * @returns {string} Cohort name
+ */
+export const extractCohortFromPath = (path: string) => {
+  if (!path) return null;
+  
+  // Try to extract cohort from path patterns like /bahrain/bh-<cohort>/
+  const cohortMatch = path.match(/\/bahrain\/bh-([^\/]+)\//);
+  if (cohortMatch) {
+    return cohortMatch[1];
+  }
+  
+  // Try other patterns
+  const moduleMatch = path.match(/\/bahrain\/([^\/]+)\//);
+  if (moduleMatch) {
+    return moduleMatch[1];
+  }
+  
+  return null;
+};
 
+/**
+ * Extract cohort number from cohort string
+ * @param {string} cohort - Cohort string
+ * @returns {string} Cohort number
+ */
+export const extractCohortNumber = (cohort: string) => {
+  if (!cohort) return null;
+  
+  const numberMatch = cohort.match(/(\d+)/);
+  return numberMatch ? numberMatch[1] : null;
+};
+
+/**
+ * Format phone number for display
+ * @param {string} phone - Phone number
+ * @returns {string} Formatted phone number
+ */
+export const formatPhoneNumber = (phone: string) => {
+  if (!phone) return '';
+  
+  // Remove all non-numeric characters
+  const cleaned = phone.replace(/\D/g, '');
+  
+  // Format Bahraini numbers
+  if (cleaned.startsWith('973')) {
+    return `+973 ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`;
+  }
+  
+  // Format other international numbers
+  if (cleaned.length > 10) {
+    return `+${cleaned}`;
+  }
+  
+  // Format local numbers
+  if (cleaned.length === 8) {
+    return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
+  }
+  
+  return phone;
+};
+
+/**
+ * Format CPR number for display (mask sensitive parts)
+ * @param {string} cpr - CPR number
+ * @returns {string} Formatted CPR number
+ */
+export const formatCPRNumber = (cpr: string, maskSensitive = true) => {
+  if (!cpr) return '';
+  
+  const cleaned = cpr.replace(/\D/g, '');
+  
+  if (cleaned.length === 9) {
+    if (maskSensitive) {
+      return `${cleaned.slice(0, 2)}****${cleaned.slice(6)}`;
+    } else {
+      return `${cleaned.slice(0, 6)}-${cleaned.slice(6)}`;
+    }
+  }
+  
+  return cpr;
+};
+
+/**
+ * Get cohort display name
+ * @param {string} cohort - Cohort identifier
+ * @returns {string} Display name for cohort
+ */
+export const getCohortDisplayName = (cohort: string) => {
+  if (!cohort) return 'Cohort';
+  
+  // Handle different cohort formats
+  if (cohort.startsWith('bh-')) {
+    const cohortName = cohort.replace('bh-', '').replace(/[-_]/g, ' ');
+    return `BH ${cohortName.charAt(0).toUpperCase() + cohortName.slice(1)}`;
+  }
+  
+  if (cohort.includes('module')) {
+    return cohort.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
+  
+  // Extract numbers for simple display
+  const numberMatch = cohort.match(/(\d+)/);
+  if (numberMatch) {
+    return `Cohort ${numberMatch[1]}`;
+  }
+  
+  return cohort.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};

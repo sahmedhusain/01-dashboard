@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/setup/test-utils.js'],
+    setupFiles: ['./tests/setup/test-utils.js', '@testing-library/jest-dom'],
     css: false,
     coverage: {
       provider: 'v8',
@@ -36,11 +36,5 @@ export default defineConfig({
       'dist/',
       '.git/'
     ]
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@tests': fileURLToPath(new URL('./tests', import.meta.url))
-    }
   }
 });

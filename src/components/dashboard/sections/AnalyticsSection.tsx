@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { BarChart3, TrendingUp, PieChart, Activity, Calendar, Target } from 'lucide-react'
-import { formatTotalXP } from '../../../utils/dataFormatting'
+import { formatXPValue } from '../../../utils/dataFormatting'
 
 interface AnalyticsSectionProps {
   analytics: any
@@ -47,7 +47,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
               textAnchor="end"
               className="fill-white/60 text-xs"
             >
-              {formatTotalXP((maxXP / 4) * i)}
+              {formatXPValue((maxXP / 4) * i)}
             </text>
           ))}
 
@@ -87,7 +87,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
                 fill="transparent"
                 className="hover:fill-white/10 cursor-pointer"
               >
-                <title>{`${point.month}: ${formatTotalXP(point.xp)} XP`}</title>
+                <title>{`${point.month}: ${formatXPValue(point.xp)} XP`}</title>
               </circle>
             </g>
           ))}
@@ -496,7 +496,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-400 mb-2">{formatTotalXP(analytics.xp.total)}</div>
+            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(analytics.xp.total)}</div>
             <div className="text-white/70 text-sm">Total XP Earned</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.xp.bhModule > analytics.xp.piscines ? 'Module-focused' : 'Piscine-heavy'} learning path

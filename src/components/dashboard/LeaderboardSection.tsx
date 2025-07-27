@@ -25,7 +25,8 @@ import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import Avatar from '../ui/Avatar'
-import { formatTotalXP, formatDate } from '../../utils/dataFormatting'
+import SectionHeader from '../ui/SectionHeader'
+import { formatXPValue, formatDate, extractPersonalInfo, getCohortDisplayName } from '../../utils/dataFormatting'
 
 interface LeaderboardSectionProps {
   user: User
@@ -42,7 +43,7 @@ interface CohortData {
   avgAuditRatio: number
 }
 
-// Comprehensive leaderboard queries with ALL USERS and cohort data
+// Enhanced leaderboard queries with ALL USERS and cohort data
 const GET_ALL_USERS_LEADERBOARD = gql`
   query GetAllUsersLeaderboard {
     user_public_view {
@@ -51,7 +52,6 @@ const GET_ALL_USERS_LEADERBOARD = gql`
       firstName
       lastName
       profile
-      campus
     }
   }
 `;
@@ -63,7 +63,6 @@ const GET_USER_STATISTICS = gql`
       login
       firstName
       lastName
-      campus
       auditRatio
       totalUp
       totalDown
@@ -107,10 +106,9 @@ const GET_PROGRESS_LEADERBOARD = gql`
 // Enhanced cohort and user data queries
 const GET_COHORT_DATA = gql`
   query GetCohortData {
-    event(where: { campus: { _eq: "bahrain" } }) {
+    event {
       id
       path
-      campus
       createdAt
       objectId
     }
@@ -125,14 +123,13 @@ const GET_COHORT_DATA = gql`
 
 const GET_GROUP_SEARCH_DATA = gql`
   query GetGroupSearchData {
-    group(where: { campus: { _eq: "bahrain" } }) {
+    group {
       id
       objectId
       eventId
       captainId
       status
       path
-      campus
       createdAt
     }
     group_user {
@@ -140,11 +137,10 @@ const GET_GROUP_SEARCH_DATA = gql`
       userId
       createdAt
     }
-    object(where: { campus: { _eq: "bahrain" } }) {
+    object {
       id
       name
       type
-      campus
     }
   }
 `;
@@ -197,7 +193,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const [projectFilter, setProjectFilter] = useState('')
   const [levelFilter, setLevelFilter] = useState('all')
 
-  // Query ALL USERS and comprehensive data
+  // Query ALL USERS and complete data
   const { data: allUsersData, loading: allUsersLoading, error: allUsersError } = useQuery(GET_ALL_USERS_LEADERBOARD, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
@@ -240,7 +236,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const groupUsers = groupSearchData?.group_user || []
   const objects = groupSearchData?.object || []
 
-  // Merge public user data with progress and transaction data for comprehensive ranking
+  // Merge public user data with progress and transaction data for complete ranking
   const allUsers = allUsersPublic.map(publicUser => ({
     ...publicUser,
     // Add default values for missing stats (will be calculated from progress/transactions)
@@ -250,7 +246,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     createdAt: null,
     updatedAt: null,
     attrs: {}
-  })).filter(user => !user.campus || user.campus === 'bahrain') // Filter to Bahrain campus only
+  }) // All users are in Bahrain by default
 
   // Process cohort information from event participation data - MUST be before early returns
   const cohortInfo = useMemo(() => {
@@ -384,7 +380,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       )
     }
 
-    // Campus filter removed - default to Bahrain campus only (already filtered in allUsers)
+    // All users are Bahrain-based by default
 
     // Apply level filter for progress leaderboard
     if (levelFilter !== 'all' && activeLeaderboard === 'progress') {
@@ -451,20 +447,12 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold text-white mb-2">
-          🏆 Advanced Leaderboard System
-        </h1>
-        <p className="text-white/70 text-lg">
-          Comprehensive rankings across {totalUsers} users • {availableCohorts.length} active cohorts • {groups.length} project groups
-        </p>
-      </motion.div>
+      {/* Enhanced Header */}
+      <SectionHeader
+        title="Advanced Leaderboard System"
+        subtitle={`Complete rankings across ${totalUsers} users • ${availableCohorts.length} active cohorts • ${groups.length} project groups`}
+        icon={Trophy}
+      />
 
       {/* Cohort Statistics Cards */}
       {availableCohorts.length > 0 && (
@@ -491,7 +479,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   </div>
                   <div className="flex justify-between text-white/70">
                     <span>Avg XP:</span>
-                    <span className="text-white font-medium">{formatTotalXP(cohortData.avgXP)}</span>
+                    <span className="text-white font-medium">{formatXPValue(cohortData.avgXP)}</span>
                   </div>
                   <div className="flex justify-between text-white/70">
                     <span>Avg Audit:</span>
@@ -526,7 +514,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             <Zap className="w-8 h-8 text-green-400" />
             <div>
               <p className="text-white font-medium">Total XP</p>
-              <p className="text-2xl font-bold text-white">{formatTotalXP(totalXPAmount)}</p>
+              <p className="text-2xl font-bold text-white">{formatXPValue(totalXPAmount)}</p>
             </div>
           </div>
         </div>
@@ -767,7 +755,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                           <div>
                             <p className="text-white font-medium">{projectObj?.name || `Group ${group.id}`}</p>
                             <p className="text-white/60 text-sm">
-                              {group.campus} • {groupMemberCount} members • {group.status}
+                              {groupMemberCount} members • {group.status}
                             </p>
                           </div>
                           <div className="text-white/60 text-sm">
@@ -800,7 +788,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 <div>
                   <p className="text-white font-medium">Your Position</p>
                   <p className="text-white/60 text-sm">
-                    {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && `${formatTotalXP(user.totalUp || 0)} XP`}
+                    {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && `${formatXPValue(user.totalUp || 0)} XP`}
                     {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && `${(user.auditRatio || 0).toFixed(2)} audit ratio`}
                     {activeLeaderboard === 'progress' && 'Progress leader'}
                   </p>
@@ -871,7 +859,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                     </div>
                     <div className="flex items-center space-x-4 text-xs text-white/60">
                       <span>{userData.firstName} {userData.lastName}</span>
-                      {userData.campus && <span>Campus: {userData.campus}</span>}
+                      <span>{getCohortDisplayName(extractPersonalInfo(userData.attrs || {}).cohort || 'module')}</span>
                       {activeLeaderboard === 'progress' && userData.progressCount && (
                         <span>Progress: {userData.progressCount}</span>
                       )}
@@ -882,7 +870,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && (
                     <div>
                       <div className="text-lg font-bold text-white">
-                        {formatTotalXP(userData.totalUp || 0)}
+                        {formatXPValue(userData.totalUp || 0)}
                       </div>
                       <div className="text-xs text-white/60">XP</div>
                       {rankingMode === 'cohort' && (
@@ -919,7 +907,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   {activeLeaderboard === 'overall' && (
                     <div>
                       <div className="text-lg font-bold text-white">
-                        {formatTotalXP(userData.totalUp || 0)}
+                        {formatXPValue(userData.totalUp || 0)}
                       </div>
                       <div className="text-xs text-white/60">
                         {(userData.auditRatio || 0).toFixed(2)} ratio

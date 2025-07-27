@@ -7,6 +7,8 @@ interface CardProps {
   hover?: boolean
   animate?: boolean
   onClick?: () => void
+  gradient?: boolean
+  glowing?: boolean
 }
 
 const Card: React.FC<CardProps> = ({ 
@@ -14,15 +16,23 @@ const Card: React.FC<CardProps> = ({
   className = '', 
   hover = false,
   animate = true,
-  onClick 
+  onClick,
+  gradient = false,
+  glowing = false
 }) => {
   const baseClasses = `
-    bg-white/10 
+    ${gradient 
+      ? 'bg-gradient-to-br from-white/10 to-white/5' 
+      : 'bg-white/10'
+    }
     backdrop-blur-lg 
     rounded-2xl 
     border 
-    border-white/20 
-    ${hover ? 'hover:bg-white/15 hover:border-white/30 transition-all duration-200' : ''}
+    ${glowing 
+      ? 'border-primary-500/50 shadow-lg shadow-primary-500/25' 
+      : 'border-white/20'
+    }
+    ${hover ? 'hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300' : ''}
     ${onClick ? 'cursor-pointer' : ''}
     ${className}
   `

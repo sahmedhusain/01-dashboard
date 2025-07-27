@@ -35,7 +35,7 @@ import StatisticsChart from '../charts/StatisticsChart'
 import DataDistributionChart from '../charts/DataDistributionChart'
 import ProgressVisualization from '../charts/ProgressVisualization'
 import TimelineVisualization from '../charts/TimelineVisualization'
-import { formatDate, formatTotalXP } from '../../utils/dataFormatting'
+import { formatDate, formatXPValue } from '../../utils/dataFormatting'
 
 interface StatisticsSectionProps {
   user: User
@@ -43,9 +43,9 @@ interface StatisticsSectionProps {
 
 type StatisticsTab = 'overview' | 'analytics' | 'trends'
 
-// Comprehensive statistics query using our tested queries
-const COMPREHENSIVE_STATS_QUERY = gql`
-  query GetComprehensiveStatistics {
+// Complete statistics query using our tested queries
+const COMPLETE_STATS_QUERY = gql`
+  query GetCompleteStatistics {
     # User statistics
     user_aggregate {
       aggregate {
@@ -199,7 +199,7 @@ const COMPREHENSIVE_STATS_QUERY = gql`
 const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<StatisticsTab>('overview')
 
-  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(COMPREHENSIVE_STATS_QUERY, {
+  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(COMPLETE_STATS_QUERY, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
@@ -320,7 +320,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
           Statistics & Analytics Dashboard
         </h1>
         <p className="text-white/70 text-lg">
-          Comprehensive data insights and analytics from real-time GraphQL queries
+          Complete data insights and analytics from real-time GraphQL queries
         </p>
 
         {/* Tab Navigation */}
@@ -523,7 +523,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
             <div>
               <p className="text-white font-medium text-sm">Data Source</p>
               <p className="text-white/60 text-xs">
-                Real-time data from 113 comprehensive GraphQL queries
+                Real-time data from 113 complete GraphQL queries
               </p>
             </div>
           </div>

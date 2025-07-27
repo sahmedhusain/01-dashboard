@@ -23,7 +23,7 @@ import Card from '../ui/Card'
 import Avatar from '../ui/Avatar'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import { debounce } from 'lodash'
-import { formatDate, formatTotalXP } from '../../utils/dataFormatting'
+import { formatDate, formatXPValue } from '../../utils/dataFormatting'
 
 interface SearchSectionProps {
   user: User
@@ -31,9 +31,9 @@ interface SearchSectionProps {
 
 type SearchType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results'
 
-// Comprehensive search queries using our tested queries
-const SEARCH_USERS_COMPREHENSIVE = gql`
-  query SearchUsersComprehensive($searchTerm: String!) {
+// Complete search queries using our tested queries
+const SEARCH_USERS_COMPLETE = gql`
+  query SearchUsersComplete($searchTerm: String!) {
     user(
       where: {
         _or: [
@@ -212,10 +212,10 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
   const [results, setResults] = useState<any[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
-  const [campusFilter, setCampusFilter] = useState<string>('all')
+  // Campus filtering removed - all users are Bahrain-based
 
-  // Comprehensive search queries
-  const [searchUsers] = useLazyQuery(SEARCH_USERS_COMPREHENSIVE, {
+  // Complete search queries
+  const [searchUsers] = useLazyQuery(SEARCH_USERS_COMPLETE, {
     errorPolicy: 'all',
     onCompleted: (data) => {
       setResults(data.user || [])
@@ -393,15 +393,9 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
 
   // Filter results based on campus filter
   const filteredResults = useMemo(() => {
-    let filtered = results
-
-    // Apply campus filter if applicable
-    if (campusFilter !== 'all') {
-      filtered = filtered.filter((item: any) => item.campus === campusFilter)
-    }
-
-    return filtered
-  }, [results, campusFilter])
+    // All results are already Bahrain-based, no campus filtering needed
+    return results
+  }, [results])
 
   // Get search type icon
   const getSearchTypeIcon = (type: SearchType) => {
@@ -479,7 +473,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
                 </div>
                 <div className="flex items-center space-x-4 text-xs text-white/50 mt-1">
                   <span>Campus: {item.campus}</span>
-                  <span>XP: {formatTotalXP(item.totalUp || 0)}</span>
+                  <span>XP: {formatXPValue(item.totalUp || 0)}</span>
                   <span>Audit: {(item.auditRatio || 0).toFixed(2)}</span>
                 </div>
               </>
@@ -575,7 +569,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
           {searchType === 'users' && (
             <div>
               <p className="text-primary-400 font-bold">
-                {formatTotalXP(item.totalUp || 0)}
+                {formatXPValue(item.totalUp || 0)}
               </p>
               <p className="text-white/60 text-xs">Total XP</p>
             </div>

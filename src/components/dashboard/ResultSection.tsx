@@ -24,13 +24,13 @@ import {
 } from 'lucide-react'
 import { User as UserType } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
-import { formatDate, formatDateTime } from '../../utils/dataFormatting'
+import { formatDate, formatDateTime, formatGrade, formatGradeDetailed } from '../../utils/dataFormatting'
 
 interface ResultSectionProps {
   user: UserType
 }
 
-// Comprehensive result queries using our tested queries - NO LIMITS
+// Complete result queries using our tested queries - NO LIMITS
 const GET_ALL_RESULTS = gql`
   query GetAllResults {
     result(order_by: {createdAt: desc}) {
@@ -169,7 +169,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
   const resultTypes = resultTypesData?.result_type || [];
   const totalResultTypes = resultTypesData?.result_type_aggregate?.aggregate?.count || 0;
 
-  // Calculate comprehensive statistics
+  // Calculate complete statistics
   const totalResults = allResultsStats?.count || 0;
   const averageGrade = allResultsStats?.avg?.grade || 0;
   const maxGrade = allResultsStats?.max?.grade || 0;
@@ -184,8 +184,8 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
   // Calculate achievements
   const achievements = {
     totalCompleted: userResults.filter((r: any) => r.grade >= 1).length,
-    perfectScores: userResults.filter((r: any) => r.grade === 100).length,
-    highGrades: userResults.filter((r: any) => r.grade >= 80).length,
+    perfectScores: userResults.filter((r: any) => r.grade >= 1).length, // 100% or higher
+    highGrades: userResults.filter((r: any) => r.grade >= 0.8).length, // 80% or higher
     recentActivity: userResults.filter((r: any) => {
       const resultDate = new Date(r.createdAt);
       const weekAgo = new Date();
@@ -209,7 +209,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
         filtered = allResults;
         break;
       case 'achievements':
-        filtered = userResults.filter((r: any) => r.grade >= 80); // High achievers
+        filtered = userResults.filter((r: any) => r.grade >= 0.8); // High achievers (80%+)
         break;
       default:
         filtered = allResults;
@@ -233,16 +233,16 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
     if (gradeFilter !== 'all') {
       switch (gradeFilter) {
         case 'perfect':
-          filtered = filtered.filter((result: any) => result.grade === 100);
+          filtered = filtered.filter((result: any) => result.grade >= 1); // 100% or higher
           break;
         case 'high':
-          filtered = filtered.filter((result: any) => result.grade >= 80);
+          filtered = filtered.filter((result: any) => result.grade >= 0.8); // 80% or higher
           break;
         case 'pass':
-          filtered = filtered.filter((result: any) => result.grade >= 1);
+          filtered = filtered.filter((result: any) => result.grade >= 1); // 100% or higher (passing)
           break;
         case 'fail':
-          filtered = filtered.filter((result: any) => result.grade < 1);
+          filtered = filtered.filter((result: any) => result.grade < 1); // Below 100%
           break;
       }
     }
@@ -250,16 +250,14 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
     return filtered;
   };
 
-  // Get result status and color
+  // Get result status and color (updated for decimal grades)
   const getResultStatus = (grade: number) => {
-    if (grade === 100) {
+    if (grade >= 1) {
       return { status: 'Perfect', color: 'text-yellow-400 bg-yellow-400/20', icon: Medal };
-    } else if (grade >= 80) {
+    } else if (grade >= 0.8) {
       return { status: 'Excellent', color: 'text-green-400 bg-green-400/20', icon: Trophy };
-    } else if (grade >= 60) {
+    } else if (grade >= 0.6) {
       return { status: 'Good', color: 'text-blue-400 bg-blue-400/20', icon: CheckCircle };
-    } else if (grade >= 1) {
-      return { status: 'Pass', color: 'text-purple-400 bg-purple-400/20', icon: CheckCircle };
     } else {
       return { status: 'Fail', color: 'text-red-400 bg-red-400/20', icon: XCircle };
     }
@@ -281,7 +279,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
           Results & Achievements
         </h1>
         <p className="text-white/70 text-lg">
-          Track {totalResults} results across {totalResultTypes} types with comprehensive achievement system
+          Track {totalResults} results across {totalResultTypes} types with complete achievement system
         </p>
       </motion.div>
 
@@ -571,7 +569,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
                       <div className="flex-1">
                         <h4 className="text-white font-medium">Result #{result.id}</h4>
                         <div className="flex items-center space-x-4 text-xs text-white/60">
-                          <span>Grade: {result.grade}%</span>
+                          <span>Grade: {formatGrade(result.grade)}</span>
                           {result.type && <span>Type: {result.type}</span>}
                           {result.path && <span>Path: {result.path}</span>}
                           <span>Date: {formatDate(result.createdAt)}</span>
@@ -580,7 +578,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${status.color}`}>
-                        {result.grade}%
+                        {formatGrade(result.grade)}
                       </div>
                       {selectedResult === result.id ? (
                         <ChevronDown className="w-4 h-4 text-white/60" />

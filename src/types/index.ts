@@ -25,6 +25,25 @@ export interface User {
   profile?: string;
   attrs?: Record<string, any>;
   githubLogin?: string;
+  // Additional personal information fields from attrs
+  emergencyContact?: {
+    name?: string;
+    phone?: string;
+    relationship?: string;
+  };
+  dateOfBirth?: string;
+  nationalId?: string;
+  cprNumber?: string;
+  nationality?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    country?: string;
+    postalCode?: string;
+  };
+  cohort?: string;
+  cohortNumber?: string;
+  studentId?: string;
 }
 
 // Enhanced user profile with computed fields

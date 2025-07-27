@@ -15,7 +15,7 @@ const ExportSection = lazy(() => import('../export/ExportSection'))
 const PiscineSection = lazy(() => import('./PiscineSection'))
 const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
 
-// New comprehensive dashboard sections
+// New complete dashboard sections
 const GroupSection = lazy(() => import('./GroupSection'))
 const EventSection = lazy(() => import('./EventSection'))
 

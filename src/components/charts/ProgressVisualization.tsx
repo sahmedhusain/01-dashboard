@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react'
+import { formatGradeDetailed } from '../../utils/dataFormatting'
 
 interface ProgressItem {
   id: string
@@ -102,7 +103,7 @@ const ProgressVisualization: React.FC<ProgressVisualizationProps> = ({
                   )}
                   {item.grade !== undefined && (
                     <p className="text-white/70 text-xs">
-                      Grade: {item.grade.toFixed(1)}%
+                      Grade: {formatGradeDetailed(item.grade)}
                     </p>
                   )}
                 </div>

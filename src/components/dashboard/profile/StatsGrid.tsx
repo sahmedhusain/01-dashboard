@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Target, BookOpen, TrendingUp } from 'lucide-react'
-import { formatTotalXP } from '../../../utils/dataFormatting'
+import { formatXPValue } from '../../../utils/dataFormatting'
 
 interface StatsGridProps {
   analytics: any
@@ -21,7 +21,7 @@ const StatsGrid: React.FC<StatsGridProps> = ({ analytics, userData }) => {
           <Zap className="w-8 h-8 text-blue-400" />
           <div>
             <p className="text-white font-medium">Total XP</p>
-            <p className="text-2xl font-bold text-white">{analytics ? formatTotalXP(analytics.xp.total) : '0'}</p>
+            <p className="text-2xl font-bold text-white">{analytics ? formatXPValue(analytics.xp.total) : '0'}</p>
           </div>
         </div>
       </div>

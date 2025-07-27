@@ -3,10 +3,12 @@ import { motion } from 'framer-motion'
 import { useQuery, gql } from '@apollo/client'
 import { User as UserType } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
+import SectionHeader from '../ui/SectionHeader'
 import { 
   separateModuleData,
   calculateModuleXPTotals,
   calculateLevel,
+  calculateLevelProgress,
   getRankFromLevel,
   formatSkillName
 } from '../../utils/dataFormatting'
@@ -18,11 +20,11 @@ import StatisticsSection from './sections/StatisticsSection'
 import TransactionsSection from './sections/TransactionsSection'
 
 // Navigation icons
-import { User, BarChart3, TrendingUp, Activity } from 'lucide-react'
+import { User, BarChart3, TrendingUp, Activity, LayoutDashboard } from 'lucide-react'
 
 // Enhanced GraphQL query with proper BH Module data separation
-const COMPREHENSIVE_DASHBOARD_QUERY = gql`
-  query GetComprehensiveDashboard($userId: Int!, $login: String!) {
+const ENHANCED_DASHBOARD_QUERY = gql`
+  query GetEnhancedDashboard($userId: Int!, $login: String!) {
     # User information with all attributes including avatar
     user(where: { login: { _eq: $login } }) {
       id
@@ -158,7 +160,7 @@ type DashboardTab = 'profile' | 'analytics' | 'statistics' | 'transactions'
 const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('profile')
 
-  const { data, loading, error } = useQuery(COMPREHENSIVE_DASHBOARD_QUERY, {
+  const { data, loading, error } = useQuery(ENHANCED_DASHBOARD_QUERY, {
     variables: { 
       login: user.login,
       userId: user.id
@@ -166,7 +168,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-and-network'
   })
 
-  // Extract comprehensive data from the new query structure
+  // Extract complete data from the new query structure
   const userData = data?.user?.[0]
   
   const allTransactions = useMemo(() => data?.userTransactions || [], [data])
@@ -194,27 +196,21 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const auditsGiven = separatedAudits.mainModule
     const groups = separatedGroups.mainModule
 
-    // Comprehensive Analytics using all available data
+    // Complete Analytics using all available data
     
     // XP Analytics from transactions
     const xpTransactions = allTransactions.filter((t: any) => t.type === 'xp')
     const totalXP = xpTransactions.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
     const avgXPPerProject = xpTransactions.length > 0 ? Math.round(totalXP / xpTransactions.length) : 0
 
-    // Level Analytics - use backend-provided level data
-    const levelTransactions = allTransactions.filter((t: any) => t.type === 'level')
-    const currentLevel = levelTransactions.length > 0 ? 
-      Math.max(...levelTransactions.map((t: any) => t.amount || 0)) : 1
-
-    // Progress calculation
-    const nextLevelXP = Math.pow(currentLevel + 1, 2) * 1000
-    const currentLevelXP = Math.pow(currentLevel, 2) * 1000
-    const progressToNextLevel = totalXP > currentLevelXP ? 
-      Math.min(100, ((totalXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100) : 0
-      
     // Separate BH Module data from piscines
     const xpTotals = calculateModuleXPTotals(allTransactions)
     const bhModuleXP = xpTotals.bhModule
+
+    // Level Analytics - use square root calculation with BH Module XP only
+    const levelInfo = calculateLevelProgress(bhModuleXP)
+    const currentLevel = levelInfo.currentLevel
+    const progressToNextLevel = levelInfo.progress
 
     // Enhanced Skills Analytics
     const skillTransactions = allTransactions.filter((t: any) => t.type?.startsWith('skill_'))
@@ -232,7 +228,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       .sort((a, b) => b.points - a.points)
       .slice(0, 10)
       
-    // Audit Analytics - comprehensive view
+    // Audit Analytics - complete view
     const totalAuditsGiven = allAudits.length
     const completedAudits = allAudits.filter((a: any) => a.grade !== null).length
     const pendingAudits = totalAuditsGiven - completedAudits
@@ -240,7 +236,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       allAudits.filter((a: any) => a.grade !== null)
                .reduce((sum: number, a: any) => sum + (a.grade || 0), 0) / completedAudits : 0
     
-    // Comprehensive Project Analytics
+    // Complete Project Analytics
     const totalProjects = allProgress.length
     const completedProjects = allProgress.filter((p: any) => p.isDone).length
     const passedProjects = allProgress.filter((p: any) => p.isDone && p.grade >= 1).length
@@ -322,7 +318,10 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       level: {
         current: currentLevel,
         progress: progressToNextLevel,
-        nextLevelXP
+        nextLevelXP: levelInfo.nextLevelXP,
+        remainingXP: levelInfo.remainingXP,
+        progressInKB: levelInfo.progressInKB,
+        remainingInKB: levelInfo.remainingInKB
       },
       skills: {
         top: topSkills,
@@ -378,7 +377,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         events: allEvents
       }
     }
-  }, [userData, allTransactions, allProgress, allResults, allAudits, allGroups, allEvents, user.id])
+  }, [userData, allTransactions, allProgress, allResults, allAudits, allGroups, allEvents, user.id, loading])
 
   if (loading) return <LoadingSpinner />
   if (error || !userData) {
@@ -415,21 +414,13 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Comprehensive Student Dashboard
-        </h1>
-        <p className="text-white/70 text-lg">
-          Complete learning analytics with detailed insights and progress tracking
-        </p>
-      </motion.div>
+    <div className="space-y-8">
+      {/* Enhanced Header */}
+      <SectionHeader
+        title="Dashboard Overview"
+        subtitle="Your complete student progress and analytics"
+        icon={LayoutDashboard}
+      />
 
       {/* Tab Navigation */}
       <motion.div
@@ -438,29 +429,34 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="bg-white/10 backdrop-blur-lg rounded-xl p-1 border border-white/20"
       >
-        <nav className="grid grid-cols-2 lg:grid-cols-4 gap-1">
-          {tabs.map((tab) => {
+        <nav className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {tabs.map((tab, index) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
             
             return (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as DashboardTab)}
+                whileHover={{ y: -2 }}
+                whileTap={{ y: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.05 }}
                 className={`
-                  flex flex-col items-center space-y-2 px-4 py-3 rounded-lg font-medium text-sm transition-all
+                  flex flex-col items-center space-y-3 px-6 py-4 rounded-xl font-medium text-sm transition-all duration-200
                   ${isActive
-                    ? 'bg-primary-500 text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/25'
+                    : 'text-white/70 hover:text-white hover:bg-white/10 hover:shadow-md'
                   }
                 `}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-white/70'}`} />
                 <div className="text-center">
                   <div className="font-semibold">{tab.label}</div>
                   <div className="text-xs opacity-80 hidden lg:block">{tab.description}</div>
                 </div>
-              </button>
+              </motion.button>
             )
           })}
         </nav>

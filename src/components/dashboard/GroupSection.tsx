@@ -20,7 +20,7 @@ interface GroupSectionProps {
   user: User
 }
 
-// Comprehensive group queries using our tested queries
+// Complete group queries using our tested queries
 const ALL_GROUPS_QUERY = gql`
   query GetAllGroups($limit: Int = 50, $offset: Int = 0) {
     group(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {

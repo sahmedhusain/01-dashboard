@@ -1,6 +1,6 @@
 // ============================================================================
-// ALL GRAPHQL QUERIES - COMPREHENSIVE TESTED COLLECTION
-// Based on comprehensive testing with 96 successful queries
+// ALL GRAPHQL QUERIES - COMPLETE TESTED COLLECTION
+// Based on complete testing with 96 successful queries
 // All queries tested successfully with real JWT token and actual schema
 // Success Rate: 100% with only 3 minor field errors remaining
 // Generated: 2025-07-23

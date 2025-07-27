@@ -5,7 +5,7 @@ import {
   Clock, CheckCircle, AlertTriangle, Search, Filter, 
   ArrowUp, ArrowDown, TrendingUp, Star
 } from 'lucide-react'
-import { formatTotalXP, formatDate, separateModuleData } from '../../../utils/dataFormatting'
+import { formatXPValue, formatDate, separateModuleData } from '../../../utils/dataFormatting'
 
 interface TransactionsSectionProps {
   analytics: any
@@ -183,7 +183,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       case 'xp':
       case 'up':
       case 'down':
-        return `+${formatTotalXP(amount)}`
+        return `+${formatXPValue(amount)}`
       case 'level':
         return `Level ${amount}`
       default:

@@ -30,7 +30,7 @@ interface ObjectSectionProps {
   user: UserType
 }
 
-// Comprehensive object queries using our tested queries - NO LIMITS
+// Complete object queries using our tested queries - NO LIMITS
 const GET_ALL_OBJECTS = gql`
   query GetAllObjects {
     object(order_by: {createdAt: desc}) {
@@ -113,7 +113,7 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all' | 'by-type' | 'hierarchy' | 'availability'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [campusFilter, setCampusFilter] = useState<string>('all');
+  // Campus filtering removed - all objects are Bahrain-based
   const [selectedObject, setSelectedObject] = useState<number | null>(null);
   const [expandedObjects, setExpandedObjects] = useState<Set<number>>(new Set());
 
@@ -181,9 +181,7 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
     }
 
     // Apply campus filter
-    if (campusFilter !== 'all') {
-      filtered = filtered.filter((obj: any) => obj.campus === campusFilter);
-    }
+    // All objects are Bahrain-based by default
 
     return filtered;
   };
@@ -381,18 +379,7 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
             </select>
           </div>
 
-          <select
-            value={campusFilter}
-            onChange={(e) => setCampusFilter(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="all">All Campuses</option>
-            {uniqueCampuses.map((campus: string) => (
-              <option key={campus} value={campus}>
-                {campus}
-              </option>
-            ))}
-          </select>
+          {/* Campus filter removed - all objects are Bahrain-based */}
         </div>
       </motion.div>
 

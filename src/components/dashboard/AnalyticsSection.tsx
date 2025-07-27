@@ -27,13 +27,13 @@ import StatisticsChart from '../charts/StatisticsChart'
 import DataDistributionChart from '../charts/DataDistributionChart'
 import ProgressVisualization from '../charts/ProgressVisualization'
 import TimelineVisualization from '../charts/TimelineVisualization'
-import { formatDate, formatTotalXP } from '../../utils/dataFormatting'
+import { formatDate, formatXPValue, formatGradeDetailed } from '../../utils/dataFormatting'
 
 interface AnalyticsSectionProps {
   user: User
 }
 
-// Comprehensive analytics queries
+// Complete analytics queries
 const GET_PLATFORM_ANALYTICS = gql`
   query GetPlatformAnalytics {
     user_aggregate {
@@ -250,7 +250,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
   const campusAnalytics = campusData?.user_aggregate || [];
   const temporalAnalytics = temporalData || {};
 
-  // Calculate comprehensive metrics
+  // Calculate complete metrics
   const totalUsers = userStats?.count || 0;
   const avgAuditRatio = userStats?.avg?.auditRatio || 0;
   const avgXP = userStats?.avg?.totalUp || 0;
@@ -300,7 +300,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
             Advanced Analytics Dashboard
           </h1>
           <p className="text-white/70 text-lg">
-            Comprehensive insights across {totalUsers} users and {totalTransactions} transactions
+            Complete insights across {totalUsers} users and {totalTransactions} transactions
           </p>
         </div>
         <button
@@ -336,7 +336,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
             <Zap className="w-8 h-8 text-green-400" />
             <div>
               <p className="text-green-200 font-medium">Total XP</p>
-              <p className="text-2xl font-bold text-white">{formatTotalXP(totalXPAmount)}</p>
+              <p className="text-2xl font-bold text-white">{formatXPValue(totalXPAmount)}</p>
               <p className="text-green-300/60 text-xs">Experience points</p>
             </div>
           </div>
@@ -483,7 +483,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
               <div className="p-3 bg-white/5 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white/80">Average XP per User</span>
-                  <span className="text-white font-bold">{formatTotalXP(avgXP)}</span>
+                  <span className="text-white font-bold">{formatXPValue(avgXP)}</span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div
@@ -507,24 +507,24 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
               <div className="p-3 bg-white/5 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white/80">Average Progress Grade</span>
-                  <span className="text-white font-bold">{avgProgressGrade.toFixed(1)}%</span>
+                  <span className="text-white font-bold">{formatGradeDetailed(avgProgressGrade)}</span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-purple-400 to-purple-500 h-2 rounded-full"
-                    style={{ width: `${avgProgressGrade}%` }}
+                    style={{ width: `${Math.min(avgProgressGrade * 100, 100)}%` }}
                   />
                 </div>
               </div>
               <div className="p-3 bg-white/5 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white/80">Average Result Grade</span>
-                  <span className="text-white font-bold">{avgResultGrade.toFixed(1)}%</span>
+                  <span className="text-white font-bold">{formatGradeDetailed(avgResultGrade)}</span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-orange-400 to-orange-500 h-2 rounded-full"
-                    style={{ width: `${avgResultGrade}%` }}
+                    style={{ width: `${Math.min(avgResultGrade * 100, 100)}%` }}
                   />
                 </div>
               </div>
@@ -627,7 +627,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/60 text-sm">Avg XP:</span>
-                      <span className="text-white font-medium">{formatTotalXP(avgXP)}</span>
+                      <span className="text-white font-medium">{formatXPValue(avgXP)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/60 text-sm">Avg Audit:</span>

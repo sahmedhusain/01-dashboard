@@ -1,9 +1,16 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { User as UserType } from '../../../types'
-import { User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target } from 'lucide-react'
+import { 
+  User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, 
+  Phone, CreditCard, Heart, Home, Shield, FileText, UserCheck, AlertTriangle
+} from 'lucide-react'
 import Avatar from '../../ui/Avatar'
-import { formatTotalXP, formatDate } from '../../../utils/dataFormatting'
+import { 
+  formatXPValue, formatDate, formatAuditRatio, formatSkillPercentage, calculateTotalSkillPoints,
+  extractPersonalInfo, formatPhoneNumber, formatCPRNumber, getCohortDisplayName, getRankFromLevel
+} from '../../../utils/dataFormatting'
+import { useToken } from '../../../store'
 
 interface ProfileSectionProps {
   user: UserType
@@ -12,6 +19,23 @@ interface ProfileSectionProps {
 
 const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
   const userData = analytics.user
+  const token = useToken()
+
+  const getAvatarUrl = () => {
+    const fileId = userData.attrs?.['pro-picUploadId'];
+    if (token && fileId) {
+      return `https://learn.reboot01.com/api/storage?token=${token}&fileId=${fileId}`;
+    }
+    return null;
+  };
+
+  const totalSkillPoints = calculateTotalSkillPoints(analytics.skills.transactions);
+  const personalInfo = extractPersonalInfo(userData.attrs || {});
+  
+  // Extract cohort from user's transaction paths or other data
+  const userCohort = personalInfo.cohort || 
+    analytics.rawData?.transactions?.find((t: any) => t.path)?.path?.match(/\/bahrain\/bh-([^\/]+)\//)?.[1] ||
+    'module';
 
   return (
     <div className="space-y-6">
@@ -22,113 +46,279 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
         transition={{ duration: 0.5 }}
         className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
       >
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          {/* Left Side - Avatar and Basic Info */}
-          <div className="flex items-center space-x-6">
-            <div className="relative">
-              <Avatar
-                user={{
-                  ...userData,
-                  avatarUrl: userData?.attrs?.['pro-picUploadId']
-                    ? `https://zone01.s3.us-east-1.amazonaws.com/avatar/${userData.attrs['pro-picUploadId']}`
-                    : null
-                }}
-                size="2xl"
-                className="ring-4 ring-white/20 shadow-2xl"
-              />
-              {analytics.performance && (
-                <div className="absolute -bottom-2 -right-2 bg-primary-500 rounded-full p-2 border-2 border-white/20">
-                  <span className="text-lg">{analytics.performance.badge}</span>
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                {userData.attrs?.displayName || userData.attrs?.firstName || user.login}
-              </h2>
-              <p className="text-white/70 text-lg mb-3">@{user.login}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          {/* User Info Container - Left Side */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Basic Profile Information */}
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <Avatar
+                  user={{
+                    ...userData,
+                    attrs: {
+                      ...userData.attrs,
+                      avatarUrl: getAvatarUrl()
+                    }
+                  }}
+                  size="2xl"
+                  className="ring-4 ring-white/20 shadow-2xl"
+                />
+                {analytics.performance && (
+                  <div className="absolute -bottom-2 -right-2 bg-primary-500 rounded-full p-2 border-2 border-white/20">
+                    <span className="text-lg">{analytics.performance.badge}</span>
+                  </div>
+                )}
+              </div>
               
-              {analytics.performance && (
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-primary-500/20 px-3 py-1 rounded-lg border border-primary-500/30">
-                    <span className="text-primary-400 font-semibold text-sm">
-                      {analytics.performance.notation}
-                    </span>
-                  </div>
-                  <div className="bg-white/10 px-3 py-1 rounded-lg">
-                    <span className="text-white/80 text-sm">
-                      Campus: {userData.campus || 'Bahrain'}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Contact Information */}
-              <div className="space-y-2">
-                {userData.attrs?.email && (
-                  <div className="flex items-center space-x-2 text-white/70">
-                    <Mail className="h-4 w-4" />
-                    <span className="text-sm">{userData.attrs.email}</span>
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  {userData.attrs?.displayName || userData.attrs?.firstName || user.login}
+                </h2>
+                <p className="text-white/70 text-lg mb-3">@{user.login}</p>
+                
+                {analytics.performance && (
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="bg-primary-500/20 px-3 py-1 rounded-lg border border-primary-500/30">
+                      <span className="text-primary-400 font-semibold text-sm">
+                        {analytics.performance.notation}
+                      </span>
+                    </div>
+                    <div className="bg-white/10 px-3 py-1 rounded-lg">
+                      <span className="text-white/80 text-sm">
+                        {getCohortDisplayName(userCohort)}
+                      </span>
+                    </div>
                   </div>
                 )}
-                {userData.attrs?.addressCity && (
-                  <div className="flex items-center space-x-2 text-white/70">
-                    <MapPin className="h-4 w-4" />
-                    <span className="text-sm">{userData.attrs.addressCity}, {userData.attrs?.addressCountry || 'Bahrain'}</span>
-                  </div>
-                )}
-                <div className="flex items-center space-x-2 text-white/70">
-                  <Calendar className="h-4 w-4" />
-                  <span className="text-sm">Joined {formatDate(userData.createdAt)}</span>
-                </div>
               </div>
             </div>
+
+            {/* Complete Contact & Personal Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Contact Information */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                  <Phone className="w-5 h-5 mr-2 text-blue-400" />
+                  Contact Information
+                </h3>
+                
+                {personalInfo.email && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <Mail className="h-4 w-4 text-blue-400" />
+                    <span className="text-sm text-white">{personalInfo.email}</span>
+                  </div>
+                )}
+                {personalInfo.phone && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <Phone className="h-4 w-4 text-green-400" />
+                    <span className="text-sm text-white">{formatPhoneNumber(personalInfo.phone)}</span>
+                  </div>
+                )}
+                {personalInfo.alternativePhone && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <Phone className="h-4 w-4 text-yellow-400" />
+                    <span className="text-sm text-white/70">Alt: {formatPhoneNumber(personalInfo.alternativePhone)}</span>
+                  </div>
+                )}
+                {personalInfo.address?.city && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <MapPin className="h-4 w-4 text-purple-400" />
+                    <span className="text-sm text-white">{personalInfo.address.city}, {personalInfo.address?.country || 'Bahrain'}</span>
+                  </div>
+                )}
+                <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                  <Calendar className="h-4 w-4 text-orange-400" />
+                  <span className="text-sm text-white">Joined {formatDate(userData.createdAt)}</span>
+                </div>
+              </div>
+
+              {/* Identity Information */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                  <CreditCard className="w-5 h-5 mr-2 text-green-400" />
+                  Identity Information
+                </h3>
+                
+                {personalInfo.cprNumber && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <CreditCard className="h-4 w-4 text-blue-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">CPR Number</span>
+                      <div className="text-sm text-white font-mono">{formatCPRNumber(personalInfo.cprNumber)}</div>
+                    </div>
+                  </div>
+                )}
+                {personalInfo.nationalId && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <FileText className="h-4 w-4 text-green-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">National ID</span>
+                      <div className="text-sm text-white font-mono">{personalInfo.nationalId}</div>
+                    </div>
+                  </div>
+                )}
+                {personalInfo.studentId && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <User className="h-4 w-4 text-cyan-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Student ID</span>
+                      <div className="text-sm text-white font-mono">{personalInfo.studentId}</div>
+                    </div>
+                  </div>
+                )}
+                {personalInfo.dateOfBirth && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <Calendar className="h-4 w-4 text-purple-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Date of Birth</span>
+                      <div className="text-sm text-white">{formatDate(personalInfo.dateOfBirth)}</div>
+                    </div>
+                  </div>
+                )}
+                {personalInfo.nationality && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <Shield className="h-4 w-4 text-orange-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Nationality</span>
+                      <div className="text-sm text-white">{personalInfo.nationality}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Emergency Contact */}
+            {personalInfo.emergencyContact?.name && (
+              <div className="bg-white/5 rounded-lg p-4 border border-red-500/20">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                  <Heart className="w-5 h-5 mr-2 text-red-400" />
+                  Emergency Contact
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-white/60">Name</span>
+                    <div className="text-sm text-white font-medium">{personalInfo.emergencyContact.name}</div>
+                  </div>
+                  {personalInfo.emergencyContact.phone && (
+                    <div>
+                      <span className="text-xs text-white/60">Phone</span>
+                      <div className="text-sm text-white font-mono">{formatPhoneNumber(personalInfo.emergencyContact.phone)}</div>
+                    </div>
+                  )}
+                  {personalInfo.emergencyContact.relationship && (
+                    <div>
+                      <span className="text-xs text-white/60">Relationship</span>
+                      <div className="text-sm text-white">{personalInfo.emergencyContact.relationship}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right Side - Level and Progress */}
-          <div className="text-center lg:text-right">
-            <div className="bg-white/10 rounded-xl p-6 border border-white/20">
-              <div className="text-5xl font-bold text-white mb-2">
-                {analytics.level.current}
+          {/* Enhanced Level Container - Right Side */}
+          <div className="lg:col-span-1">
+            <div className="bg-gradient-to-br from-primary-500/20 to-primary-600/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-500/30 shadow-2xl">
+              {/* Level Header */}
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-500/20 rounded-full mb-4">
+                  <Trophy className="w-8 h-8 text-primary-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Current Level</h3>
+                <div className="text-6xl font-bold text-white mb-2 bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text text-transparent">
+                  {analytics.level.current}
+                </div>
+                <div className="text-sm text-white/70">{analytics.performance?.notation || 'Student'}</div>
               </div>
-              <div className="text-white/70 text-sm mb-4">Current Level</div>
-              
-              <div className="w-32 h-32 mx-auto lg:mx-0 relative">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="50"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="8"
-                  />
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="50"
-                    fill="none"
-                    stroke="#3B82F6"
-                    strokeWidth="8"
-                    strokeDasharray={`${2 * Math.PI * 50}`}
-                    strokeDashoffset={`${2 * Math.PI * 50 * (1 - analytics.level.progress / 100)}`}
-                    className="transition-all duration-1000 ease-out"
-                  />
-                  <text
-                    x="60"
-                    y="65"
-                    textAnchor="middle"
-                    className="fill-white text-sm font-bold transform rotate-90"
-                    style={{ transformOrigin: '60px 60px' }}
-                  >
-                    {analytics.level.progress.toFixed(1)}%
-                  </text>
-                </svg>
+
+              {/* Progress Circle */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-40 h-40">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                    {/* Background circle */}
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="70"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.1)"
+                      strokeWidth="12"
+                    />
+                    {/* Progress circle */}
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="70"
+                      fill="none"
+                      stroke="url(#progressGradient)"
+                      strokeWidth="12"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 70}`}
+                      strokeDashoffset={`${2 * Math.PI * 70 * (1 - analytics.level.progress / 100)}`}
+                      className="transition-all duration-1000 ease-out"
+                    />
+                    {/* Gradient definition */}
+                    <defs>
+                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#3B82F6" />
+                        <stop offset="100%" stopColor="#1D4ED8" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  
+                  {/* Center content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="text-2xl font-bold text-white mb-1">
+                      {analytics.level.progress.toFixed(1)}%
+                    </div>
+                    <div className="text-xs text-white/60 text-center">
+                      Progress to<br />Level {analytics.level.current + 1}
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-              <div className="text-white/60 text-xs mt-2">
-                Progress to Level {analytics.level.current + 1}
+
+              {/* Progress Details */}
+              <div className="space-y-4">
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white/80 text-sm">Current Progress</span>
+                    <span className="text-primary-400 font-bold">{analytics.level.progressInKB?.toFixed(1) || '0.0'} kB</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-primary-400 to-primary-500 h-2 rounded-full transition-all duration-1000"
+                      style={{ width: `${analytics.level.progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80 text-sm">Remaining to Next Level</span>
+                    <span className="text-orange-400 font-bold">{analytics.level.remainingInKB?.toFixed(1) || '100.0'} kB</span>
+                  </div>
+                </div>
+
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80 text-sm">Total XP Earned</span>
+                    <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Next Level Preview */}
+              <div className="mt-6 pt-4 border-t border-white/20">
+                <div className="text-center">
+                  <div className="text-white/60 text-xs mb-2">Next Level Unlocks</div>
+                  <div className="text-sm text-white font-medium">
+                    {getRankFromLevel(analytics.level.current + 1).notation}
+                  </div>
+                  <div className="text-2xl mt-2">
+                    {getRankFromLevel(analytics.level.current + 1).badge}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -155,7 +345,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <Award className="w-5 h-5 text-blue-400" />
                 <span className="text-white text-sm">Total XP Earned</span>
               </div>
-              <span className="text-blue-400 font-bold">{formatTotalXP(analytics.xp.total)}</span>
+              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
             </div>
             
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -163,7 +353,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <Target className="w-5 h-5 text-green-400" />
                 <span className="text-white text-sm">Audit Ratio</span>
               </div>
-              <span className="text-green-400 font-bold">{analytics.audits.ratio.toFixed(2)}</span>
+              <span className="text-green-400 font-bold">{formatAuditRatio(analytics.audits.ratio)}</span>
             </div>
             
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -232,6 +422,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
         </motion.div>
       </div>
 
+
       {/* Top Skills Display */}
       {analytics.skills.top.length > 0 && (
         <motion.div
@@ -253,14 +444,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     {skill.name.replace(/-/g, ' ')}
                   </span>
                   <span className="text-orange-400 font-bold text-sm">
-                    {skill.points}
+                    {formatSkillPercentage(skill.points, totalSkillPoints)}
                   </span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div 
                     className="bg-orange-400 h-2 rounded-full transition-all duration-1000"
                     style={{ 
-                      width: `${Math.min(100, (skill.points / Math.max(...analytics.skills.top.map((s: any) => s.points))) * 100)}%` 
+                      width: formatSkillPercentage(skill.points, totalSkillPoints)
                     }}
                   />
                 </div>
@@ -290,7 +481,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
           <div className="bg-white/5 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-white font-medium">BH Module (Main Curriculum)</h4>
-              <span className="text-blue-400 font-bold">{formatTotalXP(analytics.xp.bhModule)}</span>
+              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-white/70">
@@ -314,7 +505,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
           <div className="bg-white/5 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-white font-medium">Piscines (Intensive Training)</h4>
-              <span className="text-green-400 font-bold">{formatTotalXP(analytics.xp.piscines)}</span>
+              <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.piscines)}</span>
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-white/70">

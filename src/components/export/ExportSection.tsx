@@ -22,7 +22,7 @@ import { useQuery, useLazyQuery, gql } from '@apollo/client'
 import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
-import { formatDate, formatTotalXP } from '../../utils/dataFormatting'
+import { formatDate, formatXPValue } from '../../utils/dataFormatting'
 
 interface ExportSectionProps {
   user: User
@@ -31,7 +31,7 @@ interface ExportSectionProps {
 type ExportFormat = 'json' | 'csv' | 'txt'
 type DataType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'
 
-// Comprehensive export queries using our tested queries
+// Complete export queries using our tested queries
 const GET_ALL_USERS_EXPORT = gql`
   query GetAllUsersExport {
     user(order_by: { totalUp: desc }) {
@@ -305,7 +305,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     return { content: '', filename: '', type: '' }
   }
 
-  // Handle comprehensive data export
+  // Handle complete data export
   const handleExport = async (dataType: DataType) => {
     const exportKey = `${dataType}_${selectedFormat}`
     setStatus(exportKey, 'loading')
@@ -414,7 +414,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
         className="text-center"
       >
         <h1 className="text-4xl font-bold text-white mb-2">
-          Comprehensive Data Export
+          Complete Data Export
         </h1>
         <p className="text-white/70 text-lg">
           Export any dataset from our {userCount + objectCount + eventCount + groupCount + transactionCount + progressCount + auditCount + resultCount} total records

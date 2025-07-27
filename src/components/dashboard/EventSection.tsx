@@ -22,7 +22,7 @@ interface EventSectionProps {
   user: User
 }
 
-// Comprehensive event queries using our tested queries
+// Complete event queries using our tested queries
 const ALL_EVENTS_QUERY = gql`
   query GetAllEvents($limit: Int = 50, $offset: Int = 0) {
     event(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {
@@ -92,7 +92,7 @@ const EVENT_USER_VIEW_QUERY = gql`
 const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all' | 'my-events' | 'active'>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [campusFilter, setCampusFilter] = useState<string>('all');
+  // Campus filtering removed - all events are Bahrain-based
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
 
   // Query all events
@@ -151,9 +151,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
       );
     }
 
-    if (campusFilter !== 'all') {
-      events = events.filter((event: any) => event.campus === campusFilter);
-    }
+    // All events are Bahrain-based by default
 
     return events;
   };
@@ -319,20 +317,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           />
         </div>
 
-        {/* Campus Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-white/70" />
-          <select
-            value={campusFilter}
-            onChange={(e) => setCampusFilter(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="all">All Campuses</option>
-            <option value="bahrain">Bahrain</option>
-            <option value="london">London</option>
-            <option value="paris">Paris</option>
-          </select>
-        </div>
+        {/* Campus filter removed - all events are Bahrain-based */}
       </motion.div>
 
       {/* Events Grid */}

@@ -27,7 +27,7 @@ interface RegistrationSectionProps {
   user: User
 }
 
-// Comprehensive registration queries using our tested queries
+// Complete registration queries using our tested queries
 const GET_ALL_REGISTRATIONS = gql`
   query GetAllRegistrations($limit: Int = 100, $offset: Int = 0) {
     registration(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {
@@ -94,7 +94,7 @@ const GET_USER_REGISTRATIONS = gql`
 const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all-registrations' | 'registration-users' | 'my-registrations' | 'statistics'>('all-registrations');
   const [searchTerm, setSearchTerm] = useState('');
-  const [campusFilter, setCampusFilter] = useState<string>('all');
+  // Campus filtering removed - all registrations are Bahrain-based
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedRegistration, setSelectedRegistration] = useState<number | null>(null);
 
@@ -173,9 +173,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
     }
 
     // Apply campus filter
-    if (campusFilter !== 'all' && selectedView === 'all-registrations') {
-      filtered = filtered.filter((reg: any) => reg.campus === campusFilter);
-    }
+    // All registrations are Bahrain-based by default
 
     // Apply status filter
     if (statusFilter !== 'all' && selectedView === 'all-registrations') {
@@ -364,21 +362,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
 
           {/* Filters */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-white/70" />
-              <select
-                value={campusFilter}
-                onChange={(e) => setCampusFilter(e.target.value)}
-                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-              >
-                <option value="all">All Campuses</option>
-                {uniqueCampuses.map((campus: string) => (
-                  <option key={campus} value={campus}>
-                    {campus}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Campus filter removed - all registrations are Bahrain-based */}
 
             <select
               value={statusFilter}

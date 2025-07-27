@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { BarChart3, BookOpen, Target } from 'lucide-react'
-import { formatTotalXP } from '../../../utils/dataFormatting'
+import { formatXPValue } from '../../../utils/dataFormatting'
 
 interface AnalyticsGridProps {
   analytics: any
@@ -27,7 +27,7 @@ const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ analytics }) => {
           <div className="bg-white/5 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Module XP</span>
-              <span className="text-blue-400 font-bold">{formatTotalXP(analytics.xp.bhModule)}</span>
+              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
             </div>
             <div className="w-full bg-white/10 rounded-full h-2">
               <div className="bg-blue-400 h-2 rounded-full" style={{width: `${(analytics.xp.bhModule / analytics.xp.total) * 100}%`}}></div>
@@ -37,7 +37,7 @@ const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ analytics }) => {
           <div className="bg-white/5 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Piscines XP</span>
-              <span className="text-green-400 font-bold">{formatTotalXP(analytics.xp.piscines)}</span>
+              <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.piscines)}</span>
             </div>
             <div className="w-full bg-white/10 rounded-full h-2">
               <div className="bg-green-400 h-2 rounded-full" style={{width: `${(analytics.xp.piscines / analytics.xp.total) * 100}%`}}></div>
@@ -47,7 +47,7 @@ const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ analytics }) => {
           <div className="bg-white/5 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Average per Project</span>
-              <span className="text-purple-400 font-bold">{formatTotalXP(analytics.xp.average)}</span>
+              <span className="text-purple-400 font-bold">{formatXPValue(analytics.xp.average)}</span>
             </div>
           </div>
         </div>

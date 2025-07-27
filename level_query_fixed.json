@@ -1,0 +1,4 @@
+{
+  "query": "query GetLevelData($userId: Int!) { user_by_pk(id: $userId) { id login totalUp totalDown auditRatio } xp_view(where: {userId: {_eq: $userId}}) { userId amount level progress } transaction(where: {userId: {_eq: $userId}, type: {_eq: \"level\"}}, order_by: {createdAt: desc}, limit: 5) { id type amount path createdAt attrs } }",
+  "variables": {"userId": 1599}
+}

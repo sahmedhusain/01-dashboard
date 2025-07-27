@@ -855,6 +855,11 @@ export const GET_ALL_ROLES = `
       description
       createdAt
       updatedAt
+      user_roles {
+        id
+        userId
+        roleId
+      }
     }
   }
 `;

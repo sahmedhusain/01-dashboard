@@ -77,25 +77,88 @@ export const getXPProgress = (currentXP: number | null | undefined, level: numbe
 // ============================================================================
 
 /**
- * Calculates the total points from all skill transactions.
+ * Gets the latest skill amounts and calculates skill progress correctly.
+ * Skills show the latest transaction amount as percentage (e.g., last go skill = 55 → 55%)
  * @param skillTransactions - An array of transactions of type 'skill_...'.
- * @returns The sum of all skill points.
+ * @returns Object with skill data including latest amounts and progress.
+ */
+export const calculateSkillData = (skillTransactions: any[]) => {
+  if (!skillTransactions || skillTransactions.length === 0) {
+    return { skills: [], totalSkills: 0 };
+  }
+  
+  // Group transactions by skill type
+  const skillGroups: { [key: string]: any[] } = {};
+  
+  skillTransactions.forEach(transaction => {
+    const skillName = transaction.type?.replace('skill_', '') || 'unknown';
+    if (!skillGroups[skillName]) {
+      skillGroups[skillName] = [];
+    }
+    skillGroups[skillName].push(transaction);
+  });
+  
+  // Process each skill group
+  const skills = Object.keys(skillGroups).map(skillName => {
+    const skillTxs = skillGroups[skillName].sort((a, b) => 
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    
+    const latestTransaction = skillTxs[skillTxs.length - 1];
+    const previousTransaction = skillTxs.length > 1 ? skillTxs[skillTxs.length - 2] : null;
+    
+    const currentAmount = latestTransaction.amount || 0;
+    const previousAmount = previousTransaction?.amount || 0;
+    const progress = currentAmount - previousAmount; // Difference for transaction display
+    
+    return {
+      name: formatSkillName(skillName),
+      rawName: skillName,
+      currentAmount, // This is the percentage (e.g., 55 = 55%)
+      previousAmount,
+      progress, // For transaction display (e.g., +5 if went from 50 to 55)
+      percentage: currentAmount, // Direct amount as percentage
+      latestDate: latestTransaction.createdAt,
+      transactions: skillTxs
+    };
+  });
+  
+  // Sort by current amount (highest skills first)
+  skills.sort((a, b) => b.currentAmount - a.currentAmount);
+  
+  console.log('🎯 Skill Data Calculated:', {
+    totalSkills: skills.length,
+    topSkills: skills.slice(0, 3).map(s => ({
+      name: s.name,
+      percentage: s.currentAmount + '%',
+      progress: s.progress > 0 ? `+${s.progress}%` : `${s.progress}%`
+    }))
+  });
+  
+  return {
+    skills,
+    totalSkills: skills.length
+  };
+};
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use calculateSkillData instead
  */
 export const calculateTotalSkillPoints = (skillTransactions: any[]): number => {
+  console.warn('calculateTotalSkillPoints is deprecated, use calculateSkillData instead');
   if (!skillTransactions || skillTransactions.length === 0) return 0;
   return skillTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
 };
 
 /**
- * Calculates a single skill's percentage of the total skill points.
- * @param skillPoints - The points for a single skill.
- * @param totalSkillPoints - The total points for all skills.
- * @returns The formatted percentage string (e.g., "15.5%").
+ * Formats skill percentage correctly (skill amount = percentage)
+ * @param skillAmount - The skill amount (which IS the percentage)
+ * @returns The formatted percentage string (e.g., "55%").
  */
-export const formatSkillPercentage = (skillPoints: number, totalSkillPoints: number): string => {
-  if (!skillPoints || !totalSkillPoints) return '0.0%';
-  const percentage = (skillPoints / totalSkillPoints) * 100;
-  return `${percentage.toFixed(1)}%`;
+export const formatSkillPercentage = (skillAmount: number): string => {
+  if (skillAmount == null || isNaN(skillAmount)) return '0%';
+  return `${skillAmount}%`;
 };
 
 // ============================================================================
@@ -195,86 +258,263 @@ export const getRelativeTime = (dateInput: string | Date) => {
 // MODULE & PROJECT UTILITIES
 // ============================================================================
 
+/**
+ * Separate BH Module data from piscines and checkpoints based on ALL_PATHS_STRUCTURE.md
+ * True BH module projects are the 74 direct projects that don't contain "piscine-" or "checkpoint"
+ * @param {any[]} data - Array of transactions, progress, or other data with path property
+ * @returns {object} Separated data with mainModule (true BH), piscines, checkpoints, and all
+ */
 export const separateModuleData = (data: any[]) => {
   if (!data || !Array.isArray(data)) {
-    return { mainModule: [], piscines: {}, allPiscines: [], all: [] };
+    return { mainModule: [], piscines: {}, checkpoints: [], allPiscines: [], all: [] };
   }
+  
   const mainModule: any[] = [];
   const piscines: { [key: string]: any[] } = {};
+  const checkpoints: any[] = [];
   const allPiscines: any[] = [];
+  
   data.forEach(item => {
     if (!item.path) {
+      // Items without path are considered mainModule (legacy data)
       mainModule.push(item);
       return;
     }
-    if (item.path.includes('/bh-piscine/')) {
-      const piscineType = 'go';
+    
+    // Check for checkpoint patterns (these are NOT BH module projects)
+    if (item.path.includes('checkpoint')) {
+      checkpoints.push(item);
+      return;
+    }
+    
+    // Check for piscine patterns (these are NOT BH module projects)
+    if (item.path.includes('piscine-') || item.path.includes('/bh-piscine/')) {
+      // Extract piscine type for categorization
+      let piscineType = 'unknown';
+      
+      if (item.path.includes('/bh-piscine/')) {
+        piscineType = 'go'; // Legacy Go piscine
+      } else {
+        const piscineMatch = item.path.match(/piscine-(\w+)/);
+        if (piscineMatch) {
+          piscineType = piscineMatch[1]; // js, rust, etc.
+        }
+      }
+      
       if (!piscines[piscineType]) piscines[piscineType] = [];
       piscines[piscineType].push(item);
       allPiscines.push(item);
-    } else if (item.path.includes('/bh-module/piscine-')) {
-      const piscineMatch = item.path.match(/piscine-(\w+)/);
-      if (piscineMatch) {
-        const piscineType = piscineMatch[1];
-        if (!piscines[piscineType]) piscines[piscineType] = [];
-        piscines[piscineType].push(item);
-        allPiscines.push(item);
-      }
-    } else {
-      mainModule.push(item);
+      return;
     }
+    
+    // Everything else is considered true BH module (the 74 direct projects)
+    mainModule.push(item);
   });
-  return { mainModule, piscines, allPiscines, all: data };
+  
+  console.log('🔍 Data Separation Results:', {
+    totalItems: data.length,
+    mainModuleItems: mainModule.length,
+    checkpointItems: checkpoints.length,
+    piscineItems: allPiscines.length,
+    piscineTypes: Object.keys(piscines)
+  });
+  
+  return { mainModule, piscines, checkpoints, allPiscines, all: data };
 };
 
+/**
+ * Calculate XP totals with proper BH Module filtering based on ALL_PATHS_STRUCTURE.md
+ * Excludes piscines and checkpoints from BH Module XP calculation
+ * @param {any[]} transactions - Array of XP transactions
+ * @returns {object} XP totals separated by category
+ */
 export const calculateModuleXPTotals = (transactions: any[]) => {
   if (!transactions || !Array.isArray(transactions)) {
-    return { total: 0, bhModule: 0, piscines: {} as { [key: string]: number }, allPiscines: 0 };
+    return { 
+      total: 0, 
+      bhModule: 0, 
+      piscines: {} as { [key: string]: number }, 
+      checkpoints: 0,
+      allPiscines: 0 
+    };
   }
+  
+  // Filter only XP transactions
   const xpTransactions = transactions.filter(t => t.type === 'xp');
-  const totals = { total: 0, bhModule: 0, piscines: {} as { [key: string]: number }, allPiscines: 0 };
-  xpTransactions.forEach(t => {
-    const amount = t.amount || 0;
-    totals.total += amount;
-    if (t.path && t.path.includes('piscine')) {
-      const piscineMatch = t.path.match(/piscine-(\w+)/);
-      if (piscineMatch) {
-        const piscineType = piscineMatch[1];
-        if (!totals.piscines[piscineType]) totals.piscines[piscineType] = 0;
-        totals.piscines[piscineType] += amount;
-        totals.allPiscines += amount;
+  console.log('🔍 XP Transactions found:', xpTransactions.length);
+  
+  // Enhanced audit XP detection - check multiple indicators
+  const auditXPTransactions = xpTransactions.filter(t => {
+    // Check attrs field for audit indicators
+    if (t.attrs) {
+      const attrsStr = typeof t.attrs === 'string' ? t.attrs : JSON.stringify(t.attrs);
+      if (attrsStr.toLowerCase().includes('audit') || 
+          attrsStr.toLowerCase().includes('review') ||
+          attrsStr.toLowerCase().includes('corrector')) {
+        return true;
       }
-    } else {
-      totals.bhModule += amount;
     }
+    
+    // Check path for audit indicators
+    if (t.path && (t.path.includes('audit') || t.path.includes('review'))) {
+      return true;
+    }
+    
+    // Check if transaction is associated with audit events (small amounts typically)
+    // Audit XP is usually much smaller than project XP
+    if (t.amount && t.amount < 1000) { // Less than 1kB might be audit XP
+      return true;
+    }
+    
+    return false;
   });
+  
+  const projectXPTransactions = xpTransactions.filter(t => 
+    !auditXPTransactions.includes(t)
+  );
+  
+  console.log('🎯 Transaction Separation (Enhanced Audit Detection):', {
+    totalXPTransactions: xpTransactions.length,
+    auditXPTransactions: auditXPTransactions.length,
+    projectXPTransactions: projectXPTransactions.length,
+    auditXPTotal: auditXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0),
+    auditXPSample: auditXPTransactions.slice(0, 3).map(t => ({
+      amount: t.amount,
+      path: t.path,
+      attrs: t.attrs,
+      date: t.createdAt
+    }))
+  });
+  
+  // Separate project XP data using the updated separation logic (exclude audits)
+  const separatedXP = separateModuleData(projectXPTransactions);
+  
+  const totals = {
+    total: 0,
+    bhModule: 0,
+    piscines: {} as { [key: string]: number },
+    checkpoints: 0,
+    allPiscines: 0,
+    auditXP: 0,
+    projectXP: 0
+  };
+  
+  // Calculate BH Module XP (true module projects only)
+  totals.bhModule = separatedXP.mainModule.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate checkpoint XP
+  totals.checkpoints = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate piscine XP by type
+  Object.keys(separatedXP.piscines).forEach(piscineType => {
+    totals.piscines[piscineType] = separatedXP.piscines[piscineType]
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+  });
+  
+  // Calculate total piscine XP
+  totals.allPiscines = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate audit XP
+  totals.auditXP = auditXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate project XP (excluding audits)
+  totals.projectXP = projectXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate grand total (all XP including audits)
+  totals.total = totals.projectXP + totals.auditXP;
+  
+  console.log('📊 XP Calculation Results (Audit Separation):', {
+    totalXP: totals.total,
+    bhModuleXP: totals.bhModule,
+    bhModuleXPInKB: (totals.bhModule / 1000).toFixed(1),
+    projectXP: totals.projectXP,
+    projectXPInKB: (totals.projectXP / 1000).toFixed(1),
+    auditXP: totals.auditXP,
+    auditXPInKB: (totals.auditXP / 1000).toFixed(1),
+    checkpointXP: totals.checkpoints,
+    piscineXP: totals.allPiscines,
+    piscineBreakdown: totals.piscines,
+    userExpectedForLevel26: '662.4kB (total 691kB - 28.6kB audit)'
+  });
+  
   return totals;
 };
 
+/**
+ * Calculate project statistics with proper BH Module filtering
+ * Excludes piscines and checkpoints from BH Module project counting
+ * @param {any[]} progresses - Array of progress objects
+ * @returns {object} Project statistics separated by category
+ */
 export const calculateProjectStats = (progresses: any[]) => {
-  const projectsByPath: { [key: string]: any[] } = {};
-  progresses.forEach(p => {
-    if (!projectsByPath[p.path]) projectsByPath[p.path] = [];
-    projectsByPath[p.path].push(p);
+  if (!progresses || !Array.isArray(progresses)) {
+    return {
+      total: 0,
+      passed: 0,
+      failed: 0,
+      passRate: 0,
+      bhModule: { total: 0, passed: 0, failed: 0, passRate: 0 },
+      piscines: { total: 0, passed: 0, failed: 0, passRate: 0 },
+      checkpoints: { total: 0, passed: 0, failed: 0, passRate: 0 }
+    };
+  }
+  
+  // Separate progress data by category
+  const separatedProgress = separateModuleData(progresses);
+  
+  // Helper function to calculate stats for a category
+  const calculateCategoryStats = (progressList: any[]) => {
+    const projectsByPath: { [key: string]: any[] } = {};
+    
+    progressList.forEach(p => {
+      if (!projectsByPath[p.path]) projectsByPath[p.path] = [];
+      projectsByPath[p.path].push(p);
+    });
+    
+    let totalProjects = 0, passedProjects = 0, failedProjects = 0;
+    
+    Object.keys(projectsByPath).forEach(path => {
+      const projectVersions = projectsByPath[path];
+      const latestVersion = projectVersions.reduce((latest, current) =>
+        new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
+      );
+      
+      totalProjects++;
+      if (latestVersion.isDone && latestVersion.grade >= 1) {
+        passedProjects++;
+      } else if (latestVersion.isDone) {
+        failedProjects++;
+      }
+    });
+    
+    return {
+      total: totalProjects,
+      passed: passedProjects,
+      failed: failedProjects,
+      passRate: totalProjects > 0 ? Math.round((passedProjects / totalProjects) * 100) : 0
+    };
+  };
+  
+  // Calculate stats for each category
+  const bhModuleStats = calculateCategoryStats(separatedProgress.mainModule);
+  const piscineStats = calculateCategoryStats(separatedProgress.allPiscines);
+  const checkpointStats = calculateCategoryStats(separatedProgress.checkpoints);
+  
+  // Calculate overall stats
+  const overallStats = calculateCategoryStats(progresses);
+  
+  console.log('📊 Project Statistics:', {
+    overall: overallStats,
+    bhModule: bhModuleStats,
+    piscines: piscineStats,
+    checkpoints: checkpointStats
   });
-  let totalProjects = 0, passedProjects = 0, failedProjects = 0;
-  Object.keys(projectsByPath).forEach(path => {
-    const projectVersions = projectsByPath[path];
-    const latestVersion = projectVersions.reduce((latest, current) =>
-      new Date(current.createdAt) > new Date(latest.createdAt) ? current : latest
-    );
-    totalProjects++;
-    if (latestVersion.isDone && latestVersion.grade >= 1) {
-      passedProjects++;
-    } else {
-      failedProjects++;
-    }
-  });
+  
   return {
-    total: totalProjects,
-    passed: passedProjects,
-    failed: failedProjects,
-    passRate: totalProjects > 0 ? Math.round((passedProjects / totalProjects) * 100) : 0
+    ...overallStats,
+    bhModule: bhModuleStats,
+    piscines: piscineStats,
+    checkpoints: checkpointStats
   };
 };
 
@@ -290,14 +530,16 @@ export const calculateLevel = (totalXP: number): number => {
 /**
  * Calculate level progress using the correct square root method with BH Module XP only
  * This matches the original reboot01 level calculation system
- * @param {number} bhModuleXP - BH Module XP in bytes (excluding piscines)
+ * Excludes piscines and checkpoints as per ALL_PATHS_STRUCTURE.md
+ * @param {number} bhModuleXP - BH Module XP in bytes (excluding piscines and checkpoints)
  * @returns {object} Level information with correct progress calculation
  */
 export const calculateLevelProgress = (bhModuleXP: number) => {
-  console.log('🔍 Level Calculation Debug (Square Root Method):', {
+  console.log('🔍 Level Calculation Debug (Square Root Method - BH Module Only):', {
     bhModuleXP,
     bhModuleXPInKB: bhModuleXP / 1000,
-    bhModuleXPInMB: bhModuleXP / 1000000
+    bhModuleXPInMB: bhModuleXP / 1000000,
+    note: 'Using only true BH module XP (excluding piscines and checkpoints)'
   });
 
   if (!bhModuleXP || bhModuleXP <= 0) {
@@ -340,12 +582,16 @@ export const calculateLevelProgress = (bhModuleXP: number) => {
     remainingInKB
   };
 
-  console.log('📊 Level Calculation Result (Square Root):', {
+  console.log('📊 Level Calculation Result (Square Root - BH Module Only):', {
     ...result,
     xpInCurrentLevel,
     progressInKB: progressInKB.toFixed(1),
     remainingInKB: remainingInKB.toFixed(1),
-    levelRange: levelRange / 1000
+    levelRange: (levelRange / 1000).toFixed(1) + 'kB',
+    expectedUserData: {
+      bhModuleXP: '691kB',
+      remainingXP: '66.6kB'
+    }
   });
   
   return result;
@@ -385,29 +631,34 @@ export const extractPersonalInfo = (attrs: any) => {
   if (!attrs) return {};
 
   return {
-    // Personal Details
+    // Personal Details (based on actual API data)
     dateOfBirth: attrs.dateOfBirth || attrs.dob || attrs.birthDate,
+    placeOfBirth: attrs.placeOfBirth,
+    countryOfBirth: attrs.countryOfBirth,
     nationality: attrs.nationality || attrs.country,
     nationalId: attrs.nationalId || attrs.idNumber || attrs.civilId,
-    cprNumber: attrs.cprNumber || attrs.cpr || attrs.civilId,
+    cprNumber: attrs.CPRnumber || attrs.cprNumber || attrs.cpr || attrs.civilId,
     studentId: attrs.studentId || attrs.id,
+    gender: attrs.gender || attrs.genders,
     
-    // Contact Information
+    // Contact Information (based on actual API data)
     email: attrs.email || attrs.emailAddress,
-    phone: attrs.phone || attrs.phoneNumber || attrs.mobile,
+    phone: attrs.Phone || attrs.PhoneNumber || attrs.phone || attrs.phoneNumber || attrs.mobile,
     alternativePhone: attrs.alternativePhone || attrs.altPhone,
     
-    // Emergency Contact
+    // Emergency Contact (based on actual API data)
     emergencyContact: {
-      name: attrs.emergencyContactName || attrs.emergencyName || attrs.nextOfKinName,
-      phone: attrs.emergencyContactPhone || attrs.emergencyPhone || attrs.nextOfKinPhone,
-      relationship: attrs.emergencyContactRelationship || attrs.emergencyRelation || attrs.nextOfKinRelation,
+      name: `${attrs.emergencyFirstName || ''} ${attrs.emergencyLastName || ''}`.trim() || 
+            attrs.emergencyContactName || attrs.emergencyName || attrs.nextOfKinName,
+      phone: attrs.emergencyTel || attrs.emergencyContactPhone || attrs.emergencyPhone || attrs.nextOfKinPhone,
+      relationship: attrs.emergencyAffiliation || attrs.emergencyContactRelationship || attrs.emergencyRelation || attrs.nextOfKinRelation,
       address: attrs.emergencyContactAddress || attrs.emergencyAddress
     },
     
-    // Address Information
+    // Address Information (based on actual API data)
     address: {
       street: attrs.addressStreet || attrs.street || attrs.address,
+      complementStreet: attrs.addressComplementStreet,
       city: attrs.addressCity || attrs.city,
       country: attrs.addressCountry || attrs.country || 'Bahrain',
       postalCode: attrs.addressPostalCode || attrs.postalCode || attrs.zipCode,
@@ -419,26 +670,38 @@ export const extractPersonalInfo = (attrs: any) => {
     cohortNumber: attrs.cohortNumber || attrs.batch || extractCohortNumber(attrs.cohort),
     academicLevel: attrs.academicLevel || attrs.educationLevel,
     
+    // Educational Background (based on actual API data)
+    degree: attrs.Degree || attrs.degree || attrs.qualification,
+    qualification: attrs.qualification || attrs.qualifica,
+    schoolAndDegree: attrs.schoolanddegree,
+    graduationDate: attrs.graddate,
+    howDidYouHear: attrs.howdidyou,
+    
+    // Employment Information (based on actual API data)
+    employment: attrs.employment,
+    jobTitle: attrs.jobtitle || attrs.jobTitle || attrs.position,
+    currentEmployer: attrs.currentEmployer || attrs.employer,
+    otherEmployer: attrs.otheremp,
+    workExperience: attrs.workExperience || attrs.experience,
+    
     // Additional Information
     profilePicture: attrs['pro-picUploadId'] || attrs.profilePic || attrs.avatar,
+    idCardUpload: attrs['id-cardUploadId'],
     linkedIn: attrs.linkedIn || attrs.linkedin,
     github: attrs.github || attrs.githubUsername,
     personalWebsite: attrs.website || attrs.personalSite,
     
-    // Medical/Health Information (if available)
+    // Medical/Health Information (based on actual API data)
+    medicalInfo: attrs.medicalInfo,
     allergies: attrs.allergies || attrs.medicalAllergies,
     medicalConditions: attrs.medicalConditions || attrs.healthConditions,
     bloodType: attrs.bloodType || attrs.bloodGroup,
     
-    // Professional Information
-    currentEmployer: attrs.currentEmployer || attrs.employer,
-    jobTitle: attrs.jobTitle || attrs.position,
-    workExperience: attrs.workExperience || attrs.experience,
-    
-    // Educational Background
-    previousEducation: attrs.previousEducation || attrs.education,
-    university: attrs.university || attrs.college,
-    degree: attrs.degree || attrs.qualification
+    // Other fields
+    other: attrs.other,
+    ifOther: attrs.ifother,
+    otherEq: attrs.othereq,
+    generalConditionsAccepted: attrs['general-conditionsAccepted']
   };
 };
 
@@ -552,4 +815,99 @@ export const getCohortDisplayName = (cohort: string) => {
   }
   
   return cohort.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+/**
+ * Analyze transaction history to find level achievement points and calculate remaining XP
+ * @param {any[]} transactions - Array of XP transactions (sorted by date)
+ * @param {number} currentLevel - User's current level
+ * @returns {object} Level analysis with transaction breakdown
+ */
+export const analyzeLevelProgression = (transactions: any[], currentLevel: number) => {
+  if (!transactions || !Array.isArray(transactions) || currentLevel < 1) {
+    return null;
+  }
+  
+  // Filter and sort XP transactions by date
+  const xpTransactions = transactions
+    .filter(t => t.type === 'xp')
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  
+  console.log('🔍 Analyzing Level Progression:', {
+    totalXPTransactions: xpTransactions.length,
+    currentLevel,
+    analyzing: 'Transaction history to find level achievement points'
+  });
+  
+  // Calculate level thresholds
+  const levelStartXP = Math.pow(currentLevel - 1, 2) * 1000; // in bytes
+  const levelEndXP = Math.pow(currentLevel, 2) * 1000; // in bytes
+  
+  // Track cumulative XP and find when each level was achieved
+  let cumulativeXP = 0;
+  let levelAchievedAt = null;
+  let xpAtLevelAchievement = 0;
+  let transactionsAfterLevel = [];
+  
+  for (let i = 0; i < xpTransactions.length; i++) {
+    const transaction = xpTransactions[i];
+    const previousXP = cumulativeXP;
+    cumulativeXP += transaction.amount || 0;
+    
+    // Check if this transaction caused the level to be achieved
+    const previousLevel = Math.floor(Math.sqrt(previousXP / 1000)) + 1;
+    const newLevel = Math.floor(Math.sqrt(cumulativeXP / 1000)) + 1;
+    
+    if (newLevel >= currentLevel && !levelAchievedAt) {
+      levelAchievedAt = transaction.createdAt;
+      xpAtLevelAchievement = previousXP; // XP before this transaction
+      
+      console.log('🎯 Level Achievement Found:', {
+        transaction: i + 1,
+        date: levelAchievedAt,
+        xpBefore: previousXP,
+        xpAfter: cumulativeXP,
+        transactionAmount: transaction.amount,
+        levelBefore: previousLevel,
+        levelAfter: newLevel,
+        path: transaction.path
+      });
+    }
+    
+    // Collect transactions after level achievement
+    if (levelAchievedAt && new Date(transaction.createdAt) > new Date(levelAchievedAt)) {
+      transactionsAfterLevel.push(transaction);
+    }
+  }
+  
+  // Calculate XP earned since level achievement
+  const xpEarnedSinceLevel = transactionsAfterLevel.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate remaining XP to next level
+  const nextLevelXP = Math.pow(currentLevel + 1, 2) * 1000;
+  const currentTotalXP = xpAtLevelAchievement + xpEarnedSinceLevel;
+  const remainingXP = nextLevelXP - currentTotalXP;
+  
+  const result = {
+    currentLevel,
+    levelStartXP: levelStartXP / 1000,
+    levelEndXP: levelEndXP / 1000,
+    nextLevelXP: nextLevelXP / 1000,
+    levelAchievedAt,
+    xpAtLevelAchievement: xpAtLevelAchievement / 1000,
+    xpEarnedSinceLevel: xpEarnedSinceLevel / 1000,
+    currentTotalXP: currentTotalXP / 1000,
+    remainingXP: remainingXP / 1000,
+    transactionsAfterLevel: transactionsAfterLevel.length,
+    transactionDetails: transactionsAfterLevel.map(t => ({
+      date: t.createdAt,
+      amount: t.amount,
+      path: t.path,
+      type: t.type
+    }))
+  };
+  
+  console.log('📊 Level Progression Analysis:', result);
+  
+  return result;
 };

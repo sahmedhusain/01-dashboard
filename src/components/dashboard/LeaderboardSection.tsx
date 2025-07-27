@@ -246,7 +246,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     createdAt: null,
     updatedAt: null,
     attrs: {}
-  }) // All users are in Bahrain by default
+  })) // All users are in Bahrain by default
 
   // Process cohort information from event participation data - MUST be before early returns
   const cohortInfo = useMemo(() => {

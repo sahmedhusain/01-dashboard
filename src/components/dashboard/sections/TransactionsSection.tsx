@@ -20,7 +20,25 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
   const [searchTerm, setSearchTerm] = useState('')
   const [showOnlyBHModule, setShowOnlyBHModule] = useState(false)
 
-  // Process raw transaction data
+  // Helper function to calculate skill progress for a transaction
+  const getSkillProgress = (currentTransaction: any, allTransactions: any[]) => {
+    const skillType = currentTransaction.type
+    const currentDate = new Date(currentTransaction.createdAt)
+    
+    // Find the previous transaction of the same skill type
+    const previousTransaction = allTransactions
+      .filter(t => t.type === skillType && new Date(t.createdAt) < currentDate)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    
+    if (previousTransaction) {
+      return currentTransaction.amount - previousTransaction.amount
+    }
+    
+    // If no previous transaction, this is the first one, so show full amount as progress
+    return currentTransaction.amount
+  }
+
+  // Process raw transaction data with skill progress calculation
   const filteredTransactions = useMemo(() => {
     let transactions = analytics.rawData.transactions
 
@@ -70,7 +88,19 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       )
     }
 
-    return transactions.slice(0, 100) // Limit to 100 for performance
+    // Calculate skill progress for each transaction
+    const transactionsWithProgress = transactions.map((transaction: any) => {
+      if (transaction.type?.startsWith('skill_')) {
+        const skillProgress = getSkillProgress(transaction, analytics.rawData.transactions)
+        return {
+          ...transaction,
+          skillProgress
+        }
+      }
+      return transaction
+    })
+
+    return transactionsWithProgress.slice(0, 100) // Limit to 100 for performance
   }, [analytics.rawData.transactions, transactionFilter, timeFilter, searchTerm, showOnlyBHModule])
 
   // Process progress data
@@ -178,17 +208,24 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
     }
   }
 
-  const formatTransactionAmount = (type: string, amount: number) => {
+  const formatTransactionAmount = (type: string, amount: number, transaction?: any) => {
     switch (type) {
       case 'xp':
       case 'up':
-      case 'down':
         return `+${formatXPValue(amount)}`
+      case 'down':
+        return `-${formatXPValue(amount)}`
       case 'level':
         return `Level ${amount}`
       default:
         if (type?.startsWith('skill_')) {
-          return `+${amount} pts`
+          // For skills, show the progress difference
+          if (transaction && transaction.skillProgress !== undefined) {
+            return transaction.skillProgress > 0 ? 
+              `+${transaction.skillProgress}%` : 
+              `${transaction.skillProgress}%`
+          }
+          return `${amount}%`
         }
         return `${amount}`
     }
@@ -242,8 +279,8 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
               <option value="xp">XP Transactions</option>
               <option value="level">Level Ups</option>
               <option value="skill">Skills</option>
-              <option value="up">Audit Points</option>
-              <option value="down">Point Deductions</option>
+              <option value="up">Audit Given</option>
+              <option value="down">Audit Received</option>
             </select>
           </div>
 
@@ -340,9 +377,11 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
                   </div>
                   <div>
                     <div className="text-white font-medium text-sm capitalize">
-                      {transaction.type === 'skill_' ? 
-                        `Skill: ${transaction.type.replace('skill_', '')}` : 
-                        transaction.type.replace('_', ' ')
+                      {transaction.type?.startsWith('skill_') ? 
+                        `Skill: ${transaction.type.replace('skill_', '').replace(/-/g, ' ')}` : 
+                        transaction.type === 'up' ? 'Audit Given' :
+                        transaction.type === 'down' ? 'Audit Received' :
+                        transaction.type?.replace('_', ' ') || 'Unknown'
                       }
                     </div>
                     <div className="text-white/60 text-xs">
@@ -354,7 +393,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
                   </div>
                 </div>
                 <div className={`text-right font-bold ${getTransactionColor(transaction.type)}`}>
-                  {formatTransactionAmount(transaction.type, transaction.amount)}
+                  {formatTransactionAmount(transaction.type, transaction.amount, transaction)}
                 </div>
               </motion.div>
             ))}

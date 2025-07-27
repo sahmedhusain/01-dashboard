@@ -3,12 +3,13 @@ import { motion } from 'framer-motion'
 import { User as UserType } from '../../../types'
 import { 
   User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, 
-  Phone, CreditCard, Heart, Home, Shield, FileText, UserCheck, AlertTriangle
+  Phone, CreditCard, Heart, Home, Shield, FileText, UserCheck, AlertTriangle,
+  Briefcase, Building, ExternalLink, Github, Linkedin, Globe, UserCog, Tag
 } from 'lucide-react'
 import Avatar from '../../ui/Avatar'
 import { 
-  formatXPValue, formatDate, formatAuditRatio, formatSkillPercentage, calculateTotalSkillPoints,
-  extractPersonalInfo, formatPhoneNumber, formatCPRNumber, getCohortDisplayName, getRankFromLevel
+  formatXPValue, formatDate, formatAuditRatio, formatSkillPercentage,
+  extractPersonalInfo, formatPhoneNumber, formatCPRNumber, getRankFromLevel
 } from '../../../utils/dataFormatting'
 import { useToken } from '../../../store'
 
@@ -29,13 +30,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
     return null;
   };
 
-  const totalSkillPoints = calculateTotalSkillPoints(analytics.skills.transactions);
+  // Total skill points calculation no longer needed - skills show latest amounts directly
   const personalInfo = extractPersonalInfo(userData.attrs || {});
-  
-  // Extract cohort from user's transaction paths or other data
-  const userCohort = personalInfo.cohort || 
-    analytics.rawData?.transactions?.find((t: any) => t.path)?.path?.match(/\/bahrain\/bh-([^\/]+)\//)?.[1] ||
-    'module';
 
   return (
     <div className="space-y-6">
@@ -72,7 +68,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               
               <div className="flex-1">
                 <h2 className="text-3xl font-bold text-white mb-2">
-                  {userData.attrs?.displayName || userData.attrs?.firstName || user.login}
+                  {userData.attrs?.displayName || 
+                   `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 
+                   user.login}
                 </h2>
                 <p className="text-white/70 text-lg mb-3">@{user.login}</p>
                 
@@ -83,11 +81,21 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                         {analytics.performance.notation}
                       </span>
                     </div>
-                    <div className="bg-white/10 px-3 py-1 rounded-lg">
-                      <span className="text-white/80 text-sm">
-                        {getCohortDisplayName(userCohort)}
-                      </span>
-                    </div>
+                    {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {analytics.rawData.userLabels.map((userLabel: any) => (
+                          <div 
+                            key={userLabel.id} 
+                            className="bg-cyan-400/20 px-3 py-1 rounded-lg border border-cyan-400/30"
+                            title={userLabel.label.description}
+                          >
+                            <span className="text-cyan-400 font-semibold text-sm">
+                              {userLabel.label.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -120,10 +128,23 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     <span className="text-sm text-white/70">Alt: {formatPhoneNumber(personalInfo.alternativePhone)}</span>
                   </div>
                 )}
-                {personalInfo.address?.city && (
+                {(personalInfo.address?.street || personalInfo.address?.city) && (
                   <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                     <MapPin className="h-4 w-4 text-purple-400" />
-                    <span className="text-sm text-white">{personalInfo.address.city}, {personalInfo.address?.country || 'Bahrain'}</span>
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Address</span>
+                      <div className="text-sm text-white">
+                        {personalInfo.address?.street && personalInfo.address?.complementStreet && 
+                          `${personalInfo.address.street}, Building ${personalInfo.address.complementStreet}`}
+                        {personalInfo.address?.street && !personalInfo.address?.complementStreet && 
+                          personalInfo.address.street}
+                        {personalInfo.address?.city && 
+                          `, ${personalInfo.address.city}`}
+                        {personalInfo.address?.postalCode && 
+                          ` ${personalInfo.address.postalCode}`}
+                        {`, ${personalInfo.address?.country || 'Bahrain'}`}
+                      </div>
+                    </div>
                   </div>
                 )}
                 <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
@@ -184,8 +205,118 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     </div>
                   </div>
                 )}
+                {personalInfo.placeOfBirth && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <MapPin className="h-4 w-4 text-pink-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Place of Birth</span>
+                      <div className="text-sm text-white">{personalInfo.placeOfBirth}, {personalInfo.countryOfBirth || 'Bahrain'}</div>
+                    </div>
+                  </div>
+                )}
+                {personalInfo.gender && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <User className="h-4 w-4 text-indigo-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Gender</span>
+                      <div className="text-sm text-white">{personalInfo.gender}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Professional Information */}
+            {(personalInfo.currentEmployer || personalInfo.jobTitle || personalInfo.workExperience || personalInfo.employment) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <Briefcase className="w-5 h-5 mr-2 text-blue-400" />
+                    Professional Information
+                  </h3>
+                  
+                  {personalInfo.jobTitle && (
+                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                      <UserCheck className="h-4 w-4 text-green-400" />
+                      <div className="flex-1">
+                        <span className="text-xs text-white/60">Job Title</span>
+                        <div className="text-sm text-white">{personalInfo.jobTitle}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {personalInfo.employment && (
+                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                      <Briefcase className="h-4 w-4 text-orange-400" />
+                      <div className="flex-1">
+                        <span className="text-xs text-white/60">Employment Status</span>
+                        <div className="text-sm text-white">{personalInfo.employment}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Educational Background */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                    <UserCheck className="w-5 h-5 mr-2 text-purple-400" />
+                    Educational Background
+                  </h3>
+                  
+                  {personalInfo.degree && (
+                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                      <Trophy className="h-4 w-4 text-yellow-400" />
+                      <div className="flex-1">
+                        <span className="text-xs text-white/60">Qualification</span>
+                        <div className="text-sm text-white">{personalInfo.degree}</div>
+                      </div>
+                    </div>
+                  )}                 
+                  {personalInfo.graduationDate && (
+                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                      <Calendar className="h-4 w-4 text-purple-400" />
+                      <div className="flex-1">
+                        <span className="text-xs text-white/60">Graduation Date</span>
+                        <div className="text-sm text-white">{personalInfo.graduationDate}</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {personalInfo.qualification && (
+                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                      <Award className="h-4 w-4 text-green-400" />
+                      <div className="flex-1">
+                        <span className="text-xs text-white/60">Qualification Level</span>
+                        <div className="text-sm text-white">{personalInfo.qualification}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {/* User Roles */}
+            {analytics.rawData?.userRoles && analytics.rawData.userRoles.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                  <UserCog className="w-5 h-5 mr-2 text-yellow-400" />
+                  User Roles
+                </h3>
+                
+                <div className="flex flex-wrap gap-2">
+                  {analytics.rawData.userRoles.map((userRole: any) => (
+                    <div 
+                      key={userRole.id} 
+                      className="bg-yellow-400/20 px-3 py-2 rounded-lg border border-yellow-400/30"
+                      title={userRole.role.description}
+                    >
+                      <span className="text-yellow-400 font-semibold text-sm">
+                        {userRole.role.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Emergency Contact */}
             {personalInfo.emergencyContact?.name && (
@@ -444,14 +575,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     {skill.name.replace(/-/g, ' ')}
                   </span>
                   <span className="text-orange-400 font-bold text-sm">
-                    {formatSkillPercentage(skill.points, totalSkillPoints)}
+                    {formatSkillPercentage(skill.currentAmount)}
                   </span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div 
                     className="bg-orange-400 h-2 rounded-full transition-all duration-1000"
                     style={{ 
-                      width: formatSkillPercentage(skill.points, totalSkillPoints)
+                      width: `${skill.currentAmount}%`
                     }}
                   />
                 </div>
@@ -486,7 +617,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-white/70">
                 <span>Projects:</span>
-                <span>{analytics.projects.bhModule}</span>
+                <span>{analytics.projects.bhModule?.total || analytics.projects.bhModule || 0}</span>
               </div>
               <div className="flex justify-between text-white/70">
                 <span>Current Level:</span>
@@ -510,11 +641,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-white/70">
                 <span>Projects:</span>
-                <span>{analytics.projects.piscines}</span>
+                <span>{analytics.projects.piscines?.total || analytics.projects.piscines || 0}</span>
               </div>
               <div className="flex justify-between text-white/70">
                 <span>Modules:</span>
-                <span>{analytics.moduleData.piscines}</span>
+                <span>{analytics.moduleData?.piscines || 0}</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mt-3">
                 <div 

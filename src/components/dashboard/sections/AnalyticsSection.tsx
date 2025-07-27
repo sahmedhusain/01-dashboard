@@ -425,7 +425,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
           Skills Proficiency Radar
         </h3>
         <p className="text-white/60 text-sm mb-6">Visual representation of your top skills and competencies</p>
-        <SkillsRadarChart skills={analytics.skills.top} />
+        <SkillsRadarChart skills={analytics.skills.top.map((s: any) => ({ name: s.name, points: s.currentAmount }))} />
       </motion.div>
 
       {/* Charts Grid */}

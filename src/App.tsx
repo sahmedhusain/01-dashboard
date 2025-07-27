@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ApolloProvider } from '@apollo/client'
 import client from './graphql/client'
+import { UserProvider } from './contexts/UserContext';
 import { RefreshProvider } from './contexts/RefreshContext'
 import { LoginPage, DashboardPage, ProfilePage, NotFoundPage } from './pages'
 import { useIsAuthenticated, useLogin, useSetLoading } from './store'
@@ -85,6 +86,7 @@ const AppContent: React.FC = () => {
         <Route path="/dashboard/checkpoints" element={<DashboardPage />} />
         <Route path="/dashboard/leaderboard" element={<DashboardPage />} />
         <Route path="/dashboard/export" element={<DashboardPage />} />
+        <Route path="/dashboard/audits" element={<DashboardPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
 
         {/* 404 route */}
@@ -103,7 +105,9 @@ const App: React.FC = () => {
           enableNetworkDetection={true}
           showRefreshNotifications={true}
         >
-          <AppContent />
+          <UserProvider>
+            <AppContent />
+          </UserProvider>
         </RefreshProvider>
       </ApolloProvider>
     </ErrorBoundary>

@@ -1,13 +1,13 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { User as UserType } from '../../../types'
-import { 
-  User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, 
+import {
+  User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target,
   Phone, CreditCard, Heart, Home, Shield, FileText, UserCheck, AlertTriangle,
   Briefcase, Building, ExternalLink, Github, Linkedin, Globe, UserCog, Tag
 } from 'lucide-react'
 import Avatar from '../../ui/Avatar'
-import { 
+import {
   formatXPValue, formatDate, formatAuditRatio, formatSkillPercentage,
   extractPersonalInfo, formatPhoneNumber, formatCPRNumber, getRankFromLevel
 } from '../../../utils/dataFormatting'
@@ -65,15 +65,15 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex-1">
                 <h2 className="text-3xl font-bold text-white mb-2">
-                  {userData.attrs?.displayName || 
-                   `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 
-                   user.login}
+                  {userData.attrs?.displayName ||
+                    `${userData.firstName || ''} ${userData.lastName || ''}`.trim() ||
+                    user.login}
                 </h2>
                 <p className="text-white/70 text-lg mb-3">@{user.login}</p>
-                
+
                 {analytics.performance && (
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="bg-primary-500/20 px-3 py-1 rounded-lg border border-primary-500/30">
@@ -84,8 +84,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {analytics.rawData.userLabels.map((userLabel: any) => (
-                          <div 
-                            key={userLabel.id} 
+                          <div
+                            key={userLabel.id}
                             className="bg-cyan-400/20 px-3 py-1 rounded-lg border border-cyan-400/30"
                             title={userLabel.label.description}
                           >
@@ -109,38 +109,42 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   <Phone className="w-5 h-5 mr-2 text-blue-400" />
                   Contact Information
                 </h3>
-                
+
                 {personalInfo.email && (
                   <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                     <Mail className="h-4 w-4 text-blue-400" />
+                                        <div className="flex-1">
+                      <span className="text-xs text-white/60">Email Address</span>
+                      <div className="text-sm text-white">
                     <span className="text-sm text-white">{personalInfo.email}</span>
+                    </div>
+                    </div>
                   </div>
                 )}
                 {personalInfo.phone && (
                   <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                     <Phone className="h-4 w-4 text-green-400" />
-                    <span className="text-sm text-white">{formatPhoneNumber(personalInfo.phone)}</span>
-                  </div>
-                )}
-                {personalInfo.alternativePhone && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <Phone className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-white/70">Alt: {formatPhoneNumber(personalInfo.alternativePhone)}</span>
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">Mobile Number</span>
+                      <div className="text-sm text-white">
+                        <span className="text-sm text-white">{formatPhoneNumber(personalInfo.phone)}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
                 {(personalInfo.address?.street || personalInfo.address?.city) && (
                   <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                     <MapPin className="h-4 w-4 text-purple-400" />
                     <div className="flex-1">
-                      <span className="text-xs text-white/60">Address</span>
+                      <span className="text-xs text-white/60">Home Address</span>
                       <div className="text-sm text-white">
-                        {personalInfo.address?.street && personalInfo.address?.complementStreet && 
+                        {personalInfo.address?.street && personalInfo.address?.complementStreet &&
                           `${personalInfo.address.street}, Building ${personalInfo.address.complementStreet}`}
-                        {personalInfo.address?.street && !personalInfo.address?.complementStreet && 
+                        {personalInfo.address?.street && !personalInfo.address?.complementStreet &&
                           personalInfo.address.street}
-                        {personalInfo.address?.city && 
+                        {personalInfo.address?.city &&
                           `, ${personalInfo.address.city}`}
-                        {personalInfo.address?.postalCode && 
+                        {personalInfo.address?.postalCode &&
                           ` ${personalInfo.address.postalCode}`}
                         {`, ${personalInfo.address?.country || 'Bahrain'}`}
                       </div>
@@ -149,7 +153,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 )}
                 <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                   <Calendar className="h-4 w-4 text-orange-400" />
-                  <span className="text-sm text-white">Joined {formatDate(userData.createdAt)}</span>
+                                      <div className="flex-1">
+                      <span className="text-xs text-white/60">Date Joined</span>
+                      <div className="text-sm text-white"></div>
+                  <span className="text-sm text-white">{formatDate(userData.createdAt)}</span>
+                  </div>
                 </div>
               </div>
 
@@ -159,31 +167,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   <CreditCard className="w-5 h-5 mr-2 text-green-400" />
                   Identity Information
                 </h3>
-                
+
                 {personalInfo.cprNumber && (
                   <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                     <CreditCard className="h-4 w-4 text-blue-400" />
                     <div className="flex-1">
                       <span className="text-xs text-white/60">CPR Number</span>
-                      <div className="text-sm text-white font-mono">{formatCPRNumber(personalInfo.cprNumber)}</div>
-                    </div>
-                  </div>
-                )}
-                {personalInfo.nationalId && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <FileText className="h-4 w-4 text-green-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">National ID</span>
-                      <div className="text-sm text-white font-mono">{personalInfo.nationalId}</div>
-                    </div>
-                  </div>
-                )}
-                {personalInfo.studentId && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <User className="h-4 w-4 text-cyan-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">Student ID</span>
-                      <div className="text-sm text-white font-mono">{personalInfo.studentId}</div>
+                      <div className="text-sm text-white font-mono">{personalInfo.cprNumber}</div>
                     </div>
                   </div>
                 )}
@@ -234,7 +224,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     <Briefcase className="w-5 h-5 mr-2 text-blue-400" />
                     Professional Information
                   </h3>
-                  
+
                   {personalInfo.jobTitle && (
                     <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                       <UserCheck className="h-4 w-4 text-green-400" />
@@ -244,7 +234,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                       </div>
                     </div>
                   )}
-                  
+
                   {personalInfo.employment && (
                     <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                       <Briefcase className="h-4 w-4 text-orange-400" />
@@ -262,7 +252,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     <UserCheck className="w-5 h-5 mr-2 text-purple-400" />
                     Educational Background
                   </h3>
-                  
+
                   {personalInfo.degree && (
                     <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                       <Trophy className="h-4 w-4 text-yellow-400" />
@@ -271,7 +261,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                         <div className="text-sm text-white">{personalInfo.degree}</div>
                       </div>
                     </div>
-                  )}                 
+                  )}
                   {personalInfo.graduationDate && (
                     <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                       <Calendar className="h-4 w-4 text-purple-400" />
@@ -281,7 +271,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                       </div>
                     </div>
                   )}
-                  
+
                   {personalInfo.qualification && (
                     <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                       <Award className="h-4 w-4 text-green-400" />
@@ -301,11 +291,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   <UserCog className="w-5 h-5 mr-2 text-yellow-400" />
                   User Roles
                 </h3>
-                
+
                 <div className="flex flex-wrap gap-2">
                   {analytics.rawData.userRoles.map((userRole: any) => (
-                    <div 
-                      key={userRole.id} 
+                    <div
+                      key={userRole.id}
                       className="bg-yellow-400/20 px-3 py-2 rounded-lg border border-yellow-400/30"
                       title={userRole.role.description}
                     >
@@ -396,7 +386,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                       </linearGradient>
                     </defs>
                   </svg>
-                  
+
                   {/* Center content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="text-2xl font-bold text-white mb-1">
@@ -417,7 +407,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     <span className="text-primary-400 font-bold">{analytics.level.progressInKB?.toFixed(1) || '0.0'} kB</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-gradient-to-r from-primary-400 to-primary-500 h-2 rounded-full transition-all duration-1000"
                       style={{ width: `${analytics.level.progress}%` }}
                     />
@@ -469,7 +459,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <Trophy className="w-5 h-5 mr-2 text-yellow-400" />
             Academic Achievements
           </h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
@@ -478,7 +468,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Target className="w-5 h-5 text-green-400" />
@@ -486,7 +476,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-green-400 font-bold">{formatAuditRatio(analytics.audits.ratio)}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Star className="w-5 h-5 text-purple-400" />
@@ -494,7 +484,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-purple-400 font-bold">{analytics.projects.completed}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Code className="w-5 h-5 text-orange-400" />
@@ -516,7 +506,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <Users className="w-5 h-5 mr-2 text-green-400" />
             Community Involvement
           </h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
@@ -525,7 +515,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-blue-400 font-bold">{analytics.audits.given}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Award className="w-5 h-5 text-yellow-400" />
@@ -533,7 +523,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-yellow-400 font-bold">{analytics.groups.captained}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Users className="w-5 h-5 text-green-400" />
@@ -541,7 +531,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-green-400 font-bold">{analytics.groups.total}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Target className="w-5 h-5 text-purple-400" />
@@ -566,7 +556,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <Code className="w-5 h-5 mr-2 text-orange-400" />
             Top Skills
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {analytics.skills.top.slice(0, 6).map((skill: any, index: number) => (
               <div key={skill.name} className="bg-white/5 rounded-lg p-4">
@@ -579,9 +569,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   </span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-orange-400 h-2 rounded-full transition-all duration-1000"
-                    style={{ 
+                    style={{
                       width: `${skill.currentAmount}%`
                     }}
                   />
@@ -606,7 +596,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
           <Trophy className="w-5 h-5 mr-2 text-blue-400" />
           Learning Journey Overview
         </h3>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* BH Module Progress */}
           <div className="bg-white/5 rounded-lg p-4">
@@ -624,7 +614,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <span>{analytics.level.current}</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mt-3">
-                <div 
+                <div
                   className="bg-blue-400 h-2 rounded-full"
                   style={{ width: `${(analytics.xp.bhModule / analytics.xp.total) * 100}%` }}
                 />
@@ -648,7 +638,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <span>{analytics.moduleData?.piscines || 0}</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mt-3">
-                <div 
+                <div
                   className="bg-green-400 h-2 rounded-full"
                   style={{ width: `${(analytics.xp.piscines / analytics.xp.total) * 100}%` }}
                 />

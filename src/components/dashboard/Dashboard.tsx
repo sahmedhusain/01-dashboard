@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react'
-import { motion } from 'framer-motion'
-import { LogOut, LayoutDashboard, Trophy, Download, BookOpen, Settings, CheckCircle, Users, Calendar, User as UserIcon } from 'lucide-react'
-import { useQuery, gql } from '@apollo/client'
-import { useUser, useLogout } from '../../store'
-import { User } from '../../types'
-import LoadingSpinner from '../ui/LoadingSpinner'
-import { useDashboardRouting } from '../../utils/routing'
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { motion } from 'framer-motion';
+import { LogOut, LayoutDashboard, Trophy, Download, BookOpen, Settings, CheckCircle, Users, Calendar, User as UserIcon, History } from 'lucide-react';
+import { useQuery, gql } from '@apollo/client';
+import { useUser, useLogout } from '../../store';
+import { User } from '../../types';
+import LoadingSpinner from '../ui/LoadingSpinner';
+import { useDashboardRouting } from '../../utils/routing';
 
 // Lazy load components for better performance
 const DashboardSection = lazy(() => import('./DashboardSection'))
@@ -14,6 +14,7 @@ const LeaderboardSection = lazy(() => import('./LeaderboardSection'))
 const ExportSection = lazy(() => import('../export/ExportSection'))
 const PiscineSection = lazy(() => import('./PiscineSection'))
 const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
+const AuditSection = lazy(() => import('./AuditSection'))
 
 // New complete dashboard sections
 const GroupSection = lazy(() => import('./GroupSection'))
@@ -21,7 +22,7 @@ const EventSection = lazy(() => import('./EventSection'))
 
 const UserPreferences = lazy(() => import('../preferences/UserPreferences'))
 
-type TabType = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'export' | string // Allow dynamic piscine tabs
+type TabType = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'export' | 'audits' | string // Allow dynamic piscine tabs
 
 const Dashboard: React.FC = () => {
   const user = useUser()
@@ -104,6 +105,7 @@ const Dashboard: React.FC = () => {
     { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
     { id: 'leaderboard' as TabType, label: 'Leaderboard', icon: Trophy },
     { id: 'export' as TabType, label: 'Export', icon: Download },
+    { id: 'audits' as TabType, label: 'Audits', icon: History },
   ]
 
   // Show only base tabs - piscine sub-tabs are handled within PiscinesDashboard
@@ -132,6 +134,8 @@ const Dashboard: React.FC = () => {
         return <LeaderboardSection user={user} />
       case 'export':
         return <ExportSection user={user} />
+      case 'audits':
+        return <AuditSection user={user} />
       default:
         return <DashboardSection user={user} />
     }

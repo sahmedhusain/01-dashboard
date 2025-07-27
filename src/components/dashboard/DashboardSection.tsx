@@ -181,10 +181,10 @@ interface DashboardSectionProps {
   user: UserType
 }
 
-type DashboardTab = 'profile' | 'analytics' | 'statistics' | 'transactions'
+type DashboardTab = 'profile' | 'analytics' | 'statistics' | 'transactions';
 
 const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
-  const [activeTab, setActiveTab] = useState<DashboardTab>('profile')
+  const [activeTab, setActiveTab] = useState<DashboardTab>('profile');
 
   const { data, loading, error } = useQuery(ENHANCED_DASHBOARD_QUERY, {
     variables: { 
@@ -192,7 +192,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       userId: user.id
     },
     fetchPolicy: 'cache-and-network'
-  })
+  });
 
   // Extract complete data from the new query structure
   const userData = data?.user?.[0]

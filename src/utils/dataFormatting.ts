@@ -769,26 +769,7 @@ export const formatPhoneNumber = (phone: string) => {
   return phone;
 };
 
-/**
- * Format CPR number for display (mask sensitive parts)
- * @param {string} cpr - CPR number
- * @returns {string} Formatted CPR number
- */
-export const formatCPRNumber = (cpr: string, maskSensitive = true) => {
-  if (!cpr) return '';
-  
-  const cleaned = cpr.replace(/\D/g, '');
-  
-  if (cleaned.length === 9) {
-    if (maskSensitive) {
-      return `${cleaned.slice(0, 2)}****${cleaned.slice(6)}`;
-    } else {
-      return `${cleaned.slice(0, 6)}-${cleaned.slice(6)}`;
-    }
-  }
-  
-  return cpr;
-};
+
 
 /**
  * Get cohort display name

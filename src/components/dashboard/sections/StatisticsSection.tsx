@@ -231,7 +231,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">Projects</span>
-                <span className="text-white font-bold">{analytics.projects.bhModule}</span>
+                <span className="text-white font-bold">{analytics.projects.bhModule.total}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">Contribution to Total</span>
@@ -261,7 +261,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">Projects</span>
-                <span className="text-white font-bold">{analytics.projects.piscines}</span>
+                <span className="text-white font-bold">{analytics.projects.piscines.total}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-white/70 text-sm">Modules Completed</span>

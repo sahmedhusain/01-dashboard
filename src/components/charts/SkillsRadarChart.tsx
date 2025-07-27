@@ -5,10 +5,14 @@ const COLORS = {
 }
 
 const SkillsRadarChart = ({ skills }: { skills: Array<{ name: string, points: number }> }) => {
+  if (!skills || skills.length === 0) {
+    return <div className="text-center text-gray-500">No skill data available.</div>;
+  }
+
   const size = 200
   const center = size / 2
   const radius = 70
-  const maxPoints = Math.max(...skills.map(s => s.points), 100)
+  const maxPoints = Math.max(...skills.map(s => s.points || 0), 100)
 
   const getPointOnCircle = (angle: number, distance: number) => {
     const x = center + Math.cos(angle - Math.PI / 2) * distance
@@ -52,7 +56,7 @@ const SkillsRadarChart = ({ skills }: { skills: Array<{ name: string, points: nu
       <path
         d={skills.map((skill, i) => {
           const angle = (2 * Math.PI * i) / skills.length
-          const distance = (skill.points / maxPoints) * radius
+          const distance = ((skill.points || 0) / maxPoints) * radius
           const point = getPointOnCircle(angle, distance)
           return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
         }).join(' ') + ' Z'}
@@ -64,7 +68,7 @@ const SkillsRadarChart = ({ skills }: { skills: Array<{ name: string, points: nu
       {/* Data points */}
       {skills.map((skill, i) => {
         const angle = (2 * Math.PI * i) / skills.length
-        const distance = (skill.points / maxPoints) * radius
+        const distance = ((skill.points || 0) / maxPoints) * radius
         const point = getPointOnCircle(angle, distance)
         return (
           <circle

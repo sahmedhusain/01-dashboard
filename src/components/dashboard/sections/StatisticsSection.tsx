@@ -55,7 +55,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
           <div className="text-3xl font-bold text-white mb-1">{analytics.audits.ratio.toFixed(1)}</div>
           <div className="text-white/70 text-sm">Audit Ratio</div>
           <div className="text-green-400 text-xs mt-2">
-            {analytics.audits.given} audits given
+            {analytics.audits.given} completed audits given
           </div>
         </div>
 

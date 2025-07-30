@@ -14,10 +14,13 @@ import {
   UserCheck,
   TrendingUp,
   BookOpen,
-  ChevronLeft
+  ChevronLeft,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
+import { formatDate as formatDateUtil, formatDateTime as formatDateTimeUtil } from '../../utils/dataFormatting'
 
 interface EventSectionProps {
   user: User
@@ -52,6 +55,17 @@ const EVENT_PARTICIPANTS_QUERY = gql`
       eventId
       level
       createdAt
+    }
+  }
+`;
+
+const USERS_BY_IDS_QUERY = gql`
+  query GetUsersByIds($userIds: [Int!]!) {
+    user_public_view(where: {id: {_in: $userIds}}) {
+      id
+      login
+      firstName
+      lastName
     }
   }
 `;
@@ -93,9 +107,35 @@ const EVENT_USER_VIEW_QUERY = gql`
 const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all' | 'my-events' | 'active'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Helper functions for path parsing
+  const extractEventName = (path: string) => {
+    if (!path) return 'Unknown Event';
+    const parts = path.split('/').filter(part => part);
+    return parts[parts.length - 1] || 'Unknown Event';
+  };
+
+  const extractModuleName = (path: string) => {
+    if (!path) return 'Unknown Module';
+    const parts = path.split('/').filter(part => part);
+    
+    if (parts.includes('bh-piscine')) {
+      return 'Go Piscine';
+    } else if (parts.some(part => part.startsWith('piscine-'))) {
+      const piscinePart = parts.find(part => part.startsWith('piscine-'));
+      return piscinePart ? piscinePart.replace('piscine-', '').toUpperCase() + ' Piscine' : 'Piscine';
+    } else if (parts.includes('bh-module')) {
+      return 'BH-Module';
+    } else if (parts.length >= 2) {
+      return parts[parts.length - 2] || 'Module';
+    }
+    
+    return 'Module';
+  };
 
   // Query all events
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useQuery(ALL_EVENTS_QUERY, {
@@ -128,6 +168,16 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
+  // Get user IDs from participants and query user data
+  const participantUserIds = participantsData?.event_user?.map((p: any) => p.userId) || [];
+  
+  const { data: participantUsersData, loading: participantUsersLoading } = useQuery(USERS_BY_IDS_QUERY, {
+    variables: { userIds: participantUserIds },
+    skip: participantUserIds.length === 0,
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
   const getFilteredEvents = () => {
     let events = [];
     
@@ -149,12 +199,22 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         events = eventsData?.event || [];
     }
 
-    // Apply filters
+    // Apply search filter
     if (searchTerm) {
       events = events.filter((event: any) => 
         event.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.campus?.toLowerCase().includes(searchTerm.toLowerCase())
+        event.campus?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        extractEventName(event.path).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        extractModuleName(event.path).toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      events = events.filter((event: any) => {
+        const eventStatus = getEventStatus(event);
+        return eventStatus.status === statusFilter;
+      });
     }
 
     return events;
@@ -165,13 +225,9 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     return new Date(endAt) > new Date();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
-  };
+  // Use standardized date formatting functions
+  const formatDate = formatDateUtil;
+  const formatDateTime = formatDateTimeUtil;
 
   const getEventStatus = (event: any) => {
     if (!event.endAt) return { status: 'ongoing', color: 'text-blue-400 bg-blue-400/20' };
@@ -290,7 +346,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                 : 'text-white/70 hover:text-white'
             }`}
           >
-            My Events ({userEventsData?.event_user?.length || 0})
+            My Events
           </button>
           <button
             onClick={() => setSelectedView('active')}
@@ -317,11 +373,26 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search events by path or campus..."
+            placeholder="Search events by name, module, path or campus..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
+        </div>
+
+        {/* Status Filter */}
+        <div className="flex items-center space-x-2">
+          <Filter className="w-4 h-4 text-white/70" />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="ongoing">Ongoing</option>
+          </select>
         </div>
       </motion.div>
 
@@ -334,6 +405,8 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
       >
         {getFilteredEvents().map((event: any, index: number) => {
           const eventStatus = getEventStatus(event);
+          const eventName = extractEventName(event.path);
+          const moduleName = extractModuleName(event.path);
           
           return (
             <motion.div
@@ -341,59 +414,82 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:bg-white/15 transition-all cursor-pointer"
-              onClick={() => setSelectedEvent(selectedEvent === event.id ? null : event.id)}
+              className="bg-slate-800/50 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 shadow-lg"
             >
               {/* Event Header */}
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="w-5 h-5 text-primary-400" />
-                  <span className="text-white font-medium">Event #{event.id}</span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-primary-400" />
+                  </div>
+                  <div>
+                    <span className="text-white font-semibold text-lg">{eventName}</span>
+                    <div className="text-slate-400 text-sm">{moduleName}</div>
+                  </div>
                 </div>
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${eventStatus.color}`}>
+                <div className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${eventStatus.color}`}>
                   {eventStatus.status}
                 </div>
               </div>
 
               {/* Event Details */}
-              <div className="space-y-3">
-                {event.path && (
-                  <div className="flex items-center space-x-2 text-sm">
-                    <BookOpen className="w-4 h-4 text-white/60" />
-                    <span className="text-white/80 truncate">{event.path}</span>
-                  </div>
-                )}
-                
+              <div className="space-y-4">
                 {event.campus && (
-                  <div className="flex items-center space-x-2 text-sm">
-                    <MapPin className="w-4 h-4 text-white/60" />
-                    <span className="text-white/80">{event.campus}</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">{event.campus}</div>
+                      <div className="text-slate-400 text-sm">Campus</div>
+                    </div>
                   </div>
                 )}
 
-                <div className="flex items-center space-x-2 text-sm">
-                  <Clock className="w-4 h-4 text-white/60" />
-                  <span className="text-white/80">Created: {formatDate(event.createdAt)}</span>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-purple-400" />
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">{formatDate(event.createdAt)}</div>
+                    <div className="text-slate-400 text-sm">Created</div>
+                  </div>
                 </div>
 
                 {event.endAt && (
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Clock className="w-4 h-4 text-white/60" />
-                    <span className="text-white/80">Ends: {formatDateTime(event.endAt)}</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
+                      <Clock className="w-4 h-4 text-red-400" />
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">{formatDateTime(event.endAt)}</div>
+                      <div className="text-slate-400 text-sm">Ends</div>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Expand Indicator */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                <span className="text-white/60 text-sm">
-                  Object ID: {event.objectId}
-                </span>
-                <ChevronRight 
-                  className={`w-4 h-4 text-white/60 transition-transform ${
-                    selectedEvent === event.id ? 'rotate-90' : ''
-                  }`} 
-                />
+              {/* Participants Dropdown */}
+              <div
+                className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700/50 cursor-pointer hover:bg-slate-700/30 rounded-lg p-3 transition-colors"
+                onClick={() => setSelectedEvent(selectedEvent === event.id ? null : event.id)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-primary-400" />
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">Participants</div>
+                    <div className="text-slate-400 text-sm">Click to view participants</div>
+                  </div>
+                </div>
+                <div className="transition-transform duration-200">
+                  {selectedEvent === event.id ? (
+                    <ChevronRight className="w-5 h-5 text-slate-400 rotate-90" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-slate-400" />
+                  )}
+                </div>
               </div>
 
               {/* Event Participants (Expanded) */}
@@ -402,33 +498,62 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 pt-4 border-t border-white/10"
+                  className="mt-4 bg-slate-900/50 rounded-lg p-4 border border-slate-700/30"
                 >
-                  {participantsLoading ? (
-                    <div className="flex items-center justify-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500"></div>
+                  {(participantsLoading || participantUsersLoading) ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                      <span className="ml-3 text-slate-400">Loading participants...</span>
                     </div>
                   ) : (
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Users className="w-4 h-4 text-primary-400" />
-                        <span className="text-white font-medium text-sm">
-                          Participants ({participantsData?.event_user?.length || 0})
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2 mb-4 pb-2 border-b border-slate-700/50">
+                        <UserCheck className="w-5 h-5 text-primary-400" />
+                        <span className="text-white font-semibold">
+                          Event Participants ({participantsData?.event_user?.length || 0})
                         </span>
                       </div>
-                      {participantsData?.event_user?.slice(0, 5).map((participant: any) => (
-                        <div key={participant.id} className="flex items-center justify-between text-sm">
-                          <span className="text-white/80">User #{participant.userId}</span>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-white/60">Level {participant.level}</span>
-                            <span className="text-white/60">{formatDate(participant.createdAt)}</span>
-                          </div>
+                      <div className="max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
+                        {participantsData?.event_user?.map((participant: any) => {
+                          // Find matching user data
+                          const userData = participantUsersData?.user_public_view?.find((u: any) => u.id === participant.userId);
+                          
+                          return (
+                            <div key={participant.id} className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 hover:bg-slate-800/70 transition-colors">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-primary-500/30 to-primary-600/30 rounded-full flex items-center justify-center border border-primary-500/20">
+                                  <span className="text-primary-300 text-sm font-semibold">
+                                    {userData?.firstName?.[0] || userData?.login?.[0] || 'U'}
+                                  </span>
+                                </div>
+                                <div>
+                                  <div className="text-white font-medium">
+                                    {userData?.login || 'Unknown User'}
+                                  </div>
+                                  {userData?.firstName && userData?.lastName ? (
+                                    <div className="text-slate-400 text-sm">
+                                      {userData.firstName} {userData.lastName}
+                                    </div>
+                                  ) : (
+                                    <div className="text-slate-400 text-sm">
+                                      ID: {participant.userId}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-slate-400 text-xs">Joined</div>
+                                <div className="text-slate-300 text-sm">{formatDate(participant.createdAt)}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {(participantsData?.event_user?.length || 0) === 0 && (
+                        <div className="text-center py-8">
+                          <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                          <p className="text-slate-400 text-sm">No participants found for this event</p>
                         </div>
-                      ))}
-                      {(participantsData?.event_user?.length || 0) > 5 && (
-                        <p className="text-white/60 text-xs">
-                          +{(participantsData?.event_user?.length || 0) - 5} more participants
-                        </p>
                       )}
                     </div>
                   )}
@@ -456,26 +581,27 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
             }}
             className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
+            <option value={20}>20</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
         </div>
         <div className="flex items-center space-x-4">
           <span className="text-sm">
-            Page {currentPage} of {totalPages}
+            Showing {getFilteredEvents().length} of {totalEvents} events (Page {currentPage} of {totalPages})
           </span>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

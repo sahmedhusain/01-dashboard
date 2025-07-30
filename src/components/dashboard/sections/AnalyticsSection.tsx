@@ -477,7 +477,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
           
           <div className="mt-4 text-center">
             <div className="text-2xl font-bold text-green-400">{analytics.audits.given}</div>
-            <div className="text-white/60 text-sm">Total Audits Given</div>
+            <div className="text-white/60 text-sm">Completed Audits Given</div>
           </div>
         </motion.div>
       </div>

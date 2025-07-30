@@ -511,7 +511,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <User className="w-5 h-5 text-blue-400" />
-                <span className="text-white text-sm">Audits Given</span>
+                <span className="text-white text-sm">Completed Audits Given</span>
               </div>
               <span className="text-blue-400 font-bold">{analytics.audits.given}</span>
             </div>
@@ -519,7 +519,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <User className="w-5 h-5 text-cyan-400" />
-                <span className="text-white text-sm">Audits Received</span>
+                <span className="text-white text-sm">Completed Audits Received</span>
               </div>
               <span className="text-cyan-400 font-bold">{analytics.audits.received}</span>
             </div>

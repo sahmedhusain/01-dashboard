@@ -6,8 +6,8 @@ import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent } from 'lucide-react';
-import { GET_USER_BY_PK, GET_AUDIT_TRANSACTIONS } from '../../graphql/allQueries';
-import { formatXPValue } from '../../utils/dataFormatting';
+import { GET_USER_BY_PK } from '../../graphql/allQueries';
+import { formatXPValue, formatDate } from '../../utils/dataFormatting';
 
 interface AuditSectionProps {
   user: User;
@@ -43,12 +43,12 @@ const GET_AUDIT_DATA = gql`
         path
       }
     }
-    auditsGiven_aggregate: audit_aggregate(where: { auditorId: { _eq: $userId } }) {
+    auditsGiven_aggregate: audit_aggregate(where: { auditorId: { _eq: $userId }, grade: { _is_null: false } }) {
       aggregate {
         count
       }
     }
-    auditsReceived_aggregate: audit_aggregate(where: { group: { members: { userId: { _eq: $userId } } } }) {
+    auditsReceived_aggregate: audit_aggregate(where: { group: { members: { userId: { _eq: $userId } } }, grade: { _is_null: false } }) {
       aggregate {
         count
       }
@@ -75,7 +75,28 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
     variables: { id: user.id },
   });
 
-  const { data: transactionData, loading: transactionLoading, error: transactionError } = useQuery(GET_AUDIT_TRANSACTIONS, {
+  const { data: transactionData, loading: transactionLoading, error: transactionError } = useQuery(gql`
+    query GetAuditTransactions($userId: Int!) {
+      transaction(
+        where: {
+          userId: { _eq: $userId }
+          _or: [
+            { type: { _eq: "up" } }
+            { type: { _eq: "down" } }
+          ]
+          attrs: { _has_key: "auditId" }
+        }
+        order_by: { createdAt: desc }
+      ) {
+        id
+        amount
+        path
+        createdAt
+        type
+        attrs
+      }
+    }
+  `, {
     variables: { userId: user.id },
   });
 
@@ -88,30 +109,20 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
     ];
 
     return allAudits.map(audit => {
-      const auditTime = new Date(audit.createdAt).getTime();
-      const projectPath = audit.group.path;
-      const expectedSuffix = audit.type === 'given' ? '/auditor' : '/auditee';
-
-      const potentialMatches = transactionData.transaction.filter((t: any) => {
-        return t.path.startsWith(projectPath) && t.path.endsWith(expectedSuffix);
+      // Find matching transaction by auditId in attrs
+      const matchingTransaction = transactionData.transaction.find((t: any) => {
+        return t.attrs && t.attrs.auditId === audit.id;
       });
 
-      if (potentialMatches.length === 0) {
-        return { ...audit, amount: undefined };
+      if (matchingTransaction) {
+        return { 
+          ...audit, 
+          amount: matchingTransaction.amount,
+          transactionType: matchingTransaction.type 
+        };
       }
 
-      const closestTransaction = potentialMatches.reduce((closest: any, current: any) => {
-        const currentTimeDiff = Math.abs(new Date(current.createdAt).getTime() - auditTime);
-        const closestTimeDiff = Math.abs(new Date(closest.createdAt).getTime() - auditTime);
-        return currentTimeDiff < closestTimeDiff ? current : closest;
-      });
-      
-      const timeDiff = Math.abs(new Date(closestTransaction.createdAt).getTime() - auditTime);
-      if (timeDiff < 600000) { // 10-minute window
-        return { ...audit, amount: closestTransaction.amount };
-      }
-
-      return { ...audit, amount: undefined };
+      return { ...audit, amount: undefined, transactionType: undefined };
     });
   }, [auditData, transactionData]);
 
@@ -146,8 +157,18 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl font-bold mb-4 text-center">Audit Dashboard</h1>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center"
+      >
+        <h1 className="text-4xl font-bold text-white mb-2">
+          Audit Management Dashboard
+        </h1>
+        <p className="text-white/70 text-lg">
+          Complete audit tracking system with {totalAudits} completed audits
+        </p>
       </motion.div>
 
       <motion.div
@@ -158,20 +179,56 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
       >
         <StatCard icon={ArrowUp} title="Total Up" value={formatXPValue(userData?.user_by_pk?.totalUp)} color="text-green-400" />
         <StatCard icon={ArrowDown} title="Total Down" value={formatXPValue(userData?.user_by_pk?.totalDown)} color="text-red-400" />
-        <StatCard icon={Percent} title="Audit Ratio" value={userData?.user_by_pk?.auditRatio.toFixed(2)} color="text-blue-400" />
-        <StatCard icon={Users} title="Audits Given/Received" value={`${auditData?.auditsGiven_aggregate.aggregate.count || 0} / ${auditData?.auditsReceived_aggregate.aggregate.count || 0}`} color="text-purple-400" />
+        <StatCard icon={Percent} title="Audit Ratio" value={userData?.user_by_pk?.auditRatio.toFixed(1)} color="text-blue-400" />
+        <StatCard icon={Users} title="Completed Audits Given/Received" value={`${auditData?.auditsGiven_aggregate.aggregate.count || 0} / ${auditData?.auditsReceived_aggregate.aggregate.count || 0}`} color="text-purple-400" />
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex justify-center mb-8"
+        className="flex justify-center"
       >
         <div className="bg-white/10 rounded-lg p-1">
-          <button onClick={() => setView('all')} className={`px-4 py-2 rounded-md ${view === 'all' ? 'bg-primary-500' : ''}`}>All Audits</button>
-          <button onClick={() => setView('given')} className={`px-4 py-2 rounded-md ${view === 'given' ? 'bg-primary-500' : ''}`}>Audits Given</button>
-          <button onClick={() => setView('received')} className={`px-4 py-2 rounded-md ${view === 'received' ? 'bg-primary-500' : ''}`}>Audits Received</button>
+          <button onClick={() => setView('all')} className={`px-4 py-2 rounded-md transition-all ${view === 'all' ? 'bg-primary-500 text-white' : 'text-white/70 hover:text-white'}`}>All Audits</button>
+          <button onClick={() => setView('given')} className={`px-4 py-2 rounded-md transition-all ${view === 'given' ? 'bg-primary-500 text-white' : 'text-white/70 hover:text-white'}`}>Audits Given</button>
+          <button onClick={() => setView('received')} className={`px-4 py-2 rounded-md transition-all ${view === 'received' ? 'bg-primary-500 text-white' : 'text-white/70 hover:text-white'}`}>Audits Received</button>
+        </div>
+      </motion.div>
+
+      {/* Enhanced Search and Filter Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="flex flex-col sm:flex-row gap-4 items-center justify-between"
+      >
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search audits by project path, auditor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
+            <Filter className="w-4 h-4 text-white/70" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="all">All Status</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
         </div>
       </motion.div>
 
@@ -189,8 +246,8 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="flex items-center justify-between text-white mt-8"
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="flex items-center justify-between text-white"
       >
         <div className="flex items-center space-x-2">
           <span className="text-sm">Items per page:</span>
@@ -202,32 +259,48 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
             }}
             className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
+            <option value={20}>20</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
         </div>
         <div className="flex items-center space-x-4">
           <span className="text-sm">
-            Page {currentPage} of {totalPages}
+            Showing {filteredAudits.length} of {totalAudits} audits (Page {currentPage} of {totalPages})
           </span>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </motion.div>
+
+      {/* Empty State */}
+      {filteredAudits.length === 0 && !auditLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-12"
+        >
+          <Users className="w-16 h-16 text-white/30 mx-auto mb-4" />
+          <h3 className="text-white/70 text-lg font-medium mb-2">No audits found</h3>
+          <p className="text-white/50">
+            Try adjusting your search criteria or filters.
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 };
@@ -305,18 +378,20 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
             <Calendar className="w-4 h-4 text-purple-400" />
           </div>
           <div>
-            <div className="text-white font-medium">{new Date(audit.createdAt).toLocaleDateString()}</div>
+            <div className="text-white font-medium">{formatDate(audit.createdAt)}</div>
             <div className="text-slate-400 text-sm">Date</div>
           </div>
         </div>
-        {isCompleted && audit.amount !== undefined && (
+        {isCompleted && status !== 'Assigned' && status !== 'Pending' && (
           <div className="flex items-center space-x-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${audit.type === 'given' ? 'bg-green-400/20' : 'bg-red-400/20'}`}>
               {audit.type === 'given' ? <ArrowUp className="w-4 h-4 text-green-400" /> : <ArrowDown className="w-4 h-4 text-red-400" />}
             </div>
             <div>
-              <div className={`text-white font-medium ${audit.type === 'given' ? 'text-green-400' : 'text-red-400'}`}>{formatXPValue(audit.amount)}</div>
-              <div className="text-slate-400 text-sm">{audit.type === 'given' ? 'Given' : 'Received'}</div>
+              <div className={`text-white font-medium ${audit.type === 'given' ? 'text-green-400' : 'text-red-400'}`}>
+                {audit.type === 'given' ? '+' : '-'}{audit.amount !== undefined ? formatXPValue(Math.abs(audit.amount)) : '0'}
+              </div>
+              <div className="text-slate-400 text-sm">{audit.type === 'given' ? 'Up Points' : 'Down Points'}</div>
             </div>
           </div>
         )}
@@ -326,7 +401,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
               {isCompleted ? (isSuccess ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />) : <Clock className="w-4 h-4" />}
             </div>
             <div>
-              <div className="text-white font-medium">{isCompleted ? audit.grade.toFixed(2) : 'Pending'}</div>
+              <div className="text-white font-medium">{isCompleted ? audit.grade.toFixed(2)*100+'%': 'Pending'}</div>
               <div className="text-slate-400 text-sm">Grade</div>
             </div>
           </div>

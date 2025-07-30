@@ -229,8 +229,56 @@ export const formatDate = (dateInput: string | Date | null | undefined, options?
   try {
     const date = new Date(dateInput);
     if (isNaN(date.getTime())) return '';
-    const defaultOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const defaultOptions: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
     return date.toLocaleDateString('en-US', options || defaultOptions);
+  } catch {
+    return '';
+  }
+};
+
+export const formatDateTime = (dateInput: string | Date | null | undefined): string => {
+  if (!dateInput) return '';
+  try {
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return '';
+    
+    const dateOptions: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false 
+    };
+    
+    const dateStr = date.toLocaleDateString('en-US', dateOptions);
+    const timeStr = date.toLocaleTimeString('en-US', timeOptions);
+    
+    return `${dateStr} ${timeStr}`;
+  } catch {
+    return '';
+  }
+};
+
+export const formatTime = (dateInput: string | Date | null | undefined): string => {
+  if (!dateInput) return '';
+  try {
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return '';
+    
+    const timeOptions: Intl.DateTimeFormatOptions = { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false 
+    };
+    
+    return date.toLocaleTimeString('en-US', timeOptions);
   } catch {
     return '';
   }

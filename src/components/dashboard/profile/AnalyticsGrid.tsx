@@ -108,7 +108,7 @@ const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ analytics }) => {
               <span className="text-white/80 text-sm">Given</span>
               <span className="text-blue-400 font-bold">{analytics.audits.given}</span>
             </div>
-            <div className="text-white/60 text-xs">Total audits given</div>
+            <div className="text-white/60 text-xs">Completed audits given</div>
           </div>
           
           <div className="bg-white/5 rounded-lg p-3">

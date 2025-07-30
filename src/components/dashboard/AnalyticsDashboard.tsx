@@ -52,9 +52,9 @@ const GET_ANALYTICS_DATA = gql`
       amount
     }
     
-    # Audit data for trends
+    # Audit data for trends (completed audits only)
     audits_given: audit(
-      where: { auditorId: { _eq: $userId } }
+      where: { auditorId: { _eq: $userId }, grade: { _is_null: false } }
       order_by: { createdAt: asc }
     ) {
       grade
@@ -62,7 +62,7 @@ const GET_ANALYTICS_DATA = gql`
     }
     
     audits_received: audit(
-      where: { group: { captainId: { _eq: $userId } } }
+      where: { group: { captainId: { _eq: $userId } }, grade: { _is_null: false } }
       order_by: { createdAt: asc }
       limit: 50
     ) {

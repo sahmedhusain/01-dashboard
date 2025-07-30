@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
+import { formatDate as formatDateUtil } from '../../utils/dataFormatting'
 
 interface GroupSectionProps {
   user: User
@@ -222,9 +223,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+  const formatDate = formatDateUtil;
 
   const extractProjectName = (path: string) => {
     if (!path) return 'Unknown Project';
@@ -286,11 +285,63 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         className="text-center"
       >
         <h1 className="text-4xl font-bold text-white mb-2">
-          Group Dashboard
+          Group Management Dashboard
         </h1>
         <p className="text-white/70 text-lg">
-          Manage and explore {totalGroups} collaboration groups
+          Manage and explore {totalGroups} collaboration groups with comprehensive tracking
         </p>
+      </motion.div>
+
+      {/* Statistics Cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+          <div className="flex items-center space-x-3">
+            <Users className="w-8 h-8 text-blue-400" />
+            <div>
+              <p className="text-white font-medium">Total Groups</p>
+              <p className="text-2xl font-bold text-white">{totalGroups}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+          <div className="flex items-center space-x-3">
+            <Crown className="w-8 h-8 text-yellow-400" />
+            <div>
+              <p className="text-white font-medium">My Groups</p>
+              <p className="text-2xl font-bold text-white">{getMyGroupsCount()}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+          <div className="flex items-center space-x-3">
+            <Activity className="w-8 h-8 text-green-400" />
+            <div>
+              <p className="text-white font-medium">Active Groups</p>
+              <p className="text-2xl font-bold text-white">
+                {getFilteredGroups().filter(g => g.status === 'working' || g.status === 'audit').length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+          <div className="flex items-center space-x-3">
+            <Calendar className="w-8 h-8 text-purple-400" />
+            <div>
+              <p className="text-white font-medium">Completed</p>
+              <p className="text-2xl font-bold text-white">
+                {getFilteredGroups().filter(g => g.status === 'finished').length}
+              </p>
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* View Selector */}
@@ -309,7 +360,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                 : 'text-white/70 hover:text-white'
             }`}
           >
-            All Groups ({totalGroups})
+            All Groups
           </button>
           <button
             onClick={() => setSelectedView('my-groups')}
@@ -319,7 +370,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                 : 'text-white/70 hover:text-white'
             }`}
           >
-            My Groups ({getMyGroupsCount()})
+            My Groups
           </button>
         </div>
       </motion.div>
@@ -509,7 +560,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
         className="flex items-center justify-between text-white"
       >
         <div className="flex items-center space-x-2">
@@ -522,32 +573,48 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
             }}
             className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
+            <option value={20}>20</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
           </select>
         </div>
         <div className="flex items-center space-x-4">
           <span className="text-sm">
-            Page {currentPage} of {totalPages}
+            Showing {getFilteredGroups().length} of {totalGroups} groups (Page {currentPage} of {totalPages})
           </span>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </motion.div>
+
+      {/* Empty State */}
+      {getFilteredGroups().length === 0 && !groupsLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-12"
+        >
+          <Users className="w-16 h-16 text-white/30 mx-auto mb-4" />
+          <h3 className="text-white/70 text-lg font-medium mb-2">No groups found</h3>
+          <p className="text-white/50">
+            Try adjusting your search criteria or filters.
+          </p>
+        </motion.div>
+      )}
 
       {/* Error Display */}
       {groupsError && (

@@ -539,8 +539,10 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         }
       },
       audits: {
-        given: totalAuditsGiven,
-        received: totalAuditsReceived,
+        given: completedAuditsGiven,
+        received: completedAuditsReceived,
+        totalGiven: totalAuditsGiven,
+        totalReceived: totalAuditsReceived,
         completedGiven: completedAuditsGiven,
         completedReceived: completedAuditsReceived,
         pendingGiven: pendingAuditsGiven,

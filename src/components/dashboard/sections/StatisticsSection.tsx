@@ -52,7 +52,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
 
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
           <Target className="w-12 h-12 text-green-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{analytics.audits.ratio.toFixed(2)}</div>
+          <div className="text-3xl font-bold text-white mb-1">{analytics.audits.ratio.toFixed(1)}</div>
           <div className="text-white/70 text-sm">Audit Ratio</div>
           <div className="text-green-400 text-xs mt-2">
             {analytics.audits.given} audits given
@@ -61,10 +61,10 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
 
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
           <Trophy className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{analytics.projects.passRate.toFixed(1)}%</div>
+          <div className="text-3xl font-bold text-white mb-1">{analytics.projects.bhModule.passRate}%</div>
           <div className="text-white/70 text-sm">Success Rate</div>
           <div className="text-yellow-400 text-xs mt-2">
-            {analytics.projects.passed}/{analytics.projects.total} projects
+            {analytics.projects.bhModule.passed}/{analytics.projects.bhModule.total} Projects
           </div>
         </div>
 
@@ -96,12 +96,12 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-400" />
-                <span className="text-white text-sm">Completed Projects</span>
+                <span className="text-white text-sm">Completed  Projects</span>
               </div>
               <div className="text-right">
-                <div className="text-green-400 font-bold">{analytics.projects.completed}</div>
+                <div className="text-green-400 font-bold">{analytics.projects.bhModule.completed}</div>
                 <div className="text-white/60 text-xs">
-                  {((analytics.projects.completed / analytics.projects.total) * 100).toFixed(1)}% of total
+                  {((analytics.projects.bhModule.completed / analytics.projects.bhModule.total) * 100).toFixed(0)}% 
                 </div>
               </div>
             </div>
@@ -112,7 +112,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
                 <span className="text-white text-sm">In Progress</span>
               </div>
               <div className="text-right">
-                <div className="text-yellow-400 font-bold">{analytics.projects.inProgress}</div>
+                <div className="text-yellow-400 font-bold">{analytics.projects.bhModule.inProgress}</div>
                 <div className="text-white/60 text-xs">Active projects</div>
               </div>
             </div>
@@ -291,7 +291,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {analytics.skills.top.slice(0, 6).map((skill: any, index: number) => (
+          {analytics.skills.skillData.map((skill: any, index: number) => (
             <div key={skill.name} className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-white/80 text-sm font-medium capitalize">
@@ -299,13 +299,13 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
                 </span>
                 <span className="text-purple-400 font-bold text-sm">#{index + 1}</span>
               </div>
-              <div className="text-2xl font-bold text-white mb-1">{skill.points}</div>
-              <div className="text-white/60 text-xs">Points earned</div>
+              <div className="text-2xl font-bold text-white mb-1">{skill.percentage}%</div>
+              <div className="text-white/60 text-xs">Skill percentage</div>
               <div className="w-full bg-white/10 rounded-full h-2 mt-3">
                 <div 
                   className="bg-purple-400 h-2 rounded-full transition-all duration-1000"
                   style={{ 
-                    width: `${Math.min(100, (skill.points / Math.max(...analytics.skills.top.map((s: any) => s.points))) * 100)}%` 
+                    width: `${Math.min(100, skill.percentage)}%` 
                   }}
                 />
               </div>

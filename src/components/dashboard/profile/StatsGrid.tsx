@@ -41,7 +41,7 @@ const StatsGrid: React.FC<StatsGridProps> = ({ analytics, userData }) => {
           <BookOpen className="w-8 h-8 text-purple-400" />
           <div>
             <p className="text-white font-medium">Projects</p>
-            <p className="text-2xl font-bold text-white">{analytics ? analytics.projects.completed : '0'}</p>
+            <p className="text-2xl font-bold text-white">{analytics ? analytics.projects.bhModule.completed : '0'}</p>
           </div>
         </div>
       </div>

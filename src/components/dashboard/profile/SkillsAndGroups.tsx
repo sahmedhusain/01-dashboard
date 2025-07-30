@@ -12,7 +12,7 @@ const SkillsAndGroups: React.FC<SkillsAndGroupsProps> = ({ analytics }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Skills Analytics */}
-      {analytics.skills.top.length > 0 && (
+      {analytics.skills.skillData.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -21,19 +21,19 @@ const SkillsAndGroups: React.FC<SkillsAndGroupsProps> = ({ analytics }) => {
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Code className="w-5 h-5 mr-2 text-orange-400" />
-            Skills & Learning Progress
+            All Skills & Learning Progress
           </h3>
           <div className="space-y-3 max-h-64 overflow-y-auto">
-            {analytics.skills.top.slice(0, 6).map((skill: any) => (
+            {analytics.skills.skillData.map((skill: any) => (
               <div key={skill.name} className="bg-white/5 rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-white/80 text-sm">{skill.name}</span>
-                  <span className="text-blue-400 font-bold">{skill.points.toFixed(0)}%</span>
+                  <span className="text-blue-400 font-bold">{skill.percentage}%</span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2 mt-2">
                   <div 
                     className="bg-orange-400 h-2 rounded-full transition-all duration-1000" 
-                    style={{width: `${Math.min(100, (skill.points / Math.max(...analytics.skills.top.map((s: any) => s.points))) * 100)}%`}}
+                    style={{width: `${Math.min(100, skill.percentage)}%`}}
                   ></div>
                 </div>
               </div>

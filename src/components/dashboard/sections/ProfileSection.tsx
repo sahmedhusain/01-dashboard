@@ -2,13 +2,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { User as UserType } from '../../../types'
 import {
-  User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target,
+  User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, TrendingUp,
   Phone, CreditCard, Heart, Home, Shield, FileText, UserCheck, AlertTriangle,
   Briefcase, Building, ExternalLink, Github, Linkedin, Globe, UserCog, Tag
 } from 'lucide-react'
 import Avatar from '../../ui/Avatar'
 import {
-  formatXPValue, formatDate, formatAuditRatio, formatSkillPercentage,
+  formatXPValue, formatDate, formatAuditRatio,
   extractPersonalInfo, formatPhoneNumber, formatCPRNumber, getRankFromLevel
 } from '../../../utils/dataFormatting'
 import { useToken } from '../../../store'
@@ -482,7 +482,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <Star className="w-5 h-5 text-purple-400" />
                 <span className="text-white text-sm">Projects Completed</span>
               </div>
-              <span className="text-purple-400 font-bold">{analytics.projects.completed}</span>
+              <span className="text-purple-400 font-bold">{analytics.projects.bhModule.completed}</span>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -518,6 +518,30 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
+                <User className="w-5 h-5 text-cyan-400" />
+                <span className="text-white text-sm">Audits Received</span>
+              </div>
+              <span className="text-cyan-400 font-bold">{analytics.audits.received}</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <TrendingUp className="w-5 h-5 text-green-400" />
+                <span className="text-white text-sm">Total Up (Audit Points)</span>
+              </div>
+              <span className="text-green-400 font-bold">{formatXPValue(analytics.audits.totalUp)}</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <TrendingUp className="w-5 h-5 text-red-400 rotate-180" />
+                <span className="text-white text-sm">Total Down (Audit Points)</span>
+              </div>
+              <span className="text-red-400 font-bold">{formatXPValue(analytics.audits.totalDown)}</span>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center space-x-3">
                 <Award className="w-5 h-5 text-yellow-400" />
                 <span className="text-white text-sm">Groups Led</span>
               </div>
@@ -537,53 +561,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <Target className="w-5 h-5 text-purple-400" />
                 <span className="text-white text-sm">Success Rate</span>
               </div>
-              <span className="text-purple-400 font-bold">{analytics.projects.passRate.toFixed(1)}%</span>
+              <span className="text-purple-400 font-bold">{analytics.projects.bhModule.passRate}%</span>
             </div>
           </div>
         </motion.div>
       </div>
 
 
-      {/* Top Skills Display */}
-      {analytics.skills.top.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-        >
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Code className="w-5 h-5 mr-2 text-orange-400" />
-            Top Skills
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {analytics.skills.top.slice(0, 6).map((skill: any, index: number) => (
-              <div key={skill.name} className="bg-white/5 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white/80 text-sm font-medium capitalize">
-                    {skill.name.replace(/-/g, ' ')}
-                  </span>
-                  <span className="text-orange-400 font-bold text-sm">
-                    {formatSkillPercentage(skill.currentAmount)}
-                  </span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div
-                    className="bg-orange-400 h-2 rounded-full transition-all duration-1000"
-                    style={{
-                      width: `${skill.currentAmount}%`
-                    }}
-                  />
-                </div>
-                <div className="text-white/60 text-xs mt-1">
-                  Rank #{index + 1}
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
 
       {/* Module Progress Comparison */}
       <motion.div

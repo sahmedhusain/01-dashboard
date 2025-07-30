@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Settings, Palette, Eye, Save, RotateCcw, RefreshCw, Database } from 'lucide-react'
+import { Settings, Palette, Save, RotateCcw, RefreshCw, Database, GripVertical, ArrowUp, ArrowDown } from 'lucide-react'
 import Card from '../ui/Card'
 import RefreshControl from '../ui/RefreshControl'
 
 interface UserPreferencesProps {
   userId: number
   onClose: () => void
+  defaultTabs?: Array<{ id: string; label: string; icon: any }>
 }
 
 interface Preferences {
@@ -16,11 +17,7 @@ interface Preferences {
     showAnimations: boolean
     defaultTab: string
     chartsEnabled: boolean
-  }
-  privacy: {
-    showProfile: boolean
-    showProgress: boolean
-    showStats: boolean
+    tabOrder: string[]
   }
 }
 
@@ -30,19 +27,15 @@ const defaultPreferences: Preferences = {
     compactMode: false,
     showAnimations: true,
     defaultTab: 'dashboard',
-    chartsEnabled: true
-  },
-  privacy: {
-    showProfile: true,
-    showProgress: true,
-    showStats: true
+    chartsEnabled: true,
+    tabOrder: ['dashboard', 'piscines', 'leaderboard', 'groups', 'audits', 'checkpoints', 'events', 'export']
   }
 }
 
-const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) => {
+const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defaultTabs = [] }) => {
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences)
   const [hasChanges, setHasChanges] = useState(false)
-  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'privacy' | 'data'>('appearance')
+  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data'>('appearance')
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -80,10 +73,21 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) =>
     setHasChanges(true)
   }
 
+  const moveTab = (fromIndex: number, toIndex: number) => {
+    const newTabOrder = [...preferences.dashboard.tabOrder]
+    const [movedTab] = newTabOrder.splice(fromIndex, 1)
+    newTabOrder.splice(toIndex, 0, movedTab)
+    
+    updatePreference('dashboard', 'tabOrder', newTabOrder)
+  }
+
+  const resetTabOrder = () => {
+    updatePreference('dashboard', 'tabOrder', defaultPreferences.dashboard.tabOrder)
+  }
+
   const sections = [
     { id: 'appearance' as const, label: 'Appearance', icon: Palette },
     { id: 'dashboard' as const, label: 'Dashboard', icon: Settings },
-    { id: 'privacy' as const, label: 'Privacy', icon: Eye },
     { id: 'data' as const, label: 'Data Refresh', icon: Database }
   ]
 
@@ -206,10 +210,61 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) =>
                               className="w-full bg-gray-700 text-white rounded px-3 py-2"
                             >
                               <option value="dashboard">Dashboard</option>
+                              <option value="piscines">Piscines</option>
                               <option value="leaderboard">Leaderboard</option>
-                              <option value="search">Search</option>
+                              <option value="groups">Groups</option>
+                              <option value="audits">Audits</option>
+                              <option value="checkpoints">Checkpoints</option>
+                              <option value="events">Events</option>
                               <option value="export">Export</option>
                             </select>
+                          </div>
+                        )
+                      }
+                      
+                      if (key === 'tabOrder') {
+                        return (
+                          <div key={key}>
+                            <div className="flex items-center justify-between mb-3">
+                              <label className="block text-white/80">Tab Order</label>
+                              <button
+                                onClick={resetTabOrder}
+                                className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                              >
+                                Reset to Default
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {(value as string[]).map((tabId, index) => {
+                                const tab = defaultTabs.find(t => t.id === tabId)
+                                if (!tab) return null
+                                const Icon = tab.icon
+                                
+                                return (
+                                  <div key={tabId} className="flex items-center bg-gray-700/50 rounded px-3 py-2">
+                                    <GripVertical className="w-4 h-4 text-white/40 mr-2" />
+                                    <Icon className="w-4 h-4 text-white/60 mr-2" />
+                                    <span className="text-white/80 flex-1">{tab.label}</span>
+                                    <div className="flex space-x-1">
+                                      <button
+                                        onClick={() => index > 0 && moveTab(index, index - 1)}
+                                        disabled={index === 0}
+                                        className="p-1 text-white/40 hover:text-white/60 disabled:opacity-30 disabled:cursor-not-allowed"
+                                      >
+                                        <ArrowUp className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        onClick={() => index < (value as string[]).length - 1 && moveTab(index, index + 1)}
+                                        disabled={index === (value as string[]).length - 1}
+                                        className="p-1 text-white/40 hover:text-white/60 disabled:opacity-30 disabled:cursor-not-allowed"
+                                      >
+                                        <ArrowDown className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
                           </div>
                         )
                       }
@@ -228,30 +283,6 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose }) =>
                         </label>
                       )
                     })}
-                  </div>
-                </Card>
-              </div>
-            )}
-
-            {activeSection === 'privacy' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white">Privacy Settings</h3>
-                
-                <Card className="p-4">
-                  <div className="space-y-4">
-                    {Object.entries(preferences.privacy).map(([key, value]) => (
-                      <label key={key} className="flex items-center justify-between">
-                        <span className="text-white/80 capitalize">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </span>
-                        <input
-                          type="checkbox"
-                          checked={value}
-                          onChange={(e) => updatePreference('privacy', key, e.target.checked)}
-                          className="ml-3"
-                        />
-                      </label>
-                    ))}
                   </div>
                 </Card>
               </div>

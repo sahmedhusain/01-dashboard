@@ -68,15 +68,15 @@ const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ analytics }) => {
           <div className="bg-white/5 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Completed</span>
-              <span className="text-green-400 font-bold">{analytics.projects.completed}</span>
+              <span className="text-green-400 font-bold">{analytics.projects.bhModule.completed}</span>
             </div>
-            <div className="text-white/60 text-xs">Pass rate: {analytics.projects.passRate.toFixed(1)}%</div>
+            <div className="text-white/60 text-xs">Pass rate: {analytics.projects.bhModule.passRate.toFixed(1)}%</div>
           </div>
           
           <div className="bg-white/5 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">In Progress</span>
-              <span className="text-yellow-400 font-bold">{analytics.projects.inProgress}</span>
+              <span className="text-yellow-400 font-bold">{analytics.projects.bhModule.inProgress}</span>
             </div>
             <div className="text-white/60 text-xs">Currently working</div>
           </div>
@@ -84,9 +84,9 @@ const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ analytics }) => {
           <div className="bg-white/5 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-white/80 text-sm">Failed</span>
-              <span className="text-red-400 font-bold">{analytics.projects.failed}</span>
+              <span className="text-red-400 font-bold">{analytics.projects.bhModule.failed}</span>
             </div>
-            <div className="text-white/60 text-xs">Avg grade: {analytics.projects.avgGrade.toFixed(2)}</div>
+            <div className="text-white/60 text-xs">Projects</div>
           </div>
         </div>
       </motion.div>

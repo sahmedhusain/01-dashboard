@@ -106,6 +106,26 @@ const ENHANCED_DASHBOARD_QUERY = gql`
       }
     }
     
+    # All audits (we'll filter for received audits in JavaScript)
+    allAudits: audit(order_by: { createdAt: desc }) {
+      id
+      groupId
+      auditorId
+      grade
+      createdAt
+      updatedAt
+      version
+      endAt
+      attrs
+      resultId
+      group {
+        id
+        path
+        campus
+        objectId
+      }
+    }
+    
     # Groups where user is member or captain
     userGroups: group_user(where: { userId: { _eq: $userId } }) {
       id
@@ -200,7 +220,19 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   const allTransactions = useMemo(() => data?.userTransactions || [], [data])
   const allProgress = useMemo(() => data?.userProgress || [], [data])
   const allResults = useMemo(() => data?.userResults || [], [data])
-  const allAudits = useMemo(() => data?.auditsGiven || [], [data])
+  const allAuditsGiven = useMemo(() => data?.auditsGiven || [], [data])
+  const allAudits = useMemo(() => data?.allAudits || [], [data])
+  const allAuditsReceived = useMemo(() => {
+    if (!data?.allAudits || !data?.userGroups) return []
+    
+    // Get all group IDs where the user is a member
+    const userGroupIds = data.userGroups.map((ug: any) => ug.groupId)
+    
+    // Filter audits where the user was in the group being audited (but not the auditor)
+    return data.allAudits.filter((audit: any) => 
+      userGroupIds.includes(audit.groupId) && audit.auditorId !== user.id
+    )
+  }, [data, user.id])
   const allGroups = useMemo(() => data?.userGroups || [], [data])
   const allEvents = useMemo(() => data?.userEvents || [], [data])
   
@@ -212,14 +244,16 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const separatedTransactions = separateModuleData(allTransactions)
     const separatedProgress = separateModuleData(allProgress)
     const separatedResults = separateModuleData(allResults)
-    const separatedAudits = separateModuleData(allAudits)
+    const separatedAuditsGiven = separateModuleData(allAuditsGiven)
+    const separatedAuditsReceived = separateModuleData(allAuditsReceived)
     const separatedGroups = separateModuleData(allGroups.map(ug => ({ ...ug.group, userId: ug.userId })))
     
     // Focus on BH Module data only (excluding piscines)
     const transactions = separatedTransactions.mainModule
     const progress = separatedProgress.mainModule
     const results = separatedResults.mainModule
-    const auditsGiven = separatedAudits.mainModule
+    const auditsGiven = separatedAuditsGiven.mainModule
+    const auditsReceived = separatedAuditsReceived.mainModule
     const groups = separatedGroups.mainModule
 
     // Complete Analytics using all available data
@@ -340,13 +374,21 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       latestDate: skill.latestDate
     }))
       
-    // Audit Analytics - complete view
-    const totalAuditsGiven = allAudits.length
-    const completedAudits = allAudits.filter((a: any) => a.grade !== null).length
-    const pendingAudits = totalAuditsGiven - completedAudits
-    const avgAuditGrade = completedAudits > 0 ? 
-      allAudits.filter((a: any) => a.grade !== null)
-               .reduce((sum: number, a: any) => sum + (a.grade || 0), 0) / completedAudits : 0
+    // Audit Analytics - complete view with given and received
+    const totalAuditsGiven = allAuditsGiven.length
+    const totalAuditsReceived = allAuditsReceived.length
+    const completedAuditsGiven = allAuditsGiven.filter((a: any) => a.grade !== null).length
+    const completedAuditsReceived = allAuditsReceived.filter((a: any) => a.grade !== null).length
+    const pendingAuditsGiven = totalAuditsGiven - completedAuditsGiven
+    const pendingAuditsReceived = totalAuditsReceived - completedAuditsReceived
+    
+    const avgAuditGradeGiven = completedAuditsGiven > 0 ? 
+      allAuditsGiven.filter((a: any) => a.grade !== null)
+               .reduce((sum: number, a: any) => sum + (a.grade || 0), 0) / completedAuditsGiven : 0
+               
+    const avgAuditGradeReceived = completedAuditsReceived > 0 ? 
+      allAuditsReceived.filter((a: any) => a.grade !== null)
+               .reduce((sum: number, a: any) => sum + (a.grade || 0), 0) / completedAuditsReceived : 0
     
     // Enhanced Project Analytics with proper BH Module filtering
     const projectStats = calculateProjectStats(allProgress)
@@ -369,11 +411,10 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const captainedGroups = allGroups.filter((ug: any) => ug.group?.captainId === user.id).length
     const memberGroups = totalGroups - captainedGroups
     
-    // UP/DOWN transaction analytics
-    const upTransactions = allTransactions.filter((t: any) => t.type === 'up')
-    const downTransactions = allTransactions.filter((t: any) => t.type === 'down')
-    const totalUp = upTransactions.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
-    const totalDown = downTransactions.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
+    // UP/DOWN audit analytics from user data (more accurate than transaction calculation)
+    const totalUp = userData?.totalUp || 0
+    const totalDown = userData?.totalDown || 0
+    const auditRatio = userData?.auditRatio || 0
 
     // Performance and Activity Analytics (use only module XP for level calculation)
     const level = calculateLevel(bhModuleXP)
@@ -405,7 +446,13 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
           return date >= monthStart && date < monthEnd && p.isDone
         }).length
 
-      const monthAudits = auditsGiven
+      const monthAuditsGiven = allAuditsGiven
+        .filter(a => {
+          const date = new Date(a.createdAt)
+          return date >= monthStart && date < monthEnd
+        }).length
+        
+      const monthAuditsReceived = allAuditsReceived
         .filter(a => {
           const date = new Date(a.createdAt)
           return date >= monthStart && date < monthEnd
@@ -415,7 +462,9 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         month: monthStart.toLocaleDateString('en', { month: 'short', year: '2-digit' }),
         xp: monthXP,
         projects: monthProjects,
-        audits: monthAudits
+        auditsGiven: monthAuditsGiven,
+        auditsReceived: monthAuditsReceived,
+        audits: monthAuditsGiven + monthAuditsReceived // For backward compatibility
       })
     }
 
@@ -491,11 +540,26 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       },
       audits: {
         given: totalAuditsGiven,
-        completed: completedAudits,
-        pending: pendingAudits,
-        avgGrade: avgAuditGrade,
-        ratio: userData?.auditRatio || 0,
-        monthlyData: monthlyData.map(m => ({ month: m.month, audits: m.audits }))
+        received: totalAuditsReceived,
+        completedGiven: completedAuditsGiven,
+        completedReceived: completedAuditsReceived,
+        pendingGiven: pendingAuditsGiven,
+        pendingReceived: pendingAuditsReceived,
+        avgGradeGiven: avgAuditGradeGiven,
+        avgGradeReceived: avgAuditGradeReceived,
+        // Legacy fields for backward compatibility
+        completed: completedAuditsGiven,
+        pending: pendingAuditsGiven,
+        avgGrade: avgAuditGradeGiven,
+        ratio: auditRatio,
+        totalUp: totalUp,
+        totalDown: totalDown,
+        monthlyData: monthlyData.map(m => ({ 
+          month: m.month, 
+          audits: m.audits,
+          auditsGiven: m.auditsGiven,
+          auditsReceived: m.auditsReceived
+        }))
       },
       groups: {
         total: totalGroups,
@@ -521,14 +585,16 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         transactions: allTransactions,
         progress: allProgress,
         results: allResults,
-        audits: allAudits,
+        auditsGiven: allAuditsGiven,
+        auditsReceived: allAuditsReceived,
+        allAudits: allAudits,
         groups: allGroups,
         events: allEvents,
         userRoles: data?.userRoles || [],
         userLabels: data?.userLabels || []
       }
     }
-  }, [userData, allTransactions, allProgress, allResults, allAudits, allGroups, allEvents, user.id, data?.userRoles, data?.userLabels])
+  }, [userData, allTransactions, allProgress, allResults, allAuditsGiven, allAuditsReceived, allAudits, allGroups, allEvents, user.id, data?.userRoles, data?.userLabels])
 
   if (loading) return <LoadingSpinner />
   if (error || !userData) {

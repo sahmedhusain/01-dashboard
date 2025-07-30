@@ -30,9 +30,31 @@ const Dashboard: React.FC = () => {
   const { getCurrentTab, navigateToTab } = useDashboardRouting()
   const [piscineTypes, setPiscineTypes] = useState<string[]>([])
   const [showPreferences, setShowPreferences] = useState(false)
+  const [preferences, setPreferences] = useState<any>(null)
 
-  const activeTab = getCurrentTab()
+  const currentTab = getCurrentTab()
   const setActiveTab = navigateToTab
+  
+  // Use default tab from preferences if we're on root dashboard and preferences are loaded
+  const activeTab = React.useMemo(() => {
+    if (currentTab === 'dashboard' && preferences?.dashboard?.defaultTab && preferences.dashboard.defaultTab !== 'dashboard') {
+      // Check if we're on the root dashboard path and should redirect to default tab
+      if (window.location.pathname === '/dashboard') {
+        return preferences.dashboard.defaultTab
+      }
+    }
+    return currentTab
+  }, [currentTab, preferences])
+
+  // Effect to navigate to default tab if needed
+  React.useEffect(() => {
+    if (preferences?.dashboard?.defaultTab && 
+        preferences.dashboard.defaultTab !== 'dashboard' && 
+        window.location.pathname === '/dashboard' &&
+        currentTab === 'dashboard') {
+      navigateToTab(preferences.dashboard.defaultTab)
+    }
+  }, [preferences, navigateToTab, currentTab])
 
   // Redirect if no user (shouldn't happen with routing, but safety check)
   if (!user) {
@@ -68,6 +90,26 @@ const Dashboard: React.FC = () => {
     errorPolicy: 'all'
   })
 
+  // Load user preferences
+  useEffect(() => {
+    const loadPreferences = () => {
+      const saved = localStorage.getItem(`user-preferences-${user.id}`)
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          setPreferences(parsed)
+        } catch (error) {
+          console.error('Failed to parse preferences:', error)
+          setPreferences(null)
+        }
+      }
+    }
+    
+    if (user?.id) {
+      loadPreferences()
+    }
+  }, [user?.id])
+
   // Extract piscine types from transaction paths (CORRECTED)
   useEffect(() => {
     if (piscineData) {
@@ -96,20 +138,54 @@ const Dashboard: React.FC = () => {
     logout()
   }, [logout])
 
-  // Updated tabs structure - dashboard combines profile info with statistics
-  const baseTabs = [
+  const handlePreferencesUpdate = useCallback(() => {
+    // Reload preferences when the modal is closed and changes are saved
+    const saved = localStorage.getItem(`user-preferences-${user.id}`)
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setPreferences(parsed)
+      } catch (error) {
+        console.error('Failed to parse updated preferences:', error)
+      }
+    }
+  }, [user.id])
+
+  // Default tab order as requested: dashboard, piscines, leaderboard, groups, audits, checkpoints, events, export
+  const defaultTabs = [
     { id: 'dashboard' as TabType, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'groups' as TabType, label: 'Groups', icon: Users },
-    { id: 'events' as TabType, label: 'Events', icon: Calendar },
-    { id: 'piscines' as TabType, label: 'Piscines Dashboard', icon: BookOpen },
-    { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
+    { id: 'piscines' as TabType, label: 'Piscines', icon: BookOpen },
     { id: 'leaderboard' as TabType, label: 'Leaderboard', icon: Trophy },
-    { id: 'export' as TabType, label: 'Export', icon: Download },
+    { id: 'groups' as TabType, label: 'Groups', icon: Users },
     { id: 'audits' as TabType, label: 'Audits', icon: History },
+    { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
+    { id: 'events' as TabType, label: 'Events', icon: Calendar },
+    { id: 'export' as TabType, label: 'Export', icon: Download },
   ]
 
-  // Show only base tabs - piscine sub-tabs are handled within PiscinesDashboard
-  const tabs = baseTabs
+  // Apply user's custom tab order if available
+  const tabs = React.useMemo(() => {
+    if (preferences?.dashboard?.tabOrder && Array.isArray(preferences.dashboard.tabOrder)) {
+      const orderedTabs = []
+      const tabMap = new Map(defaultTabs.map(tab => [tab.id, tab]))
+      
+      // Add tabs in user's preferred order
+      for (const tabId of preferences.dashboard.tabOrder) {
+        const tab = tabMap.get(tabId)
+        if (tab) {
+          orderedTabs.push(tab)
+          tabMap.delete(tabId)
+        }
+      }
+      
+      // Add any remaining tabs that weren't in the user's order
+      orderedTabs.push(...Array.from(tabMap.values()))
+      
+      return orderedTabs
+    }
+    
+    return defaultTabs
+  }, [preferences])
 
   const renderContent = () => {
     // Handle piscine sub-tabs dynamically
@@ -244,7 +320,11 @@ const Dashboard: React.FC = () => {
         <Suspense fallback={null}>
           <UserPreferences
             userId={user.id}
-            onClose={() => setShowPreferences(false)}
+            onClose={() => {
+              setShowPreferences(false)
+              handlePreferencesUpdate()
+            }}
+            defaultTabs={defaultTabs}
           />
         </Suspense>
       )}

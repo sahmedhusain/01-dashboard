@@ -495,7 +495,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
               <div className="p-3 bg-white/5 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white/80">Average Audit Ratio</span>
-                  <span className="text-white font-bold">{avgAuditRatio.toFixed(2)}</span>
+                  <span className="text-white font-bold">{avgAuditRatio.toFixed(1)}</span>
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div

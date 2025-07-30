@@ -223,10 +223,10 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
 
   // SVG Graph 3: Project Success Rate Pie Chart
   const ProjectSuccessPieChart = () => {
-    const total = analytics.projects.total || 1
-    const passed = analytics.projects.passed
-    const failed = analytics.projects.failed
-    const inProgress = analytics.projects.inProgress
+    const total = analytics.projects.bhModule.total || 1
+    const passed = analytics.projects.bhModule.passed
+    const failed = analytics.projects.bhModule.failed
+    const inProgress = analytics.projects.bhModule.inProgress
     
     const data = [
       { label: 'Passed', value: passed, color: '#10B981', percentage: (passed / total) * 100 },
@@ -441,22 +441,22 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
             <PieChart className="w-5 h-5 mr-2 text-green-400" />
             Project Success Rate
           </h3>
-          <p className="text-white/60 text-sm mb-6">Distribution of project outcomes</p>
+          <p className="text-white/60 text-sm mb-6">Distribution of Project outcomes</p>
           <ProjectSuccessPieChart />
           
           {/* Legend */}
           <div className="mt-4 space-y-2">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded"></div>
-              <span className="text-white/80 text-sm">Passed: {analytics.projects.passed}</span>
+              <span className="text-white/80 text-sm">Passed: {analytics.projects.bhModule.passed}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-red-500 rounded"></div>
-              <span className="text-white/80 text-sm">Failed: {analytics.projects.failed}</span>
+              <span className="text-white/80 text-sm">Failed: {analytics.projects.bhModule.failed}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-yellow-500 rounded"></div>
-              <span className="text-white/80 text-sm">In Progress: {analytics.projects.inProgress}</span>
+              <span className="text-white/80 text-sm">In Progress: {analytics.projects.bhModule.inProgress}</span>
             </div>
           </div>
         </motion.div>
@@ -494,7 +494,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
           Key Performance Insights
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(analytics.xp.total)}</div>
             <div className="text-white/70 text-sm">Total XP Earned</div>
@@ -504,10 +504,10 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
           </div>
           
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">{analytics.projects.passRate.toFixed(1)}%</div>
-            <div className="text-white/70 text-sm">Success Rate</div>
+            <div className="text-3xl font-bold text-green-400 mb-2">{analytics.projects.bhModule.passRate.toFixed(1)}%</div>
+            <div className="text-white/70 text-sm">BH-Module Success Rate</div>
             <div className="text-white/50 text-xs mt-1">
-              {analytics.projects.passRate > 80 ? 'Excellent' : analytics.projects.passRate > 60 ? 'Good' : 'Needs improvement'} performance
+              {analytics.projects.bhModule.passRate > 80 ? 'Excellent' : analytics.projects.bhModule.passRate > 60 ? 'Good' : 'Needs improvement'} performance
             </div>
           </div>
           
@@ -516,6 +516,14 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
             <div className="text-white/70 text-sm">Audit Ratio</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.audits.ratio > 1 ? 'Positive' : analytics.audits.ratio > 0.8 ? 'Balanced' : 'Focus needed'} contribution
+            </div>
+          </div>
+
+          <div className="text-center">
+            <div className="text-3xl font-bold text-purple-400 mb-2">{formatXPValue(analytics.audits.totalUp)}</div>
+            <div className="text-white/70 text-sm">Total Up Points</div>
+            <div className="text-white/50 text-xs mt-1">
+              From peer reviews
             </div>
           </div>
         </div>

@@ -524,7 +524,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             <Target className="w-8 h-8 text-purple-400" />
             <div>
               <p className="text-white font-medium">Avg Audit Ratio</p>
-              <p className="text-2xl font-bold text-white">{avgAuditRatio.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">{avgAuditRatio.toFixed(1)}</p>
             </div>
           </div>
         </div>

@@ -22,13 +22,13 @@ interface CheckpointDashboardProps {
 const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
   const [activeCheckpointTab, setActiveCheckpointTab] = useState<string>('main')
 
-  // Query enhanced checkpoint data including transactions, progress, and results
-  const { data: checkpointXPData, loading: xpLoading, error: xpError } = useQuery(gql`
-    query GetCheckpointXP($userId: Int!) {
+  // Query enhanced checkpoint data - checkpoints use "exam" type transactions
+  const { data: checkpointExamData, loading: examLoading, error: examError } = useQuery(gql`
+    query GetCheckpointExams($userId: Int!) {
       transaction(
         where: {
           userId: { _eq: $userId }
-          type: { _eq: "xp" }
+          type: { _eq: "exam" }
           path: { _like: "%checkpoint%" }
         }
         order_by: { createdAt: desc }
@@ -37,9 +37,12 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
         amount
         path
         createdAt
+        type
+        attrs
         object {
           name
           type
+          attrs
         }
       }
     }
@@ -99,21 +102,21 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     errorPolicy: 'all'
   })
 
-  if (xpLoading || progressLoading || resultsLoading) return <LoadingSpinner />
+  if (examLoading || progressLoading || resultsLoading) return <LoadingSpinner />
 
-  if (xpError) {
+  if (examError) {
     return (
       <Card className="p-6">
         <div className="text-center text-red-400">
           <p>Error loading checkpoint data</p>
-          <p className="text-sm text-white/60 mt-2">{xpError.message}</p>
+          <p className="text-sm text-white/60 mt-2">{examError.message}</p>
         </div>
       </Card>
     )
   }
 
   // Process complete checkpoint data
-  const checkpointTransactions = checkpointXPData?.transaction || []
+  const checkpointTransactions = checkpointExamData?.transaction || []
   const checkpointProgress = checkpointProgressData?.progress || []
   const checkpointResults = checkpointResultsData?.result || []
   
@@ -136,32 +139,61 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     return categories
   }
   
-  const xpCategories = categorizeCheckpoints(checkpointTransactions)
+  const examCategories = categorizeCheckpoints(checkpointTransactions)
   const progressCategories = categorizeCheckpoints(checkpointProgress)
   const resultCategories = categorizeCheckpoints(checkpointResults)
   
   // Calculate aggregates for each category
   const calculateAggregates = (transactions: any[]) => {
     const count = transactions.length
-    const totalXP = transactions.reduce((sum, t) => sum + (t.amount || 0), 0)
-    const avgXP = count > 0 ? totalXP / count : 0
-    return { count, sum: { amount: totalXP }, avg: { amount: avgXP } }
+    const totalScore = transactions.reduce((sum, t) => sum + (t.amount || 0), 0)
+    const avgScore = count > 0 ? totalScore / count : 0
+    return { count, sum: { amount: totalScore }, avg: { amount: avgScore } }
   }
   
-  const mainCheckpointAggregate = calculateAggregates(xpCategories.main)
-  const goPiscineCheckpointAggregate = calculateAggregates(xpCategories.goPiscine)
-  const otherPiscineCheckpointAggregate = calculateAggregates(xpCategories.otherPiscines)
+  const mainCheckpointAggregate = calculateAggregates(examCategories.main)
+  const goPiscineCheckpointAggregate = calculateAggregates(examCategories.goPiscine)
+  const otherPiscineCheckpointAggregate = calculateAggregates(examCategories.otherPiscines)
   
-  // Analyze progress statistics
+  // Analyze progress statistics - grade-based completion logic for checkpoint projects
   const analyzeProgress = (progress: any[]) => {
-    const completed = progress.filter(p => p.isDone).length
-    const total = progress.length
-    const averageGrade = progress
+    // Filter out checkpoint container paths to get only actual projects
+    const actualProjects = progress.filter(p => {
+      const projectName = p.path?.split('/').pop() || ''
+      const isCheckpointContainer = projectName.match(/^checkpoint-\d+$/i) || 
+                                  projectName === 'checkpoint' ||
+                                  p.path?.match(/\/checkpoint-\d+$/)
+      return !isCheckpointContainer
+    })
+    
+    // Get unique projects by path (avoid counting duplicates)
+    const uniqueProjects = actualProjects.reduce((acc: any[], current) => {
+      const projectPath = current.path
+      const existing = acc.find(p => p.path === projectPath)
+      if (!existing) {
+        acc.push(current)
+      } else {
+        // Keep the one with latest/best grade if available
+        if (current.grade !== null && (existing.grade === null || current.grade >= existing.grade)) {
+          const index = acc.indexOf(existing)
+          acc[index] = current
+        }
+      }
+      return acc
+    }, [])
+    
+    // Count projects that are completed (100% grade = 1.0)
+    const completed = uniqueProjects.filter(p => p.grade !== null && p.grade === 1.0).length
+    // Count projects that are uncompleted (0% grade = 0)
+    const uncompleted = uniqueProjects.filter(p => p.grade !== null && p.grade === 0).length
+    const total = uniqueProjects.length // Total actual projects found
+    const averageGrade = uniqueProjects
       .filter(p => p.grade !== null)
-      .reduce((sum, p) => sum + p.grade, 0) / progress.filter(p => p.grade !== null).length || 0
+      .reduce((sum, p) => sum + p.grade, 0) / uniqueProjects.filter(p => p.grade !== null).length || 0
     
     return {
       completed,
+      uncompleted,
       total,
       completionRate: total > 0 ? (completed / total) * 100 : 0,
       averageGrade: isNaN(averageGrade) ? 0 : averageGrade
@@ -174,9 +206,9 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
 
   // Detect available checkpoint types
   const availableCheckpointTypes = []
-  if (xpCategories.main.length > 0 || progressCategories.main.length > 0) availableCheckpointTypes.push('main')
-  if (xpCategories.goPiscine.length > 0 || progressCategories.goPiscine.length > 0) availableCheckpointTypes.push('go')
-  if (xpCategories.otherPiscines.length > 0 || progressCategories.otherPiscines.length > 0) availableCheckpointTypes.push('piscines')
+  if (examCategories.main.length > 0 || progressCategories.main.length > 0) availableCheckpointTypes.push('main')
+  if (examCategories.goPiscine.length > 0 || progressCategories.goPiscine.length > 0) availableCheckpointTypes.push('go')
+  if (examCategories.otherPiscines.length > 0 || progressCategories.otherPiscines.length > 0) availableCheckpointTypes.push('piscines')
 
   // Detect specific piscine checkpoint types
   const detectPiscineCheckpointTypes = (checkpoints: any[]) => {
@@ -184,7 +216,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     
     checkpoints.forEach(checkpoint => {
       const path = checkpoint.path
-      const piscineMatch = path.match(/\/bahrain\/bh-module\/piscine-([^\/]+)\/checkpoint\//)
+      const piscineMatch = path.match(/\/bahrain\/bh-module\/piscine-([^\/]+)\/.*checkpoint/)
       if (piscineMatch) {
         piscineSet.add(piscineMatch[1])
       }
@@ -193,7 +225,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     return Array.from(piscineSet)
   }
 
-  const piscineCheckpointTypes = detectPiscineCheckpointTypes(xpCategories.otherPiscines)
+  const piscineCheckpointTypes = detectPiscineCheckpointTypes(examCategories.otherPiscines)
 
   if (availableCheckpointTypes.length === 0) {
     return (
@@ -234,34 +266,30 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
         icon={Target}
       />
 
-      {/* Checkpoint Overview Cards */}
+      {/* Checkpoint Overview Cards */
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main Module Checkpoints */}
-        {(xpCategories.main.length > 0 || progressCategories.main.length > 0) && (
+        {(examCategories.main.length > 0 || progressCategories.main.length > 0) && (
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Target className="w-6 h-6 text-primary-400 mr-3" />
-                <h3 className="text-lg font-semibold text-white">Main Module</h3>
-              </div>
-              <span className="text-2xl font-bold text-primary-400">
-                {mainCheckpointAggregate?.count || 0}
-              </span>
+            <div className="flex items-center mb-4">
+              <Target className="w-6 h-6 text-primary-400 mr-3" />
+              <h3 className="text-lg font-semibold text-white">Main Module</h3>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-white/60 text-sm">Total XP</div>
-                <div className="text-xl font-bold text-white">
-                  {formatXPValue(mainCheckpointAggregate?.sum?.amount || 0)}
-                </div>
-              </div>
-              <div>
-                <div className="text-white/60 text-sm">Progress</div>
-                <div className="text-xl font-bold text-green-400">
-                  {mainProgressStats.completed}/{mainProgressStats.total}
-                </div>
-                <div className="text-xs text-white/60">
-                  {mainProgressStats.completionRate.toFixed(1)}% complete
+            <div className="flex justify-center">
+              <div className="text-center">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-white/60 text-sm">Completed</div>
+                    <div className="text-xl font-bold text-green-400">
+                      {mainProgressStats.completed}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-white/60 text-sm">Uncompleted</div>
+                    <div className="text-xl font-bold text-red-400">
+                      {mainProgressStats.uncompleted}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -269,31 +297,27 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
         )}
 
         {/* Go Piscine Checkpoints */}
-        {(xpCategories.goPiscine.length > 0 || progressCategories.goPiscine.length > 0) && (
+        {(examCategories.goPiscine.length > 0 || progressCategories.goPiscine.length > 0) && (
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <CheckCircle className="w-6 h-6 text-green-400 mr-3" />
-                <h3 className="text-lg font-semibold text-white">Go Piscine</h3>
-              </div>
-              <span className="text-2xl font-bold text-green-400">
-                {goPiscineCheckpointAggregate?.count || 0}
-              </span>
+            <div className="flex items-center mb-4">
+              <CheckCircle className="w-6 h-6 text-green-400 mr-3" />
+              <h3 className="text-lg font-semibold text-white">Go Piscine</h3>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-white/60 text-sm">Total XP</div>
-                <div className="text-xl font-bold text-white">
-                  {formatXPValue(goPiscineCheckpointAggregate?.sum?.amount || 0)}
-                </div>
-              </div>
-              <div>
-                <div className="text-white/60 text-sm">Progress</div>
-                <div className="text-xl font-bold text-green-400">
-                  {goPiscineProgressStats.completed}/{goPiscineProgressStats.total}
-                </div>
-                <div className="text-xs text-white/60">
-                  {goPiscineProgressStats.completionRate.toFixed(1)}% complete
+            <div className="flex justify-center">
+              <div className="text-center">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-white/60 text-sm">Completed</div>
+                    <div className="text-xl font-bold text-green-400">
+                      {goPiscineProgressStats.completed}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-white/60 text-sm">Uncompleted</div>
+                    <div className="text-xl font-bold text-red-400">
+                      {goPiscineProgressStats.uncompleted}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -301,42 +325,39 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
         )}
 
         {/* Other Piscine Checkpoints */}
-        {(xpCategories.otherPiscines.length > 0 || progressCategories.otherPiscines.length > 0) && (
+        {(examCategories.otherPiscines.length > 0 || progressCategories.otherPiscines.length > 0) && (
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Award className="w-6 h-6 text-yellow-400 mr-3" />
-                <h3 className="text-lg font-semibold text-white">Other Piscines</h3>
-              </div>
-              <span className="text-2xl font-bold text-yellow-400">
-                {otherPiscineCheckpointAggregate?.count || 0}
-              </span>
+            <div className="flex items-center mb-4">
+              <Award className="w-6 h-6 text-yellow-400 mr-3" />
+              <h3 className="text-lg font-semibold text-white">Other Piscines</h3>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-white/60 text-sm">Total XP</div>
-                <div className="text-xl font-bold text-white">
-                  {formatXPValue(otherPiscineCheckpointAggregate?.sum?.amount || 0)}
+            <div className="flex justify-center">
+              <div className="text-center">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-white/60 text-sm">Completed</div>
+                    <div className="text-xl font-bold text-green-400">
+                      {otherPiscineProgressStats.completed}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-white/60 text-sm">Uncompleted</div>
+                    <div className="text-xl font-bold text-red-400">
+                      {otherPiscineProgressStats.uncompleted}
+                    </div>
+                  </div>
                 </div>
                 {piscineCheckpointTypes.length > 0 && (
-                  <div className="text-white/60 text-sm mt-1">
+                  <div className="text-white/60 text-sm mt-2">
                     Types: {piscineCheckpointTypes.join(', ')}
                   </div>
                 )}
-              </div>
-              <div>
-                <div className="text-white/60 text-sm">Progress</div>
-                <div className="text-xl font-bold text-yellow-400">
-                  {otherPiscineProgressStats.completed}/{otherPiscineProgressStats.total}
-                </div>
-                <div className="text-xs text-white/60">
-                  {otherPiscineProgressStats.completionRate.toFixed(1)}% complete
-                </div>
               </div>
             </div>
           </Card>
         )}
       </div>
+      }
 
       {/* Checkpoint Tabs */}
       <motion.div
@@ -385,28 +406,43 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
           {/* Checkpoint List with Progress and XP Data */}
           <div className="space-y-4">
             {(() => {
-              const currentXPData = activeCheckpointTab === 'main' ? xpCategories.main :
-                                   activeCheckpointTab === 'go' ? xpCategories.goPiscine :
-                                   xpCategories.otherPiscines
+              const currentExamData = activeCheckpointTab === 'main' ? examCategories.main :
+                                     activeCheckpointTab === 'go' ? examCategories.goPiscine :
+                                     examCategories.otherPiscines
               
               const currentProgressData = activeCheckpointTab === 'main' ? progressCategories.main :
                                          activeCheckpointTab === 'go' ? progressCategories.goPiscine :
                                          progressCategories.otherPiscines
               
-              // Merge XP and progress data by path
-              const mergedData = currentXPData.map(xp => {
-                const progress = currentProgressData.find(p => p.path === xp.path)
-                return { ...xp, progress }
+              // Merge exam and progress data by path
+              const mergedData = currentExamData.map(exam => {
+                const progress = currentProgressData.find(p => p.path === exam.path)
+                return { ...exam, progress }
               })
               
-              // Add progress items that don't have XP transactions
+              // Add progress items that don't have exam transactions
               currentProgressData.forEach(progress => {
                 if (!mergedData.find(item => item.path === progress.path)) {
                   mergedData.push({ progress, path: progress.path, amount: 0 })
                 }
               })
               
-              return mergedData.map((item: any) => (
+              // Show actual checkpoint projects, not checkpoint container paths
+              const filteredData = mergedData.filter(item => {
+                const path = item.path || item.progress?.path || ''
+                const projectName = item.object?.name || item.progress?.path?.split('/').pop() || 'Checkpoint'
+                
+                // Only show items that are actual projects inside checkpoints
+                // Exclude: checkpoint-01, checkpoint-02, etc. (container paths)
+                // Include: printnbr, atoi, fromto, zipstring, etc. (actual projects)
+                const isCheckpointContainer = projectName.match(/^checkpoint-\d+$/i) || 
+                                            projectName === 'Checkpoint' ||
+                                            path.match(/\/checkpoint-\d+$/)
+                
+                return !isCheckpointContainer
+              })
+              
+              return filteredData.map((item: any) => (
                 <div key={item.id || item.progress?.id} className="bg-white/5 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
@@ -416,25 +452,19 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                         </h4>
                         {item.progress && (
                           <span className={`px-2 py-1 text-xs rounded-full ${
-                            item.progress.isDone ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                            item.progress.grade !== null && item.progress.grade > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                           }`}>
-                            {item.progress.isDone ? 'Completed' : 'In Progress'}
+                            {item.progress.grade !== null && item.progress.grade > 0 ? 'Completed' : 'Uncompleted'}
                           </span>
                         )}
                       </div>
-                      <p className="text-white/60 text-sm mt-1">{item.path}</p>
-                      {item.progress && item.progress.grade && (
-                        <p className="text-white/60 text-sm">
-                          Grade: <span className="text-white font-medium">{formatGradeDetailed(item.progress.grade)}</span>
-                        </p>
-                      )}
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-primary-400">
-                        {formatXPValue(item.amount || 0)}
+                        {item.progress?.grade !== null ? `${(item.progress.grade * 100).toFixed(0)}%` : 'No Grade'}
                       </div>
                       <div className="text-white/60 text-sm">
-                        {getRelativeTime(item.createdAt || item.progress?.updatedAt)}
+                        {new Date(item.createdAt || item.progress?.updatedAt).toLocaleDateString()}
                       </div>
                     </div>
                   </div>

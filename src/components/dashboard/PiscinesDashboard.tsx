@@ -23,6 +23,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
   const [activePiscineTab, setActivePiscineTab] = useState<string>('')
 
   // Query enhanced piscine data including XP transactions, progress, and results
+  // IMPORTANT: Exclude checkpoint paths - those belong in CheckpointDashboard
   const { data: piscineXPData, loading: xpLoading } = useQuery(gql`
     query GetAllPiscineXP($userId: Int!) {
       transaction(
@@ -33,6 +34,12 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
             { path: { _like: "/bahrain/bh-piscine/%" } }
             { path: { _like: "/bahrain/bh-module/piscine-%" } }
           ]
+          _not: { 
+            _or: [
+              { path: { _like: "%checkpoint%" } }
+              { type: { _eq: "exam" } }
+            ]
+          }
         }
         order_by: { createdAt: desc }
       ) {
@@ -40,9 +47,11 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
         amount
         path
         createdAt
+        attrs
         object {
           name
           type
+          attrs
         }
       }
     }
@@ -51,7 +60,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
     errorPolicy: 'all'
   })
 
-  // Query piscine progress data
+  // Query piscine progress data (excluding checkpoints)
   const { data: piscineProgressData, loading: progressLoading } = useQuery(gql`
     query GetPiscineProgress($userId: Int!) {
       progress(
@@ -61,6 +70,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
             { path: { _like: "/bahrain/bh-piscine/%" } }
             { path: { _like: "/bahrain/bh-module/piscine-%" } }
           ]
+          _not: { path: { _like: "%checkpoint%" } }
         }
         order_by: { updatedAt: desc }
       ) {
@@ -71,6 +81,11 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
         createdAt
         updatedAt
         version
+        object {
+          name
+          type
+          attrs
+        }
       }
     }
   `, {
@@ -78,7 +93,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
     errorPolicy: 'all'
   })
 
-  // Query piscine results data
+  // Query piscine results data (excluding checkpoints)
   const { data: piscineResultsData, loading: resultsLoading } = useQuery(gql`
     query GetPiscineResults($userId: Int!) {
       result(
@@ -88,6 +103,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
             { path: { _like: "/bahrain/bh-piscine/%" } }
             { path: { _like: "/bahrain/bh-module/piscine-%" } }
           ]
+          _not: { path: { _like: "%checkpoint%" } }
         }
         order_by: { updatedAt: desc }
       ) {
@@ -97,9 +113,11 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
         createdAt
         updatedAt
         type
+        attrs
         object {
           name
           type
+          attrs
         }
       }
     }
@@ -118,75 +136,121 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user, piscineType
   const moduleData = separateModuleData(transactions)
   const xpTotals = calculateModuleXPTotals(transactions)
   
-  // Analyze progress statistics by piscine type
+  // Enhanced progress analysis by piscine type with detailed metrics
   const analyzeProgressByPiscine = (progressData: any[], piscineType: string) => {
     const relevantProgress = progressData.filter(p => {
       if (piscineType === 'go') {
-        return p.path.includes('/bahrain/bh-piscine/')
+        return p.path.includes('/bahrain/bh-piscine/') && !p.path.includes('checkpoint')
       } else {
-        return p.path.includes(`/bahrain/bh-module/piscine-${piscineType}/`)
+        return p.path.includes(`/bahrain/bh-module/piscine-${piscineType}/`) && !p.path.includes('checkpoint')
       }
     })
     
     const completed = relevantProgress.filter(p => p.isDone).length
+    const passed = relevantProgress.filter(p => p.isDone && p.grade >= 1).length
+    const failed = relevantProgress.filter(p => p.isDone && p.grade < 1).length
+    const inProgress = relevantProgress.filter(p => !p.isDone).length
     const total = relevantProgress.length
-    const averageGrade = relevantProgress
-      .filter(p => p.grade !== null)
-      .reduce((sum, p) => sum + p.grade, 0) / relevantProgress.filter(p => p.grade !== null).length || 0
+    
+    const gradesWithValues = relevantProgress.filter(p => p.grade !== null && p.grade !== undefined)
+    const averageGrade = gradesWithValues.length > 0 ? 
+      gradesWithValues.reduce((sum, p) => sum + p.grade, 0) / gradesWithValues.length : 0
+    
+    // Group by project/quest for better analytics
+    const projectGroups = relevantProgress.reduce((groups: any, progress: any) => {
+      const projectName = progress.path.split('/').pop() || 'unknown'
+      if (!groups[projectName]) groups[projectName] = []
+      groups[projectName].push(progress)
+      return groups
+    }, {})
+    
+    const uniqueProjects = Object.keys(projectGroups).sort()
     
     return {
       completed,
+      passed,
+      failed,
+      inProgress,
       total,
       completionRate: total > 0 ? (completed / total) * 100 : 0,
+      passRate: completed > 0 ? (passed / completed) * 100 : 0,
       averageGrade: isNaN(averageGrade) ? 0 : averageGrade,
-      recentActivity: relevantProgress.slice(0, 5)
+      recentActivity: relevantProgress
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 8),
+      projectGroups,
+      uniqueProjects,
+      projectsCount: uniqueProjects.length,
+      bestGrade: gradesWithValues.length > 0 ? Math.max(...gradesWithValues.map(p => p.grade)) : 0,
+      worstGrade: gradesWithValues.length > 0 ? Math.min(...gradesWithValues.map(p => p.grade)) : 0
     }
   }
   
-  // Analyze results by piscine type
+  // Enhanced results analysis by piscine type
   const analyzeResultsByPiscine = (resultsData: any[], piscineType: string) => {
     const relevantResults = resultsData.filter(r => {
       if (piscineType === 'go') {
-        return r.path.includes('/bahrain/bh-piscine/')
+        return r.path.includes('/bahrain/bh-piscine/') && !r.path.includes('checkpoint')
       } else {
-        return r.path.includes(`/bahrain/bh-module/piscine-${piscineType}/`)
+        return r.path.includes(`/bahrain/bh-module/piscine-${piscineType}/`) && !r.path.includes('checkpoint')
       }
     })
     
     const passedResults = relevantResults.filter(r => r.grade >= 1).length
+    const failedResults = relevantResults.filter(r => r.grade < 1).length
     const totalResults = relevantResults.length
-    const averageGrade = relevantResults
-      .reduce((sum, r) => sum + r.grade, 0) / relevantResults.length || 0
+    const averageGrade = totalResults > 0 ? 
+      relevantResults.reduce((sum, r) => sum + r.grade, 0) / totalResults : 0
+    
+    // Get performance breakdown by grade ranges
+    const excellent = relevantResults.filter(r => r.grade >= 1.2).length  // 120%+
+    const good = relevantResults.filter(r => r.grade >= 1.0 && r.grade < 1.2).length  // 100-119%
+    const acceptable = relevantResults.filter(r => r.grade >= 0.8 && r.grade < 1.0).length  // 80-99%
+    const poor = relevantResults.filter(r => r.grade < 0.8).length  // <80%
     
     return {
       passed: passedResults,
+      failed: failedResults,
       total: totalResults,
       passRate: totalResults > 0 ? (passedResults / totalResults) * 100 : 0,
       averageGrade: isNaN(averageGrade) ? 0 : averageGrade,
-      recentResults: relevantResults.slice(0, 5)
+      recentResults: relevantResults
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 6),
+      gradeDistribution: {
+        excellent,
+        good,
+        acceptable,
+        poor
+      },
+      bestGrade: totalResults > 0 ? Math.max(...relevantResults.map(r => r.grade)) : 0,
+      worstGrade: totalResults > 0 ? Math.min(...relevantResults.map(r => r.grade)) : 0
     }
   }
 
-  // Dynamically detect piscine types from transaction paths
+  // Dynamically detect piscine types from transaction paths (excluding checkpoints)
   const detectPiscineTypes = (transactions: any[]) => {
     const piscineSet = new Set<string>()
 
     transactions.forEach(transaction => {
       const path = transaction.path
+      
+      // Skip checkpoint paths - they belong in CheckpointDashboard
+      if (path.includes('checkpoint')) return
 
-      // Go piscine: /bahrain/bh-piscine/
+      // Go piscine: /bahrain/bh-piscine/ (excluding checkpoints)
       if (path.includes('/bahrain/bh-piscine/')) {
         piscineSet.add('go')
       }
 
-      // Other piscines: /bahrain/bh-module/piscine-{name}/
+      // Other piscines: /bahrain/bh-module/piscine-{name}/ (excluding checkpoints)
       const piscineMatch = path.match(/\/bahrain\/bh-module\/piscine-([^\/]+)\//)
       if (piscineMatch) {
         piscineSet.add(piscineMatch[1])
       }
     })
 
-    return Array.from(piscineSet)
+    return Array.from(piscineSet).sort()
   }
 
   const detectedPiscineTypes = detectPiscineTypes(transactions)

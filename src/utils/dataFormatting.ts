@@ -282,13 +282,16 @@ export const separateModuleData = (data: any[]) => {
     }
     
     // Check for checkpoint patterns (these are NOT BH module projects)
+    // This includes checkpoints in main module, go piscine, and other piscines
     if (item.path.includes('checkpoint')) {
       checkpoints.push(item);
       return;
     }
     
     // Check for piscine patterns (these are NOT BH module projects)
-    if (item.path.includes('piscine-') || item.path.includes('/bh-piscine/')) {
+    // Exclude any piscine paths that contain checkpoints (they should go to checkpoints)
+    if ((item.path.includes('piscine-') || item.path.includes('/bh-piscine/')) && 
+        !item.path.includes('checkpoint')) {
       // Extract piscine type for categorization
       let piscineType = 'unknown';
       

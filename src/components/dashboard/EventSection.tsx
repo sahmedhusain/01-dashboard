@@ -13,7 +13,8 @@ import {
   ChevronRight,
   UserCheck,
   TrendingUp,
-  BookOpen
+  BookOpen,
+  ChevronLeft
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -92,11 +93,16 @@ const EVENT_USER_VIEW_QUERY = gql`
 const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all' | 'my-events' | 'active'>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  // Campus filtering removed - all events are Bahrain-based
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Query all events
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useQuery(ALL_EVENTS_QUERY, {
+    variables: {
+      limit: itemsPerPage,
+      offset: (currentPage - 1) * itemsPerPage
+    },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
@@ -151,8 +157,6 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
       );
     }
 
-    // All events are Bahrain-based by default
-
     return events;
   };
 
@@ -180,6 +184,9 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     }
   };
 
+  const totalEvents = eventsData?.event_aggregate?.aggregate?.count || 0;
+  const totalPages = Math.ceil(totalEvents / itemsPerPage);
+
   if (eventsLoading && !eventsData) {
     return <LoadingSpinner />;
   }
@@ -197,7 +204,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           Event Management Dashboard
         </h1>
         <p className="text-white/70 text-lg">
-          Explore {eventsData?.event_aggregate?.aggregate?.count || 0} events with {eventStatsData?.event_user_view_aggregate?.aggregate?.count || 0} total participations
+          Explore {totalEvents} events with {eventStatsData?.event_user_view_aggregate?.aggregate?.count || 0} total participations
         </p>
       </motion.div>
 
@@ -214,7 +221,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
             <div>
               <p className="text-white font-medium">Total Events</p>
               <p className="text-2xl font-bold text-white">
-                {eventsData?.event_aggregate?.aggregate?.count || 0}
+                {totalEvents}
               </p>
             </div>
           </div>
@@ -316,8 +323,6 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
-
-        {/* Campus filter removed - all events are Bahrain-based */}
       </motion.div>
 
       {/* Events Grid */}
@@ -432,6 +437,50 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
             </motion.div>
           );
         })}
+      </motion.div>
+
+      {/* Pagination Controls */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="flex items-center justify-between text-white"
+      >
+        <div className="flex items-center space-x-2">
+          <span className="text-sm">Items per page:</span>
+          <select
+            value={itemsPerPage}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+        <div className="flex items-center space-x-4">
+          <span className="text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </motion.div>
 
       {/* Error Display */}

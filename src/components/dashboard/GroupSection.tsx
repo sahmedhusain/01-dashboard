@@ -11,7 +11,9 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
-  UserPlus
+  UserPlus,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -128,9 +130,15 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Query all groups
   const { data: groupsData, loading: groupsLoading, error: groupsError } = useQuery(ALL_GROUPS_QUERY, {
+    variables: {
+      limit: itemsPerPage,
+      offset: (currentPage - 1) * itemsPerPage
+    },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
@@ -256,6 +264,9 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     );
     return uniqueGroups.length;
   };
+  
+  const totalGroups = groupsData?.group_aggregate?.aggregate?.count || 0;
+  const totalPages = Math.ceil(totalGroups / itemsPerPage);
 
   if (groupsLoading && !groupsData) {
     return <LoadingSpinner />;
@@ -278,7 +289,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           Group Dashboard
         </h1>
         <p className="text-white/70 text-lg">
-          Manage and explore {groupsData?.group_aggregate?.aggregate?.count || 0} collaboration groups
+          Manage and explore {totalGroups} collaboration groups
         </p>
       </motion.div>
 
@@ -298,7 +309,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                 : 'text-white/70 hover:text-white'
             }`}
           >
-            All Groups ({groupsData?.group_aggregate?.aggregate?.count || 0})
+            All Groups ({totalGroups})
           </button>
           <button
             onClick={() => setSelectedView('my-groups')}
@@ -416,7 +427,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                 </div>
                 <div>
                   <div className="text-white font-medium">
-                    Members ({membersData && selectedGroup === group.id ? membersData.group_user?.length || 0 : '...'})
+                    Group Members
                   </div>
                   <div className="text-slate-400 text-sm">Click to view members</div>
                 </div>
@@ -492,6 +503,50 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
             )}
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* Pagination Controls */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="flex items-center justify-between text-white"
+      >
+        <div className="flex items-center space-x-2">
+          <span className="text-sm">Items per page:</span>
+          <select
+            value={itemsPerPage}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+        <div className="flex items-center space-x-4">
+          <span className="text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </motion.div>
 
       {/* Error Display */}

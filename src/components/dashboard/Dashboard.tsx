@@ -218,9 +218,9 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Enhanced Header */}
-      <header className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl">
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+      {/* Enhanced Header - Fixed */}
+      <header className="flex-shrink-0 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Enhanced Logo/Title */}
@@ -287,8 +287,8 @@ const Dashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* Enhanced Navigation Tabs */}
-      <nav className="bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl" role="navigation" aria-label="Dashboard navigation">
+      {/* Enhanced Navigation Tabs - Fixed */}
+      <nav className="flex-shrink-0 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl" role="navigation" aria-label="Dashboard navigation">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-hide py-2" role="tablist">
             {tabs.map((tab, index) => {
@@ -324,18 +324,20 @@ const Dashboard: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main" aria-label="Dashboard content">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Suspense fallback={<LoadingSpinner />}>
-            {renderContent()}
-          </Suspense>
-        </motion.div>
+      {/* Main Content - Scrollable */}
+      <main className="flex-1 overflow-y-auto" role="main" aria-label="Dashboard content">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Suspense fallback={<LoadingSpinner />}>
+              {renderContent()}
+            </Suspense>
+          </motion.div>
+        </div>
       </main>
 
       {/* User Preferences Modal */}

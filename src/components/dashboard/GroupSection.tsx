@@ -282,7 +282,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900">
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full">
       <div className="relative overflow-hidden">
         {/* Enhanced Background */}
         <div className="absolute inset-0 opacity-30">

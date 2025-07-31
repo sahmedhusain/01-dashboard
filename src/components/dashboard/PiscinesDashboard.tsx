@@ -83,17 +83,37 @@ const PISCINE_CONFIG = {
   'ui': { name: 'UI Design', path: '/bahrain/bh-module/piscine-ui/', icon: User, color: 'from-indigo-500 to-purple-500' }
 };
 
-const StatCard = ({ icon: Icon, title, value, color, subValue }: { icon: React.ElementType, title: string, value: string | number, color: string, subValue?: string }) => (
-    <div className={`bg-gradient-to-br ${color} backdrop-blur-lg rounded-2xl p-6 border border-white/20`}>
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string, 
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className={`${bgGradient || `bg-gradient-to-br ${color} backdrop-blur-lg`} rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+    >
       <div className="flex items-center justify-between mb-4">
-        <div className="p-3 bg-white/20 rounded-xl">
-          <Icon className="w-8 h-8 text-white" />
+        <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+          <Icon className="w-8 h-8 text-white drop-shadow-lg" />
         </div>
+        {trend && (
+          <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+            trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+          }`}>
+            {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+          </div>
+        )}
       </div>
-      <h3 className="text-2xl font-bold text-white mb-1">{value}</h3>
-      <p className="text-white/80 text-sm">{title}</p>
-      {subValue && <p className="text-white/60 text-xs mt-1">{subValue}</p>}
-    </div>
+      <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+      <p className="text-white/80 text-sm font-medium">{title}</p>
+      {subValue && <p className="text-white/60 text-xs mt-2 bg-white/10 rounded-lg px-2 py-1">{subValue}</p>}
+    </motion.div>
   );
 
 const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
@@ -254,43 +274,164 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
   const nonXpRatio = totalTransactions > 0 ? (currentStats.nonXpTransactions / totalTransactions) * 100 : 0;
 
   return (
-    <div className="space-y-8">
-      <SectionHeader
-        title="Piscines Dashboard"
-        subtitle={`Track your progress across ${piscineAnalysis.availablePiscines.length} piscines with ${formatXPValue(piscineAnalysis.overallStats.totalXP)} total XP`}
-        icon={BookOpen}
-      />
-
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-2">
-        <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
-          <button onClick={() => setSelectedPiscine('all')} className={`flex items-center px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 whitespace-nowrap ${selectedPiscine === 'all' ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10'}`}>
-            <Trophy className="w-5 h-5 mr-3" />
-            All Piscines ({piscineAnalysis.overallStats.totalProjects})
-          </button>
-          {piscineAnalysis.availablePiscines.map(piscineType => {
-            const config = PISCINE_CONFIG[piscineType as keyof typeof PISCINE_CONFIG];
-            if (!config) return null;
-            const IconComponent = config.icon;
-            const stats = piscineAnalysis.piscineStats[piscineType];
-            return (
-              <button key={piscineType} onClick={() => setSelectedPiscine(piscineType)} className={`flex items-center px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-200 whitespace-nowrap ${selectedPiscine === piscineType ? `bg-gradient-to-r ${config.color} text-white shadow-lg` : 'text-white/70 hover:text-white hover:bg-white/10'}`}>
-                <IconComponent className="w-5 h-5 mr-3" />
-                {config.name} ({stats.totalProjects})
-              </button>
-            );
-          })}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-cyan-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 45px 45px, rgba(6, 182, 212, 0.1) 2px, transparent 0)`,
+            backgroundSize: '90px 90px'
+          }}></div>
         </div>
-      </motion.div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <BookOpen className="w-10 h-10 text-cyan-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparent">
+              Piscines Dashboard
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Dive deep into <span className="text-cyan-400 font-semibold">{piscineAnalysis.availablePiscines.length}</span> intensive coding piscines with <span className="text-cyan-400 font-semibold">{formatXPValue(piscineAnalysis.overallStats.totalXP)}</span> total XP
+            </p>
+          </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-        {selectedPiscine !== 'all' && <StatCard icon={BookOpen} title="Piscine Level" value={currentStats.level || 0} color="from-gray-500/20 to-gray-600/20" />}
-        <StatCard icon={Zap} title="Total XP Earned" value={formatXPValue(currentStats.totalXP || 0)} color="from-blue-500/20 to-blue-600/20" subValue="*Checkpoints xp excluded" />
-        <StatCard icon={Target} title="Total Exercises" value={currentStats.totalProjects || 0} color="from-green-500/20 to-green-600/20" />
-        <StatCard icon={CheckCircle} title="Passed Exercises" value={currentStats.passedProjects || 0} color="from-purple-500/20 to-purple-600/20" />
-        <StatCard icon={Percent} title="Pass Rate" value={`${(currentStats.passRate || 0).toFixed(1)}%`} color="from-yellow-500/20 to-yellow-600/20" />
-        <StatCard icon={XCircle} title="Failed Attempts" value={currentStats.failedAttempts || 0} color="from-red-500/20 to-red-600/20" />
-        <StatCard icon={Database} title="XP Exercises" value={currentStats.xpTransactions || 0} color="from-cyan-500/20 to-cyan-600/20" subValue={`${xpRatio.toFixed(1)}% of total`} />
-        <StatCard icon={Database} title="Non-XP Exercises" value={currentStats.nonXpTransactions || 0} color="from-gray-500/20 to-gray-600/20" subValue={`${nonXpRatio.toFixed(1)}% of total`} />
+          {/* Enhanced Piscine Selector */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.6, delay: 0.3 }} 
+            className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-3 shadow-2xl"
+          >
+            <div className="flex space-x-3 overflow-x-auto scrollbar-hide">
+              <motion.button 
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedPiscine('all')} 
+                className={`flex items-center px-8 py-4 text-sm font-bold rounded-2xl transition-all duration-300 whitespace-nowrap shadow-lg ${
+                  selectedPiscine === 'all' 
+                    ? 'bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white shadow-cyan-500/30 border border-white/20' 
+                    : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 hover:shadow-xl border border-white/10'
+                }`}
+              >
+                <Trophy className="w-6 h-6 mr-3" />
+                <div className="text-left">
+                  <div>All Piscines</div>
+                  <div className="text-xs opacity-80">({piscineAnalysis.overallStats.totalProjects} exercises)</div>
+                </div>
+              </motion.button>
+              {piscineAnalysis.availablePiscines.map((piscineType, index) => {
+                const config = PISCINE_CONFIG[piscineType as keyof typeof PISCINE_CONFIG];
+                if (!config) return null;
+                const IconComponent = config.icon;
+                const stats = piscineAnalysis.piscineStats[piscineType];
+                return (
+                  <motion.button 
+                    key={piscineType}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setSelectedPiscine(piscineType)} 
+                    className={`flex items-center px-8 py-4 text-sm font-bold rounded-2xl transition-all duration-300 whitespace-nowrap shadow-lg ${
+                      selectedPiscine === piscineType 
+                        ? `bg-gradient-to-r ${config.color} text-white shadow-lg border border-white/20` 
+                        : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 hover:shadow-xl border border-white/10'
+                    }`}
+                  >
+                    <IconComponent className="w-6 h-6 mr-3" />
+                    <div className="text-left">
+                      <div>{config.name}</div>
+                      <div className="text-xs opacity-80">({stats.totalProjects} exercises)</div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.5, delay: 0.2 }} 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-8 gap-6"
+      >
+        {selectedPiscine !== 'all' && (
+          <StatCard 
+            icon={BookOpen} 
+            title="Piscine Level" 
+            value={currentStats.level || 0} 
+            color="from-gray-500/20 to-gray-600/20"
+            bgGradient="bg-gradient-to-br from-slate-800/50 to-slate-900/50"
+            subValue="Current achievement level"
+          />
+        )}
+        <StatCard 
+          icon={Zap} 
+          title="Total XP Earned" 
+          value={formatXPValue(currentStats.totalXP || 0)} 
+          color="from-blue-500/20 to-blue-600/20"
+          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+          subValue="Experience points gained"
+        />
+        <StatCard 
+          icon={Target} 
+          title="Total Exercises" 
+          value={currentStats.totalProjects || 0} 
+          color="from-green-500/20 to-green-600/20"
+          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+          subValue="Coding challenges attempted"
+        />
+        <StatCard 
+          icon={CheckCircle} 
+          title="Passed Exercises" 
+          value={currentStats.passedProjects || 0} 
+          color="from-purple-500/20 to-purple-600/20"
+          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+          subValue="Successfully completed"
+        />
+        <StatCard 
+          icon={Percent} 
+          title="Success Rate" 
+          value={`${(currentStats.passRate || 0).toFixed(1)}%`} 
+          color="from-yellow-500/20 to-yellow-600/20"
+          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+          trend={currentStats.passRate >= 75 ? { value: Math.round(currentStats.passRate - 60), isPositive: true } : undefined}
+          subValue={currentStats.passRate >= 75 ? "Outstanding!" : currentStats.passRate >= 50 ? "Good progress" : "Keep practicing"}
+        />
+        <StatCard 
+          icon={XCircle} 
+          title="Failed Attempts" 
+          value={currentStats.failedAttempts || 0} 
+          color="from-red-500/20 to-red-600/20"
+          bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
+          subValue="Learning opportunities"
+        />
+        <StatCard 
+          icon={Database} 
+          title="XP Exercises" 
+          value={currentStats.xpTransactions || 0} 
+          color="from-cyan-500/20 to-cyan-600/20"
+          bgGradient="bg-gradient-to-br from-cyan-900/20 to-teal-900/20"
+          subValue={`${xpRatio.toFixed(1)}% of total exercises`}
+        />
+        <StatCard 
+          icon={Activity} 
+          title="Practice Exercises" 
+          value={currentStats.nonXpTransactions || 0} 
+          color="from-indigo-500/20 to-indigo-600/20"
+          bgGradient="bg-gradient-to-br from-indigo-900/20 to-blue-900/20"
+          subValue={`${nonXpRatio.toFixed(1)}% of total exercises`}
+        />
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10">
@@ -388,6 +529,8 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
           )}
         </div>
       </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

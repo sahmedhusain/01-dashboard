@@ -446,13 +446,98 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <SectionHeader
-        title="Leaderboard System"
-        subtitle={`Complete rankings across ${totalUsers} users • ${availableCohorts.length} active cohorts • ${groups.length} project groups`}
-        icon={Trophy}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-yellow-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 to-amber-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 35px 35px, rgba(251, 191, 36, 0.1) 2px, transparent 0)`,
+            backgroundSize: '70px 70px'
+          }}></div>
+        </div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <Trophy className="w-10 h-10 text-yellow-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-yellow-100 to-amber-100 bg-clip-text text-transparent">
+              Leaderboard Rankings
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Compete with <span className="text-yellow-400 font-semibold">{totalUsers}</span> students across <span className="text-yellow-400 font-semibold">{availableCohorts.length}</span> active cohorts
+            </p>
+          </motion.div>
+
+          {/* Enhanced Statistics Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+          >
+            <StatCard 
+              icon={Users} 
+              title="Total Students" 
+              value={totalUsers.toLocaleString()} 
+              color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+              bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+              subValue="Active participants"
+            />
+
+            <StatCard 
+              icon={Trophy} 
+              title="Active Cohorts" 
+              value={availableCohorts.length} 
+              color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
+              bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+              subValue="Learning groups"
+            />
+
+            <StatCard 
+              icon={Activity} 
+              title="Project Groups" 
+              value={groups.length.toLocaleString()} 
+              color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+              bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+              subValue="Collaborative teams"
+            />
+
+            <StatCard 
+              icon={BarChart3} 
+              title="Avg XP" 
+              value={formatXPValue(Math.round(stats.transaction_aggregate?.aggregate?.avg?.amount || 0))} 
+              color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+              bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+              subValue="Platform average"
+            />
+
+            <StatCard 
+              icon={Award} 
+              title="Avg Audit Ratio" 
+              value={(stats.audit_aggregate?.aggregate?.avg?.grade || 0).toFixed(1)} 
+              color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
+              bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
+              subValue="Peer review quality"
+            />
+
+            <StatCard 
+              icon={Target} 
+              title="Your Rank" 
+              value={`#${getCurrentUserRank()}`} 
+              color="bg-gradient-to-r from-rose-500/30 to-pink-500/30"
+              bgGradient="bg-gradient-to-br from-rose-900/20 to-pink-900/20"
+              subValue={rankingMode === 'cohort' ? 'In your cohort' : 'Global ranking'}
+              trend={getCurrentUserRank() <= 10 ? { value: 10, isPositive: true } : undefined}
+            />
+          </motion.div>
 
       {/* Cohort Statistics Cards */}
       {availableCohorts.length > 0 && (
@@ -953,8 +1038,50 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           </p>
         </motion.div>
       )}
+        </div>
+      </div>
     </div>
   )
+
+  // Helper function to get current user rank
+  function getCurrentUserRank(): number {
+    const filteredData = getFilteredData()
+    const userIndex = filteredData.findIndex((userData: any) => userData.id === user.id)
+    return userIndex >= 0 ? userIndex + 1 : filteredData.length + 1
+  }
 }
+
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
+    </div>
+    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+    <p className="text-white/70 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
+);
 
 export default LeaderboardSection

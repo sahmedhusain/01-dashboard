@@ -405,21 +405,115 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
   ]
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Complete Data Export
-        </h1>
-        <p className="text-white/70 text-lg">
-          Export any dataset from our {userCount + objectCount + eventCount + groupCount + transactionCount + progressCount + auditCount + resultCount} total records
-        </p>
-      </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 25px 25px, rgba(34, 197, 94, 0.1) 2px, transparent 0)`,
+            backgroundSize: '50px 50px'
+          }}></div>
+        </div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <Download className="w-10 h-10 text-green-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-green-100 to-emerald-100 bg-clip-text text-transparent">
+              Data Export Center
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Export comprehensive datasets from <span className="text-green-400 font-semibold">{(userCount + objectCount + eventCount + groupCount + transactionCount + progressCount + auditCount + resultCount).toLocaleString()}</span> total records
+            </p>
+          </motion.div>
+
+          {/* Enhanced Statistics Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-6"
+          >
+            <StatCard 
+              icon={Users} 
+              title="Users" 
+              value={userCount.toLocaleString()} 
+              color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+              bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+              subValue="Student profiles"
+            />
+
+            <StatCard 
+              icon={Database} 
+              title="Learning Objects" 
+              value={objectCount.toLocaleString()} 
+              color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+              bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+              subValue="Curriculum items"
+            />
+
+            <StatCard 
+              icon={Calendar} 
+              title="Events" 
+              value={eventCount.toLocaleString()} 
+              color="bg-gradient-to-r from-orange-500/30 to-red-500/30"
+              bgGradient="bg-gradient-to-br from-orange-900/20 to-red-900/20"
+              subValue="Platform activities"
+            />
+
+            <StatCard 
+              icon={Users} 
+              title="Groups" 
+              value={groupCount.toLocaleString()} 
+              color="bg-gradient-to-r from-emerald-500/30 to-teal-500/30"
+              bgGradient="bg-gradient-to-br from-emerald-900/20 to-teal-900/20"
+              subValue="Team formations"
+            />
+
+            <StatCard 
+              icon={Activity} 
+              title="Transactions" 
+              value={transactionCount.toLocaleString()} 
+              color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
+              bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+              subValue="XP & interactions"
+            />
+
+            <StatCard 
+              icon={Target} 
+              title="Progress Records" 
+              value={progressCount.toLocaleString()} 
+              color="bg-gradient-to-r from-pink-500/30 to-rose-500/30"
+              bgGradient="bg-gradient-to-br from-pink-900/20 to-rose-900/20"
+              subValue="Learning progress"
+            />
+
+            <StatCard 
+              icon={Award} 
+              title="Audits" 
+              value={auditCount.toLocaleString()} 
+              color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
+              bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
+              subValue="Peer reviews"
+            />
+
+            <StatCard 
+              icon={TrendingUp} 
+              title="Results" 
+              value={resultCount.toLocaleString()} 
+              color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+              bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+              subValue="Assessment data"
+            />
+          </motion.div>
 
       {/* Export Configuration */}
       <motion.div
@@ -429,9 +523,9 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
         className="grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
         {/* Data Type Selection */}
-        <Card className="p-6">
+        <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Database className="w-5 h-5 mr-2 text-primary-400" />
+            <Database className="w-5 h-5 mr-2 text-green-400" />
             Select Data Type
           </h3>
           <div className="space-y-3">
@@ -445,22 +539,22 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
                   onClick={() => setSelectedDataType(option.id)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full p-4 rounded-lg border transition-all text-left ${
+                  className={`w-full p-4 rounded-xl border transition-all text-left ${
                     isSelected
-                      ? 'bg-primary-500/20 border-primary-500/30 text-white'
-                      : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30 text-white shadow-lg'
+                      : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-white/20'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Icon className="w-5 h-5 text-primary-400" />
+                      <Icon className="w-5 h-5 text-green-400" />
                       <div>
                         <p className="font-medium">{option.label}</p>
                         <p className="text-sm text-white/60">{option.description}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-primary-400">
+                      <p className="text-lg font-bold text-green-400">
                         {option.count.toLocaleString()}
                       </p>
                       <p className="text-xs text-white/60">records</p>
@@ -470,12 +564,12 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
               )
             })}
           </div>
-        </Card>
+        </div>
 
         {/* Format Selection */}
-        <Card className="p-6">
+        <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <FileText className="w-5 h-5 mr-2 text-primary-400" />
+            <FileText className="w-5 h-5 mr-2 text-green-400" />
             Export Format
           </h3>
           <div className="space-y-3 mb-6">
@@ -489,14 +583,14 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
                   onClick={() => setSelectedFormat(format.id)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full p-4 rounded-lg border transition-all text-left ${
+                  className={`w-full p-4 rounded-xl border transition-all text-left ${
                     isSelected
-                      ? 'bg-primary-500/20 border-primary-500/30 text-white'
-                      : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30 text-white shadow-lg'
+                      : 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-white/20'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <Icon className="w-5 h-5 text-primary-400" />
+                    <Icon className="w-5 h-5 text-green-400" />
                     <div>
                       <p className="font-medium">{format.label}</p>
                       <p className="text-sm text-white/60">{format.description}</p>
@@ -522,7 +616,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
               </label>
             </div>
           </div>
-        </Card>
+        </div>
       </motion.div>
 
       {/* Export Action */}
@@ -532,13 +626,13 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="text-center"
       >
-        <Card className="p-8">
-          <div className="max-w-md mx-auto">
-            <h3 className="text-xl font-semibold text-white mb-4">
+        <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-lg">
+          <div className="max-w-md mx-auto text-center">
+            <h3 className="text-2xl font-semibold text-white mb-4">
               Ready to Export {getDataTypeLabel(selectedDataType)}?
             </h3>
             <p className="text-white/70 mb-6">
-              Export {getDataTypeCount(selectedDataType)} records in {selectedFormat.toUpperCase()} format
+              Export <span className="text-green-400 font-semibold">{getDataTypeCount(selectedDataType).toLocaleString()}</span> records in {selectedFormat.toUpperCase()} format
             </p>
 
             <motion.button
@@ -546,14 +640,14 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
               disabled={exportStatus[`${selectedDataType}_${selectedFormat}`] === 'loading'}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-8 py-4 rounded-lg font-medium transition-all flex items-center justify-center mx-auto ${
+              className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all flex items-center justify-center mx-auto shadow-lg ${
                 exportStatus[`${selectedDataType}_${selectedFormat}`] === 'loading'
-                  ? 'bg-primary-500 text-white cursor-wait'
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white cursor-wait'
                   : exportStatus[`${selectedDataType}_${selectedFormat}`] === 'success'
-                  ? 'bg-green-500 text-white'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
                   : exportStatus[`${selectedDataType}_${selectedFormat}`] === 'error'
-                  ? 'bg-red-500 text-white'
-                  : 'bg-primary-500 text-white hover:bg-primary-600'
+                  ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-green-500/25'
               }`}
             >
               {exportStatus[`${selectedDataType}_${selectedFormat}`] === 'loading' ? (
@@ -579,36 +673,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
               )}
             </motion.button>
           </div>
-        </Card>
-      </motion.div>
-
-      {/* Export Statistics */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        <Card className="p-4 text-center">
-          <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{userCount.toLocaleString()}</p>
-          <p className="text-white/60 text-sm">Users</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Database className="w-8 h-8 text-green-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{objectCount.toLocaleString()}</p>
-          <p className="text-white/60 text-sm">Objects</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Activity className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{transactionCount.toLocaleString()}</p>
-          <p className="text-white/60 text-sm">Transactions</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Target className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{progressCount.toLocaleString()}</p>
-          <p className="text-white/60 text-sm">Progress</p>
-        </Card>
+        </div>
       </motion.div>
 
       {/* Usage Tips */}
@@ -617,9 +682,9 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <Card className="p-6">
+        <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-lg">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <BookOpen className="w-5 h-5 mr-2 text-primary-400" />
+            <BookOpen className="w-5 h-5 mr-2 text-green-400" />
             Export Guide
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-white/70">
@@ -645,8 +710,10 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
               <p>Human-readable format perfect for reports, documentation, and sharing insights with stakeholders.</p>
             </div>
           </div>
-        </Card>
+        </div>
       </motion.div>
+        </div>
+      </div>
     </div>
   )
 
@@ -659,5 +726,38 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     return dataTypeOptions.find(option => option.id === dataType)?.count || 0
   }
 }
+
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
+    </div>
+    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+    <p className="text-white/70 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
+);
 
 export default ExportSection

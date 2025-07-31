@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
+import SectionHeader from '../ui/SectionHeader'
 import { formatDate as formatDateUtil, formatDateTime as formatDateTimeUtil } from '../../utils/dataFormatting'
 
 interface EventSectionProps {
@@ -36,7 +37,6 @@ const ALL_EVENTS_QUERY = gql`
       objectId
       parentId
       path
-      campus
     }
     
     event_aggregate {
@@ -77,6 +77,14 @@ const USER_EVENT_PARTICIPATION_QUERY = gql`
       eventId
       level
       createdAt
+      event {
+        id
+        path
+        createdAt
+        endAt
+        objectId
+        parentId
+      }
     }
   }
 `;
@@ -86,7 +94,6 @@ const EVENTS_WITH_PARTICIPANTS_QUERY = gql`
     event {
       id
       path
-      campus
       createdAt
       endAt
       objectId
@@ -111,6 +118,11 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedView, searchTerm, statusFilter]);
 
   // Helper functions for path parsing
   const extractEventName = (path: string) => {
@@ -186,8 +198,8 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         events = eventsData?.event || [];
         break;
       case 'my-events':
-        const myEventIds = userEventsData?.event_user?.map((eu: any) => eu.eventId) || [];
-        events = eventsData?.event?.filter((e: any) => myEventIds.includes(e.id)) || [];
+        // Use the nested event data directly from user's event participation
+        events = userEventsData?.event_user?.map((eu: any) => eu.event).filter(Boolean) || [];
         break;
       case 'active':
         const now = new Date();
@@ -199,14 +211,33 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         events = eventsData?.event || [];
     }
 
-    // Apply search filter
+    // Apply enhanced search filter (name, module, participants)
     if (searchTerm) {
-      events = events.filter((event: any) => 
-        event.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.campus?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        extractEventName(event.path).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        extractModuleName(event.path).toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const searchLower = searchTerm.toLowerCase();
+      events = events.filter((event: any) => {
+        // Search by event name
+        const eventName = extractEventName(event.path).toLowerCase();
+        // Search by module name
+        const moduleName = extractModuleName(event.path).toLowerCase();
+        // Search by path
+        const path = event.path?.toLowerCase() || '';
+        
+        // Search by participants (if participant data is available)
+        let participantMatch = false;
+        if (participantUsersData?.user_public_view) {
+          participantMatch = participantUsersData.user_public_view.some((user: any) => 
+            user.login?.toLowerCase().includes(searchLower) ||
+            user.firstName?.toLowerCase().includes(searchLower) ||
+            user.lastName?.toLowerCase().includes(searchLower) ||
+            `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchLower)
+          );
+        }
+        
+        return eventName.includes(searchLower) ||
+               moduleName.includes(searchLower) ||
+               path.includes(searchLower) ||
+               participantMatch;
+      });
     }
 
     // Apply status filter
@@ -248,118 +279,156 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Events Dashboard
-        </h1>
-        <p className="text-white/70 text-lg">
-          Explore {totalEvents} events with {eventStatsData?.event_user_view_aggregate?.aggregate?.count || 0} total participations
-        </p>
-      </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-red-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 35px 35px, rgba(249, 115, 22, 0.1) 2px, transparent 0)`,
+            backgroundSize: '70px 70px'
+          }}></div>
+        </div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <Calendar className="w-10 h-10 text-orange-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-orange-100 to-red-100 bg-clip-text text-transparent">
+              Events Dashboard
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Discover and participate in <span className="text-orange-400 font-semibold">{totalEvents}</span> exciting coding events
+            </p>
+          </motion.div>
 
-      {/* Statistics Cards */}
+      {/* Enhanced Statistics Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
       >
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-8 h-8 text-blue-400" />
-            <div>
-              <p className="text-white font-medium">Total Events</p>
-              <p className="text-2xl font-bold text-white">
-                {totalEvents}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={Calendar} 
+          title="Total Events" 
+          value={totalEvents} 
+          color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+          subValue="All available events"
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <UserCheck className="w-8 h-8 text-green-400" />
-            <div>
-              <p className="text-white font-medium">Total Participations</p>
-              <p className="text-2xl font-bold text-white">
-                {eventStatsData?.event_user_view_aggregate?.aggregate?.count || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={UserCheck} 
+          title="Total Participations" 
+          value={eventStatsData?.event_user_view_aggregate?.aggregate?.count || 0} 
+          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+          subValue="Community engagement"
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Activity className="w-8 h-8 text-purple-400" />
-            <div>
-              <p className="text-white font-medium">My Events</p>
-              <p className="text-2xl font-bold text-white">
-                {userEventsData?.event_user?.length || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={Activity} 
+          title="My Events" 
+          value={userEventsData?.event_user?.length || 0} 
+          color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+          subValue="Your participation"
+          trend={userEventsData?.event_user?.length > 10 ? { value: 20, isPositive: true } : undefined}
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <TrendingUp className="w-8 h-8 text-orange-400" />
-            <div>
-              <p className="text-white font-medium">Active Events</p>
-              <p className="text-2xl font-bold text-white">
-                {eventsData?.event?.filter((e: any) => isEventActive(e.endAt)).length || 0}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={TrendingUp} 
+          title="Active Events" 
+          value={eventsData?.event?.filter((e: any) => isEventActive(e.endAt)).length || 0} 
+          color="bg-gradient-to-r from-orange-500/30 to-red-500/30"
+          bgGradient="bg-gradient-to-br from-orange-900/20 to-red-900/20"
+          subValue="Currently running"
+        />
+
+        <StatCard 
+          icon={Clock} 
+          title="Completed Events" 
+          value={eventsData?.event?.filter((e: any) => !isEventActive(e.endAt)).length || 0} 
+          color="bg-gradient-to-r from-gray-500/30 to-slate-500/30"
+          bgGradient="bg-gradient-to-br from-gray-900/20 to-slate-900/20"
+          subValue="Past events"
+        />
+
+        <StatCard 
+          icon={BookOpen} 
+          title="Participation Rate" 
+          value={`${totalEvents > 0 ? ((userEventsData?.event_user?.length || 0) / totalEvents * 100).toFixed(1) : '0'}%`} 
+          color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
+          bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
+          subValue="Your engagement level"
+          trend={totalEvents > 0 && (userEventsData?.event_user?.length || 0) / totalEvents > 0.3 ? 
+            { value: Math.round(((userEventsData?.event_user?.length || 0) / totalEvents - 0.2) * 100), isPositive: true } : undefined}
+        />
       </motion.div>
 
-      {/* View Selector */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex justify-center"
-      >
-        <div className="bg-white/10 rounded-lg p-1">
-          <button
-            onClick={() => setSelectedView('all')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              selectedView === 'all'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
+          {/* Enhanced View Selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex justify-center"
           >
-            All Events
-          </button>
-          <button
-            onClick={() => setSelectedView('my-events')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              selectedView === 'my-events'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            My Events
-          </button>
-          <button
-            onClick={() => setSelectedView('active')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              selectedView === 'active'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            Active Events
-          </button>
-        </div>
-      </motion.div>
+            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedView('all')}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  selectedView === 'all'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Calendar className="w-5 h-5" />
+                  <span>All Events</span>
+                </div>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedView('my-events')}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  selectedView === 'my-events'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <UserCheck className="w-5 h-5" />
+                  <span>My Events</span>
+                </div>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedView('active')}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  selectedView === 'active'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="w-5 h-5" />
+                  <span>Active Events</span>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
 
       {/* Filters */}
       <motion.div
@@ -373,7 +442,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search events by name, module, path or campus..."
+            placeholder="Search events by name, module, path, or participants..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -434,18 +503,6 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
 
               {/* Event Details */}
               <div className="space-y-4">
-                {event.campus && (
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-4 h-4 text-green-400" />
-                    </div>
-                    <div>
-                      <div className="text-white font-medium">{event.campus}</div>
-                      <div className="text-slate-400 text-sm">Campus</div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
                     <Clock className="w-4 h-4 text-purple-400" />
@@ -636,8 +693,43 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           </p>
         </motion.div>
       )}
+        </div>
+      </div>
     </div>
   )
 }
+
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
+    </div>
+    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+    <p className="text-white/70 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
+);
 
 export default EventSection

@@ -218,60 +218,80 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900">
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-lg border-b border-white/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Enhanced Header */}
+      <header className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            {/* Responsive Logo/Title */}
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Enhanced Logo/Title */}
             <div className="flex items-center min-w-0">
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200 }}
-                className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0 shadow-lg shadow-blue-500/25 border border-white/20"
               >
-                <UserIcon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+                <UserIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white drop-shadow-lg" />
               </motion.div>
               <div className="min-w-0">
-                <h1 className="text-lg sm:text-xl font-bold text-white truncate">Student Dashboard</h1>
-                <p className="text-xs sm:text-sm text-white/70 truncate">#{user.id}</p>
+                <motion.h1 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent truncate"
+                >
+                  Student Dashboard
+                </motion.h1>
+                <motion.p 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-sm sm:text-base text-white/70 truncate"
+                >
+                  Welcome, <span className="text-blue-400 font-semibold">{user.login}</span>
+                </motion.p>
               </div>
             </div>
 
-            {/* Actions: Preferences and Logout */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Enhanced Actions */}
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <motion.button
                 onClick={() => setShowPreferences(true)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, rotate: 90 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/20"
                 aria-label="Open preferences"
                 title="Preferences"
               >
-                <Settings className="w-5 h-5" />
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6" />
               </motion.button>
               <motion.button
                 onClick={handleLogout}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center px-3 sm:px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded-lg transition-colors"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 text-red-200 rounded-xl transition-all duration-300 backdrop-blur-sm border border-red-500/20 hover:border-red-500/30 shadow-lg hover:shadow-red-500/25"
                 aria-label="Logout from dashboard"
                 title="Logout"
               >
-                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Logout</span>
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <span className="hidden sm:inline font-semibold">Logout</span>
               </motion.button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Navigation Tabs */}
-      <nav className="bg-white/5 backdrop-blur-sm border-b border-white/10" role="navigation" aria-label="Dashboard navigation">
+      {/* Enhanced Navigation Tabs */}
+      <nav className="bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl" role="navigation" aria-label="Dashboard navigation">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-2 sm:space-x-4 lg:space-x-8 overflow-x-auto scrollbar-hide" role="tablist">
-            {tabs.map((tab) => {
+          <div className="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-hide py-2" role="tablist">
+            {tabs.map((tab, index) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
               
@@ -279,19 +299,22 @@ const Dashboard: React.FC = () => {
                 <motion.button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ y: 0 }}
-                  className={`flex items-center px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-all whitespace-nowrap min-w-0 ${
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.05 }}
+                  className={`flex items-center px-4 sm:px-6 py-3 sm:py-4 text-sm font-bold rounded-2xl transition-all duration-300 whitespace-nowrap min-w-0 shadow-lg ${
                     isActive
-                      ? 'border-primary-500 text-primary-400'
-                      : 'border-transparent text-white/70 hover:text-white hover:border-white/30'
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/30 border border-white/20'
+                      : 'bg-white/10 text-white/70 hover:text-white hover:bg-white/20 border border-white/10 hover:border-white/20'
                   }`}
                   aria-label={`Switch to ${tab.label} tab`}
                   aria-current={isActive ? 'page' : undefined}
                   role="tab"
                   tabIndex={0}
                 >
-                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline">{tab.label}</span>
                   <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </motion.button>

@@ -633,64 +633,90 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Enhanced Header */}
-      <SectionHeader
-        title="Dashboard Overview"
-        subtitle="Your complete student progress and analytics"
-        icon={LayoutDashboard}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 50px 50px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
+            backgroundSize: '100px 100px'
+          }}></div>
+        </div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <LayoutDashboard className="w-10 h-10 text-blue-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent">
+              Dashboard Overview
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Your complete <span className="text-blue-400 font-semibold">Progress</span> and analytics hub
+            </p>
+          </motion.div>
 
-      {/* Tab Navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-1 border border-white/20"
-      >
-        <nav className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          {tabs.map((tab, index) => {
-            const Icon = tab.icon
-            const isActive = activeTab === tab.id
-            
-            return (
-              <motion.button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as DashboardTab)}
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-                className={`
-                  flex flex-col items-center space-y-3 px-6 py-4 rounded-xl font-medium text-sm transition-all duration-200
-                  ${isActive
-                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/25'
-                    : 'text-white/70 hover:text-white hover:bg-white/10 hover:shadow-md'
-                  }
-                `}
-              >
-                <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-white/70'}`} />
-                <div className="text-center">
-                  <div className="font-semibold">{tab.label}</div>
-                  <div className="text-xs opacity-80 hidden lg:block">{tab.description}</div>
-                </div>
-              </motion.button>
-            )
-          })}
-        </nav>
-      </motion.div>
+          {/* Enhanced Tab Navigation */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex justify-center"
+          >
+            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl">
+              <nav className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                {tabs.map((tab, index) => {
+                  const Icon = tab.icon
+                  const isActive = activeTab === tab.id
+                  
+                  return (
+                    <motion.button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as DashboardTab)}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 + index * 0.05 }}
+                      className={`
+                        flex flex-col items-center space-y-3 px-8 py-4 rounded-2xl font-bold text-sm transition-all duration-300
+                        ${isActive
+                          ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30'
+                          : 'text-white/70 hover:text-white hover:bg-white/10'
+                        }
+                      `}
+                    >
+                      <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-white/70'}`} />
+                      <div className="text-center">
+                        <div className="font-semibold">{tab.label}</div>
+                        <div className="text-xs opacity-80 hidden lg:block">{tab.description}</div>
+                      </div>
+                    </motion.button>
+                  )
+                })}
+              </nav>
+            </div>
+          </motion.div>
 
-      {/* Tab Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="min-h-[600px]"
-      >
-        {renderTabContent()}
-      </motion.div>
+          {/* Tab Content */}
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="min-h-[600px]"
+          >
+            {renderTabContent()}
+          </motion.div>
+        </div>
+      </div>
     </div>
   )
 }

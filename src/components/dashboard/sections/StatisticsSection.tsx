@@ -34,48 +34,70 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         <p className="text-white/70">Complete metrics and key performance indicators</p>
       </motion.div>
 
-      {/* Key Performance Indicators */}
+      {/* Enhanced Statistics Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
       >
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
-          <Zap className="w-12 h-12 text-blue-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{formatXPValue(analytics.xp.total)}</div>
-          <div className="text-white/70 text-sm">Total XP</div>
-          <div className="text-blue-400 text-xs mt-2">
-            Level {analytics.level.current} ({analytics.level.progress.toFixed(1)}% to next)
-          </div>
-        </div>
+        <StatCard 
+          icon={Zap} 
+          title="Total XP" 
+          value={formatXPValue(analytics.xp.total)} 
+          color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+          subValue={`Level ${analytics.level.current} (${analytics.level.progress.toFixed(1)}% to next)`}
+          trend={analytics.level.progress > 50 ? { value: Math.round(analytics.level.progress - 40), isPositive: true } : undefined}
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
-          <Target className="w-12 h-12 text-green-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{analytics.audits.ratio.toFixed(1)}</div>
-          <div className="text-white/70 text-sm">Audit Ratio</div>
-          <div className="text-green-400 text-xs mt-2">
-            {analytics.audits.given} completed audits given
-          </div>
-        </div>
+        <StatCard 
+          icon={Target} 
+          title="Audit Ratio" 
+          value={analytics.audits.ratio.toFixed(1)} 
+          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+          subValue={`${analytics.audits.given} audits completed`}
+          trend={analytics.audits.ratio > 1 ? { value: Math.round((analytics.audits.ratio - 1) * 100), isPositive: true } : undefined}
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
-          <Trophy className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{analytics.projects.bhModule.passRate}%</div>
-          <div className="text-white/70 text-sm">Success Rate</div>
-          <div className="text-yellow-400 text-xs mt-2">
-            {analytics.projects.bhModule.passed}/{analytics.projects.bhModule.total} Projects
-          </div>
-        </div>
+        <StatCard 
+          icon={Trophy} 
+          title="Success Rate" 
+          value={`${analytics.projects.bhModule.passRate.toFixed(1)}%`} 
+          color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
+          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+          subValue={`${analytics.projects.bhModule.passed}/${analytics.projects.bhModule.total} projects`}
+          trend={analytics.projects.bhModule.passRate > 75 ? { value: Math.round(analytics.projects.bhModule.passRate - 60), isPositive: true } : undefined}
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 text-center">
-          <Code className="w-12 h-12 text-purple-400 mx-auto mb-3" />
-          <div className="text-3xl font-bold text-white mb-1">{analytics.skills.total}</div>
-          <div className="text-white/70 text-sm">Skills Mastered</div>
-          <div className="text-purple-400 text-xs mt-2">
-            {analytics.skills.top[0]?.name || 'None'} leading
-          </div>
-        </div>
+        <StatCard 
+          icon={Code} 
+          title="Skills Mastered" 
+          value={analytics.skills.total} 
+          color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+          subValue={`${analytics.skills.top[0]?.name || 'None'} leading skill`}
+        />
+
+        <StatCard 
+          icon={Activity} 
+          title="Monthly Average XP" 
+          value={formatXPValue(averageXPPerMonth)} 
+          color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
+          bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
+          subValue={`${mostActiveMonth.month} was peak month`}
+          trend={trendDirection === 'improving' ? { value: 15, isPositive: true } : { value: 10, isPositive: false }}
+        />
+
+        <StatCard 
+          icon={Calendar} 
+          title="Recent Trend" 
+          value={trendDirection === 'improving' ? '📈 Rising' : '📉 Stable'} 
+          color="bg-gradient-to-r from-rose-500/30 to-pink-500/30"
+          bgGradient="bg-gradient-to-br from-rose-900/20 to-pink-900/20"
+          subValue={`${formatXPValue(recentTrend)} avg (3 months)`}
+        />
       </motion.div>
 
       {/* Detailed Statistics Grid */}
@@ -353,5 +375,38 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
     </div>
   )
 }
+
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
+    </div>
+    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+    <p className="text-white/70 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
+);
 
 export default StatisticsSection

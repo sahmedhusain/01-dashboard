@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
+import SectionHeader from '../ui/SectionHeader'
 import { formatDate as formatDateUtil } from '../../utils/dataFormatting'
 
 interface GroupSectionProps {
@@ -133,6 +134,11 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedView, searchTerm, statusFilter]);
 
   // Query all groups
   const { data: groupsData, loading: groupsLoading, error: groupsError } = useQuery(ALL_GROUPS_QUERY, {
@@ -276,104 +282,140 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Groups Dashboard
-        </h1>
-        <p className="text-white/70 text-lg">
-          Manage and explore {totalGroups} collaboration groups with comprehensive tracking
-        </p>
-      </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 40px 40px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+            backgroundSize: '80px 80px'
+          }}></div>
+        </div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <Users className="w-10 h-10 text-emerald-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent">
+              Groups Dashboard
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Collaborate and excel with <span className="text-emerald-400 font-semibold">{totalGroups}</span> dynamic project teams
+            </p>
+          </motion.div>
 
-      {/* Statistics Cards */}
+      {/* Enhanced Statistics Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
       >
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Users className="w-8 h-8 text-blue-400" />
-            <div>
-              <p className="text-white font-medium">Total Groups</p>
-              <p className="text-2xl font-bold text-white">{totalGroups}</p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={Users} 
+          title="Total Groups" 
+          value={totalGroups} 
+          color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+          subValue="All collaborative groups"
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Crown className="w-8 h-8 text-yellow-400" />
-            <div>
-              <p className="text-white font-medium">My Groups</p>
-              <p className="text-2xl font-bold text-white">{getMyGroupsCount()}</p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={Crown} 
+          title="My Groups" 
+          value={getMyGroupsCount()} 
+          color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
+          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+          subValue="Your active participation"
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Activity className="w-8 h-8 text-green-400" />
-            <div>
-              <p className="text-white font-medium">Active Groups</p>
-              <p className="text-2xl font-bold text-white">
-                {getFilteredGroups().filter(g => g.status === 'working' || g.status === 'audit').length}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={Activity} 
+          title="Active Groups" 
+          value={getFilteredGroups().filter(g => g.status === 'working' || g.status === 'audit').length} 
+          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+          subValue="Currently working"
+          trend={getFilteredGroups().filter(g => g.status === 'working' || g.status === 'audit').length > totalGroups * 0.6 ? 
+            { value: 15, isPositive: true } : undefined}
+        />
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-8 h-8 text-purple-400" />
-            <div>
-              <p className="text-white font-medium">Completed</p>
-              <p className="text-2xl font-bold text-white">
-                {getFilteredGroups().filter(g => g.status === 'finished').length}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          icon={Calendar} 
+          title="Completed" 
+          value={getFilteredGroups().filter(g => g.status === 'finished').length} 
+          color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+          subValue="Successfully finished"
+        />
+
+        <StatCard 
+          icon={UserPlus} 
+          title="As Captain" 
+          value={getFilteredGroups().filter(g => g.captainId === user.id).length} 
+          color="bg-gradient-to-r from-red-500/30 to-rose-500/30"
+          bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
+          subValue="Leadership roles"
+        />
+
+        <StatCard 
+          icon={Users} 
+          title="As Member" 
+          value={getMyGroupsCount() - getFilteredGroups().filter(g => g.captainId === user.id).length} 
+          color="bg-gradient-to-r from-indigo-500/30 to-blue-500/30"
+          bgGradient="bg-gradient-to-br from-indigo-900/20 to-blue-900/20"
+          subValue="Team collaborations"
+        />
       </motion.div>
 
-      {/* View Selector */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="flex justify-center"
-      >
-        <div className="bg-white/10 rounded-lg p-1">
-          <button
-            onClick={() => setSelectedView('all')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              selectedView === 'all'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
+          {/* Enhanced View Selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex justify-center"
           >
-            All Groups
-          </button>
-          <button
-            onClick={() => setSelectedView('my-groups')}
-            className={`px-4 py-2 rounded-md transition-all ${
-              selectedView === 'my-groups'
-                ? 'bg-primary-500 text-white'
-                : 'text-white/70 hover:text-white'
-            }`}
-          >
-            My Groups
-          </button>
-        </div>
-      </motion.div>
+            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedView('all')}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  selectedView === 'all'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>All Groups</span>
+                </div>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedView('my-groups')}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  selectedView === 'my-groups'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Crown className="w-5 h-5" />
+                  <span>My Groups</span>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
 
       {/* Filters */}
       <motion.div
@@ -643,8 +685,43 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           </p>
         </motion.div>
       )}
+        </div>
+      </div>
     </div>
   )
 }
+
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
+    </div>
+    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+    <p className="text-white/70 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
+);
 
 export default GroupSection

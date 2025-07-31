@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery, gql } from '@apollo/client';
 import { User } from '../../types';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent } from 'lucide-react';
+import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent, Activity } from 'lucide-react';
 import { GET_USER_BY_PK } from '../../graphql/allQueries';
 import { formatXPValue, formatDate } from '../../utils/dataFormatting';
 
@@ -62,6 +62,11 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   const [view, setView] = useState('all');
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, view]);
 
   const { data: auditData, loading: auditLoading, error: auditError } = useQuery(GET_AUDIT_DATA, {
     variables: {
@@ -156,45 +161,148 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   });
 
   return (
-    <div className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Audits Dashboard
-        </h1>
-        <p className="text-white/70 text-lg">
-          Complete audit tracking system with {totalAudits} completed audits
-        </p>
-      </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900/20 to-slate-900">
+      <div className="relative overflow-hidden">
+        {/* Enhanced Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 30px 30px, rgba(99, 102, 241, 0.1) 2px, transparent 0)`,
+            backgroundSize: '60px 60px'
+          }}></div>
+        </div>
+        
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-4"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+              <UserCheck className="w-10 h-10 text-indigo-400" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent">
+              Audits Dashboard
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Track your peer review journey with <span className="text-indigo-400 font-semibold">{totalAudits}</span> completed audit evaluations
+            </p>
+          </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
       >
-        <StatCard icon={ArrowUp} title="Total Up" value={formatXPValue(userData?.user_by_pk?.totalUp)} color="text-green-400" />
-        <StatCard icon={ArrowDown} title="Total Down" value={formatXPValue(userData?.user_by_pk?.totalDown)} color="text-red-400" />
-        <StatCard icon={Percent} title="Audit Ratio" value={userData?.user_by_pk?.auditRatio.toFixed(1)} color="text-blue-400" />
-        <StatCard icon={Users} title="Completed Audits Given/Received" value={`${auditData?.auditsGiven_aggregate.aggregate.count || 0} / ${auditData?.auditsReceived_aggregate.aggregate.count || 0}`} color="text-purple-400" />
+        <StatCard 
+          icon={ArrowUp} 
+          title="Total Up Points" 
+          value={formatXPValue(userData?.user_by_pk?.totalUp)} 
+          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+          subValue="Positive feedback earned"
+        />
+        <StatCard 
+          icon={ArrowDown} 
+          title="Total Down Points" 
+          value={formatXPValue(userData?.user_by_pk?.totalDown)} 
+          color="bg-gradient-to-r from-red-500/30 to-rose-500/30"
+          bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
+          subValue="Areas for improvement"
+        />
+        <StatCard 
+          icon={Percent} 
+          title="Audit Ratio" 
+          value={`${userData?.user_by_pk?.auditRatio.toFixed(1)}` || '0.0'} 
+          color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+          trend={userData?.user_by_pk?.auditRatio > 1 ? { value: Math.round((userData?.user_by_pk?.auditRatio - 1) * 100), isPositive: true } : undefined}
+          subValue={userData?.user_by_pk?.auditRatio > 1 ? "Above average!" : "Keep contributing"}
+        />
+        <StatCard 
+          icon={UserCheck} 
+          title="Audits Given" 
+          value={`${auditData?.auditsGiven_aggregate.aggregate.count || 0}`} 
+          color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+          subValue="Reviews provided"
+        />
+        <StatCard 
+          icon={Users} 
+          title="Audits Received" 
+          value={`${auditData?.auditsReceived_aggregate.aggregate.count || 0}`} 
+          color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
+          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+          subValue="Reviews received"
+        />
+        <StatCard 
+          icon={Activity} 
+          title="Total Audits" 
+          value={`${(auditData?.auditsGiven_aggregate.aggregate.count || 0) + (auditData?.auditsReceived_aggregate.aggregate.count || 0)}`} 
+          color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
+          bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
+          subValue="Overall audit activity"
+        />
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex justify-center"
-      >
-        <div className="bg-white/10 rounded-lg p-1">
-          <button onClick={() => setView('all')} className={`px-4 py-2 rounded-md transition-all ${view === 'all' ? 'bg-primary-500 text-white' : 'text-white/70 hover:text-white'}`}>All Audits</button>
-          <button onClick={() => setView('given')} className={`px-4 py-2 rounded-md transition-all ${view === 'given' ? 'bg-primary-500 text-white' : 'text-white/70 hover:text-white'}`}>Audits Given</button>
-          <button onClick={() => setView('received')} className={`px-4 py-2 rounded-md transition-all ${view === 'received' ? 'bg-primary-500 text-white' : 'text-white/70 hover:text-white'}`}>Audits Received</button>
-        </div>
-      </motion.div>
+          {/* Enhanced View Selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex justify-center"
+          >
+            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl">
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setView('all')} 
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  view === 'all' 
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Activity className="w-5 h-5" />
+                  <span>All Audits</span>
+                </div>
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setView('given')} 
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  view === 'given' 
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <ArrowUp className="w-5 h-5" />
+                  <span>Audits Given</span>
+                </div>
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setView('received')} 
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  view === 'received' 
+                    ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30' 
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <ArrowDown className="w-5 h-5" />
+                  <span>Audits Received</span>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
 
       {/* Enhanced Search and Filter Section */}
       <motion.div
@@ -287,34 +395,57 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
         </div>
       </motion.div>
 
-      {/* Empty State */}
-      {filteredAudits.length === 0 && !auditLoading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-12"
-        >
-          <Users className="w-16 h-16 text-white/30 mx-auto mb-4" />
-          <h3 className="text-white/70 text-lg font-medium mb-2">No audits found</h3>
-          <p className="text-white/50">
-            Try adjusting your search criteria or filters.
-          </p>
-        </motion.div>
-      )}
+          {/* Empty State */}
+          {filteredAudits.length === 0 && !auditLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <Users className="w-16 h-16 text-white/30 mx-auto mb-4" />
+              <h3 className="text-white/70 text-lg font-medium mb-2">No audits found</h3>
+              <p className="text-white/50">
+                Try adjusting your search criteria or filters.
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
-const StatCard = ({ icon: Icon, title, value, color }: { icon: React.ElementType, title: string, value: string, color: string }) => (
-  <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-    <div className="flex items-center space-x-3">
-      <Icon className={`w-8 h-8 ${color}`} />
-      <div>
-        <p className="text-white font-medium">{title}</p>
-        <p className={`text-2xl font-bold text-white ${color}`}>{value}</p>
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
       </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
     </div>
-  </div>
+    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
+    <p className="text-white/70 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
 );
 
 const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
@@ -327,7 +458,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
     const twoWeeks = 14 * 24 * 60 * 60 * 1000;
     const auditDate = new Date(audit.createdAt);
     const now = new Date();
-    return now.getTime() - auditDate.getTime() > twoWeeks ? 'Assigned' : 'Pending';
+    return now.getTime() - auditDate.getTime() > twoWeeks ? 'Re-Assigned' : 'Pending';
   };
 
   const status = getStatus();
@@ -336,7 +467,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
     switch (status) {
       case 'Passed': return 'text-green-400 bg-green-400/20';
       case 'Failed': return 'text-red-400 bg-red-400/20';
-      case 'Assigned': return 'text-blue-400 bg-blue-400/20';
+      case 'Re-Assigned': return 'text-blue-400 bg-blue-400/20';
       default: return 'text-yellow-400 bg-yellow-400/20';
     }
   };
@@ -382,7 +513,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
             <div className="text-slate-400 text-sm">Date</div>
           </div>
         </div>
-        {isCompleted && status !== 'Assigned' && status !== 'Pending' && (
+        {isCompleted && status !== 'Re-Assigned' && status !== 'Pending' && (
           <div className="flex items-center space-x-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${audit.type === 'given' ? 'bg-green-400/20' : 'bg-red-400/20'}`}>
               {audit.type === 'given' ? <ArrowUp className="w-4 h-4 text-green-400" /> : <ArrowDown className="w-4 h-4 text-red-400" />}
@@ -395,7 +526,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
             </div>
           </div>
         )}
-        {status !== 'Assigned' && (
+        {status !== 'Re-Assigned' && (
           <div className="flex items-center space-x-3">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getStatusColor()}`}>
               {isCompleted ? (isSuccess ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />) : <Clock className="w-4 h-4" />}

@@ -480,7 +480,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                   </div>
                   <div>
                     <div className="text-white font-medium">Participants</div>
-                    <div className="text-slate-400 text-sm">Click to view participants</div>
+                    <div className="text-slate-400 text-sm">{selectedEvent === event.id ? 'Click to hide' : 'Click to view'}</div>
                   </div>
                 </div>
                 <div className="transition-transform duration-200">

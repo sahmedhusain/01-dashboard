@@ -418,7 +418,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
           </div>
           <div>
             <div className="text-white font-medium">{getDetailsLabel()}</div>
-            <div className="text-slate-400 text-sm">Click to view</div>
+            <div className="text-slate-400 text-sm">{isExpanded ? 'Click to hide' : 'Click to view'}</div>
           </div>
         </div>
         <div className="transition-transform duration-200">

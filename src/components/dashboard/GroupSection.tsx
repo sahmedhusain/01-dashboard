@@ -480,7 +480,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                   <div className="text-white font-medium">
                     Group Members
                   </div>
-                  <div className="text-slate-400 text-sm">Click to view members</div>
+                  <div className="text-slate-400 text-sm">{selectedGroup === group.id ? 'Click to hide members' : 'Click to view members'}</div>
                 </div>
               </div>
               <div className="transition-transform duration-200">

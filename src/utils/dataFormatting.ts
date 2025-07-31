@@ -240,6 +240,27 @@ export const formatDate = (dateInput: string | Date | null | undefined, options?
   }
 };
 
+export const formatDateTimeDetailed = (dateInput: string | Date | null | undefined): string => {
+  if (!dateInput) return '';
+  try {
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return '';
+    
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    };
+    
+    return date.toLocaleString('en-US', options);
+  } catch {
+    return '';
+  }
+};
+
 export const formatDateTime = (dateInput: string | Date | null | undefined): string => {
   if (!dateInput) return '';
   try {
@@ -657,6 +678,12 @@ export const getRankFromLevel = (level: number) => {
   if (level >= 20) return { notation: "Apprentice developer", badge: "🛠️" };
   if (level >= 10) return { notation: "Beginner developer", badge: "🌱" };
   return { notation: "Aspiring developer", badge: "💡" };
+};
+
+export const calculatePiscineLevel = (xp: number): number => {
+  if (!xp || xp <= 0) return 0;
+  // Simple linear progression for piscine levels
+  return Math.floor(xp / 10000);
 };
 
 /**

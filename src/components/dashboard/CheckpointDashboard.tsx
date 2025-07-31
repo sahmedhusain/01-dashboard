@@ -1,481 +1,354 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { CheckCircle, Target, TrendingUp, Award } from 'lucide-react'
-import { useQuery, gql } from '@apollo/client'
-import { GET_ALL_USERS } from '../../graphql/allQueries'
-import { User } from '../../types'
-import Card from '../ui/Card'
-import LoadingSpinner from '../ui/LoadingSpinner'
-import SectionHeader from '../ui/SectionHeader'
+import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { useQuery, gql } from '@apollo/client';
 import {
-  formatXPValue,
-  separateModuleData,
-  calculateModuleXPTotals,
-  getRelativeTime,
-  formatGradeDetailed
-} from '../../utils/dataFormatting'
+  BookOpen,
+  Target,
+  CheckCircle,
+  XCircle,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  ArrowUpDown,
+  List,
+  Percent,
+  Database,
+  Search,
+  Zap,
+  Activity,
+  Calendar
+} from 'lucide-react';
+import { User as UserType } from '../../types';
+import LoadingSpinner from '../ui/LoadingSpinner';
+import SectionHeader from '../ui/SectionHeader';
+import { formatXPValue, formatDateTimeDetailed, formatDate } from '../../utils/dataFormatting';
 
 interface CheckpointDashboardProps {
-  user: User
+  user: UserType;
 }
 
-const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
-  const [activeCheckpointTab, setActiveCheckpointTab] = useState<string>('main')
-
-  // Query enhanced checkpoint data - checkpoints use "exam" type transactions
-  const { data: checkpointExamData, loading: examLoading, error: examError } = useQuery(gql`
-    query GetCheckpointExams($userId: Int!) {
-      transaction(
-        where: {
-          userId: { _eq: $userId }
-          type: { _eq: "exam" }
-          path: { _like: "%checkpoint%" }
-        }
-        order_by: { createdAt: desc }
-      ) {
-        id
-        amount
-        path
-        createdAt
-        type
-        attrs
-        object {
-          name
-          type
-          attrs
-        }
+const ALL_CHECKPOINT_DATA_QUERY = gql`
+  query GetAllCheckpointData($userId: Int!) {
+    checkpointTransactions: transaction(
+      where: {
+        userId: { _eq: $userId },
+        path: { _like: "%checkpoint%", _nlike: "%/checkpoint" }
       }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      amount
+      path
+      createdAt
+      type
     }
-  `, {
-    variables: { userId: user.id },
-    errorPolicy: 'all'
-  })
-
-  // Query checkpoint progress data
-  const { data: checkpointProgressData, loading: progressLoading } = useQuery(gql`
-    query GetCheckpointProgress($userId: Int!) {
-      progress(
-        where: {
-          userId: { _eq: $userId }
-          path: { _like: "%checkpoint%" }
-        }
-        order_by: { updatedAt: desc }
-      ) {
-        id
-        grade
-        isDone
-        path
-        createdAt
-        updatedAt
-        version
+    checkpointProgress: progress(
+      where: {
+        userId: { _eq: $userId },
+        path: { _like: "%checkpoint%", _nlike: "%/checkpoint" }
       }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      isDone
+      path
+      createdAt
     }
-  `, {
-    variables: { userId: user.id },
-    errorPolicy: 'all'
-  })
+  }
+`;
 
-  // Query checkpoint results data
-  const { data: checkpointResultsData, loading: resultsLoading } = useQuery(gql`
-    query GetCheckpointResults($userId: Int!) {
-      result(
-        where: {
-          userId: { _eq: $userId }
-          path: { _like: "%checkpoint%" }
-        }
-        order_by: { updatedAt: desc }
-      ) {
-        id
-        grade
-        path
-        createdAt
-        updatedAt
-        type
-        object {
-          name
-          type
-        }
-      }
-    }
-  `, {
-    variables: { userId: user.id },
-    errorPolicy: 'all'
-  })
-
-  if (examLoading || progressLoading || resultsLoading) return <LoadingSpinner />
-
-  if (examError) {
-    return (
-      <Card className="p-6">
-        <div className="text-center text-red-400">
-          <p>Error loading checkpoint data</p>
-          <p className="text-sm text-white/60 mt-2">{examError.message}</p>
+const StatCard = ({ icon: Icon, title, value, color, subValue }: { icon: React.ElementType, title: string, value: string | number, color: string, subValue?: string }) => (
+    <div className={`bg-gradient-to-br ${color} backdrop-blur-lg rounded-2xl p-6 border border-white/20`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="p-3 bg-white/20 rounded-xl">
+          <Icon className="w-8 h-8 text-white" />
         </div>
-      </Card>
-    )
-  }
+      </div>
+      <h3 className="text-2xl font-bold text-white mb-1">{value}</h3>
+      <p className="text-white/80 text-sm">{title}</p>
+      {subValue && <p className="text-white/60 text-xs mt-1">{subValue}</p>}
+    </div>
+  );
 
-  // Process complete checkpoint data
-  const checkpointTransactions = checkpointExamData?.transaction || []
-  const checkpointProgress = checkpointProgressData?.progress || []
-  const checkpointResults = checkpointResultsData?.result || []
-  
-  // Categorize checkpoints by type based on path analysis
-  const categorizeCheckpoints = (data: any[]) => {
-    const categories = {
-      main: data.filter(item => 
-        item.path.includes('/bahrain/bh-module/') && 
-        item.path.includes('/checkpoint/') &&
-        !item.path.includes('/piscine-')
-      ),
-      goPiscine: data.filter(item => 
-        item.path.includes('/bahrain/bh-piscine/checkpoint-')
-      ),
-      otherPiscines: data.filter(item => 
-        item.path.includes('/bahrain/bh-module/piscine-') && 
-        item.path.includes('/checkpoint/')
-      )
-    }
-    return categories
-  }
-  
-  const examCategories = categorizeCheckpoints(checkpointTransactions)
-  const progressCategories = categorizeCheckpoints(checkpointProgress)
-  const resultCategories = categorizeCheckpoints(checkpointResults)
-  
-  // Calculate aggregates for each category
-  const calculateAggregates = (transactions: any[]) => {
-    const count = transactions.length
-    const totalScore = transactions.reduce((sum, t) => sum + (t.amount || 0), 0)
-    const avgScore = count > 0 ? totalScore / count : 0
-    return { count, sum: { amount: totalScore }, avg: { amount: avgScore } }
-  }
-  
-  const mainCheckpointAggregate = calculateAggregates(examCategories.main)
-  const goPiscineCheckpointAggregate = calculateAggregates(examCategories.goPiscine)
-  const otherPiscineCheckpointAggregate = calculateAggregates(examCategories.otherPiscines)
-  
-  // Analyze progress statistics - grade-based completion logic for checkpoint projects
-  const analyzeProgress = (progress: any[]) => {
-    // Filter out checkpoint container paths to get only actual projects
-    const actualProjects = progress.filter(p => {
-      const projectName = p.path?.split('/').pop() || ''
-      const isCheckpointContainer = projectName.match(/^checkpoint-\d+$/i) || 
-                                  projectName === 'checkpoint' ||
-                                  p.path?.match(/\/checkpoint-\d+$/)
-      return !isCheckpointContainer
-    })
+const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
+  const [selectedModule, setSelectedModule] = useState<string>('all');
+  const [selectedCheckpoint, setSelectedCheckpoint] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'date' | 'amount' | 'path'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+
+  const { data, loading, error } = useQuery(ALL_CHECKPOINT_DATA_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const checkpointAnalysis = useMemo(() => {
+    if (!data) return null;
+
+    const transactions = data.checkpointTransactions.filter((t: any) => !t.path.endsWith('/transaction'));
+    const progress = data.checkpointProgress.filter((p: any) => !p.path.endsWith('/transaction'));
     
-    // Get unique projects by path (avoid counting duplicates)
-    const uniqueProjects = actualProjects.reduce((acc: any[], current) => {
-      const projectPath = current.path
-      const existing = acc.find(p => p.path === projectPath)
-      if (!existing) {
-        acc.push(current)
-      } else {
-        // Keep the one with latest/best grade if available
-        if (current.grade !== null && (existing.grade === null || current.grade >= existing.grade)) {
-          const index = acc.indexOf(existing)
-          acc[index] = current
+    const extractPathInfo = (path: string) => {
+      if (!path) return { projectName: 'Unknown Project', sectionName: 'Unknown Section', moduleName: 'Unknown Module' };
+      const parts = path.split('/').filter(part => part);
+      const projectName = parts[parts.length - 1] || 'Unknown Project';
+      let sectionName = parts.length > 1 ? parts[parts.length - 2] : 'Section';
+      let moduleName = 'BH Module';
+      if (path.includes('/bahrain/bh-piscine/')) {
+        moduleName = 'Go Piscine';
+        sectionName = 'Go Checkpoint';
+      } else if (path.includes('/bahrain/bh-module/piscine-')) {
+        const match = path.match(/\/bahrain\/bh-module\/piscine-([^/]+)\//);
+        moduleName = match ? match[1] : 'Piscine';
+        sectionName = 'Piscine Checkpoint';
+      }
+      return { projectName, sectionName, moduleName };
+    };
+
+    const projectAttempts: Record<string, any> = {};
+
+    progress.forEach((prog: any) => {
+      const projectPath = prog.path;
+      if (!projectAttempts[projectPath]) {
+        const { projectName, sectionName, moduleName } = extractPathInfo(projectPath);
+        projectAttempts[projectPath] = {
+          path: projectPath,
+          projectName,
+          sectionName,
+          moduleName,
+          attempts: [],
+          totalXP: 0,
+          lastDate: prog.createdAt,
+        };
+      }
+      projectAttempts[projectPath].attempts.push(prog);
+    });
+
+    transactions.forEach((transaction: any) => {
+      if (projectAttempts[transaction.path]) {
+        if (transaction.type === 'xp') {
+          projectAttempts[transaction.path].totalXP += transaction.amount || 0;
         }
       }
-      return acc
-    }, [])
-    
-    // Count projects that are completed (100% grade = 1.0)
-    const completed = uniqueProjects.filter(p => p.grade !== null && p.grade === 1.0).length
-    // Count projects that are uncompleted (0% grade = 0)
-    const uncompleted = uniqueProjects.filter(p => p.grade !== null && p.grade === 0).length
-    const total = uniqueProjects.length // Total actual projects found
-    const averageGrade = uniqueProjects
-      .filter(p => p.grade !== null)
-      .reduce((sum, p) => sum + p.grade, 0) / uniqueProjects.filter(p => p.grade !== null).length || 0
-    
-    return {
-      completed,
-      uncompleted,
-      total,
-      completionRate: total > 0 ? (completed / total) * 100 : 0,
-      averageGrade: isNaN(averageGrade) ? 0 : averageGrade
-    }
-  }
-  
-  const mainProgressStats = analyzeProgress(progressCategories.main)
-  const goPiscineProgressStats = analyzeProgress(progressCategories.goPiscine)
-  const otherPiscineProgressStats = analyzeProgress(progressCategories.otherPiscines)
+    });
 
-  // Detect available checkpoint types
-  const availableCheckpointTypes = []
-  if (examCategories.main.length > 0 || progressCategories.main.length > 0) availableCheckpointTypes.push('main')
-  if (examCategories.goPiscine.length > 0 || progressCategories.goPiscine.length > 0) availableCheckpointTypes.push('go')
-  if (examCategories.otherPiscines.length > 0 || progressCategories.otherPiscines.length > 0) availableCheckpointTypes.push('piscines')
+    Object.values(projectAttempts).forEach(project => {
+      const passed = project.attempts.some((p: any) => p.isDone && p.grade >= 1);
+      project.status = passed ? 'passed' : project.attempts.some((p: any) => p.isDone) ? 'failed' : 'in-progress';
+      project.failedAttempts = project.attempts.filter((p: any) => p.isDone && p.grade < 1).length;
+    });
 
-  // Detect specific piscine checkpoint types
-  const detectPiscineCheckpointTypes = (checkpoints: any[]) => {
-    const piscineSet = new Set<string>()
-    
-    checkpoints.forEach(checkpoint => {
-      const path = checkpoint.path
-      const piscineMatch = path.match(/\/bahrain\/bh-module\/piscine-([^\/]+)\/.*checkpoint/)
-      if (piscineMatch) {
-        piscineSet.add(piscineMatch[1])
+    const projectList = Object.values(projectAttempts);
+
+    const modules: Record<string, any> = {};
+    projectList.forEach(project => {
+      if (!modules[project.moduleName]) {
+        modules[project.moduleName] = {
+          checkpoints: {},
+          projects: []
+        };
       }
-    })
-    
-    return Array.from(piscineSet)
-  }
+      const date = new Date(project.lastDate).toLocaleDateString();
+      if (!modules[project.moduleName].checkpoints[date]) {
+        modules[project.moduleName].checkpoints[date] = [];
+      }
+      modules[project.moduleName].checkpoints[date].push(project);
+      modules[project.moduleName].projects.push(project);
+    });
 
-  const piscineCheckpointTypes = detectPiscineCheckpointTypes(examCategories.otherPiscines)
+    const overallStats = {
+        totalXP: projectList.reduce((sum, p) => sum + p.totalXP, 0),
+        totalProjects: projectList.length,
+        passedProjects: projectList.filter(p => p.status === 'passed').length,
+        passRate: projectList.length > 0 ? (projectList.filter(p => p.status === 'passed').length / projectList.length) * 100 : 0,
+        failedAttempts: projectList.reduce((sum, p) => sum + p.failedAttempts, 0),
+      };
 
-  if (availableCheckpointTypes.length === 0) {
-    return (
-      <div className="space-y-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Checkpoints Dashboard
-          </h1>
-          <p className="text-white/70 text-lg">
-            Your checkpoint progress and achievements
-          </p>
-        </motion.div>
+    return {
+      projectList,
+      modules,
+      overallStats,
+    };
+  }, [data]);
 
-        <Card className="p-8 text-center">
-          <div className="flex flex-col items-center space-y-4">
-            <CheckCircle className="w-16 h-16 text-white/30" />
-            <h3 className="text-xl font-semibold text-white">No Checkpoints Found</h3>
-            <p className="text-white/60">
-              You haven't completed any checkpoints yet. Checkpoints will appear here once you start completing them.
-            </p>
-          </div>
-        </Card>
-      </div>
-    )
-  }
+  const filteredAndSortedProjects = useMemo(() => {
+    if (!checkpointAnalysis) return [];
+    let filtered = checkpointAnalysis.projectList;
+
+    if (selectedModule !== 'all') {
+      filtered = filtered.filter(project => project.moduleName === selectedModule);
+    }
+    if (selectedCheckpoint !== 'all') {
+      filtered = filtered.filter(project => new Date(project.lastDate).toLocaleDateString() === selectedCheckpoint);
+    }
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(project =>
+        project.projectName.toLowerCase().includes(searchLower)
+      );
+    }
+
+    filtered.sort((a, b) => {
+      let aVal, bVal;
+      if (sortBy === 'date') {
+        aVal = new Date(a.lastDate || 0).getTime();
+        bVal = new Date(b.lastDate || 0).getTime();
+      } else if (sortBy === 'amount') {
+        aVal = a.totalXP;
+        bVal = b.totalXP;
+      } else {
+        aVal = a.projectName.toLowerCase();
+        bVal = b.projectName.toLowerCase();
+      }
+      return sortOrder === 'asc' ? aVal > bVal ? 1 : -1 : aVal < bVal ? 1 : -1;
+    });
+
+    return filtered;
+  }, [checkpointAnalysis, selectedModule, selectedCheckpoint, searchTerm, sortBy, sortOrder]);
+
+  const currentStats = useMemo(() => {
+    if (!checkpointAnalysis) return { totalXP: 0, totalProjects: 0, passedProjects: 0, passRate: 0, failedAttempts: 0 };
+    if (selectedModule === 'all') return checkpointAnalysis.overallStats;
+    const moduleProjects = checkpointAnalysis.modules[selectedModule]?.projects || [];
+    if (selectedCheckpoint === 'all') {
+      const passedProjects = moduleProjects.filter(p => p.status === 'passed').length;
+      return {
+        totalXP: moduleProjects.reduce((sum, p) => sum + p.totalXP, 0),
+        totalProjects: moduleProjects.length,
+        passedProjects,
+        passRate: moduleProjects.length > 0 ? (passedProjects / moduleProjects.length) * 100 : 0,
+        failedAttempts: moduleProjects.reduce((sum, p) => sum + p.failedAttempts, 0),
+      };
+    }
+    const checkpointProjects = checkpointAnalysis.modules[selectedModule]?.checkpoints[selectedCheckpoint] || [];
+    const passedProjects = checkpointProjects.filter(p => p.status === 'passed').length;
+    return {
+      totalXP: checkpointProjects.reduce((sum, p) => sum + p.totalXP, 0),
+      totalProjects: checkpointProjects.length,
+      passedProjects,
+      passRate: checkpointProjects.length > 0 ? (passedProjects / checkpointProjects.length) * 100 : 0,
+      failedAttempts: checkpointProjects.reduce((sum, p) => sum + p.failedAttempts, 0),
+    };
+  }, [selectedModule, selectedCheckpoint, checkpointAnalysis]);
+
+  if (loading) return <LoadingSpinner />;
+  if (error || !checkpointAnalysis) return <div>Error loading checkpoint data.</div>;
+
+  const { modules } = checkpointAnalysis;
 
   return (
     <div className="space-y-8">
-      {/* Enhanced Header */}
       <SectionHeader
         title="Checkpoints Dashboard"
-        subtitle="Your checkpoint progress and achievements"
-        icon={Target}
+        subtitle={`Review your performance across ${checkpointAnalysis.projectList.length} checkpoints`}
+        icon={BookOpen}
       />
 
-      {/* Checkpoint Overview Cards */
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Main Module Checkpoints */}
-        {(examCategories.main.length > 0 || progressCategories.main.length > 0) && (
-          <Card className="p-6">
-            <div className="flex items-center mb-4">
-              <Target className="w-6 h-6 text-primary-400 mr-3" />
-              <h3 className="text-lg font-semibold text-white">Main Module</h3>
-            </div>
-            <div className="flex justify-center">
-              <div className="text-center">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-white/60 text-sm">Completed</div>
-                    <div className="text-xl font-bold text-green-400">
-                      {mainProgressStats.completed}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-white/60 text-sm">Uncompleted</div>
-                    <div className="text-xl font-bold text-red-400">
-                      {mainProgressStats.uncompleted}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        {/* Go Piscine Checkpoints */}
-        {(examCategories.goPiscine.length > 0 || progressCategories.goPiscine.length > 0) && (
-          <Card className="p-6">
-            <div className="flex items-center mb-4">
-              <CheckCircle className="w-6 h-6 text-green-400 mr-3" />
-              <h3 className="text-lg font-semibold text-white">Go Piscine</h3>
-            </div>
-            <div className="flex justify-center">
-              <div className="text-center">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-white/60 text-sm">Completed</div>
-                    <div className="text-xl font-bold text-green-400">
-                      {goPiscineProgressStats.completed}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-white/60 text-sm">Uncompleted</div>
-                    <div className="text-xl font-bold text-red-400">
-                      {goPiscineProgressStats.uncompleted}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        {/* Other Piscine Checkpoints */}
-        {(examCategories.otherPiscines.length > 0 || progressCategories.otherPiscines.length > 0) && (
-          <Card className="p-6">
-            <div className="flex items-center mb-4">
-              <Award className="w-6 h-6 text-yellow-400 mr-3" />
-              <h3 className="text-lg font-semibold text-white">Other Piscines</h3>
-            </div>
-            <div className="flex justify-center">
-              <div className="text-center">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-white/60 text-sm">Completed</div>
-                    <div className="text-xl font-bold text-green-400">
-                      {otherPiscineProgressStats.completed}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-white/60 text-sm">Uncompleted</div>
-                    <div className="text-xl font-bold text-red-400">
-                      {otherPiscineProgressStats.uncompleted}
-                    </div>
-                  </div>
-                </div>
-                {piscineCheckpointTypes.length > 0 && (
-                  <div className="text-white/60 text-sm mt-2">
-                    Types: {piscineCheckpointTypes.join(', ')}
-                  </div>
-                )}
-              </div>
-            </div>
-          </Card>
-        )}
-      </div>
-      }
-
-      {/* Checkpoint Tabs */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <nav className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-2">
-          <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
-            {availableCheckpointTypes.map((type) => (
-              <motion.button
-                key={type}
-                onClick={() => setActiveCheckpointTab(type)}
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
-                className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all whitespace-nowrap ${
-                  activeCheckpointTab === type
-                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                {type === 'main' ? 'Main Module' : 
-                 type === 'go' ? 'Go Piscine' : 
-                 'Other Piscines'}
-              </motion.button>
-            ))}
-          </div>
-        </nav>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard icon={Zap} title="Total XP Earned" value={formatXPValue(currentStats.totalXP || 0)} color="from-blue-500/20 to-blue-600/20" />
+        <StatCard icon={Target} title="Total Checkpoints" value={currentStats.totalProjects || 0} color="from-green-500/20 to-green-600/20" />
+        <StatCard icon={CheckCircle} title="Passed Checkpoints" value={currentStats.passedProjects || 0} color="from-purple-500/20 to-purple-600/20" />
+        <StatCard icon={Percent} title="Pass Rate" value={`${(currentStats.passRate || 0).toFixed(1)}%`} color="from-yellow-500/20 to-yellow-600/20" />
       </motion.div>
 
-      {/* Active Checkpoint Content */}
-      <motion.div
-        key={activeCheckpointTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="p-6">
-          <h3 className="text-xl font-semibold text-white mb-6">
-            {activeCheckpointTab === 'main' ? 'Main Module Checkpoints' :
-             activeCheckpointTab === 'go' ? 'Go Piscine Checkpoints' :
-             'Other Piscine Checkpoints'}
+      <div className="flex space-x-2">
+        <button onClick={() => {setSelectedModule('all'); setSelectedCheckpoint('all');}} className={`px-4 py-2 rounded-md ${selectedModule === 'all' ? 'bg-primary-500' : ''}`}>All Modules</button>
+        {Object.keys(modules).map(module => (
+          <button key={module} onClick={() => {setSelectedModule(module); setSelectedCheckpoint('all');}} className={`px-4 py-2 rounded-md ${selectedModule === module ? 'bg-primary-500' : ''}`}>{module}</button>
+        ))}
+      </div>
+
+      {selectedModule !== 'all' && (
+        <div className="flex space-x-2">
+          <button onClick={() => setSelectedCheckpoint('all')} className={`px-4 py-2 rounded-md ${selectedCheckpoint === 'all' ? 'bg-primary-500' : ''}`}>All Checkpoints</button>
+          {Object.keys(modules[selectedModule]?.checkpoints || {}).sort((a, b) => new Date(b).getTime() - new Date(a).getTime()).map((date, index) => (
+            <button key={date} onClick={() => setSelectedCheckpoint(date)} className={`px-4 py-2 rounded-md ${selectedCheckpoint === date ? 'bg-primary-500' : ''}`}>Checkpoint {Object.keys(modules[selectedModule]?.checkpoints || {}).length - index}</button>
+          ))}
+        </div>
+      )}
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10">
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+            <input type="text" placeholder="Search by project name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg" />
+          </div>
+          <div className="flex items-center space-x-2">
+            <ArrowUpDown className="w-4 h-4 text-white/70" />
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-white/10 border border-white/20 rounded-lg px-3 py-2">
+              <option value="date">Sort by Date</option>
+              <option value="amount">Sort by XP</option>
+              <option value="path">Sort by Name</option>
+            </select>
+            <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')} className="p-2 bg-white/10 rounded-lg hover:bg-white/20">
+              <ChevronDown className={`w-4 h-4 transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 overflow-hidden">
+        <div className="p-6 border-b border-white/10">
+          <h3 className="text-xl font-bold text-white flex items-center">
+            <Activity className="w-6 h-6 mr-3 text-primary-400" />
+            Checkpoints ({filteredAndSortedProjects.length})
           </h3>
-          
-          {/* Checkpoint List with Progress and XP Data */}
-          <div className="space-y-4">
-            {(() => {
-              const currentExamData = activeCheckpointTab === 'main' ? examCategories.main :
-                                     activeCheckpointTab === 'go' ? examCategories.goPiscine :
-                                     examCategories.otherPiscines
-              
-              const currentProgressData = activeCheckpointTab === 'main' ? progressCategories.main :
-                                         activeCheckpointTab === 'go' ? progressCategories.goPiscine :
-                                         progressCategories.otherPiscines
-              
-              // Merge exam and progress data by path
-              const mergedData = currentExamData.map(exam => {
-                const progress = currentProgressData.find(p => p.path === exam.path)
-                return { ...exam, progress }
-              })
-              
-              // Add progress items that don't have exam transactions
-              currentProgressData.forEach(progress => {
-                if (!mergedData.find(item => item.path === progress.path)) {
-                  mergedData.push({ progress, path: progress.path, amount: 0 })
-                }
-              })
-              
-              // Show actual checkpoint projects, not checkpoint container paths
-              const filteredData = mergedData.filter(item => {
-                const path = item.path || item.progress?.path || ''
-                const projectName = item.object?.name || item.progress?.path?.split('/').pop() || 'Checkpoint'
-                
-                // Only show items that are actual projects inside checkpoints
-                // Exclude: checkpoint-01, checkpoint-02, etc. (container paths)
-                // Include: printnbr, atoi, fromto, zipstring, etc. (actual projects)
-                const isCheckpointContainer = projectName.match(/^checkpoint-\d+$/i) || 
-                                            projectName === 'Checkpoint' ||
-                                            path.match(/\/checkpoint-\d+$/)
-                
-                return !isCheckpointContainer
-              })
-              
-              return filteredData.map((item: any) => (
-                <div key={item.id || item.progress?.id} className="bg-white/5 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h4 className="font-medium text-white">
-                          {item.object?.name || item.progress?.path?.split('/').pop() || 'Checkpoint'}
-                        </h4>
-                        {item.progress && (
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            item.progress.grade !== null && item.progress.grade > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                          }`}>
-                            {item.progress.grade !== null && item.progress.grade > 0 ? 'Completed' : 'Uncompleted'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-primary-400">
-                        {item.progress?.grade !== null ? `${(item.progress.grade * 100).toFixed(0)}%` : 'No Grade'}
-                      </div>
-                      <div className="text-white/60 text-sm">
-                        {new Date(item.createdAt || item.progress?.updatedAt).toLocaleDateString()}
-                      </div>
-                    </div>
+        </div>
+        <div className="max-h-[600px] overflow-y-auto">
+          {filteredAndSortedProjects.map((project, index) => (
+            <div key={project.path} className="border-b border-white/5 last:border-b-0 p-6 hover:bg-white/5 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${project.status === 'passed' ? 'bg-green-500/20' : project.status === 'failed' ? 'bg-red-500/20' : 'bg-yellow-500/20'}`}>
+                    {project.status === 'passed' ? <CheckCircle className="w-6 h-6 text-green-400" /> : project.status === 'failed' ? <XCircle className="w-6 h-6 text-red-400" /> : <Clock className="w-6 h-6 text-yellow-400" />}
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">{project.projectName}</h4>
+                    <p className="text-white/60 text-sm">{project.sectionName}</p>
                   </div>
                 </div>
-              ))
-            })()}
-          </div>
-        </Card>
+                <div className="text-right">
+                  <div className={`text-2xl font-bold ${project.totalXP > 0 ? 'text-green-400' : 'text-white/60'}`}>{project.totalXP > 0 ? `+${formatXPValue(project.totalXP)}` : 'No XP'}</div>
+                  <p className="text-white/60 text-sm">{formatDateTimeDetailed(project.lastDate)}</p>
+                  {project.attempts.length > 1 && project.status === 'passed' ? (
+                    <button onClick={() => setExpandedProject(expandedProject === project.path ? null : project.path)} className="mt-2 flex items-center space-x-1 text-xs text-primary-400 hover:text-primary-300">
+                      <List className="w-3 h-3" />
+                      <span>{expandedProject === project.path ? 'Hide attempts' : `Show ${project.failedAttempts} failed attempt${project.failedAttempts !== 1 ? 's' : ''}`}</span>
+                      {expandedProject === project.path ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              {expandedProject === project.path && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 bg-white/5 border border-white/10 rounded-lg p-4">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {project.attempts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((attempt: any, attemptIndex: number) => (
+                      <div key={attempt.id} className={`flex items-center justify-between p-3 rounded-lg ${attempt.grade >= 1 ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                        <div className="flex items-center space-x-3">
+                          {attempt.grade >= 1 ? <CheckCircle className="w-4 h-4 text-green-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
+                          <div>
+                            <div className="font-medium">{attempt.grade >= 1 ? 'Passed' : 'Failed'}</div>
+                            <div className="text-white/40 text-xs">Attempt #{project.attempts.length - attemptIndex}</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-white/60 text-sm">Grade: <span className={`font-semibold ${attempt.grade >= 1 ? 'text-green-400' : 'text-red-400'}`}>{(attempt.grade * 100).toFixed(1)}%</span></div>
+                          <div className="text-white/40 text-xs">{formatDateTimeDetailed(attempt.createdAt)}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          ))}
+        </div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default CheckpointDashboard
+export default CheckpointDashboard;

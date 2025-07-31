@@ -359,13 +359,13 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
               {expandedProject === project.path && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 bg-white/5 border border-white/10 rounded-lg p-4">
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {project.attempts.map((attempt: any, attemptIndex: number) => (
+                    {project.attempts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((attempt: any, attemptIndex: number) => (
                       <div key={attempt.id} className={`flex items-center justify-between p-3 rounded-lg ${attempt.grade >= 1 ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
                         <div className="flex items-center space-x-3">
                           {attempt.grade >= 1 ? <CheckCircle className="w-4 h-4 text-green-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
                           <div>
                             <div className="font-medium">{attempt.grade >= 1 ? 'Passed' : 'Failed'}</div>
-                            <div className="text-white/40 text-xs">Attempt #{attemptIndex + 1}</div>
+                            <div className="text-white/40 text-xs">Attempt #{project.attempts.length - attemptIndex}</div>
                           </div>
                         </div>
                         <div className="text-right">

@@ -203,7 +203,7 @@ const Dashboard: React.FC = () => {
       case 'events':
         return <EventSection user={user} />
       case 'piscines':
-        return <PiscinesDashboard user={user} piscineTypes={piscineTypes} />
+        return <PiscinesDashboard user={user} />
       case 'checkpoints':
         return <CheckpointDashboard user={user} />
       case 'leaderboard':

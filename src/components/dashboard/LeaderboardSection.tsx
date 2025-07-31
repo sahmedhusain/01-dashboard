@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Trophy,
   Medal,
@@ -7,425 +7,222 @@ import {
   TrendingUp,
   Users,
   Crown,
-  Star,
   Target,
-  Activity,
   BarChart3,
   Zap,
-  Filter,
-  Search,
-  ChevronDown,
   UserSearch,
-  Hash,
-  Layers
+  Layers,
+  SortAsc,
+  SortDesc
 } from 'lucide-react'
-import { useQuery, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 
 import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import Avatar from '../ui/Avatar'
-import SectionHeader from '../ui/SectionHeader'
-import { formatXPValue, formatDate, extractPersonalInfo, getCohortDisplayName } from '../../utils/dataFormatting'
+import { formatXPValue, formatDate } from '../../utils/dataFormatting'
+import { 
+  GET_ENHANCED_LEADERBOARD_DATA, 
+  GET_LEADERBOARD_STATISTICS,
+  GET_LEADERBOARD_BY_COHORT,
+  GET_LEVEL_LEADERBOARD
+} from '../../graphql/allQueries'
 
 interface LeaderboardSectionProps {
   user: User
 }
 
-type LeaderboardType = 'xp' | 'audit' | 'progress' | 'overall' | 'cohort-xp' | 'cohort-audit'
-type CohortType = 'all' | 'cohort1' | 'cohort2' | 'cohort3'
-type RankingMode = 'global' | 'cohort'
+type LeaderboardType = 'level' | 'audit' | 'overall'
+type CohortFilter = string
+type SortOrder = 'desc' | 'asc'
 
-interface CohortData {
-  cohort: string
-  memberCount: number
-  avgXP: number
-  avgAuditRatio: number
+interface EnhancedUser {
+  id: number
+  login: string
+  firstName?: string
+  lastName?: string
+  profile?: string
+  attrs?: any
+  auditRatio: number
+  totalUp: number
+  totalDown: number
+  level?: number
+  totalXP?: number
+  cohort?: string
+  eventPath?: string
+  createdAt?: string
+  rank?: number
 }
 
-// Enhanced leaderboard queries with ALL USERS and cohort data
-const GET_ALL_USERS_LEADERBOARD = gql`
-  query GetAllUsersLeaderboard {
-    user_public_view {
-      id
-      login
-      firstName
-      lastName
-      profile
-    }
-  }
-`;
-
-const GET_USER_STATISTICS = gql`
-  query GetUserStatistics {
-    user {
-      id
-      login
-      firstName
-      lastName
-      auditRatio
-      totalUp
-      totalDown
-      createdAt
-      updatedAt
-      attrs
-      profile
-    }
-  }
-`;
-
-const GET_PROGRESS_LEADERBOARD = gql`
-  query GetProgressLeaderboard {
-    progress(order_by: { grade: desc }) {
-      id
-      userId
-      grade
-      isDone
-      path
-      createdAt
-      updatedAt
-    }
-    
-    progress_aggregate {
-      aggregate {
-        count
-        avg {
-          grade
-        }
-        max {
-          grade
-        }
-        min {
-          grade
-        }
-      }
-    }
-  }
-`;
-
-// Enhanced cohort and user data queries
-const GET_COHORT_DATA = gql`
-  query GetCohortData {
-    event {
-      id
-      path
-      createdAt
-      objectId
-    }
-    event_user {
-      eventId
-      userId
-      level
-      createdAt
-    }
-  }
-`;
-
-const GET_GROUP_SEARCH_DATA = gql`
-  query GetGroupSearchData {
-    group {
-      id
-      objectId
-      eventId
-      captainId
-      status
-      path
-      createdAt
-    }
-    group_user {
-      groupId
-      userId
-      createdAt
-    }
-    object {
-      id
-      name
-      type
-    }
-  }
-`;
-
-const GET_LEADERBOARD_STATS = gql`
-  query GetLeaderboardStats {
-    user_aggregate {
-      aggregate {
-        count
-        avg {
-          auditRatio
-          totalUp
-        }
-        max {
-          auditRatio
-          totalUp
-        }
-      }
-    }
-
-    progress_aggregate {
-      aggregate {
-        count
-        avg {
-          grade
-        }
-      }
-    }
-
-    transaction_aggregate(where: { type: { _eq: "xp" } }) {
-      aggregate {
-        count
-        sum {
-          amount
-        }
-        avg {
-          amount
-        }
-      }
-    }
-  }
-`;
+interface CohortStats {
+  name: string
+  userCount: number
+  avgLevel: number
+  avgXP: number
+  avgAuditRatio: number
+  maxLevel: number
+}
 
 const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
-  const [activeLeaderboard, setActiveLeaderboard] = useState<LeaderboardType>('xp')
+  const [activeLeaderboard, setActiveLeaderboard] = useState<LeaderboardType>('level')
+  const [cohortFilter, setCohortFilter] = useState<CohortFilter>('all')
   const [searchTerm, setSearchTerm] = useState('')
-  const [cohortFilter, setCohortFilter] = useState<CohortType>('all')
-  const [rankingMode, setRankingMode] = useState<RankingMode>('global')
-  const [showGroupSearch, setShowGroupSearch] = useState(false)
-  const [projectFilter, setProjectFilter] = useState('')
-  const [levelFilter, setLevelFilter] = useState('all')
+  const [minLevel, setMinLevel] = useState(1)
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+  const [limit, setLimit] = useState(100)
 
-  // Query ALL USERS and complete data
-  const { data: allUsersData, loading: allUsersLoading, error: allUsersError } = useQuery(GET_ALL_USERS_LEADERBOARD, {
+  const { data: enhancedData, loading: enhancedLoading, error: enhancedError } = useQuery(GET_ENHANCED_LEADERBOARD_DATA, {
     errorPolicy: 'all',
-    fetchPolicy: 'cache-first'
+    fetchPolicy: 'cache-and-network'
   })
 
-  const { data: userStatsData, loading: userStatsLoading } = useQuery(GET_USER_STATISTICS, {
-    errorPolicy: 'all',
-    fetchPolicy: 'cache-first'
-  })
+  const processedUsers = useMemo((): EnhancedUser[] => {
+    if (!enhancedData?.bhModuleUsers) return []
 
-  const { data: progressLeaderboardData, loading: progressLoading } = useQuery(GET_PROGRESS_LEADERBOARD, {
-    errorPolicy: 'all',
-    fetchPolicy: 'cache-first'
-  })
+    console.log('BH Module Users Data:', enhancedData.bhModuleUsers)
+    console.log('User Labels Data:', enhancedData.userLabels)
 
-  const { data: statsData, loading: statsLoading } = useQuery(GET_LEADERBOARD_STATS, {
-    errorPolicy: 'all',
-    fetchPolicy: 'cache-first'
-  })
+    return enhancedData.bhModuleUsers.map((eventUserView: any, index: number) => {
+      console.log(`Event User View ${index}:`, eventUserView)
+      const userData = eventUserView.user
+      if (!userData) return null
 
-  const { data: cohortData, loading: cohortLoading } = useQuery(GET_COHORT_DATA, {
-    errorPolicy: 'all',
-    fetchPolicy: 'cache-first'
-  })
-
-  const { data: groupSearchData, loading: groupSearchLoading } = useQuery(GET_GROUP_SEARCH_DATA, {
-    errorPolicy: 'all',
-    fetchPolicy: 'cache-first'
-  })
-
-  // Process leaderboard data - must be defined before early returns
-  const allUsersPublic = allUsersData?.user_public_view || [] // 8,382 users from public view
-  const currentUserStats = userStatsData?.user?.[0] || {} // Current user detailed stats
-  const progressData = progressLeaderboardData?.progress || []
-  const progressAggregates = progressLeaderboardData?.progress_aggregate || {}
-  const stats = statsData || {}
-  const events = cohortData?.event || []
-  const eventUsers = cohortData?.event_user || []
-  const groups = groupSearchData?.group || []
-  const groupUsers = groupSearchData?.group_user || []
-  const objects = groupSearchData?.object || []
-
-  // Merge public user data with progress and transaction data for complete ranking
-  const allUsers = allUsersPublic.map(publicUser => ({
-    ...publicUser,
-    // Add default values for missing stats (will be calculated from progress/transactions)
-    auditRatio: 0,
-    totalUp: 0,
-    totalDown: 0,
-    createdAt: null,
-    updatedAt: null,
-    attrs: {}
-  })) // All users are in Bahrain by default
-
-  // Process cohort information from event participation data - MUST be before early returns
-  const cohortInfo = useMemo(() => {
-    const cohorts: Record<string, CohortData> = {}
-    
-    events.forEach(event => {
-      const cohortName = event.path?.includes('cohort-1') ? 'cohort1' : 
-                        event.path?.includes('cohort-2') ? 'cohort2' : 
-                        event.path?.includes('cohort-3') ? 'cohort3' : 'unknown'
-      
-      if (cohortName !== 'unknown') {
-        const participants = eventUsers.filter(eu => eu.eventId === event.id)
-        const participantIds = participants.map(p => p.userId)
-        const cohortUsers = allUsers.filter(u => participantIds.includes(u.id))
-        
-        cohorts[cohortName] = {
-          cohort: cohortName,
-          memberCount: cohortUsers.length,
-          avgXP: cohortUsers.reduce((sum, u) => sum + (u.totalUp || 0), 0) / cohortUsers.length || 0,
-          avgAuditRatio: cohortUsers.reduce((sum, u) => sum + (u.auditRatio || 0), 0) / cohortUsers.length || 0
+      // Get user's cohort from separate userLabels data
+      let cohort = 'unknown'
+      if (enhancedData.userLabels) {
+        const userLabel = enhancedData.userLabels.find((labelUser: any) => 
+          labelUser.userId === userData.id && 
+          labelUser.label?.name?.toLowerCase().includes('cohort')
+        )
+        if (userLabel) {
+          cohort = userLabel.label.name
         }
       }
-    })
+
+      return {
+        id: userData.id,
+        login: userData.login || 'Unknown',
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        profile: userData.profile || '',
+        attrs: userData.attrs || {},
+        auditRatio: userData.auditRatio || 0,
+        totalUp: userData.totalUp || 0,
+        totalDown: userData.totalDown || 0,
+        level: eventUserView.level || 0,
+        totalXP: userData.totalUp || 0,
+        cohort: cohort,
+        eventPath: '/bahrain/bh-module',
+        createdAt: userData.createdAt || eventUserView.createdAt,
+        rank: index + 1
+      }
+    }).filter(Boolean) as EnhancedUser[]
+  }, [enhancedData])
+
+  // Extract available cohorts from labels data
+  const availableCohorts = useMemo((): string[] => {
+    const cohorts = new Set<string>(['all'])
     
-    return cohorts
-  }, [events, eventUsers, allUsers])
-
-  // Get user's cohort information
-  const getUserCohort = (userId: number): string => {
-    const userEvents = eventUsers.filter(eu => eu.userId === userId)
-    for (const userEvent of userEvents) {
-      const event = events.find(e => e.id === userEvent.eventId)
-      if (event?.path?.includes('cohort-1')) return 'cohort1'
-      if (event?.path?.includes('cohort-2')) return 'cohort2'
-      if (event?.path?.includes('cohort-3')) return 'cohort3'
-    }
-    return 'unknown'
-  }
-
-  // Early returns AFTER all hooks are declared
-  if (allUsersLoading && !allUsersData) return <LoadingSpinner />
-
-  if (allUsersError) {
-    return (
-      <Card className="p-6">
-        <div className="text-center text-red-400">
-          <p>Error loading leaderboard data</p>
-          <p className="text-sm text-white/60 mt-2">{allUsersError?.message}</p>
-        </div>
-      </Card>
-    )
-  }
-
-  // Calculate comprehensive statistics
-  const totalUsers = stats.user_aggregate?.aggregate?.count || allUsers.length
-  const avgAuditRatio = stats.user_aggregate?.aggregate?.avg?.auditRatio || 0
-  const avgXP = stats.user_aggregate?.aggregate?.avg?.totalUp || 0
-  const maxXP = stats.user_aggregate?.aggregate?.max?.totalUp || 0
-  const totalProgress = stats.progress_aggregate?.aggregate?.count || 0
-  const avgGrade = stats.progress_aggregate?.aggregate?.avg?.grade || 0
-  const totalXPTransactions = stats.transaction_aggregate?.aggregate?.count || 0
-  const totalXPAmount = stats.transaction_aggregate?.aggregate?.sum?.amount || 0
-
-  // Get current leaderboard data based on active tab and cohort filter
-  const getCurrentLeaderboardData = () => {
-    let baseData = []
-    
-    switch (activeLeaderboard) {
-      case 'xp':
-      case 'cohort-xp':
-        baseData = allUsers.slice().sort((a, b) => (b.totalUp || 0) - (a.totalUp || 0))
-        break
-      case 'audit':
-      case 'cohort-audit':
-        baseData = allUsers.slice().sort((a, b) => (b.auditRatio || 0) - (a.auditRatio || 0))
-        break
-      case 'progress':
-        // Group progress data by user and calculate stats
-        const userProgressMap = new Map()
-        progressData.forEach((progress: any) => {
-          const userId = progress.userId
-          if (!userProgressMap.has(userId)) {
-            const user = allUsers.find(u => u.id === userId)
-            if (user) {
-              userProgressMap.set(userId, {
-                ...user,
-                progressCount: 0,
-                totalGrade: 0,
-                maxGrade: 0,
-                avgGrade: 0
-              })
-            }
-          }
-          
-          const userProgress = userProgressMap.get(userId)
-          if (userProgress) {
-            userProgress.progressCount++
-            userProgress.totalGrade += (progress.grade || 0)
-            userProgress.maxGrade = Math.max(userProgress.maxGrade, progress.grade || 0)
-            userProgress.avgGrade = userProgress.totalGrade / userProgress.progressCount
-          }
-        })
-        
-        baseData = Array.from(userProgressMap.values()).sort((a, b) => b.avgGrade - a.avgGrade)
-        break
-      case 'overall':
-        baseData = allUsers.slice().sort((a, b) => (b.totalUp || 0) - (a.totalUp || 0)).slice(0, 20)
-        break
-      default:
-        baseData = allUsers.slice().sort((a, b) => (b.totalUp || 0) - (a.totalUp || 0))
-    }
-    
-    // Apply cohort filter
-    if (cohortFilter !== 'all') {
-      baseData = baseData.filter(userData => getUserCohort(userData.id) === cohortFilter)
-    }
-    
-    return baseData
-  }
-
-  // Filter leaderboard data with enhanced filtering
-  const getFilteredData = () => {
-    let data = getCurrentLeaderboardData()
-
-    // Apply search filter
-    if (searchTerm) {
-      data = data.filter((item: any) =>
-        item.login?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    // All users are Bahrain-based by default
-
-    // Apply level filter for progress leaderboard
-    if (levelFilter !== 'all' && activeLeaderboard === 'progress') {
-      const minLevel = parseInt(levelFilter)
-      data = data.filter((item: any) => (item.avgGrade || 0) >= minLevel)
-    }
-
-    return data
-  }
-
-  // Get available cohorts for filters
-  const availableCohorts = Object.keys(cohortInfo).filter(cohort => cohortInfo[cohort].memberCount > 0)
-  
-  // Filter groups for group search
-  const getFilteredGroups = () => {
-    let filteredGroups = groups
-    
-    if (cohortFilter !== 'all') {
-      filteredGroups = filteredGroups.filter(group => {
-        const event = events.find(e => e.id === group.eventId)
-        return event?.path?.includes(cohortFilter.replace('cohort', 'cohort-'))
+    // Add cohorts from all labels
+    if (enhancedData?.allLabels) {
+      enhancedData.allLabels.forEach((label: any) => {
+        if (label.name?.toLowerCase().includes('cohort')) {
+          cohorts.add(label.name)
+        }
       })
     }
     
-    if (projectFilter) {
-      const matchingObjects = objects.filter(obj => 
-        obj.name?.toLowerCase().includes(projectFilter.toLowerCase())
-      )
-      const objectIds = matchingObjects.map(obj => obj.id)
-      filteredGroups = filteredGroups.filter(group => objectIds.includes(group.objectId))
+    // Also add cohorts from processed users
+    processedUsers.forEach(user => {
+      if (user.cohort && user.cohort !== 'unknown') {
+        cohorts.add(user.cohort)
+      }
+    })
+    
+    return Array.from(cohorts).sort()
+  }, [enhancedData, processedUsers])
+
+
+  // Sort and filter users
+  const filteredAndSortedUsers = useMemo(() => {
+    let users = [...processedUsers]
+    
+    // Apply cohort filter
+    if (cohortFilter !== 'all') {
+      users = users.filter(user => user.cohort === cohortFilter)
     }
     
-    return filteredGroups
-  }
+    // Apply search filter
+    if (searchTerm) {
+      users = users.filter(user =>
+        user.login.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
 
-  // Get user's rank in current leaderboard
-  const getUserRank = () => {
-    const data = getCurrentLeaderboardData()
-    const userIndex = data.findIndex((item: any) => item.id === user.id)
+    // Apply level filter
+    if (minLevel > 1) {
+      users = users.filter(user => (user.level || 0) >= minLevel)
+    }
+
+    // Sort based on active leaderboard type
+    users.sort((a, b) => {
+      let aValue: number, bValue: number
+      
+      switch (activeLeaderboard) {
+        case 'level':
+          aValue = a.level || 0
+          bValue = b.level || 0
+          break
+        case 'audit':
+          aValue = a.auditRatio || 0
+          bValue = b.auditRatio || 0
+          break
+        case 'overall': {
+          // Combined score: level (40%) + audit ratio (40%) + total up (20%)
+          const maxLevel = Math.max(...users.map(u => u.level || 0), 1)
+          const maxAudit = Math.max(...users.map(u => u.auditRatio || 0), 1)
+          const maxUp = Math.max(...users.map(u => u.totalUp || 0), 1)
+          
+          aValue = ((a.level || 0) / maxLevel) * 40 + 
+                   ((a.auditRatio || 0) / maxAudit) * 40 + 
+                   ((a.totalUp || 0) / maxUp) * 20
+          bValue = ((b.level || 0) / maxLevel) * 40 + 
+                   ((b.auditRatio || 0) / maxAudit) * 40 + 
+                   ((b.totalUp || 0) / maxUp) * 20
+          break
+        }
+        default:
+          aValue = a.level || 0
+          bValue = b.level || 0
+      }
+      
+      return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+    })
+
+    // Update ranks after sorting
+    return users.map((user, index) => ({ ...user, rank: index + 1 }))
+  }, [processedUsers, cohortFilter, searchTerm, minLevel, activeLeaderboard, sortOrder])
+
+  // Get user's current rank
+  const currentUserRank = useMemo(() => {
+    const userIndex = filteredAndSortedUsers.findIndex(u => u.id === user.id)
     return userIndex >= 0 ? userIndex + 1 : null
+  }, [filteredAndSortedUsers, user.id])
+
+  const totalUsers = enhancedData?.bhModuleStats?.aggregate?.count || processedUsers.length
+  const maxLevel = enhancedData?.bhModuleStats?.aggregate?.max?.level || Math.max(...processedUsers.map(u => u.level || 0), 0)
+  const avgLevel = enhancedData?.bhModuleStats?.aggregate?.avg?.level || (processedUsers.reduce((sum, u) => sum + (u.level || 0), 0) / Math.max(totalUsers, 1))
+  const avgAuditRatio = processedUsers.reduce((sum, u) => sum + (u.auditRatio || 0), 0) / Math.max(totalUsers, 1)
+
+  // Helper functions
+  const getCohortDisplayName = (cohort: string) => {
+    if (cohort === 'all') return 'All Cohorts'
+    return cohort.charAt(0).toUpperCase() + cohort.slice(1)
   }
 
-  const userRank = getUserRank()
-
-  // Get rank icon
   const getRankIcon = (position: number) => {
     switch (position) {
       case 1: return <Crown className="w-5 h-5 text-yellow-400" />
@@ -435,7 +232,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     }
   }
 
-  // Get rank colors
   const getRankColors = (position: number) => {
     switch (position) {
       case 1: return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30'
@@ -445,643 +241,375 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     }
   }
 
+  const getLeaderboardTitle = () => {
+    const cohortSuffix = cohortFilter !== 'all' ? ` - ${getCohortDisplayName(cohortFilter)}` : ''
+    switch (activeLeaderboard) {
+      case 'level': return `Level Rankings${cohortSuffix}`
+      case 'audit': return `Audit Ratio Rankings${cohortSuffix}`
+      case 'overall': return `Overall Rankings${cohortSuffix}`
+      default: return `Leaderboard${cohortSuffix}`
+    }
+  }
+
+  const getValueDisplay = (user: EnhancedUser) => {
+    switch (activeLeaderboard) {
+      case 'level':
+        return { value: `Level ${user.level || 0}`, subValue: `${formatXPValue(user.totalUp || 0)} XP` }
+      case 'audit':
+        return { value: (user.auditRatio || 0).toFixed(2), subValue: `${user.totalUp || 0} ↑ ${user.totalDown || 0} ↓` }
+      case 'overall':
+        return { value: `L${user.level || 0}`, subValue: `${formatXPValue(user.totalUp || 0)} • ${(user.auditRatio || 0).toFixed(1)}` }
+      default:
+        return { value: `${user.level || 0}`, subValue: '' }
+    }
+  }
+
+  // Loading and error states
+  if (enhancedLoading && !enhancedData) return <LoadingSpinner />
+
+  if (enhancedError) {
+    return (
+      <Card className="p-6">
+        <div className="text-center text-red-400">
+          <p>Error loading leaderboard data</p>
+          <p className="text-sm text-white/60 mt-2">{enhancedError?.message}</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-yellow-900/20 to-slate-900 min-h-full relative">
-      {/* Full Screen Background */}
+    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full relative">
+      {/* Background Effects */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 to-amber-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(251, 191, 36, 0.1) 2px, transparent 0)`,
-          backgroundSize: '70px 70px'
+          backgroundImage: `radial-gradient(circle at 40px 40px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
+          backgroundSize: '80px 80px'
         }}></div>
       </div>
-      <div className="relative z-10 overflow-hidden">
-        
-        <div className="relative space-y-8 p-6">
-          {/* Enhanced Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center space-y-4"
-          >
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-500/20 to-amber-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
-              <Trophy className="w-10 h-10 text-yellow-400" />
-            </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-yellow-100 to-amber-100 bg-clip-text text-transparent">
-              Leaderboard Rankings
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Compete with <span className="text-yellow-400 font-semibold">{totalUsers}</span> students across <span className="text-yellow-400 font-semibold">{availableCohorts.length}</span> active cohorts
-            </p>
-          </motion.div>
 
-          {/* Enhanced Statistics Cards */}
+      <div className="relative z-10 space-y-8 p-6">
+        {/* Enhanced Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center space-y-4"
+        >
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
+            <Trophy className="w-10 h-10 text-blue-400" />
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+            Leaderboard
+          </h1>
+          <p className="text-xl text-white/70 max-w-2xl mx-auto">
+            Rankings for <span className="text-blue-400 font-semibold">{totalUsers}</span> Students
+          </p>
+        </motion.div>
+
+        {/* BH Module Statistics */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+          <StatCard 
+            icon={Users} 
+            title="Total Students" 
+            value={totalUsers.toLocaleString()} 
+            color="from-blue-500/30 to-cyan-500/30"
+            subValue="Participants"
+          />
+          <StatCard 
+            icon={BarChart3} 
+            title="Average Level" 
+            value={avgLevel.toFixed(1)} 
+            color="from-green-500/30 to-emerald-500/30"
+            subValue={`Max: ${maxLevel}`}
+          />
+          <StatCard 
+            icon={Target} 
+            title="Avg Audit Ratio" 
+            value={avgAuditRatio.toFixed(2)} 
+            color="from-orange-500/30 to-red-500/30"
+            subValue="Community contribution"
+          />
+        </motion.div>
+
+
+        {/* Leaderboard Type Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex flex-wrap gap-2 justify-center"
+        >
+          {[
+            { key: 'level', label: '📊 Level Rankings', icon: TrendingUp },
+            { key: 'audit', label: '⚖️ Audit Rankings', icon: Target },
+            { key: 'overall', label: '🏆 Overall Rankings', icon: Trophy }
+          ].map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setActiveLeaderboard(key as LeaderboardType)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                activeLeaderboard === key
+                  ? 'bg-primary-500 text-white shadow-lg'
+                  : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="text-sm font-medium">{label}</span>
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Advanced Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="space-y-4"
+        >
+          {/* Main Filter Row */}
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            {/* Search */}
+            <div className="relative flex-1 max-w-md">
+              <UserSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search users by login, name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+
+            {/* Filter Controls */}
+            <div className="flex items-center space-x-3">
+              {/* Cohort Filter */}
+              <select
+                value={cohortFilter}
+                onChange={(e) => setCohortFilter(e.target.value)}
+                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                {availableCohorts.map(cohort => (
+                  <option key={cohort} value={cohort}>
+                    {getCohortDisplayName(cohort)}
+                  </option>
+                ))}
+              </select>
+
+              {/* Level Filter */}
+              <select
+                value={minLevel}
+                onChange={(e) => setMinLevel(Number(e.target.value))}
+                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value={1}>All Levels</option>
+                <option value={5}>Level 5+</option>
+                <option value={10}>Level 10+</option>
+                <option value={15}>Level 15+</option>
+                <option value={20}>Level 20+</option>
+                <option value={25}>Level 25+</option>
+              </select>
+
+              {/* Sort Order */}
+              <button
+                onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+                className="flex items-center space-x-2 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all"
+              >
+                {sortOrder === 'desc' ? <SortDesc className="w-4 h-4" /> : <SortAsc className="w-4 h-4" />}
+                <span className="text-sm">{sortOrder === 'desc' ? 'High to Low' : 'Low to High'}</span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* User's Current Position */}
+        {currentUserRank && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <StatCard 
-              icon={Users} 
-              title="Total Students" 
-              value={totalUsers.toLocaleString()} 
-              color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
-              bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
-              subValue="Active participants"
-            />
-
-            <StatCard 
-              icon={Trophy} 
-              title="Active Cohorts" 
-              value={availableCohorts.length} 
-              color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
-              bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
-              subValue="Learning groups"
-            />
-
-            <StatCard 
-              icon={Activity} 
-              title="Project Groups" 
-              value={groups.length.toLocaleString()} 
-              color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
-              bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
-              subValue="Collaborative teams"
-            />
-
-            <StatCard 
-              icon={BarChart3} 
-              title="Avg XP" 
-              value={formatXPValue(Math.round(stats.transaction_aggregate?.aggregate?.avg?.amount || 0))} 
-              color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
-              bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
-              subValue="Platform average"
-            />
-
-            <StatCard 
-              icon={Award} 
-              title="Avg Audit Ratio" 
-              value={(stats.audit_aggregate?.aggregate?.avg?.grade || 0).toFixed(1)} 
-              color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
-              bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
-              subValue="Peer review quality"
-            />
-
-            <StatCard 
-              icon={Target} 
-              title="Your Rank" 
-              value={`#${getCurrentUserRank()}`} 
-              color="bg-gradient-to-r from-rose-500/30 to-pink-500/30"
-              bgGradient="bg-gradient-to-br from-rose-900/20 to-pink-900/20"
-              subValue={rankingMode === 'cohort' ? 'In your cohort' : 'Global ranking'}
-              trend={getCurrentUserRank() <= 10 ? { value: 10, isPositive: true } : undefined}
-            />
-          </motion.div>
-
-      {/* Cohort Statistics Cards */}
-      {availableCohorts.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.05 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"
-        >
-          {availableCohorts.map(cohort => {
-            const cohortData = cohortInfo[cohort]
-            return (
-              <div key={cohort} className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-white font-semibold capitalize">
-                    {cohort.replace('cohort', 'Cohort ')}
-                  </h3>
-                  <Layers className="w-5 h-5 text-blue-400" />
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between text-white/70">
-                    <span>Members:</span>
-                    <span className="text-white font-medium">{cohortData.memberCount}</span>
-                  </div>
-                  <div className="flex justify-between text-white/70">
-                    <span>Avg XP:</span>
-                    <span className="text-white font-medium">{formatXPValue(cohortData.avgXP)}</span>
-                  </div>
-                  <div className="flex justify-between text-white/70">
-                    <span>Avg Audit:</span>
-                    <span className="text-white font-medium">{cohortData.avgAuditRatio.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </motion.div>
-      )}
-
-      {/* Global Statistics Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4"
-      >
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Users className="w-8 h-8 text-blue-400" />
-            <div>
-              <p className="text-white font-medium">Total Users</p>
-              <p className="text-2xl font-bold text-white">{totalUsers}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Zap className="w-8 h-8 text-green-400" />
-            <div>
-              <p className="text-white font-medium">Total XP</p>
-              <p className="text-2xl font-bold text-white">{formatXPValue(totalXPAmount)}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Target className="w-8 h-8 text-purple-400" />
-            <div>
-              <p className="text-white font-medium">Avg Audit Ratio</p>
-              <p className="text-2xl font-bold text-white">{avgAuditRatio.toFixed(1)}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-          <div className="flex items-center space-x-3">
-            <Activity className="w-8 h-8 text-orange-400" />
-            <div>
-              <p className="text-white font-medium">Progress Records</p>
-              <p className="text-2xl font-bold text-white">{totalProgress}</p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Enhanced Leaderboard Type Selector */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="space-y-4"
-      >
-        {/* Ranking Mode Toggle */}
-        <div className="flex justify-center">
-          <div className="bg-white/10 rounded-lg p-1">
-            <button
-              onClick={() => setRankingMode('global')}
-              className={`px-4 py-2 rounded-md transition-all ${
-                rankingMode === 'global'
-                  ? 'bg-primary-500 text-white'
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              🌍 Global Rankings
-            </button>
-            <button
-              onClick={() => setRankingMode('cohort')}
-              className={`px-4 py-2 rounded-md transition-all ${
-                rankingMode === 'cohort'
-                  ? 'bg-primary-500 text-white'
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              👥 Cohort Rankings
-            </button>
-          </div>
-        </div>
-
-        {/* Ranking Type Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <div className="bg-white/10 rounded-lg p-1">
-            <h4 className="text-white/60 text-xs font-medium px-2 mb-1">XP RANKINGS</h4>
-            <button
-              onClick={() => setActiveLeaderboard(rankingMode === 'cohort' ? 'cohort-xp' : 'xp')}
-              className={`w-full px-3 py-2 rounded-md transition-all text-sm ${
-                (activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp')
-                  ? 'bg-primary-500 text-white'
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              🚀 XP Projects ({allUsers.length})
-            </button>
-          </div>
-
-          <div className="bg-white/10 rounded-lg p-1">
-            <h4 className="text-white/60 text-xs font-medium px-2 mb-1">AUDIT RANKINGS</h4>
-            <button
-              onClick={() => setActiveLeaderboard(rankingMode === 'cohort' ? 'cohort-audit' : 'audit')}
-              className={`w-full px-3 py-2 rounded-md transition-all text-sm ${
-                (activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit')
-                  ? 'bg-primary-500 text-white'
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              ⚖️ Audit Ratio ({allUsers.length})
-            </button>
-          </div>
-
-          <div className="bg-white/10 rounded-lg p-1">
-            <h4 className="text-white/60 text-xs font-medium px-2 mb-1">OTHER RANKINGS</h4>
-            <button
-              onClick={() => setActiveLeaderboard('progress')}
-              className={`w-full px-3 py-2 rounded-md transition-all text-sm ${
-                activeLeaderboard === 'progress'
-                  ? 'bg-primary-500 text-white'
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              📈 Progress ({progressData.length})
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Enhanced Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="space-y-4"
-      >
-        {/* Main Search and Filter Row */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-          {/* Enhanced Search */}
-          <div className="relative flex-1 max-w-md">
-            <UserSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search users by login, name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
-          </div>
-
-          {/* Filter Controls */}
-          <div className="flex items-center space-x-3">
-            {/* Cohort Filter */}
-            {availableCohorts.length > 0 && (
-              <div className="flex items-center space-x-2">
-                <Hash className="w-4 h-4 text-white/70" />
-                <select
-                  value={cohortFilter}
-                  onChange={(e) => setCohortFilter(e.target.value as CohortType)}
-                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="all">All Cohorts</option>
-                  {availableCohorts.map(cohort => (
-                    <option key={cohort} value={cohort}>
-                      {cohort.replace('cohort', 'Cohort ')}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-
-            {/* Level Filter for Progress */}
-            {activeLeaderboard === 'progress' && (
-              <div className="flex items-center space-x-2">
-                <Target className="w-4 h-4 text-white/70" />
-                <select
-                  value={levelFilter}
-                  onChange={(e) => setLevelFilter(e.target.value)}
-                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="all">All Levels</option>
-                  <option value="50">50%+ Grade</option>
-                  <option value="75">75%+ Grade</option>
-                  <option value="90">90%+ Grade</option>
-                </select>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Group Search Toggle */}
-        <div className="flex justify-center">
-          <button
-            onClick={() => setShowGroupSearch(!showGroupSearch)}
-            className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all"
-          >
-            <Filter className="w-4 h-4" />
-            <span>Group Search</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${showGroupSearch ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
-
-        {/* Group Search Panel */}
-        <AnimatePresence>
-          {showGroupSearch && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-            >
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <Users className="w-5 h-5 mr-2 text-primary-400" />
-                Group Search
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Cohort Selection for Groups */}
-                <div>
-                  <label className="block text-white/70 text-sm font-medium mb-2">Select Cohort</label>
-                  <select
-                    value={cohortFilter}
-                    onChange={(e) => setCohortFilter(e.target.value as CohortType)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="all">All Cohorts</option>
-                    {availableCohorts.map(cohort => (
-                      <option key={cohort} value={cohort}>
-                        {cohort.replace('cohort', 'Cohort ')}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Project Filter */}
-                <div>
-                  <label className="block text-white/70 text-sm font-medium mb-2">Project Name</label>
-                  <input
-                    type="text"
-                    placeholder="Search project paths..."
-                    value={projectFilter}
-                    onChange={(e) => setProjectFilter(e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
-
-              {/* Group Results */}
-              <div className="mt-4">
-                <h4 className="text-white/80 font-medium mb-2">
-                  Found {getFilteredGroups().length} groups
-                </h4>
-                <div className="max-h-40 overflow-y-auto space-y-2">
-                  {getFilteredGroups().slice(0, 10).map(group => {
-                    const groupMemberCount = groupUsers.filter(gu => gu.groupId === group.id).length
-                    const projectObj = objects.find(obj => obj.id === group.objectId)
-                    
-                    return (
-                      <div key={group.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-white font-medium">{projectObj?.name || `Group ${group.id}`}</p>
-                            <p className="text-white/60 text-sm">
-                              {groupMemberCount} members • {group.status}
-                            </p>
-                          </div>
-                          <div className="text-white/60 text-sm">
-                            {formatDate(group.createdAt)}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* User's Position Card */}
-      {userRank && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <Card className="p-4 bg-gradient-to-r from-primary-500/10 to-primary-600/10 border border-primary-500/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="mr-3">
-                  {getRankIcon(userRank)}
-                </div>
-                <div>
-                  <p className="text-white font-medium">Your Position</p>
-                  <p className="text-white/60 text-sm">
-                    {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && `${formatXPValue(user.totalUp || 0)} XP`}
-                    {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && `${(user.auditRatio || 0).toFixed(2)} audit ratio`}
-                    {activeLeaderboard === 'progress' && 'Progress leader'}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-primary-400">#{userRank}</p>
-                <p className="text-white/60 text-sm">of {getCurrentLeaderboardData().length}</p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Leaderboard List */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-      >
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <Trophy className="w-5 h-5 mr-2 text-primary-400" />
-          {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && 
-            `${rankingMode === 'cohort' ? 'Cohort ' : ''}XP Projects Ranking`}
-          {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && 
-            `${rankingMode === 'cohort' ? 'Cohort ' : ''}Audit Ratio Ranking`}
-          {activeLeaderboard === 'progress' && 'Progress Leaders Ranking'}
-          {activeLeaderboard === 'overall' && 'Overall Top Performers'}
-          {cohortFilter !== 'all' && ` - ${cohortFilter.replace('cohort', 'Cohort ')}`}
-          <span className="ml-2 text-primary-400">({getFilteredData().length})</span>
-        </h3>
-
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {getFilteredData().slice(0, 50).map((userData: any, index: number) => {
-            const position = index + 1;
-            const isCurrentUser = userData.id === user.id;
-
-            return (
-              <motion.div
-                key={userData.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.02 }}
-                className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
-                  isCurrentUser
-                    ? 'bg-primary-500/20 border-primary-500/30'
-                    : getRankColors(position)
-                }`}
-              >
+            <Card className="p-4 bg-gradient-to-r from-primary-500/10 to-primary-600/10 border border-primary-500/20">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center justify-center w-8 h-8">
-                    {getRankIcon(position)}
-                  </div>
-                  <Avatar
-                    user={userData}
-                    size="sm"
-                    className="w-8 h-8"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="text-white font-medium">{userData.login}</h4>
-                      {isCurrentUser && (
-                        <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded text-xs">
-                          You
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-4 text-xs text-white/60">
-                      <span>{userData.firstName} {userData.lastName}</span>
-                      <span>{getCohortDisplayName(extractPersonalInfo(userData.attrs || {}).cohort || 'module')}</span>
-                      {activeLeaderboard === 'progress' && userData.progressCount && (
-                        <span>Progress: {userData.progressCount}</span>
-                      )}
-                    </div>
+                  {getRankIcon(currentUserRank)}
+                  <div>
+                    <p className="text-white font-medium">Your Current Position</p>
+                    <p className="text-white/60 text-sm">{getLeaderboardTitle()}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  {(activeLeaderboard === 'xp' || activeLeaderboard === 'cohort-xp') && (
-                    <div>
-                      <div className="text-lg font-bold text-white">
-                        {formatXPValue(userData.totalUp || 0)}
-                      </div>
-                      <div className="text-xs text-white/60">XP</div>
-                      {rankingMode === 'cohort' && (
-                        <div className="text-xs text-blue-400">
-                          {getUserCohort(userData.id).replace('cohort', 'C')}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {(activeLeaderboard === 'audit' || activeLeaderboard === 'cohort-audit') && (
-                    <div>
-                      <div className="text-lg font-bold text-white">
-                        {(userData.auditRatio || 0).toFixed(2)}
-                      </div>
-                      <div className="text-xs text-white/60">Audit Ratio</div>
-                      {rankingMode === 'cohort' && (
-                        <div className="text-xs text-blue-400">
-                          {getUserCohort(userData.id).replace('cohort', 'C')}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {activeLeaderboard === 'progress' && (
-                    <div>
-                      <div className="text-lg font-bold text-white">
-                        {userData.avgGrade?.toFixed(1) || '0.0'}%
-                      </div>
-                      <div className="text-xs text-white/60">Avg Grade</div>
-                      <div className="text-xs text-green-400">
-                        {userData.progressCount || 0} projects
-                      </div>
-                    </div>
-                  )}
-                  {activeLeaderboard === 'overall' && (
-                    <div>
-                      <div className="text-lg font-bold text-white">
-                        {formatXPValue(userData.totalUp || 0)}
-                      </div>
-                      <div className="text-xs text-white/60">
-                        {(userData.auditRatio || 0).toFixed(2)} ratio
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-2xl font-bold text-primary-400">#{currentUserRank}</p>
+                  <p className="text-white/60 text-sm">of {filteredAndSortedUsers.length}</p>
                 </div>
-              </motion.div>
-            );
-          })}
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
-          {getFilteredData().length > 50 && (
-            <div className="text-center py-4">
-              <p className="text-white/60 text-sm">
-                Showing 50 of {getFilteredData().length} users
-              </p>
-            </div>
-          )}
-        </div>
-      </motion.div>
-
-      {/* Loading States */}
-      {(allUsersLoading || progressLoading || statsLoading || cohortLoading || groupSearchLoading) && (
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-            <span className="ml-3 text-white/70">Loading comprehensive leaderboard data...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {getFilteredData().length === 0 && !allUsersLoading && (
+        {/* Leaderboard List */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
         >
-          <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
-          <h3 className="text-white/70 text-lg font-medium mb-2">No users found</h3>
-          <p className="text-white/50">
-            Try adjusting your search criteria or filters.
-          </p>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-white flex items-center">
+              <Trophy className="w-5 h-5 mr-2 text-primary-400" />
+              {getLeaderboardTitle()}
+              <span className="ml-2 text-primary-400">({filteredAndSortedUsers.length})</span>
+            </h3>
+            
+            <div className="flex items-center space-x-2">
+              <span className="text-white/60 text-sm">Show:</span>
+              <select
+                value={limit}
+                onChange={(e) => setLimit(Number(e.target.value))}
+                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+              >
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={200}>200</option>
+                <option value={500}>500</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {filteredAndSortedUsers.slice(0, limit).map((userData: EnhancedUser, index: number) => {
+              const position = userData.rank || (index + 1)
+              const isCurrentUser = userData.id === user.id
+              const displayData = getValueDisplay(userData)
+
+              return (
+                <motion.div
+                  key={userData.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.02 }}
+                  className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                    isCurrentUser
+                      ? 'bg-primary-500/20 border-primary-500/30 ring-1 ring-primary-500/20'
+                      : getRankColors(position)
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-8 h-8">
+                      {getRankIcon(position)}
+                    </div>
+                    <Avatar
+                      user={userData}
+                      size="sm"
+                      className="w-8 h-8"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="text-white font-medium">{userData.login}</h4>
+                        {isCurrentUser && (
+                          <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded text-xs font-medium">
+                            You
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-4 text-xs text-white/60">
+                        <span>{userData.firstName} {userData.lastName}</span>
+                        {userData.cohort !== 'unknown' && (
+                          <span className="flex items-center">
+                            <Layers className="w-3 h-3 mr-1" />
+                            {getCohortDisplayName(userData.cohort)}
+                          </span>
+                        )}
+                        <span>Joined {formatDate(userData.createdAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-white">
+                      {displayData.value}
+                    </div>
+                    <div className="text-xs text-white/60">
+                      {displayData.subValue}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {filteredAndSortedUsers.length > limit && (
+              <div className="text-center py-4">
+                <p className="text-white/60 text-sm">
+                  Showing {limit} of {filteredAndSortedUsers.length} users
+                </p>
+              </div>
+            )}
+          </div>
         </motion.div>
-      )}
-        </div>
+
+        {/* Loading State */}
+        {enhancedLoading && (
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+              <span className="ml-3 text-white/70">Loading leaderboard data...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {filteredAndSortedUsers.length === 0 && !enhancedLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
+            <h3 className="text-white/70 text-lg font-medium mb-2">No users found</h3>
+            <p className="text-white/50">
+              Try adjusting your search criteria or filters.
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   )
-
-  // Helper function to get current user rank
-  function getCurrentUserRank(): number {
-    const filteredData = getFilteredData()
-    const userIndex = filteredData.findIndex((userData: any) => userData.id === user.id)
-    return userIndex >= 0 ? userIndex + 1 : filteredData.length + 1
-  }
 }
 
-const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
-  icon: React.ElementType, 
-  title: string, 
-  value: string | number, 
-  color: string,
-  subValue?: string,
-  trend?: { value: number, isPositive: boolean },
-  bgGradient?: string
+// Enhanced Stat Card Component
+const StatCard = ({ 
+  icon: Icon, 
+  title, 
+  value, 
+  color, 
+  subValue 
+}: { 
+  icon: React.ElementType
+  title: string
+  value: string | number
+  color: string
+  subValue?: string
 }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
-    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+    className={`bg-gradient-to-br ${color} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
   >
     <div className="flex items-center justify-between mb-4">
-      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+      <div className={`p-3 rounded-xl bg-white/20 backdrop-blur-sm`}>
         <Icon className="w-8 h-8 text-white drop-shadow-lg" />
       </div>
-      {trend && (
-        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
-          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-        }`}>
-          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
-        </div>
-      )}
     </div>
     <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
     <p className="text-white/70 text-sm font-medium">{title}</p>
     {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
   </motion.div>
-);
+)
 
 export default LeaderboardSection

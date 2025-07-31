@@ -1,4 +1,0 @@
-{
-  "query": "query GetXPView($userId: Int!) { xp_view(where: {userId: {_eq: $userId}}) { userId amount } }",
-  "variables": {"userId": 1599}
-}

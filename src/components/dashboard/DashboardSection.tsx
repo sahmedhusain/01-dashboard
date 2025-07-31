@@ -6,10 +6,7 @@ import LoadingSpinner from '../ui/LoadingSpinner'
 import SectionHeader from '../ui/SectionHeader'
 import { 
   separateModuleData,
-  calculateModuleXPTotals,
   calculateProjectStats,
-  calculateLevel,
-  calculateLevelProgress,
   analyzeLevelProgression,
   getRankFromLevel,
   calculateSkillData
@@ -41,6 +38,48 @@ const ENHANCED_DASHBOARD_QUERY = gql`
       auditRatio
       totalUp
       totalDown
+    }
+    
+    # Total XP aggregates by module
+    bhModuleXP: transaction_aggregate(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+        event: { path: { _eq: "/bahrain/bh-module" } }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
+    
+    totalXP: transaction_aggregate(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
+    
+    piscineXP: transaction_aggregate(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+        event: { path: { _like: "%piscine%" } }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
     }
     
     # User transactions with full details
@@ -251,21 +290,28 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     // Focus on BH Module data only (excluding piscines)
     const transactions = separatedTransactions.mainModule
     const progress = separatedProgress.mainModule
-    const results = separatedResults.mainModule
-    const auditsGiven = separatedAuditsGiven.mainModule
-    const auditsReceived = separatedAuditsReceived.mainModule
-    const groups = separatedGroups.mainModule
 
     // Complete Analytics using all available data
     
-    // XP Analytics from transactions
+    // XP Analytics using aggregated data from GraphQL
+    const totalXP = data?.totalXP?.aggregate?.sum?.amount || 0
+    const bhModuleXP = data?.bhModuleXP?.aggregate?.sum?.amount || 0
+    const piscineXP = data?.piscineXP?.aggregate?.sum?.amount || 0
+    
+    // Calculate remaining XP categories by subtraction
+    const otherXP = totalXP - bhModuleXP - piscineXP
+    
+    // Keep transaction-based calculation for average (fallback)
     const xpTransactions = allTransactions.filter((t: any) => t.type === 'xp')
-    const totalXP = xpTransactions.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
     const avgXPPerProject = xpTransactions.length > 0 ? Math.round(totalXP / xpTransactions.length) : 0
-
-    // Separate BH Module data from piscines and calculate with audit exclusion
-    const xpTotals = calculateModuleXPTotals(allTransactions)
-    const bhModuleXP = xpTotals.bhModule
+    
+    console.log('🎯 Updated XP Calculation Using Aggregates:', {
+      totalXP: (totalXP / 1000).toFixed(1) + 'kB',
+      bhModuleXP: (bhModuleXP / 1000).toFixed(1) + 'kB',
+      piscineXP: (piscineXP / 1000).toFixed(1) + 'kB',
+      otherXP: (otherXP / 1000).toFixed(1) + 'kB',
+      avgXPPerProject: (avgXPPerProject / 1000).toFixed(1) + 'kB'
+    })
     
     // Find the last level transaction to get current level and calculate progress from there
     const levelTransactions = allTransactions.filter((t: any) => t.type === 'level')
@@ -441,14 +487,12 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     return {
       user: userData,
       xp: {
-        total: bhModuleXP, // Dashboard total = BH Module XP only (as requested)
-        bhModule: bhModuleXP, // BH Module XP only (no piscines/checkpoints/audits)
-        projectXP: xpTotals.projectXP || 0, // All project XP (no audits)
-        auditXP: xpTotals.auditXP || 0, // Audit/review XP
+        total: totalXP, // Total XP across all modules using aggregated query
+        bhModule: bhModuleXP, // BH Module XP only using aggregated query
+        piscines: piscineXP, // Piscine XP using aggregated query
+        other: otherXP, // Other XP (checkpoints, etc.) calculated by subtraction
         earnedAfterLevel: xpEarnedAfterLevel, // XP earned since last level transaction
-        piscines: xpTotals.allPiscines,
-        checkpoints: xpTotals.checkpoints,
-        allTime: totalXP, // Keep total including everything for reference
+        allTime: totalXP, // Same as total for backward compatibility
         average: avgXPPerProject,
         recent: recentActivity,
         upTotal: totalUp,
@@ -566,7 +610,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         userLabels: data?.userLabels || []
       }
     }
-  }, [userData, allTransactions, allProgress, allResults, allAuditsGiven, allAuditsReceived, allAudits, allGroups, allEvents, user.id, data?.userRoles, data?.userLabels])
+  }, [userData, allTransactions, allProgress, allResults, allAuditsGiven, allAuditsReceived, allAudits, allGroups, allEvents, user.id, data?.userRoles, data?.userLabels, data?.totalXP?.aggregate?.sum?.amount, data?.bhModuleXP?.aggregate?.sum?.amount, data?.piscineXP?.aggregate?.sum?.amount])
 
   if (loading) return <LoadingSpinner />
   if (error || !userData) {

@@ -1,4 +1,0 @@
-{
-  "query": "query GetModuleXP($userId: Int!) { transaction(where: {userId: {_eq: $userId}, type: {_eq: \"xp\"}, path: {_like: \"%bh-module%\"}}) { amount path } }",
-  "variables": {"userId": 1599}
-}

@@ -350,17 +350,8 @@ export const separateModuleData = (data: any[]) => {
       return;
     }
     
-    // Check for checkpoint patterns (these are NOT BH module projects)
-    // This includes checkpoints in main module, go piscine, and other piscines
-    if (item.path.includes('checkpoint')) {
-      checkpoints.push(item);
-      return;
-    }
-    
-    // Check for piscine patterns (these are NOT BH module projects)
-    // Exclude any piscine paths that contain checkpoints (they should go to checkpoints)
-    if ((item.path.includes('piscine-') || item.path.includes('/bh-piscine/')) && 
-        !item.path.includes('checkpoint')) {
+    // Check for piscine patterns FIRST (but be more specific about piscine checkpoints)
+    if (item.path.includes('piscine-') || item.path.includes('/bh-piscine/')) {
       // Extract piscine type for categorization
       let piscineType = 'unknown';
       
@@ -379,24 +370,57 @@ export const separateModuleData = (data: any[]) => {
       return;
     }
     
+    // Check for main module checkpoints (NOT piscine checkpoints)
+    // These are checkpoints that are NOT part of any piscine
+    if (item.path.includes('checkpoint')) {
+      checkpoints.push(item);
+      return;
+    }
+    
     // Everything else is considered true BH module (the 74 direct projects)
     mainModule.push(item);
   });
   
-  console.log('🔍 Data Separation Results:', {
-    totalItems: data.length,
-    mainModuleItems: mainModule.length,
-    checkpointItems: checkpoints.length,
-    piscineItems: allPiscines.length,
-    piscineTypes: Object.keys(piscines)
+  console.log('🔍 DATA SEPARATION RESULTS:');
+  console.log('  Total Items:', data.length);
+  console.log('  Main Module Items:', mainModule.length);
+  console.log('  Main Checkpoints:', checkpoints.length);
+  console.log('  Total Piscine Items:', allPiscines.length);
+  console.log('  Piscine Types:', Object.keys(piscines));
+  
+  // Show all checkpoint paths to debug misclassification  
+  const allCheckpointPaths = data.filter(item => item.path && item.path.includes('checkpoint')).map(c => c.path);
+  console.log('  ');
+  console.log('  ALL CHECKPOINT PATHS (' + allCheckpointPaths.length + ' total):');
+  allCheckpointPaths.forEach((path, i) => {
+    if (i < 15) { // Show first 15
+      console.log('    ' + (i+1) + ':', path);
+    }
+  });
+  
+  console.log('  ');
+  console.log('  MAIN CHECKPOINTS (' + checkpoints.length + ' assigned to main):');
+  checkpoints.slice(0, 10).forEach((c, i) => {
+    console.log('    ' + (i+1) + ':', c.path);
+  });
+  
+  console.log('  ');
+  console.log('  PISCINE BREAKDOWN:');
+  Object.keys(piscines).forEach(type => {
+    console.log('    ' + type + ':', piscines[type].length + ' items');
+    piscines[type].slice(0, 3).forEach((p, i) => {
+      console.log('      ' + (i+1) + ':', p.path);
+    });
   });
   
   return { mainModule, piscines, checkpoints, allPiscines, all: data };
 };
 
 /**
- * Calculate XP totals with proper BH Module filtering based on ALL_PATHS_STRUCTURE.md
- * Excludes piscines and checkpoints from BH Module XP calculation
+ * Calculate XP totals with proper BH Module filtering 
+ * BH Module XP = Total Project XP - All Piscines XP (including piscine checkpoints)
+ * EXCLUDES: audit/review XP (audits are for ratio/community, not XP progress)
+ * Expected result: 691 kB for main module total
  * @param {any[]} transactions - Array of XP transactions
  * @returns {object} XP totals separated by category
  */
@@ -407,15 +431,23 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
       bhModule: 0, 
       piscines: {} as { [key: string]: number }, 
       checkpoints: 0,
-      allPiscines: 0 
+      allPiscines: 0,
+      auditXP: 0,
+      projectXP: 0
     };
   }
   
-  // Filter only XP transactions
+  // Filter only TRUE XP transactions (exclude up/down which are audit-related)
   const xpTransactions = transactions.filter(t => t.type === 'xp');
   console.log('🔍 XP Transactions found:', xpTransactions.length);
   
-  // Enhanced audit XP detection - check multiple indicators
+  // Also exclude up/down transactions completely as they are not XP
+  const nonAuditTransactions = transactions.filter(t => 
+    t.type !== 'up' && t.type !== 'down'
+  );
+  console.log('🔍 Non-audit transactions found:', nonAuditTransactions.length);
+  
+  // Proper separation: Exclude audit/review XP as they are for community/ratio, not XP progress
   const auditXPTransactions = xpTransactions.filter(t => {
     // Check attrs field for audit indicators
     if (t.attrs) {
@@ -432,11 +464,7 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
       return true;
     }
     
-    // Check if transaction is associated with audit events (small amounts typically)
-    // Audit XP is usually much smaller than project XP
-    if (t.amount && t.amount < 1000) { // Less than 1kB might be audit XP
-      return true;
-    }
+    // Note: up/down transactions are already filtered out at the XP level
     
     return false;
   });
@@ -458,7 +486,7 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
     }))
   });
   
-  // Separate project XP data using the updated separation logic (exclude audits)
+  // Separate ONLY project XP data (excluding audit/review XP and piscines)
   const separatedXP = separateModuleData(projectXPTransactions);
   
   const totals = {
@@ -471,11 +499,11 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
     projectXP: 0
   };
   
-  // Calculate BH Module XP (true module projects only)
-  totals.bhModule = separatedXP.mainModule.reduce((sum, t) => sum + (t.amount || 0), 0);
-  
-  // Calculate checkpoint XP
+  // Calculate checkpoint XP (main module checkpoints only)
   totals.checkpoints = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
+  // Calculate total piscine XP (includes piscine checkpoints)
+  totals.allPiscines = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
   
   // Calculate piscine XP by type
   Object.keys(separatedXP.piscines).forEach(piscineType => {
@@ -483,31 +511,46 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
       .reduce((sum, t) => sum + (t.amount || 0), 0);
   });
   
-  // Calculate total piscine XP
-  totals.allPiscines = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
+  // Debug: Calculate individual components
+  const mainModuleXP = separatedXP.mainModule.reduce((sum, t) => sum + (t.amount || 0), 0);
+  const mainCheckpointsXP = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
+  const piscinesXP = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  // Calculate audit XP
+  console.log('🔍 XP Breakdown by Category:');
+  console.log('  Main Module XP:', (mainModuleXP / 1000).toFixed(2) + ' kB');
+  console.log('  Main Checkpoints XP:', (mainCheckpointsXP / 1000).toFixed(2) + ' kB');
+  console.log('  Piscines XP:', (piscinesXP / 1000).toFixed(2) + ' kB');
+  console.log('  Sum Check:', ((mainModuleXP + mainCheckpointsXP + piscinesXP) / 1000).toFixed(2) + ' kB');
+  console.log('  Total Project XP:', (totals.projectXP / 1000).toFixed(2) + ' kB');
+  console.log('  Expected Piscines:', '609.79 kB');
+  console.log('  Piscines Difference:', ((piscinesXP / 1000) - 609.79).toFixed(2) + ' kB');
+  
+  // Calculate audit XP (for tracking purposes, but not included in main XP)
   totals.auditXP = auditXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  // Calculate project XP (excluding audits)
-  totals.projectXP = projectXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+  // Calculate project XP (all non-audit XP) - use the component sum
+  totals.projectXP = mainModuleXP + mainCheckpointsXP + piscinesXP;
   
-  // Calculate grand total (all XP including audits)
-  totals.total = totals.projectXP + totals.auditXP;
+  // Calculate grand total (project XP only, excluding audit XP)
+  totals.total = totals.projectXP;
   
-  console.log('📊 XP Calculation Results (Audit Separation):', {
-    totalXP: totals.total,
-    bhModuleXP: totals.bhModule,
-    bhModuleXPInKB: (totals.bhModule / 1000).toFixed(1),
-    projectXP: totals.projectXP,
-    projectXPInKB: (totals.projectXP / 1000).toFixed(1),
-    auditXP: totals.auditXP,
-    auditXPInKB: (totals.auditXP / 1000).toFixed(1),
-    checkpointXP: totals.checkpoints,
-    piscineXP: totals.allPiscines,
-    piscineBreakdown: totals.piscines,
-    userExpectedForLevel26: '662.4kB (total 691kB - 28.6kB audit)'
-  });
+  // Calculate BH Module XP = Total Project XP - All Piscines XP
+  totals.bhModule = totals.projectXP - piscinesXP;
+  
+  console.log('📊 XP CALCULATION RESULTS:');
+  console.log('  TOTAL PROJECT XP:', (totals.projectXP / 1000).toFixed(2) + ' kB');
+  console.log('  ALL PISCINES XP:', (totals.allPiscines / 1000).toFixed(2) + ' kB');
+  console.log('  EXPECTED PISCINES:', '609.79 kB');
+  console.log('  PISCINES DISCREPANCY:', ((totals.allPiscines / 1000) - 609.79).toFixed(2) + ' kB');
+  console.log('  ');
+  console.log('  BH MODULE XP:', (totals.bhModule / 1000).toFixed(2) + ' kB');
+  console.log('  EXPECTED BH MODULE:', '691 kB');
+  console.log('  BH MODULE DISCREPANCY:', (Math.round(totals.bhModule / 1000) - 691) + ' kB');
+  console.log('  ');
+  console.log('  MAIN CHECKPOINTS XP:', (totals.checkpoints / 1000).toFixed(2) + ' kB');
+  console.log('  AUDIT XP (excluded):', (totals.auditXP / 1000).toFixed(2) + ' kB');
+  console.log('  ');
+  console.log('  FORMULA: BH Module = Total Project XP - All Piscines XP');
   
   return totals;
 };

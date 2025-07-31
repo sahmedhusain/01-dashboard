@@ -26,7 +26,7 @@ import {
 import { User as UserType } from '../../types';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import SectionHeader from '../ui/SectionHeader';
-import { formatXPValue, formatDate, calculatePiscineLevel, formatDateTimeDetailed } from '../../utils/dataFormatting';
+import { formatXPValue, formatDate, formatDateTimeDetailed } from '../../utils/dataFormatting';
 
 interface PiscinesDashboardProps {
   user: UserType;
@@ -65,6 +65,22 @@ const ALL_PISCINE_DATA_QUERY = gql`
       id
       grade
       isDone
+      path
+      createdAt
+    }
+    piscineLevels: transaction(
+      where: {
+        userId: { _eq: $userId },
+        type: { _eq: "level" },
+        _or: [
+          { path: { _like: "/bahrain/bh-piscine/%" } },
+          { path: { _like: "/bahrain/bh-module/piscine-%" } }
+        ]
+      },
+      order_by: { createdAt: desc }
+    ) {
+      id
+      amount
       path
       createdAt
     }
@@ -135,6 +151,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
 
     const transactions = data.piscineTransactions || [];
     const progress = data.piscineProgress || [];
+    const levels = data.piscineLevels || [];
     
     const extractPiscineType = (path: string): string => {
       if (path.includes('/bahrain/bh-piscine/')) return 'go';
@@ -195,6 +212,10 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
       const totalXP = typeProjects.reduce((sum, p) => sum + p.totalXP, 0);
       const xpTransactions = typeProjects.filter(p => p.totalXP > 0).length;
       const nonXpTransactions = typeProjects.length - xpTransactions;
+      
+      const piscineLevelTransactions = levels.filter((level: any) => extractPiscineType(level.path) === type);
+      const latestLevel = piscineLevelTransactions.length > 0 ? piscineLevelTransactions[0].amount : 0;
+
       piscineStats[type] = {
         totalXP,
         totalProjects: typeProjects.length,
@@ -203,7 +224,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
         failedAttempts: typeProjects.reduce((sum, p) => sum + p.failedAttempts, 0),
         xpTransactions,
         nonXpTransactions,
-        level: calculatePiscineLevel(totalXP),
+        level: latestLevel,
       };
     });
 
@@ -274,16 +295,16 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
   const nonXpRatio = totalTransactions > 0 ? (currentStats.nonXpTransactions / totalTransactions) * 100 : 0;
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-cyan-900/20 to-slate-900 min-h-full">
-      <div className="relative overflow-hidden">
-        {/* Enhanced Background */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 45px 45px, rgba(6, 182, 212, 0.1) 2px, transparent 0)`,
-            backgroundSize: '90px 90px'
-          }}></div>
-        </div>
+    <div className="bg-gradient-to-br from-slate-900 via-cyan-900/20 to-slate-900 min-h-full relative">
+      {/* Full Screen Background */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 45px 45px, rgba(6, 182, 212, 0.1) 2px, transparent 0)`,
+          backgroundSize: '90px 90px'
+        }}></div>
+      </div>
+      <div className="relative z-10 overflow-hidden">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}

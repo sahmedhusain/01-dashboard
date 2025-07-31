@@ -33,8 +33,24 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
   // Total skill points calculation no longer needed - skills show latest amounts directly
   const personalInfo = extractPersonalInfo(userData.attrs || {});
 
+  // Always calculate levels to the next rank boundary (multiples of 10)
+  const rankBoundary = (Math.floor(analytics.level.current / 10) + 1) * 10;
+  const levelsToNextRank = rankBoundary - analytics.level.current;
+  
+  // Get info for the next rank
+  const nextRankInfo = getRankFromLevel(rankBoundary);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Full Screen Background for Profile Section */}
+      <div className="fixed inset-0 opacity-20 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/3 to-purple-500/3"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 60px 60px, rgba(147, 51, 234, 0.08) 2px, transparent 0)`,
+          backgroundSize: '120px 120px'
+        }}></div>
+      </div>
+      <div className="relative z-10">
       {/* Main Profile Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -424,7 +440,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-white/80 text-sm">Total XP Earned</span>
-                    <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
+                    <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
                   </div>
                 </div>
               </div>
@@ -432,12 +448,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               {/* Next Level Preview */}
               <div className="mt-6 pt-4 border-t border-white/20">
                 <div className="text-center">
-                  <div className="text-white/60 text-xs mb-2">Next Level Unlocks</div>
+                  <div className="text-white/60 text-xs mb-2">
+                    You are <span className="font-bold text-white">{levelsToNextRank}</span> level(s) away from the next rank!
+                  </div>
                   <div className="text-sm text-white font-medium">
-                    {getRankFromLevel(analytics.level.current + 1).notation}
+                    {nextRankInfo.notation}
                   </div>
                   <div className="text-2xl mt-2">
-                    {getRankFromLevel(analytics.level.current + 1).badge}
+                    {nextRankInfo.badge}
                   </div>
                 </div>
               </div>
@@ -466,7 +484,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <Award className="w-5 h-5 text-blue-400" />
                 <span className="text-white text-sm">Total XP Earned</span>
               </div>
-              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
+              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -600,7 +618,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               <div className="w-full bg-white/10 rounded-full h-2 mt-3">
                 <div
                   className="bg-blue-400 h-2 rounded-full"
-                  style={{ width: `${(analytics.xp.bhModule / analytics.xp.total) * 100}%` }}
+                  style={{ width: `${(analytics.xp.bhModule / (analytics.xp.bhModule + analytics.xp.piscines)) * 100}%` }}
                 />
               </div>
             </div>
@@ -624,13 +642,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               <div className="w-full bg-white/10 rounded-full h-2 mt-3">
                 <div
                   className="bg-green-400 h-2 rounded-full"
-                  style={{ width: `${(analytics.xp.piscines / analytics.xp.total) * 100}%` }}
+                  style={{ width: `${(analytics.xp.piscines / (analytics.xp.bhModule + analytics.xp.piscines)) * 100}%` }}
                 />
               </div>
             </div>
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   )
 }

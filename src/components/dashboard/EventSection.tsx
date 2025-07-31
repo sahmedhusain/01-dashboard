@@ -279,16 +279,16 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900 min-h-full">
-      <div className="relative overflow-hidden">
-        {/* Enhanced Background */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-red-500/5"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 35px 35px, rgba(249, 115, 22, 0.1) 2px, transparent 0)`,
-            backgroundSize: '70px 70px'
-          }}></div>
-        </div>
+    <div className="bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900 min-h-full relative">
+      {/* Full Screen Background */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-red-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(249, 115, 22, 0.1) 2px, transparent 0)`,
+          backgroundSize: '70px 70px'
+        }}></div>
+      </div>
+      <div className="relative z-10 overflow-hidden">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}

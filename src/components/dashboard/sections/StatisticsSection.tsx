@@ -22,7 +22,16 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
   const trendDirection = recentTrend > averageXPPerMonth ? 'improving' : 'declining'
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Full Screen Background for Statistics Section */}
+      <div className="fixed inset-0 opacity-15 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/3 to-cyan-500/3"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 40px 40px, rgba(34, 197, 94, 0.06) 2px, transparent 0)`,
+          backgroundSize: '80px 80px'
+        }}></div>
+      </div>
+      <div className="relative z-10">
       {/* Statistics Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -43,8 +52,8 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
       >
         <StatCard 
           icon={Zap} 
-          title="Total XP" 
-          value={formatXPValue(analytics.xp.total)} 
+          title="Total XP (Main Module)" 
+          value={formatXPValue(analytics.xp.bhModule)} 
           color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
           bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
           subValue={`Level ${analytics.level.current} (${analytics.level.progress.toFixed(1)}% to next)`}
@@ -256,15 +265,15 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
                 <span className="text-white font-bold">{analytics.projects.bhModule.total}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-white/70 text-sm">Contribution to Total</span>
+                <span className="text-white/70 text-sm">vs Piscines</span>
                 <span className="text-white font-bold">
-                  {((analytics.xp.bhModule / analytics.xp.total) * 100).toFixed(1)}%
+                  {((analytics.xp.bhModule / (analytics.xp.bhModule + analytics.xp.piscines)) * 100).toFixed(1)}%
                 </span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mt-2">
                 <div 
                   className="bg-blue-400 h-2 rounded-full transition-all duration-1000"
-                  style={{ width: `${(analytics.xp.bhModule / analytics.xp.total) * 100}%` }}
+                  style={{ width: `${(analytics.xp.bhModule / (analytics.xp.bhModule + analytics.xp.piscines)) * 100}%` }}
                 />
               </div>
             </div>
@@ -292,7 +301,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               <div className="w-full bg-white/10 rounded-full h-2 mt-2">
                 <div 
                   className="bg-green-400 h-2 rounded-full transition-all duration-1000"
-                  style={{ width: `${(analytics.xp.piscines / analytics.xp.total) * 100}%` }}
+                  style={{ width: `${(analytics.xp.piscines / (analytics.xp.bhModule + analytics.xp.piscines)) * 100}%` }}
                 />
               </div>
             </div>
@@ -372,6 +381,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   )
 }

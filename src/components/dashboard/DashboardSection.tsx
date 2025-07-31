@@ -275,7 +275,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const currentLevel = lastLevelTransaction ? lastLevelTransaction.amount : 1
     const lastLevelDate = lastLevelTransaction ? lastLevelTransaction.createdAt : null
     
-    // Get XP transactions after the last level transaction (exclude piscines/checkpoints dynamically)
+    // Get XP transactions after the last level transaction (exclude piscines/checkpoints/audits)
     const xpAfterLevel = allTransactions.filter((t: any) => 
       t.type === 'xp' && 
       lastLevelDate && 
@@ -283,22 +283,23 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       t.path && // Must have a path
       t.path.includes('bh-module') && // Must be BH module
       !t.path.includes('piscine') && // Exclude piscines
-      !t.path.includes('checkpoint') // Exclude checkpoints
+      !t.path.includes('checkpoint') && // Exclude checkpoints
+      // Exclude audit-related XP
+      !(t.attrs && (
+        JSON.stringify(t.attrs).toLowerCase().includes('audit') ||
+        JSON.stringify(t.attrs).toLowerCase().includes('review') ||
+        JSON.stringify(t.attrs).toLowerCase().includes('corrector')
+      )) &&
+      !(t.path && (t.path.includes('audit') || t.path.includes('review')))
     )
     
     const xpEarnedAfterLevel = xpAfterLevel.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
     const remainingToNextLevel = 100000 - xpEarnedAfterLevel // 100kB - earned XP
     const progressPercentage = (xpEarnedAfterLevel / 100000) * 100
     
-    // Also check for UP/DOWN transactions after level (these might count for progress)
-    const upDownAfterLevel = allTransactions.filter((t: any) => 
-      (t.type === 'up' || t.type === 'down') && 
-      lastLevelDate && 
-      new Date(t.createdAt) > new Date(lastLevelDate)
-    )
-    const upDownEarned = upDownAfterLevel.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
+    // NO UP/DOWN transactions for level progress - audit amounts are for community/ratio only
     
-    console.log('🎯 Dynamic Level Calculation (Real Data):', {
+    console.log('🎯 Level Calculation (Project XP Only - No Audits):', {
       lastLevelTransaction: lastLevelTransaction ? {
         level: lastLevelTransaction.amount,
         date: lastLevelTransaction.createdAt,
@@ -308,52 +309,22 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       bhModuleXP: (bhModuleXP / 1000).toFixed(1) + 'kB',
       xpTransactionsAfterLevel: xpAfterLevel.length,
       xpEarnedAfterLevel: (xpEarnedAfterLevel / 1000).toFixed(1) + 'kB',
-      upDownTransactionsAfterLevel: upDownAfterLevel.length,
-      upDownEarnedAfterLevel: (upDownEarned / 1000).toFixed(1) + 'kB',
-      totalProgressAfterLevel: ((xpEarnedAfterLevel + upDownEarned) / 1000).toFixed(1) + 'kB',
       remainingToNextLevel: (remainingToNextLevel / 1000).toFixed(1) + 'kB',
       progressPercentage: progressPercentage.toFixed(1) + '%',
-      userExpectedRemaining: '66.6kB',
-      discrepancy: 'User expects 66.6kB remaining, calculation shows ' + (remainingToNextLevel / 1000).toFixed(1) + 'kB'
+      expectedValue: '691 kB total main module XP',
+      note: 'Level progress = Project XP only (NO audit amounts)'
     })
     
-    // Check if the 66.6kB remaining comes from a different calculation
-    // Maybe the level progression includes UP/DOWN or has a different base
-    const alternativeProgress = xpEarnedAfterLevel + upDownEarned
-    const alternativeRemaining = 100000 - alternativeProgress
-    
-    console.log('🔍 Alternative Calculations:', {
-      ifUpDownCounts: {
-        progress: (alternativeProgress / 1000).toFixed(1) + 'kB',
-        remaining: (alternativeRemaining / 1000).toFixed(1) + 'kB',
-        matchesUser: Math.abs(alternativeRemaining - 66600) < 1000
-      },
-      possibleExplanation: alternativeRemaining === 66600 ? 'UP/DOWN transactions count for level progress' : 'Different calculation method needed'
-    })
-
-    // Use the more appropriate calculation (if UP/DOWN matches user expectation, use that)
-    const shouldIncludeUpDown = Math.abs(alternativeRemaining - 66600) < Math.abs(remainingToNextLevel - 66600)
-    const finalProgress = shouldIncludeUpDown ? alternativeProgress : xpEarnedAfterLevel
-    const finalRemaining = shouldIncludeUpDown ? alternativeRemaining : remainingToNextLevel
-    const finalProgressPercentage = (finalProgress / 100000) * 100
-    
-    console.log('📊 Final Calculation Choice:', {
-      usingUpDown: shouldIncludeUpDown,
-      finalProgress: (finalProgress / 1000).toFixed(1) + 'kB',
-      finalRemaining: (finalRemaining / 1000).toFixed(1) + 'kB',
-      closenessToUserExpectation: Math.abs(finalRemaining - 66600) + ' bytes difference'
-    })
-    
-    // Create corrected level info based on level transaction and dynamic progress calculation
+    // Create level info based on project XP only (no audit amounts)
     const correctedLevelInfo = {
       currentLevel: currentLevel,
-      progress: Math.max(0, Math.min(100, finalProgressPercentage)),
-      remainingXP: finalRemaining,
+      progress: Math.max(0, Math.min(100, progressPercentage)),
+      remainingXP: remainingToNextLevel,
       nextLevelXP: 100000, // 100kB to next level
       currentLevelStartXP: 0, // Progress resets at each level
-      progressInKB: finalProgress / 1000,
-      remainingInKB: finalRemaining / 1000,
-      includesUpDown: shouldIncludeUpDown
+      progressInKB: xpEarnedAfterLevel / 1000,
+      remainingInKB: remainingToNextLevel / 1000,
+      includesUpDown: false // No audit amounts in progress
     }
     
     const progressToNextLevel = correctedLevelInfo.progress
@@ -417,8 +388,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const auditRatio = userData?.auditRatio || 0
 
     // Performance and Activity Analytics (use only module XP for level calculation)
-    const level = calculateLevel(bhModuleXP)
-    const performanceData = getRankFromLevel(level)
+    const performanceData = getRankFromLevel(currentLevel)
 
     // Activity Analytics (Last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -633,16 +603,16 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full">
-      <div className="relative overflow-hidden">
-        {/* Enhanced Background */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 50px 50px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
-            backgroundSize: '100px 100px'
-          }}></div>
-        </div>
+    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full relative">
+      {/* Full Screen Background */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 50px 50px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
+          backgroundSize: '100px 100px'
+        }}></div>
+      </div>
+      <div className="relative z-10 overflow-hidden">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}

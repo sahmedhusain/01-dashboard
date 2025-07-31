@@ -285,12 +285,12 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         {selectedPiscine !== 'all' && <StatCard icon={BookOpen} title="Piscine Level" value={currentStats.level || 0} color="from-gray-500/20 to-gray-600/20" />}
         <StatCard icon={Zap} title="Total XP Earned" value={formatXPValue(currentStats.totalXP || 0)} color="from-blue-500/20 to-blue-600/20" subValue="*Checkpoints xp excluded" />
-        <StatCard icon={Target} title="Total Projects" value={currentStats.totalProjects || 0} color="from-green-500/20 to-green-600/20" />
-        <StatCard icon={CheckCircle} title="Passed Projects" value={currentStats.passedProjects || 0} color="from-purple-500/20 to-purple-600/20" />
+        <StatCard icon={Target} title="Total Exercises" value={currentStats.totalProjects || 0} color="from-green-500/20 to-green-600/20" />
+        <StatCard icon={CheckCircle} title="Passed Exercises" value={currentStats.passedProjects || 0} color="from-purple-500/20 to-purple-600/20" />
         <StatCard icon={Percent} title="Pass Rate" value={`${(currentStats.passRate || 0).toFixed(1)}%`} color="from-yellow-500/20 to-yellow-600/20" />
         <StatCard icon={XCircle} title="Failed Attempts" value={currentStats.failedAttempts || 0} color="from-red-500/20 to-red-600/20" />
-        <StatCard icon={Database} title="XP Projects" value={currentStats.xpTransactions || 0} color="from-cyan-500/20 to-cyan-600/20" subValue={`${xpRatio.toFixed(1)}% of total`} />
-        <StatCard icon={Database} title="Non-XP Projects" value={currentStats.nonXpTransactions || 0} color="from-gray-500/20 to-gray-600/20" subValue={`${nonXpRatio.toFixed(1)}% of total`} />
+        <StatCard icon={Database} title="XP Exercises" value={currentStats.xpTransactions || 0} color="from-cyan-500/20 to-cyan-600/20" subValue={`${xpRatio.toFixed(1)}% of total`} />
+        <StatCard icon={Database} title="Non-XP Exercises" value={currentStats.nonXpTransactions || 0} color="from-gray-500/20 to-gray-600/20" subValue={`${nonXpRatio.toFixed(1)}% of total`} />
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10">
@@ -328,7 +328,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
         <div className="p-6 border-b border-white/10">
           <h3 className="text-xl font-bold text-white flex items-center">
             <Activity className="w-6 h-6 mr-3 text-primary-400" />
-            Projects ({filteredAndSortedProjects.length})
+            Exercises ({filteredAndSortedProjects.length})
           </h3>
         </div>
         <div className="max-h-[600px] overflow-y-auto">
@@ -382,7 +382,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
           {filteredAndSortedProjects.length === 0 && (
             <div className="text-center py-12">
               <Search className="w-16 h-16 text-white/30 mx-auto mb-4" />
-              <h3 className="text-white/70 text-lg font-medium mb-2">No projects found</h3>
+              <h3 className="text-white/70 text-lg font-medium mb-2">No Exercises found</h3>
               <p className="text-white/50">Try adjusting your search criteria or filters</p>
             </div>
           )}

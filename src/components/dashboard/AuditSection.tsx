@@ -164,7 +164,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
         className="text-center"
       >
         <h1 className="text-4xl font-bold text-white mb-2">
-          Audit Management Dashboard
+          Audits Dashboard
         </h1>
         <p className="text-white/70 text-lg">
           Complete audit tracking system with {totalAudits} completed audits

@@ -249,8 +249,8 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
 
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard icon={Zap} title="Total XP Earned" value={formatXPValue(currentStats.totalXP || 0)} color="from-blue-500/20 to-blue-600/20" />
-        <StatCard icon={Target} title="Total Checkpoints" value={currentStats.totalProjects || 0} color="from-green-500/20 to-green-600/20" />
-        <StatCard icon={CheckCircle} title="Passed Checkpoints" value={currentStats.passedProjects || 0} color="from-purple-500/20 to-purple-600/20" />
+        <StatCard icon={Target} title="Approached Exams" value={currentStats.totalProjects || 0} color="from-green-500/20 to-green-600/20" />
+        <StatCard icon={CheckCircle} title="Passed Exams" value={currentStats.passedProjects || 0} color="from-purple-500/20 to-purple-600/20" />
         <StatCard icon={Percent} title="Pass Rate" value={`${(currentStats.passRate || 0).toFixed(1)}%`} color="from-yellow-500/20 to-yellow-600/20" />
       </motion.div>
 
@@ -294,7 +294,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
         <div className="p-6 border-b border-white/10">
           <h3 className="text-xl font-bold text-white flex items-center">
             <Activity className="w-6 h-6 mr-3 text-primary-400" />
-            Checkpoints ({filteredAndSortedProjects.length})
+            Exams ({filteredAndSortedProjects.length})
           </h3>
         </div>
         <div className="max-h-[600px] overflow-y-auto">

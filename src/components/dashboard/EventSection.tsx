@@ -257,7 +257,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         className="text-center"
       >
         <h1 className="text-4xl font-bold text-white mb-2">
-          Event Management Dashboard
+          Events Dashboard
         </h1>
         <p className="text-white/70 text-lg">
           Explore {totalEvents} events with {eventStatsData?.event_user_view_aggregate?.aggregate?.count || 0} total participations

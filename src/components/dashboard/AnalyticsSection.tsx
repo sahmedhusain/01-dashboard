@@ -297,7 +297,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
       >
         <div className="text-center flex-1">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Advanced Analytics Dashboard
+            Analytics Dashboard
           </h1>
           <p className="text-white/70 text-lg">
             Complete insights across {totalUsers} users and {totalTransactions} transactions

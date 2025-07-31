@@ -159,7 +159,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ user }) => {
         className="text-center"
       >
         <h1 className="text-4xl font-bold text-white mb-2">
-          Advanced Analytics Dashboard
+          Analytics Dashboard
         </h1>
         <p className="text-white/70 text-lg">
           Deep insights into your learning journey and performance

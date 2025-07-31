@@ -449,7 +449,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     <div className="space-y-6">
       {/* Enhanced Header */}
       <SectionHeader
-        title="Advanced Leaderboard System"
+        title="Leaderboard System"
         subtitle={`Complete rankings across ${totalUsers} users • ${availableCohorts.length} active cohorts • ${groups.length} project groups`}
         icon={Trophy}
       />

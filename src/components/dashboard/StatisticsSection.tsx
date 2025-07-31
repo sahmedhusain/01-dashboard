@@ -346,7 +346,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
               }`}
             >
               <PieChart className="w-4 h-4" />
-              Advanced Analytics
+              Analytics
             </button>
             <button
               onClick={() => setActiveTab('trends')}

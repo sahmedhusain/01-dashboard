@@ -9,9 +9,7 @@ import {
   Crown,
   Target,
   BarChart3,
-  Zap,
   UserSearch,
-  Layers,
   SortAsc,
   SortDesc
 } from 'lucide-react'
@@ -21,21 +19,54 @@ import { User } from '../../types'
 import Card from '../ui/Card'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import Avatar from '../ui/Avatar'
-import { formatXPValue, formatDate } from '../../utils/dataFormatting'
-import { 
-  GET_ENHANCED_LEADERBOARD_DATA, 
-  GET_LEADERBOARD_STATISTICS,
-  GET_LEADERBOARD_BY_COHORT,
-  GET_LEVEL_LEADERBOARD
+import { formatDate } from '../../utils/dataFormatting'
+import {
+  GET_COMPREHENSIVE_LEADERBOARD_DATA
 } from '../../graphql/allQueries'
 
 interface LeaderboardSectionProps {
   user: User
 }
 
-type LeaderboardType = 'level' | 'audit' | 'overall'
+type LeaderboardType = 'level' | 'audit'
 type CohortFilter = string
 type SortOrder = 'desc' | 'asc'
+
+interface UserData {
+  id: number
+  login: string
+  firstName?: string
+  lastName?: string
+  profile?: string
+  attrs?: Record<string, unknown>
+  auditRatio: number
+  totalUp: number
+  totalDown: number
+  createdAt?: string
+  updatedAt?: string
+}
+
+interface EventUserWithNestedUser {
+  id: number
+  userId: number
+  eventId: number
+  level: number
+  createdAt: string
+  user?: UserData | null
+}
+
+interface LabelData {
+  id: number
+  name: string
+  description?: string
+}
+
+interface UserLabelData {
+  id: number
+  userId: number
+  labelId: number
+  label: LabelData
+}
 
 interface EnhancedUser {
   id: number
@@ -43,7 +74,7 @@ interface EnhancedUser {
   firstName?: string
   lastName?: string
   profile?: string
-  attrs?: any
+  attrs?: Record<string, unknown>
   auditRatio: number
   totalUp: number
   totalDown: number
@@ -53,16 +84,9 @@ interface EnhancedUser {
   eventPath?: string
   createdAt?: string
   rank?: number
+  userLabels?: UserLabelData[]
 }
 
-interface CohortStats {
-  name: string
-  userCount: number
-  avgLevel: number
-  avgXP: number
-  avgAuditRatio: number
-  maxLevel: number
-}
 
 const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const [activeLeaderboard, setActiveLeaderboard] = useState<LeaderboardType>('level')
@@ -72,42 +96,160 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [limit, setLimit] = useState(100)
 
-  const { data: enhancedData, loading: enhancedLoading, error: enhancedError } = useQuery(GET_ENHANCED_LEADERBOARD_DATA, {
+  // Use comprehensive query that tries multiple approaches in one call
+  const { data: comprehensiveData, loading: comprehensiveLoading } = useQuery(GET_COMPREHENSIVE_LEADERBOARD_DATA, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network'
   })
 
+  const isLoading = comprehensiveLoading
+  const hasError = !comprehensiveData && !isLoading
+
   const processedUsers = useMemo((): EnhancedUser[] => {
-    if (!enhancedData?.bhModuleUsers) return []
+    if (!comprehensiveData?.bhModuleUsers) {
+      console.log('Missing comprehensive data:', { 
+        comprehensiveData: !!comprehensiveData,
+        bhModuleUsers: !!comprehensiveData?.bhModuleUsers 
+      })
+      return []
+    }
 
-    console.log('BH Module Users Data:', enhancedData.bhModuleUsers)
-    console.log('User Labels Data:', enhancedData.userLabels)
+    console.log('=== COMPREHENSIVE DATA ANALYSIS ===')
+    console.log('BH Module Users Count:', comprehensiveData.bhModuleUsers?.length)
+    console.log('All Users Count:', comprehensiveData.allUsers?.length)
+    console.log('Public Users Count:', comprehensiveData.publicUsers?.length)
+    console.log('User Audit Results Count:', comprehensiveData.userAuditResults?.length)
+    console.log('User Labels Count:', comprehensiveData.userLabels?.length)
+    console.log('All User Labels Count:', comprehensiveData.allUserLabels?.length)
+    console.log('Sample All Users:', comprehensiveData.allUsers?.slice(0, 3))
+    console.log('Sample Public Users:', comprehensiveData.publicUsers?.slice(0, 3))
+    console.log('Sample User Audit Results:', comprehensiveData.userAuditResults?.slice(0, 5))
+    console.log('Sample User Labels:', comprehensiveData.userLabels?.slice(0, 5))
+    console.log('Sample All User Labels:', comprehensiveData.allUserLabels?.slice(0, 5))
 
-    return enhancedData.bhModuleUsers.map((eventUserView: any, index: number) => {
-      console.log(`Event User View ${index}:`, eventUserView)
-      const userData = eventUserView.user
-      if (!userData) return null
+    // Create user data maps for quick lookup
+    const allUsersMap = new Map()
+    const publicUsersMap = new Map()
+    const userAuditMap = new Map()
 
-      // Get user's cohort from separate userLabels data
-      let cohort = 'unknown'
-      if (enhancedData.userLabels) {
-        const userLabel = enhancedData.userLabels.find((labelUser: any) => 
-          labelUser.userId === userData.id && 
-          labelUser.label?.name?.toLowerCase().includes('cohort')
-        )
-        if (userLabel) {
-          cohort = userLabel.label.name
+    // Prioritize allUsers data (with audit ratios) if available
+    if (comprehensiveData.allUsers) {
+      comprehensiveData.allUsers.forEach((user: any) => {
+        allUsersMap.set(user.id, user)
+      })
+    }
+
+    // Fallback to public users data (names/logins only)
+    if (comprehensiveData.publicUsers) {
+      comprehensiveData.publicUsers.forEach((user: any) => {
+        publicUsersMap.set(user.id, user)
+      })
+    }
+
+    // Process user audit results to calculate audit ratios manually
+    if (comprehensiveData.userAuditResults) {
+      console.log('Processing audit results for ratio calculation...')
+      const auditResultsByUser = new Map()
+      comprehensiveData.userAuditResults.forEach((result: any) => {
+        if (!auditResultsByUser.has(result.userId)) {
+          auditResultsByUser.set(result.userId, [])
+        }
+        auditResultsByUser.get(result.userId).push(result.grade)
+      })
+
+      console.log(`Found audit results for ${auditResultsByUser.size} users`)
+
+      // Calculate average audit ratio for each user
+      auditResultsByUser.forEach((grades, userId) => {
+        const avgGrade = grades.reduce((sum: number, grade: number) => sum + grade, 0) / grades.length
+        userAuditMap.set(userId, avgGrade)
+        console.log(`User ${userId} audit ratio: ${avgGrade.toFixed(2)} (from ${grades.length} audits)`)
+      })
+    }
+
+    return comprehensiveData.bhModuleUsers.map((eventUserView: any, index: number) => {
+      const userId = eventUserView.userId
+      
+      if (!userId) {
+        console.log('No valid userId found:', userId)
+        return null
+      }
+
+      // Try to get full user data first (with audit ratios)
+      let userData = allUsersMap.get(userId)
+      let dataSource = 'allUsers'
+      
+      // If not available, try public user data (names/logins only)
+      if (!userData) {
+        userData = publicUsersMap.get(userId)
+        dataSource = 'publicUsers'
+      }
+
+      if (!userData) {
+        console.log('No user data found for userId:', userId)
+        // Fallback to basic data
+        return {
+          id: userId,
+          login: `user_${userId}`,
+          firstName: '',
+          lastName: '',
+          profile: '',
+          attrs: {},
+          auditRatio: 0,
+          totalUp: 0,
+          totalDown: 0,
+          level: eventUserView.level || 0,
+          totalXP: 0,
+          cohort: 'unknown',
+          eventPath: '/bahrain/bh-module',
+          createdAt: eventUserView.createdAt,
+          rank: index + 1,
+          userLabels: []
         }
       }
 
+      console.log(`Found ${dataSource} data for userId ${userId}:`, userData)
+
+      // Get user's cohort and labels
+      let cohort = 'unknown'
+      const userLabels = comprehensiveData.userLabels ? 
+        comprehensiveData.userLabels.filter((labelUser: UserLabelData) => labelUser.userId === userId) : []
+
+      if (userLabels.length > 0) {
+        console.log(`User ${userId} has ${userLabels.length} labels:`, userLabels.map((labelUser: UserLabelData) => labelUser.label.name))
+        const cohortLabel = userLabels.find((labelUser: UserLabelData) => 
+          labelUser.label?.name?.toLowerCase().includes('cohort')
+        )
+        if (cohortLabel) {
+          cohort = cohortLabel.label.name
+        }
+      } else {
+        // Only log for first few users to avoid spam
+        if (index < 5) {
+          console.log(`User ${userId} has no labels (might be permission restriction)`)
+        }
+      }
+
+      // Get audit ratio from multiple sources (priority order)
+      let auditRatio = 0
+      if (userData.auditRatio && userData.auditRatio > 0) {
+        auditRatio = userData.auditRatio
+        if (index < 5) console.log(`User ${userId} using audit ratio from user data: ${auditRatio}`)
+      } else if (userAuditMap.has(userId)) {
+        auditRatio = userAuditMap.get(userId)
+        if (index < 5) console.log(`User ${userId} using calculated audit ratio: ${auditRatio}`)
+      } else {
+        if (index < 5) console.log(`User ${userId} has no audit ratio data available`)
+      }
+
       return {
-        id: userData.id,
-        login: userData.login || 'Unknown',
+        id: userId,
+        login: userData.login || `user_${userId}`,
         firstName: userData.firstName || '',
         lastName: userData.lastName || '',
         profile: userData.profile || '',
         attrs: userData.attrs || {},
-        auditRatio: userData.auditRatio || 0,
+        auditRatio: auditRatio,
         totalUp: userData.totalUp || 0,
         totalDown: userData.totalDown || 0,
         level: eventUserView.level || 0,
@@ -115,18 +257,19 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         cohort: cohort,
         eventPath: '/bahrain/bh-module',
         createdAt: userData.createdAt || eventUserView.createdAt,
-        rank: index + 1
+        rank: index + 1,
+        userLabels: userLabels
       }
     }).filter(Boolean) as EnhancedUser[]
-  }, [enhancedData])
+  }, [comprehensiveData])
 
   // Extract available cohorts from labels data
   const availableCohorts = useMemo((): string[] => {
     const cohorts = new Set<string>(['all'])
     
     // Add cohorts from all labels
-    if (enhancedData?.allLabels) {
-      enhancedData.allLabels.forEach((label: any) => {
+    if (comprehensiveData?.allLabels) {
+      comprehensiveData.allLabels.forEach((label: LabelData) => {
         if (label.name?.toLowerCase().includes('cohort')) {
           cohorts.add(label.name)
         }
@@ -141,11 +284,12 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     })
     
     return Array.from(cohorts).sort()
-  }, [enhancedData, processedUsers])
+  }, [comprehensiveData, processedUsers])
 
 
   // Sort and filter users
   const filteredAndSortedUsers = useMemo(() => {
+    console.log('Processing users for filtering. Total processed users:', processedUsers.length)
     let users = [...processedUsers]
     
     // Apply cohort filter
@@ -180,20 +324,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           aValue = a.auditRatio || 0
           bValue = b.auditRatio || 0
           break
-        case 'overall': {
-          // Combined score: level (40%) + audit ratio (40%) + total up (20%)
-          const maxLevel = Math.max(...users.map(u => u.level || 0), 1)
-          const maxAudit = Math.max(...users.map(u => u.auditRatio || 0), 1)
-          const maxUp = Math.max(...users.map(u => u.totalUp || 0), 1)
-          
-          aValue = ((a.level || 0) / maxLevel) * 40 + 
-                   ((a.auditRatio || 0) / maxAudit) * 40 + 
-                   ((a.totalUp || 0) / maxUp) * 20
-          bValue = ((b.level || 0) / maxLevel) * 40 + 
-                   ((b.auditRatio || 0) / maxAudit) * 40 + 
-                   ((b.totalUp || 0) / maxUp) * 20
-          break
-        }
         default:
           aValue = a.level || 0
           bValue = b.level || 0
@@ -203,7 +333,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     })
 
     // Update ranks after sorting
-    return users.map((user, index) => ({ ...user, rank: index + 1 }))
+    const finalUsers = users.map((user, index) => ({ ...user, rank: index + 1 }))
+    console.log('Final filtered and sorted users:', finalUsers.length)
+    return finalUsers
   }, [processedUsers, cohortFilter, searchTerm, minLevel, activeLeaderboard, sortOrder])
 
   // Get user's current rank
@@ -212,9 +344,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     return userIndex >= 0 ? userIndex + 1 : null
   }, [filteredAndSortedUsers, user.id])
 
-  const totalUsers = enhancedData?.bhModuleStats?.aggregate?.count || processedUsers.length
-  const maxLevel = enhancedData?.bhModuleStats?.aggregate?.max?.level || Math.max(...processedUsers.map(u => u.level || 0), 0)
-  const avgLevel = enhancedData?.bhModuleStats?.aggregate?.avg?.level || (processedUsers.reduce((sum, u) => sum + (u.level || 0), 0) / Math.max(totalUsers, 1))
+  const totalUsers = comprehensiveData?.bhModuleStats?.aggregate?.count || processedUsers.length
+  const maxLevel = comprehensiveData?.bhModuleStats?.aggregate?.max?.level || Math.max(...processedUsers.map(u => u.level || 0), 0)
+  const avgLevel = comprehensiveData?.bhModuleStats?.aggregate?.avg?.level || (processedUsers.reduce((sum, u) => sum + (u.level || 0), 0) / Math.max(totalUsers, 1))
   const avgAuditRatio = processedUsers.reduce((sum, u) => sum + (u.auditRatio || 0), 0) / Math.max(totalUsers, 1)
 
   // Helper functions
@@ -246,7 +378,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     switch (activeLeaderboard) {
       case 'level': return `Level Rankings${cohortSuffix}`
       case 'audit': return `Audit Ratio Rankings${cohortSuffix}`
-      case 'overall': return `Overall Rankings${cohortSuffix}`
       default: return `Leaderboard${cohortSuffix}`
     }
   }
@@ -254,25 +385,23 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const getValueDisplay = (user: EnhancedUser) => {
     switch (activeLeaderboard) {
       case 'level':
-        return { value: `Level ${user.level || 0}`, subValue: `${formatXPValue(user.totalUp || 0)} XP` }
+        return { value: `Level ${user.level || 0}`, subValue: '' }
       case 'audit':
-        return { value: (user.auditRatio || 0).toFixed(2), subValue: `${user.totalUp || 0} ↑ ${user.totalDown || 0} ↓` }
-      case 'overall':
-        return { value: `L${user.level || 0}`, subValue: `${formatXPValue(user.totalUp || 0)} • ${(user.auditRatio || 0).toFixed(1)}` }
+        return { value: (user.auditRatio || 0).toFixed(1), subValue: '' }
       default:
         return { value: `${user.level || 0}`, subValue: '' }
     }
   }
 
   // Loading and error states
-  if (enhancedLoading && !enhancedData) return <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />
 
-  if (enhancedError) {
+  if (hasError) {
     return (
       <Card className="p-6">
         <div className="text-center text-red-400">
           <p>Error loading leaderboard data</p>
-          <p className="text-sm text-white/60 mt-2">{enhancedError?.message}</p>
+          <p className="text-sm text-white/60 mt-2">Unable to load required data</p>
         </div>
       </Card>
     )
@@ -348,8 +477,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         >
           {[
             { key: 'level', label: '📊 Level Rankings', icon: TrendingUp },
-            { key: 'audit', label: '⚖️ Audit Rankings', icon: Target },
-            { key: 'overall', label: '🏆 Overall Rankings', icon: Trophy }
+            { key: 'audit', label: '⚖️ Audit Rankings', icon: Target }
           ].map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -511,22 +639,36 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <h4 className="text-white font-medium">{userData.login}</h4>
+                        <div className="flex flex-col">
+                          <h4 className="text-white font-medium">
+                            {userData.firstName && userData.lastName 
+                              ? `${userData.firstName} ${userData.lastName}` 
+                              : userData.login}
+                          </h4>
+                          {userData.firstName && userData.lastName && (
+                            <span className="text-xs text-white/60">@{userData.login}</span>
+                          )}
+                        </div>
                         {isCurrentUser && (
                           <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded text-xs font-medium">
                             You
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center space-x-4 text-xs text-white/60">
-                        <span>{userData.firstName} {userData.lastName}</span>
-                        {userData.cohort !== 'unknown' && (
-                          <span className="flex items-center">
-                            <Layers className="w-3 h-3 mr-1" />
-                            {getCohortDisplayName(userData.cohort)}
-                          </span>
+                      <div className="flex items-center space-x-2 text-xs text-white/60 mt-1">
+                        {userData.userLabels && userData.userLabels.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {userData.userLabels.map((userLabel) => (
+                              <span 
+                                key={userLabel.id}
+                                className="px-1.5 py-0.5 bg-white/10 text-white/70 rounded text-xs"
+                              >
+                                {userLabel.label.name}
+                              </span>
+                            ))}
+                          </div>
                         )}
-                        <span>Joined {formatDate(userData.createdAt)}</span>
+                        <span className="ml-auto">Joined {formatDate(userData.createdAt)}</span>
                       </div>
                     </div>
                   </div>
@@ -553,7 +695,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         </motion.div>
 
         {/* Loading State */}
-        {enhancedLoading && (
+        {isLoading && (
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
@@ -563,7 +705,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         )}
 
         {/* Empty State */}
-        {filteredAndSortedUsers.length === 0 && !enhancedLoading && (
+        {filteredAndSortedUsers.length === 0 && !isLoading && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

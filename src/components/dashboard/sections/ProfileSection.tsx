@@ -9,7 +9,7 @@ import {
 import Avatar from '../../ui/Avatar'
 import {
   formatXPValue, formatDate, formatAuditRatio,
-  extractPersonalInfo, formatPhoneNumber, formatCPRNumber, getRankFromLevel
+  extractPersonalInfo, formatPhoneNumber, getRankFromLevel
 } from '../../../utils/dataFormatting'
 import { useToken } from '../../../store'
 
@@ -30,14 +30,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
     return null;
   };
 
-  // Total skill points calculation no longer needed - skills show latest amounts directly
   const personalInfo = extractPersonalInfo(userData.attrs || {});
 
-  // Always calculate levels to the next rank boundary (multiples of 10)
   const rankBoundary = (Math.floor(analytics.level.current / 10) + 1) * 10;
   const levelsToNextRank = rankBoundary - analytics.level.current;
   
-  // Get info for the next rank
   const nextRankInfo = getRankFromLevel(rankBoundary);
 
   return (
@@ -170,7 +167,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                   <Calendar className="h-4 w-4 text-orange-400" />
                                       <div className="flex-1">
-                      <span className="text-xs text-white/60">Date Joined</span>
+                      <span className="text-xs text-white/60">Date Registered</span>
                       <div className="text-sm text-white"></div>
                   <span className="text-sm text-white">{formatDate(userData.createdAt)}</span>
                   </div>

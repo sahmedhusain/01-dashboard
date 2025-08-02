@@ -606,6 +606,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         allAudits: allAudits,
         groups: allGroups,
         events: allEvents,
+        userEvents: allEvents, // For backward compatibility
         userRoles: data?.userRoles || [],
         userLabels: data?.userLabels || []
       }

@@ -1012,8 +1012,11 @@ export const GET_ALL_LABEL_USERS = gql`
       id
       labelId
       userId
-      createdAt
-      updatedAt
+      label {
+        id
+        name
+        description
+      }
     }
   }
 `;
@@ -1035,7 +1038,6 @@ export const GET_LABEL_USER_BY_PK = gql`
       labelId
       userId
       createdAt
-      updatedAt
     }
   }
 `;
@@ -1781,7 +1783,7 @@ export const GET_LEVEL_LEADERBOARD = gql`
 
 export const GET_COMPREHENSIVE_LEADERBOARD_DATA = gql`
   query GetComprehensiveLeaderboardData {
-    # Get BH Module event users
+    # Get BH Module event users with audit ratios and user logins
     bhModuleUsers: event_user(
       where: {
         event: { path: { _eq: "/bahrain/bh-module" } }
@@ -1793,10 +1795,18 @@ export const GET_COMPREHENSIVE_LEADERBOARD_DATA = gql`
       eventId
       level
       createdAt
+      userLogin
+      userAuditRatio
+      userName
+      event {
+        id
+        path
+        campus
+      }
     }
     
-    # Try to get all users data with audit ratios
-    allUsers: user {
+    # Get ALL users for basic information
+    allUsersWithEvents: user {
       id
       login
       firstName
@@ -1810,6 +1820,20 @@ export const GET_COMPREHENSIVE_LEADERBOARD_DATA = gql`
       updatedAt
     }
     
+    # Get ALL event_user relationships for dynamic cohort mapping
+    allEventUsers: event_user {
+      id
+      userId
+      eventId
+      level
+      createdAt
+      event {
+        id
+        path
+        campus
+      }
+    }
+    
     # Fallback: Get public user data (names and logins)
     publicUsers: user_public_view {
       id
@@ -1818,18 +1842,6 @@ export const GET_COMPREHENSIVE_LEADERBOARD_DATA = gql`
       lastName
       profile
       campus
-    }
-    
-    # Get user audit results to calculate audit ratios manually
-    userAuditResults: result(
-      where: {
-        type: { _eq: "audit" }
-      }
-    ) {
-      id
-      userId
-      grade
-      createdAt
     }
     
     # BH Module statistics
@@ -1849,33 +1861,20 @@ export const GET_COMPREHENSIVE_LEADERBOARD_DATA = gql`
       }
     }
     
-    # All available labels for cohort filtering
-    allLabels: label(
-      order_by: { name: asc }
+    # Get ALL user label assignments (from label_user table)
+    userLabels: label_user(
+      order_by: { id: asc }
     ) {
-      id
-      name
-      description
-    }
-    
-    # User label assignments for cohort identification
-    userLabels: label_user {
-      id
-      userId
-      labelId
-      label {
-        id
-        name
-        description
-      }
-    }
-    
-    # Try alternative approach for user labels through all labels
-    allUserLabels: label_user {
       id
       userId
       labelId
       createdAt
+      label {
+        id
+        name
+        description
+        createdAt
+      }
     }
   }
 `;

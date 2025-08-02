@@ -32,6 +32,60 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
   const personalInfo = extractPersonalInfo(userData.attrs || {});
 
+    // Find BH module joining date from event_user data
+  const bhModuleJoinInfo = React.useMemo(() => {
+    console.log('🔍 Checking for events data in analytics:', {
+      hasAnalytics: !!analytics,
+      hasRawData: !!analytics?.rawData,
+      hasEvents: !!analytics?.rawData?.events,
+      eventsLength: analytics?.rawData?.events?.length || 0
+    })
+
+    if (!analytics?.rawData?.events) {
+      console.log('❌ No events data available')
+      return null
+    }
+    
+    console.log('✅ Events available:', analytics.rawData.events.length, 'events')
+    console.log('📋 First few events:', analytics.rawData.events.slice(0, 3).map((e: any) => ({
+      eventPath: e.event?.path,
+      createdAt: e.createdAt,
+      eventId: e.eventId
+    })))
+    
+    // Find the BH module event (path: "/bahrain/bh-module") or similar main curriculum events
+    const bhModuleEvent = analytics.rawData.events.find((eventUser: any) => 
+      eventUser.event?.path === '/bahrain/bh-module' || 
+      eventUser.event?.path?.includes('bh-module')
+    )
+    
+    if (bhModuleEvent) {
+      console.log('✅ Found BH Module join date:', bhModuleEvent.createdAt, 'for event:', bhModuleEvent.event?.path)
+      return {
+        date: bhModuleEvent.createdAt,
+        label: 'Date Joined',
+        description: 'Started main curriculum'
+      }
+    }
+    
+    // Fallback: find the earliest event joining date as program start date
+    const earliestEvent = analytics.rawData.events
+      .filter((eventUser: any) => eventUser.createdAt)
+      .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
+    
+    if (earliestEvent) {
+      console.log('✅ Using earliest event join date:', earliestEvent.createdAt, 'for event:', earliestEvent.event?.path)
+      return {
+        date: earliestEvent.createdAt,
+        label: 'Date Joined Program',
+        description: 'Started learning journey'
+      }
+    }
+    
+    console.log('❌ No join date found')
+    return null
+  }, [analytics])
+
   const rankBoundary = (Math.floor(analytics.level.current / 10) + 1) * 10;
   const levelsToNextRank = rankBoundary - analytics.level.current;
   
@@ -164,14 +218,29 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     </div>
                   </div>
                 )}
+                {/* Date Information */}
                 <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                   <Calendar className="h-4 w-4 text-orange-400" />
-                                      <div className="flex-1">
-                      <span className="text-xs text-white/60">Date Registered</span>
-                      <div className="text-sm text-white"></div>
-                  <span className="text-sm text-white">{formatDate(userData.createdAt)}</span>
+                  <div className="flex-1">
+                    <span className="text-xs text-white/60">Date Registered</span>
+                    <div className="text-sm text-white">{formatDate(userData.createdAt)}</div>
+                    <div className="text-xs text-white/40 mt-1">Account creation date</div>
                   </div>
                 </div>
+                
+                {bhModuleJoinInfo && (
+                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+                    <UserCheck className="h-4 w-4 text-green-400" />
+                    <div className="flex-1">
+                      <span className="text-xs text-white/60">{bhModuleJoinInfo.label}</span>
+                      <div className="text-sm text-white">{formatDate(bhModuleJoinInfo.date)}</div>
+                      <div className="text-xs text-white/40 mt-1">{bhModuleJoinInfo.description}</div>
+                      {bhModuleJoinInfo.date === userData.createdAt && (
+                        <div className="text-xs text-yellow-400 mt-1">Same as registration date</div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Identity Information */}

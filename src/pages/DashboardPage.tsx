@@ -7,7 +7,6 @@ import LoadingSpinner from '../components/ui/LoadingSpinner'
 const DashboardPage: React.FC = () => {
   const isAuthenticated = useIsAuthenticated()
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }

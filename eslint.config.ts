@@ -8,7 +8,6 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
-  // JavaScript files
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -33,7 +32,6 @@ export default defineConfig([
       }],
     },
   },
-  // TypeScript files
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -62,10 +60,9 @@ export default defineConfig([
         argsIgnorePattern: '^_|WrappedComponent',
         ignoreRestSiblings: true
       }],
-      'no-unused-vars': 'off', // Turn off base rule as it can report incorrect errors
+      'no-unused-vars': 'off',
     },
   },
-  // Test files configuration
   {
     files: ['**/*.test.{js,jsx,ts,tsx}', '**/test/**/*.{js,jsx,ts,tsx}', '**/__tests__/**/*.{js,jsx,ts,tsx}', '**/testUtils.{js,ts}'],
     languageOptions: {

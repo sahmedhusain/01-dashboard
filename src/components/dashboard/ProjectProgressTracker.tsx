@@ -32,7 +32,6 @@ interface ProjectProgressTrackerProps {
   user: User
 }
 
-// Complete progress queries using our tested queries
 const GET_ALL_USER_PROGRESS = gql`
   query GetAllUserProgress($userId: Int!) {
     progress(

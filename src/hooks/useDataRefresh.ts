@@ -24,7 +24,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
   } = options
 
   const client = useApolloClient()
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [refreshState, setRefreshState] = useState<RefreshState>({
     isRefreshing: false,
     lastRefresh: null,
@@ -37,7 +37,6 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     const queriesToRefresh = specificQueries || queries
     
     if (queriesToRefresh.length === 0) {
-      console.warn('No queries specified for refresh')
       return
     }
 
@@ -219,7 +218,6 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
   }
 }
 
-// Hook for component-specific refresh with optimistic updates
 export const useOptimisticRefresh = <T>(
   initialData: T,
   refreshFn: () => Promise<T>,
@@ -266,7 +264,6 @@ export const useOptimisticRefresh = <T>(
   }
 }
 
-// Hook for background refresh with stale-while-revalidate pattern
 export const useStaleWhileRevalidate = <T>(
   key: string,
   fetchFn: () => Promise<T>,

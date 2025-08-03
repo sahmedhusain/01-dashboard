@@ -1,12 +1,7 @@
-// Common type definitions for the application
 import { ReactNode, ComponentType } from 'react';
 
-// Re-export GraphQL types
 export * from './graphql';
 
-// ============================================================================
-// ENHANCED USER TYPES - Updated for comprehensive data structure
-// ============================================================================
 
 export interface User {
   id: number;
@@ -46,7 +41,6 @@ export interface User {
   studentId?: string;
 }
 
-// Enhanced user profile with computed fields
 export interface UserProfile extends User {
   fullName: string;
   initials: string;
@@ -66,9 +60,6 @@ export interface UserProfile extends User {
   };
 }
 
-// ============================================================================
-// ENHANCED TRANSACTION TYPES - Updated for comprehensive data structure
-// ============================================================================
 
 export interface Transaction {
   id: number;
@@ -93,7 +84,6 @@ export interface Transaction {
   };
 }
 
-// Transaction aggregates for statistics
 export interface TransactionAggregates {
   xp: {
     total: number;
@@ -119,9 +109,6 @@ export interface TransactionAggregates {
   };
 }
 
-// ============================================================================
-// ENHANCED PROJECT & PROGRESS TYPES
-// ============================================================================
 
 export interface Project {
   id: number;
@@ -169,7 +156,6 @@ export interface Result {
   object?: Project;
 }
 
-// Progress statistics
 export interface ProgressStats {
   total: number;
   completed: number;
@@ -185,9 +171,6 @@ export interface ProgressStats {
   }>;
 }
 
-// ============================================================================
-// ENHANCED SKILL TYPES
-// ============================================================================
 
 export interface Skill {
   id: number;
@@ -207,9 +190,6 @@ export interface SkillCategory {
   topSkills: Skill[];
 }
 
-// ============================================================================
-// ENHANCED AUDIT TYPES
-// ============================================================================
 
 export interface Audit {
   id: number;
@@ -247,9 +227,6 @@ export interface AuditStats {
   trend: 'improving' | 'stable' | 'declining';
 }
 
-// ============================================================================
-// ENHANCED GROUP & EVENT TYPES
-// ============================================================================
 
 export interface Group {
   id: number;
@@ -378,7 +355,6 @@ export interface LoadingProps {
   retry?: (() => void) | null;
 }
 
-// Auth types
 export interface AuthState {
   isAuthenticated: boolean;
   isInitialized: boolean;
@@ -392,7 +368,6 @@ export interface AuthContextType extends AuthState {
   refreshUser: () => Promise<void>;
 }
 
-// Data context types
 export interface DataState {
   user: User | null;
   transactions: Transaction[];
@@ -408,14 +383,12 @@ export interface DataContextType extends DataState {
   updateUser: (user: User) => void;
 }
 
-// Error types
 export interface AppError extends Error {
   code?: string;
   statusCode?: number;
   context?: Record<string, any>;
 }
 
-// Route types
 export interface RouteConfig {
   path: string;
   component: ComponentType;
@@ -423,9 +396,6 @@ export interface RouteConfig {
   title?: string;
 }
 
-// ============================================================================
-// ENHANCED CHART TYPES - SVG-based charts for project requirements
-// ============================================================================
 
 export interface SVGChartData {
   labels: string[];
@@ -465,7 +435,6 @@ export interface ChartConfig {
   description?: string;
 }
 
-// Specific chart data types
 export interface XPTimelineData {
   date: string;
   xp: number;
@@ -495,9 +464,6 @@ export interface SkillRadarData {
   category: string;
 }
 
-// ============================================================================
-// ENHANCED DASHBOARD TYPES
-// ============================================================================
 
 export interface DashboardData {
   user: UserProfile;
@@ -543,7 +509,6 @@ export interface DashboardData {
   }>;
 }
 
-// API types
 export interface ApiResponse<T = any> {
   data: T;
   message?: string;
@@ -557,14 +522,12 @@ export interface ApiError {
   details?: any;
 }
 
-// Utility types
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-// Environment types
 export interface ImportMetaEnv {
   readonly VITE_API_URL?: string;
   readonly VITE_APP_TITLE?: string;

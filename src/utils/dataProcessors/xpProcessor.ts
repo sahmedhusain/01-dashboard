@@ -1,6 +1,5 @@
 import { formatDistanceToNow } from 'date-fns'
 
-// Types for processed data
 export interface ProcessedXPTransaction {
   id: string
   amount: number
@@ -31,7 +30,6 @@ export interface XPProgressionData {
   type?: string
 }
 
-// Process raw XP transactions from GraphQL
 export const processXPTransactions = (transactions: any[]): ProcessedXPTransaction[] => {
   return transactions.map(transaction => ({
     id: transaction.id,
@@ -47,7 +45,6 @@ export const processXPTransactions = (transactions: any[]): ProcessedXPTransacti
   }))
 }
 
-// Calculate XP summary from transactions
 export const calculateXPSummary = (
   bhTransactions: any[],
   piscineTransactions: any[] = []
@@ -83,7 +80,6 @@ export const calculateXPSummary = (
   }
 }
 
-// Create XP progression data for charts
 export const createXPProgressionData = (transactions: any[]): XPProgressionData[] => {
   // Sort transactions by date
   const sortedTransactions = [...transactions].sort(
@@ -103,7 +99,6 @@ export const createXPProgressionData = (transactions: any[]): XPProgressionData[
   })
 }
 
-// Detect piscine types from transactions
 export const detectPiscineTypes = (transactions: any[]): string[] => {
   const piscineTypes = new Set<string>()
   
@@ -119,7 +114,6 @@ export const detectPiscineTypes = (transactions: any[]): string[] => {
   return Array.from(piscineTypes)
 }
 
-// Format XP values for display
 export const formatXP = (xp: number, format: 'kB' | 'MB' | 'auto' = 'auto'): string => {
   if (format === 'kB' || (format === 'auto' && xp >= 1000)) {
     return `${Math.round(xp / 1000)} kB`
@@ -132,7 +126,6 @@ export const formatXP = (xp: number, format: 'kB' | 'MB' | 'auto' = 'auto'): str
   return xp.toString() + ' B'
 }
 
-// Calculate XP growth rate
 export const calculateXPGrowthRate = (transactions: any[], days: number = 30): number => {
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - days)
@@ -145,7 +138,6 @@ export const calculateXPGrowthRate = (transactions: any[], days: number = 30): n
   return totalXP / days // XP per day
 }
 
-// Get XP milestones
 export const getXPMilestones = (currentXP: number): { 
   current: number
   next: number
@@ -165,7 +157,6 @@ export const getXPMilestones = (currentXP: number): {
   }
 }
 
-// Group transactions by time period
 export const groupTransactionsByPeriod = (
   transactions: any[],
   period: 'day' | 'week' | 'month' = 'month'

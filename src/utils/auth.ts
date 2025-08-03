@@ -11,7 +11,6 @@ export const getStoredAuthData = () => {
 import { jwtDecode } from 'jwt-decode';
 import config from '../config/appConfig';
 
-// GraphQL query to fetch user by ID
 const GET_USER_BY_ID = `
   query GetUserById($userId: Int!) {
     user(where: { id: { _eq: $userId } }) {
@@ -31,12 +30,10 @@ const GET_USER_BY_ID = `
   }
 `;
 
-// Dynamic API endpoints from configuration
 export const API_BASE_URL = config.api.baseURL;
 export const SIGNIN_ENDPOINT = config.api.authEndpoint;
 export const GRAPHQL_ENDPOINT = config.api.graphqlEndpoint;
 
-// Dynamic storage keys from configuration
 export const TOKEN_KEY = config.auth.tokenKey;
 export const USER_KEY = config.auth.userKey;
 
@@ -92,20 +89,15 @@ export const authenticateUser = async (identifier, password) => {
 
     // Debug logging in development
     if (import.meta.env.DEV) {
-      console.log('Raw token length:', token.length);
-      console.log('Clean token length:', cleanToken.length);
-      console.log('Token parts:', cleanToken.split('.').length);
     }
 
     // Validate token format (basic JWT structure check)
     if (!cleanToken.includes('.') || cleanToken.split('.').length !== 3) {
-      console.error('Invalid token format. Token:', cleanToken.substring(0, 50) + '...');
       throw new Error('Invalid token format received from server');
     }
 
     // Additional validation
     if (!isValidTokenFormat(cleanToken)) {
-      console.error('Token failed format validation');
       throw new Error('Token format validation failed');
     }
 
@@ -190,7 +182,6 @@ export const fetchUserData = async (userId, token) => {
 
     return result.data.user[0];
   } catch (error) {
-    console.error('Failed to fetch user data:', error);
     throw error;
   }
 };
@@ -261,7 +252,6 @@ export const getStoredUser = () => {
 
     return null;
   } catch (e) {
-    console.warn('Error parsing persisted user data:', e);
     return null;
   }
 };
@@ -303,7 +293,6 @@ export const isTokenExpired = (token) => {
     const currentTime = Date.now() / 1000;
     return decoded.exp < currentTime;
   } catch (error) {
-    console.warn('Token validation error:', error.message);
     return true;
   }
 };
@@ -342,13 +331,11 @@ export const getAuthHeader = () => {
   }
 
   if (!isValidTokenFormat(token)) {
-    console.warn('Invalid token format, clearing auth data');
     clearAuthData();
     return {};
   }
 
   if (isTokenExpired(token)) {
-    console.warn('Token expired, clearing auth data');
     clearAuthData();
     return {};
   }

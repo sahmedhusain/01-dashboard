@@ -18,22 +18,19 @@ const LoginPage: React.FC = () => {
   const isLoading = useIsLoading()
   const error = useAuthError()
 
-  // Redirect if already authenticated
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />
   }
 
   const isEmail = identifier.includes('@')
 
-  // Test login functionality for development
   const handleTestLogin = async () => {
-    if ((import.meta.env as any).VITE_USE_TEST_AUTH !== 'true') return
+    if ((import.meta.env as { VITE_USE_TEST_AUTH?: string }).VITE_USE_TEST_AUTH !== 'true') return
 
     clearError()
     setLoading(true)
 
     try {
-      // Create mock user data for development (since test token is expired)
       const mockUserData = {
         id: 1599,
         login: 'sayedahmed',
@@ -59,10 +56,8 @@ const LoginPage: React.FC = () => {
         updatedAt: new Date().toISOString()
       }
 
-      // Create a mock token (not for real API calls, just for UI state)
       const mockToken = 'mock-dev-token-' + Date.now()
 
-      console.log('Test login - Using mock data:', mockUserData)
       login(mockUserData, mockToken)
 
     } catch (err: unknown) {
@@ -213,7 +208,7 @@ const LoginPage: React.FC = () => {
           </form>
 
           {/* Test Login Button for development */}
-          {(import.meta.env as any).VITE_USE_TEST_AUTH === 'true' && (
+          {(import.meta.env as { VITE_USE_TEST_AUTH?: string }).VITE_USE_TEST_AUTH === 'true' && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

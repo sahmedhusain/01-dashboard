@@ -7,7 +7,6 @@ import { User } from '../../types';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { useDashboardRouting } from '../../utils/routing';
 
-// Lazy load components for better performance
 const DashboardSection = lazy(() => import('./DashboardSection'))
 const PiscinesDashboard = lazy(() => import('./PiscinesDashboard'))
 const LeaderboardSection = lazy(() => import('./LeaderboardSection'))
@@ -16,7 +15,6 @@ const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
 const AuditSection = lazy(() => import('./AuditSection'))
 const SubjectsSection = lazy(() => import('./sections/SubjectsSection'))
 
-// New complete dashboard sections
 const GroupSection = lazy(() => import('./GroupSection'))
 const EventSection = lazy(() => import('./EventSection'))
 
@@ -114,7 +112,6 @@ const Dashboard: React.FC = () => {
           const parsed = JSON.parse(saved)
           setPreferences(parsed)
         } catch (error) {
-          console.error('Failed to parse preferences:', error)
           setPreferences(null)
         }
       }
@@ -161,7 +158,6 @@ const Dashboard: React.FC = () => {
         const parsed = JSON.parse(saved)
         setPreferences(parsed)
       } catch (error) {
-        console.error('Failed to parse updated preferences:', error)
       }
     }
   }, [user.id])

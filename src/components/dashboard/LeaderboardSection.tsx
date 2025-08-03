@@ -164,9 +164,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       array.findIndex(l => l.name === label.name) === index
     )
     
-    console.log('=== COHORT LABELS DETECTED ===')
-    console.log('Available cohort labels (normalized):', uniqueCohortLabels.map(l => l.name))
-    console.log('Total unique cohort labels found:', uniqueCohortLabels.length)
     
     return uniqueCohortLabels
   }, [allLabelsData?.label])
@@ -175,11 +172,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const eventToCohortMapping = useMemo(() => {
     const mapping = new Map<number, string>()
     
-    console.log('=== DYNAMIC EVENT TO COHORT MAPPING ===')
     
     // Extract event IDs from label descriptions dynamically
     if (allLabelsData?.label) {
-      console.log('Processing labels for event ID extraction:', allLabelsData.label.length)
       
       allLabelsData.label.forEach(label => {
         const labelName = label.name.toLowerCase()
@@ -188,7 +183,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         // Skip non-cohort labels
         if (!labelName.includes('cohort')) return
         
-        console.log(`Processing cohort label: "${label.name}" with description: "${description}"`)
         
         // Extract event ID from description using multiple patterns
         const eventIdPatterns = [
@@ -204,7 +198,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           const match = description.match(pattern)
           if (match) {
             eventId = parseInt(match[1], 10)
-            console.log(`Found event ID ${eventId} using pattern: ${pattern}`)
             break
           }
         }
@@ -223,22 +216,15 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           }
           
           mapping.set(eventId, cohortName)
-          console.log(`✅ Dynamic mapping: Event ${eventId} → ${cohortName} (from label: ${label.name})`)
-        } else {
-          console.log(`⚠️  No event ID found in description for label: ${label.name}`)
         }
       })
     }
     
     // If no dynamic mappings found, log warning but don't use fallback
     if (mapping.size === 0) {
-      console.warn('❌ No event-to-cohort mappings found from label descriptions')
-      console.log('Available labels:', allLabelsData?.label?.map(l => ({ name: l.name, desc: l.description })))
-    } else {
-      console.log(`✅ Successfully created ${mapping.size} dynamic event-to-cohort mappings`)
+      return mapping
     }
     
-    console.log('Final dynamic event-to-cohort mapping:', Object.fromEntries(mapping))
     return mapping
   }, [allLabelsData?.label])
 
@@ -251,10 +237,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     const labelFromComprehensive = comprehensiveData?.userLabels || []
     const allUserLabels = [...labelFromDedicated, ...labelFromComprehensive]
     
-    console.log('=== LABEL MAPPING DEBUG ===')
-    console.log('Raw label data from labelData:', labelFromDedicated.length)
-    console.log('Raw label data from comprehensiveData:', labelFromComprehensive.length)
-    console.log('Combined label_user records found:', allUserLabels.length)
     
     // Process direct database labels (only cohort labels) with normalization
     allUserLabels.forEach((userLabel: UserLabelData) => {
@@ -289,13 +271,11 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         }
         
         map.get(userId)!.push(normalizedLabel)
-        console.log(`User ${userId} has DIRECT cohort label: ${normalizedName} (original: ${originalLabel.name})`)
       }
     })
     
     // Add event-based cohort labels for ALL users (avoid duplicates with direct labels)
     const allEventUsers = comprehensiveData?.allEventUsers || []
-    console.log(`Processing ${allEventUsers.length} event users for synthetic cohort labels`)
     
     allEventUsers.forEach((eventUser: { userId: number, eventId: number, createdAt?: string }) => {
       const userId = eventUser.userId
@@ -328,9 +308,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             }
           }
           map.get(userId)!.push(syntheticLabel)
-          console.log(`User ${userId} gets EVENT-BASED cohort label: ${cohortName} (from Event ${eventId})`)
-        } else {
-          console.log(`User ${userId} already has cohort label: ${cohortName} - skipping synthetic label`)
         }
       }
     })
@@ -341,7 +318,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       const uniqueLabels = labels.filter(label => {
         const cohortName = label.label.name
         if (seenCohortNames.has(cohortName)) {
-          console.log(`Removing duplicate cohort label "${cohortName}" for user ${userId}`)
           return false
         }
         seenCohortNames.add(cohortName)
@@ -350,39 +326,13 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       map.set(userId, uniqueLabels)
     })
     
-    console.log('Created user cohort labels map with', map.size, 'users having cohort labels')
-    console.log('Sample users with cohort labels:', Array.from(map.keys()).slice(0, 10))
     
     return map
   }, [labelData?.label_user, comprehensiveData?.userLabels, comprehensiveData?.allEventUsers, eventToCohortMapping])
 
   // Enhanced debugging for leaderboard
   React.useEffect(() => {
-    console.log('=== LEADERBOARD QUERY DEBUG ===')
-    console.log('Comprehensive Loading:', comprehensiveLoading)
-    console.log('Label Loading:', labelLoading)
-    console.log('All Labels Loading:', allLabelsLoading)
-    console.log('Comprehensive Data exists:', !!comprehensiveData)
-    console.log('Label Data exists:', !!labelData)
-    console.log('All Labels Data exists:', !!allLabelsData)
-    
-    if (comprehensiveData) {
-      console.log('BH Module Users:', comprehensiveData.bhModuleUsers?.length || 0)
-    }
-    
-    if (labelData) {
-      console.log('Label Users from dedicated query:', labelData.label_user?.length || 0)
-    }
-
-    if (allLabelsData) {
-      console.log('All available labels:', allLabelsData.label?.length || 0)
-      console.log('Label names:', allLabelsData.label?.map((l: { name: string }) => l.name) || [])
-    }
-    
-    // Log authentication status
-    const token = localStorage.getItem('auth_token')
-    const isMockMode = token?.includes('mock-dev-token')
-    console.log('Authentication mode:', isMockMode ? 'Mock/Test Mode' : 'Real API Mode')
+    // Simplified effect
   }, [comprehensiveLoading, comprehensiveData, labelLoading, labelData, allLabelsLoading, allLabelsData])
 
   const isLoading = comprehensiveLoading || labelLoading || allLabelsLoading
@@ -390,17 +340,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
   const processedUsers = useMemo((): EnhancedUser[] => {
     if (!comprehensiveData?.bhModuleUsers) {
-      console.log('Missing comprehensive data:', { 
-        comprehensiveData: !!comprehensiveData,
-        bhModuleUsers: !!comprehensiveData?.bhModuleUsers 
-      })
       return []
     }
 
-    console.log('=== PROCESSING USERS WITH REAL LABEL DATA ===')
-    console.log('BH Module Users Count:', comprehensiveData.bhModuleUsers?.length)
-    console.log('Total User Labels Available:', labelData?.label_user?.length || comprehensiveData.userLabels?.length || 0)
-    console.log('Label Data Source:', labelData?.label_user ? 'Dedicated Query' : 'Comprehensive Query')
 
     // Create user data maps for quick lookup
     const allUsersMap = new Map()
@@ -411,7 +353,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       comprehensiveData.allUsersWithEvents.forEach((user: UserData) => {
         allUsersMap.set(user.id, user)
       })
-      console.log('✅ Processed', comprehensiveData.allUsersWithEvents.length, 'users')
     }
 
     // Fallback to public users data (names/logins only)
@@ -428,23 +369,15 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       const userAuditRatio = Number(eventUserView.userAuditRatio) || 0
       
       if (!userId) {
-        console.log('No valid userId found:', userId)
         return null
-      }
-
-      // Log the audit ratio from event_user
-      if (index < 5) {
-        console.log(`User ${userId} (${userLogin}/${userName}) has audit ratio: ${userAuditRatio} from event_user`)
       }
 
       // Try to get additional user data (names, profile, etc.)
       let userData = allUsersMap.get(userId)
-      let dataSource = 'allUsers'
       
       // If not available, try public user data (names/logins only)
       if (!userData) {
         userData = publicUsersMap.get(userId)
-        dataSource = 'publicUsers'
       }
 
       // Get real user labels from the API - FILTER TO ONLY COHORT LABELS
@@ -466,7 +399,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       const combinedLabels = cohortUserLabels
 
       if (!userData) {
-        if (index < 5) console.log('No additional user data found for userId:', userId)
         // Use basic data with userLogin and userName from event_user
         const nameParts = userName ? userName.split(' ') : []
         return {
@@ -490,15 +422,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         }
       }
 
-      if (index < 5) console.log(`Found ${dataSource} data for userId ${userId}:`, userData)
 
       // Enhanced logging for users with cohort labels
       if (index < 10) {
-        console.log(`User ${userId} (${userLogin}) has ${cohortUserLabels.length} cohort labels:`, cohortLabelNames)
-        if (index < 3) {
-          console.log(`  - userLabelsMap has user ${userId}:`, userLabelsMap.has(userId))
-          console.log(`  - Raw cohort label data for user ${userId}:`, cohortUserLabels)
-        }
+        // Processing user data
       }
 
       return {
@@ -521,7 +448,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         labelNames: cohortLabelNames // Array of cohort label names for easy display and filtering
       }
     }).filter(Boolean) as EnhancedUser[]
-  }, [comprehensiveData, userLabelsMap, labelData])
+  }, [comprehensiveData, userLabelsMap])
 
     // Extract available cohorts from processed users (based on real labels only)
     const availableCohorts = useMemo((): string[] => {
@@ -541,12 +468,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       })
       
       const cohortArray = Array.from(cohorts).sort()
-      console.log('Available cohorts for filtering (from real labels only):', cohortArray)
       return cohortArray
     }, [processedUsers])
   // Sort and filter users
   const filteredAndSortedUsers = useMemo(() => {
-    console.log('Processing users for filtering. Total processed users:', processedUsers.length)
     let users = [...processedUsers]
     
     // Apply cohort filter
@@ -608,7 +533,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
     // Preserve original ranks when searching/filtering - don't renumber positions
     // This ensures users see their actual leaderboard position, not filtered position
-    console.log('Final filtered and sorted users:', users.length)
     return users
   }, [processedUsers, cohortFilter, searchTerm, cohortSearchTerm, minLevel, activeLeaderboard, sortOrder])
 
@@ -1091,7 +1015,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                       </div>
                       {/* Debug: Log cohort label data */}
                       {(() => {
-                        console.log(`Rendering user ${userData.login} with ${userData.userLabels?.length || 0} COHORT labels:`, userData.userLabels?.map(ul => ul.label.name));
                         return null;
                       })()}
                       <div className="flex items-center space-x-2 text-xs text-white/60 mt-1">

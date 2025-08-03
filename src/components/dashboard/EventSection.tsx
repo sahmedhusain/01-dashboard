@@ -27,7 +27,6 @@ interface EventSectionProps {
   user: User
 }
 
-// Complete event queries using our tested queries
 const ALL_EVENTS_QUERY = gql`
   query GetAllEvents($limit: Int = 50, $offset: Int = 0) {
     event(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {

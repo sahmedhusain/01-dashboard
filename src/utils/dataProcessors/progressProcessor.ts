@@ -1,6 +1,5 @@
 import { formatDistanceToNow } from 'date-fns'
 
-// Types for processed progress data
 export interface ProcessedProgress {
   id: string
   project: {
@@ -35,7 +34,6 @@ export interface ProjectTrend {
   passRate: number
 }
 
-// Process raw progress data from GraphQL
 export const processProgressData = (progressData: any[]): ProcessedProgress[] => {
   return progressData.map(progress => {
     const isPassed = progress.isDone && progress.grade >= 1
@@ -65,7 +63,6 @@ export const processProgressData = (progressData: any[]): ProcessedProgress[] =>
   })
 }
 
-// Calculate project statistics
 export const calculateProjectStats = (progressData: any[]): ProjectStats => {
   const processed = processProgressData(progressData)
   const completed = processed.filter(p => p.isDone)
@@ -96,7 +93,6 @@ export const calculateProjectStats = (progressData: any[]): ProjectStats => {
   }
 }
 
-// Calculate project trends over time
 export const calculateProjectTrends = (
   progressData: any[],
   period: 'week' | 'month' = 'month'
@@ -144,7 +140,6 @@ export const calculateProjectTrends = (
     .sort((a, b) => a.period.localeCompare(b.period))
 }
 
-// Get project difficulty analysis
 export const analyzeProjectDifficulty = (progressData: any[]): {
   easy: number
   medium: number
@@ -164,7 +159,6 @@ export const analyzeProjectDifficulty = (progressData: any[]): {
   return { easy, medium, hard }
 }
 
-// Get retry analysis
 export const analyzeRetries = (progressData: any[]): {
   firstAttemptSuccess: number
   multipleAttempts: number
@@ -213,7 +207,6 @@ export const analyzeRetries = (progressData: any[]): {
   }
 }
 
-// Get project type distribution
 export const getProjectTypeDistribution = (progressData: any[]): Record<string, number> => {
   const distribution: Record<string, number> = {}
   
@@ -225,7 +218,6 @@ export const getProjectTypeDistribution = (progressData: any[]): Record<string, 
   return distribution
 }
 
-// Calculate completion velocity (projects per time period)
 export const calculateCompletionVelocity = (
   progressData: any[],
   days: number = 30
@@ -240,7 +232,6 @@ export const calculateCompletionVelocity = (
   return recentCompletions.length / days // Projects per day
 }
 
-// Get learning path progress
 export const getLearningPathProgress = (progressData: any[]): {
   pathName: string
   completed: number

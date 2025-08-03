@@ -1,7 +1,3 @@
-// ============================================================================
-// INTELLIGENT CACHING SYSTEM
-// Comprehensive caching solution for GraphQL dashboard performance optimization
-// ============================================================================
 
 /**
  * Cache configuration and constants
@@ -24,7 +20,6 @@ interface PerformanceMetrics {
 }
 import config from '../../config/appConfig';
 
-// Use dynamic cache configuration
 const CACHE_CONFIG = {
   // Cache durations from configuration
   USER_DATA: config.cache.durations.userData,
@@ -356,13 +351,11 @@ class CacheManager {
       this.set(key, data, ttl, userLogin);
       return data;
     } catch (error) {
-      console.error(`Cache preload failed for key ${key}:`, error);
       return null;
     }
   }
 }
 
-// Create singleton instance
 const cacheManager = new CacheManager();
 
 /**
@@ -442,9 +435,6 @@ export const CacheUtils = {
 
 export default cacheManager;
 
-// ============================================================================
-// PERFORMANCE MONITORING SYSTEM
-// ============================================================================
 
 /**
  * Performance Monitor Class
@@ -518,7 +508,6 @@ class PerformanceMonitor {
         navObserver.observe({ entryTypes: ['navigation'] });
         this.observers.push(navObserver);
       } catch (_e) {
-        console.warn('Navigation timing observer not supported');
       }
     }
 
@@ -536,7 +525,6 @@ class PerformanceMonitor {
         resourceObserver.observe({ entryTypes: ['resource'] });
         this.observers.push(resourceObserver);
       } catch (_e) {
-        console.warn('Resource timing observer not supported');
       }
     }
   }
@@ -777,13 +765,10 @@ class PerformanceMonitor {
   }
 }
 
-// Create singleton instance
 const performanceMonitor = new PerformanceMonitor();
 
-// Start monitoring
 performanceMonitor.startMonitoring();
 
-// Export performance utilities
 export const PerformanceUtils = {
   getInstance: () => performanceMonitor,
   getSummary: () => performanceMonitor.getSummary(),

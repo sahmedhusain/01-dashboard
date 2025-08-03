@@ -4,9 +4,6 @@
  * Ensures type safety throughout the application
  */
 
-// ============================================================================
-// CORE ENTITY INTERFACES
-// ============================================================================
 
 export interface User {
   id: number;
@@ -148,9 +145,6 @@ export interface Object {
   events?: Event[];
 }
 
-// ============================================================================
-// JUNCTION TABLE INTERFACES
-// ============================================================================
 
 export interface GroupUser {
   // Relationships
@@ -164,9 +158,6 @@ export interface EventUser {
   event?: Event;
 }
 
-// ============================================================================
-// AGGREGATE INTERFACES
-// ============================================================================
 
 export interface AggregateResult {
   count?: number;
@@ -203,9 +194,6 @@ export interface EventAggregate {
   nodes?: Event[];
 }
 
-// ============================================================================
-// QUERY RESPONSE INTERFACES
-// ============================================================================
 
 export interface UserResponse {
   user: User[];
@@ -243,9 +231,6 @@ export interface ObjectResponse {
   object: Object[];
 }
 
-// ============================================================================
-// STATISTICS AND ANALYTICS INTERFACES
-// ============================================================================
 
 export interface UserStats {
   user: User[];
@@ -274,9 +259,6 @@ export interface LeaderboardEntry {
   xp_total?: TransactionAggregate;
 }
 
-// ============================================================================
-// QUERY VARIABLES INTERFACES
-// ============================================================================
 
 export interface UserQueryVariables {
   userLogin?: string;
@@ -310,9 +292,6 @@ export interface LeaderboardVariables {
   limit?: number;
 }
 
-// ============================================================================
-// ERROR AND LOADING INTERFACES
-// ============================================================================
 
 export interface GraphQLError {
   message: string;
@@ -330,9 +309,6 @@ export interface QueryResult<T> {
   loading?: boolean;
 }
 
-// ============================================================================
-// UTILITY TYPES
-// ============================================================================
 
 export type Maybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };

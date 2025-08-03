@@ -1,21 +1,8 @@
-// ============================================================================
-// DATA FORMATTING UTILITIES
-// Functions for formatting and displaying data in components
-// ============================================================================
-
 import config from '../config/appConfig';
 
-// ============================================================================
-// XP & NUMERIC FORMATTING
-// ============================================================================
-
 /**
- * New universal formatter for XP and other large numbers.
- * - < 1000: Displays as Bytes (B).
- * - 1,000 to 999,999: Displays as Kilobytes (kB) with 2 decimal places.
- * - >= 1,000,000: Displays as Megabytes (MB) with 2 decimal places.
- * @param num - The number to format.
- * @returns The formatted string (e.g., "950 B", "25.50 kB", "1.25 MB").
+ * @param num
+ * @returns
  */
 export const formatXPValue = (num: number | null | undefined): string => {
   if (num === null || num === undefined || isNaN(num)) return '0 B';
@@ -30,36 +17,31 @@ export const formatXPValue = (num: number | null | undefined): string => {
 };
 
 /**
- * Formats audit values (up/down) which are typically very large.
- * This function will now use the universal formatter.
- * @param auditValue - The audit value to format.
- * @returns The formatted string in B, kB, or MB.
+ * @param auditValue
+ * @returns
  */
 export const formatAuditMB = (auditValue: number | null | undefined): string => {
   return formatXPValue(auditValue);
 };
 
 /**
- * Formats the audit ratio to one decimal place.
- * @param ratio - The audit ratio.
- * @returns The formatted string (e.g., "1.9").
+ * @param ratio
+ * @returns
  */
 export const formatAuditRatio = (ratio: number | null | undefined): string => {
   if (ratio == null || isNaN(ratio)) return '0.0';
   return ratio.toFixed(1);
 };
 
-// Deprecated functions for backward compatibility
 export const formatTotalXP = (xp: number) => formatXPValue(xp);
 export const formatModuleXP = (xp: number) => formatXPValue(xp);
 export const formatXP = (xp: number) => formatXPValue(xp);
 export const formatXPForQuickStats = (xp: number) => formatXPValue(xp);
 
 /**
- * Get XP progress percentage for level progression
- * @param currentXP - Current XP amount
- * @param level - Current level
- * @returns Progress percentage (0-100)
+ * @param currentXP
+ * @param level
+ * @returns
  */
 export const getXPProgress = (currentXP: number | null | undefined, level: number | null | undefined): number => {
   if (!currentXP || !level) return 0;
@@ -72,22 +54,15 @@ export const getXPProgress = (currentXP: number | null | undefined, level: numbe
   return Math.min(100, Math.max(0, (progressXP / requiredXP) * 100));
 };
 
-// ============================================================================
-// SKILL FORMATTING
-// ============================================================================
-
 /**
- * Gets the latest skill amounts and calculates skill progress correctly.
- * Skills show the latest transaction amount as percentage (e.g., last go skill = 55 → 55%)
- * @param skillTransactions - An array of transactions of type 'skill_...'.
- * @returns Object with skill data including latest amounts and progress.
+ * @param skillTransactions
+ * @returns
  */
 export const calculateSkillData = (skillTransactions: any[]) => {
   if (!skillTransactions || skillTransactions.length === 0) {
     return { skills: [], totalSkills: 0 };
   }
   
-  // Group transactions by skill type
   const skillGroups: { [key: string]: any[] } = {};
   
   skillTransactions.forEach(transaction => {
@@ -98,7 +73,7 @@ export const calculateSkillData = (skillTransactions: any[]) => {
     skillGroups[skillName].push(transaction);
   });
   
-  // Process each skill group
+
   const skills = Object.keys(skillGroups).map(skillName => {
     const skillTxs = skillGroups[skillName].sort((a, b) => 
       new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -109,31 +84,22 @@ export const calculateSkillData = (skillTransactions: any[]) => {
     
     const currentAmount = latestTransaction.amount || 0;
     const previousAmount = previousTransaction?.amount || 0;
-    const progress = currentAmount - previousAmount; // Difference for transaction display
+    const progress = currentAmount - previousAmount;
     
     return {
       name: formatSkillName(skillName),
       rawName: skillName,
-      currentAmount, // This is the percentage (e.g., 55 = 55%)
+      currentAmount,
       previousAmount,
-      progress, // For transaction display (e.g., +5 if went from 50 to 55)
-      percentage: currentAmount, // Direct amount as percentage
+      progress,
+      percentage: currentAmount,
       latestDate: latestTransaction.createdAt,
       transactions: skillTxs
     };
   });
   
-  // Sort by current amount (highest skills first)
   skills.sort((a, b) => b.currentAmount - a.currentAmount);
   
-  console.log('🎯 Skill Data Calculated:', {
-    totalSkills: skills.length,
-    topSkills: skills.slice(0, 3).map(s => ({
-      name: s.name,
-      percentage: s.currentAmount + '%',
-      progress: s.progress > 0 ? `+${s.progress}%` : `${s.progress}%`
-    }))
-  });
   
   return {
     skills,
@@ -146,7 +112,6 @@ export const calculateSkillData = (skillTransactions: any[]) => {
  * @deprecated Use calculateSkillData instead
  */
 export const calculateTotalSkillPoints = (skillTransactions: any[]): number => {
-  console.warn('calculateTotalSkillPoints is deprecated, use calculateSkillData instead');
   if (!skillTransactions || skillTransactions.length === 0) return 0;
   return skillTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
 };
@@ -381,37 +346,8 @@ export const separateModuleData = (data: any[]) => {
     mainModule.push(item);
   });
   
-  console.log('🔍 DATA SEPARATION RESULTS:');
-  console.log('  Total Items:', data.length);
-  console.log('  Main Module Items:', mainModule.length);
-  console.log('  Main Checkpoints:', checkpoints.length);
-  console.log('  Total Piscine Items:', allPiscines.length);
-  console.log('  Piscine Types:', Object.keys(piscines));
   
-  // Show all checkpoint paths to debug misclassification  
-  const allCheckpointPaths = data.filter(item => item.path && item.path.includes('checkpoint')).map(c => c.path);
-  console.log('  ');
-  console.log('  ALL CHECKPOINT PATHS (' + allCheckpointPaths.length + ' total):');
-  allCheckpointPaths.forEach((path, i) => {
-    if (i < 15) { // Show first 15
-      console.log('    ' + (i+1) + ':', path);
-    }
-  });
-  
-  console.log('  ');
-  console.log('  MAIN CHECKPOINTS (' + checkpoints.length + ' assigned to main):');
-  checkpoints.slice(0, 10).forEach((c, i) => {
-    console.log('    ' + (i+1) + ':', c.path);
-  });
-  
-  console.log('  ');
-  console.log('  PISCINE BREAKDOWN:');
-  Object.keys(piscines).forEach(type => {
-    console.log('    ' + type + ':', piscines[type].length + ' items');
-    piscines[type].slice(0, 3).forEach((p, i) => {
-      console.log('      ' + (i+1) + ':', p.path);
-    });
-  });
+
   
   return { mainModule, piscines, checkpoints, allPiscines, all: data };
 };
@@ -439,13 +375,11 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
   
   // Filter only TRUE XP transactions (exclude up/down which are audit-related)
   const xpTransactions = transactions.filter(t => t.type === 'xp');
-  console.log('🔍 XP Transactions found:', xpTransactions.length);
   
   // Also exclude up/down transactions completely as they are not XP
   const nonAuditTransactions = transactions.filter(t => 
     t.type !== 'up' && t.type !== 'down'
   );
-  console.log('🔍 Non-audit transactions found:', nonAuditTransactions.length);
   
   // Proper separation: Exclude audit/review XP as they are for community/ratio, not XP progress
   const auditXPTransactions = xpTransactions.filter(t => {
@@ -473,18 +407,7 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
     !auditXPTransactions.includes(t)
   );
   
-  console.log('🎯 Transaction Separation (Enhanced Audit Detection):', {
-    totalXPTransactions: xpTransactions.length,
-    auditXPTransactions: auditXPTransactions.length,
-    projectXPTransactions: projectXPTransactions.length,
-    auditXPTotal: auditXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0),
-    auditXPSample: auditXPTransactions.slice(0, 3).map(t => ({
-      amount: t.amount,
-      path: t.path,
-      attrs: t.attrs,
-      date: t.createdAt
-    }))
-  });
+
   
   // Separate ONLY project XP data (excluding audit/review XP and piscines)
   const separatedXP = separateModuleData(projectXPTransactions);
@@ -516,14 +439,6 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
   const mainCheckpointsXP = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
   const piscinesXP = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  console.log('🔍 XP Breakdown by Category:');
-  console.log('  Main Module XP:', (mainModuleXP / 1000).toFixed(2) + ' kB');
-  console.log('  Main Checkpoints XP:', (mainCheckpointsXP / 1000).toFixed(2) + ' kB');
-  console.log('  Piscines XP:', (piscinesXP / 1000).toFixed(2) + ' kB');
-  console.log('  Sum Check:', ((mainModuleXP + mainCheckpointsXP + piscinesXP) / 1000).toFixed(2) + ' kB');
-  console.log('  Total Project XP:', (totals.projectXP / 1000).toFixed(2) + ' kB');
-  console.log('  Expected Piscines:', '609.79 kB');
-  console.log('  Piscines Difference:', ((piscinesXP / 1000) - 609.79).toFixed(2) + ' kB');
   
   // Calculate audit XP (for tracking purposes, but not included in main XP)
   totals.auditXP = auditXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -537,29 +452,13 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
   // Calculate BH Module XP = Total Project XP - All Piscines XP
   totals.bhModule = totals.projectXP - piscinesXP;
   
-  console.log('📊 XP CALCULATION RESULTS:');
-  console.log('  TOTAL PROJECT XP:', (totals.projectXP / 1000).toFixed(2) + ' kB');
-  console.log('  ALL PISCINES XP:', (totals.allPiscines / 1000).toFixed(2) + ' kB');
-  console.log('  EXPECTED PISCINES:', '609.79 kB');
-  console.log('  PISCINES DISCREPANCY:', ((totals.allPiscines / 1000) - 609.79).toFixed(2) + ' kB');
-  console.log('  ');
-  console.log('  BH MODULE XP:', (totals.bhModule / 1000).toFixed(2) + ' kB');
-  console.log('  EXPECTED BH MODULE:', '691 kB');
-  console.log('  BH MODULE DISCREPANCY:', (Math.round(totals.bhModule / 1000) - 691) + ' kB');
-  console.log('  ');
-  console.log('  MAIN CHECKPOINTS XP:', (totals.checkpoints / 1000).toFixed(2) + ' kB');
-  console.log('  AUDIT XP (excluded):', (totals.auditXP / 1000).toFixed(2) + ' kB');
-  console.log('  ');
-  console.log('  FORMULA: BH Module = Total Project XP - All Piscines XP');
   
   return totals;
 };
 
 /**
- * Calculate project statistics with proper BH Module filtering
- * Excludes piscines and checkpoints from BH Module project counting
- * @param {any[]} progresses - Array of progress objects
- * @returns {object} Project statistics separated by category
+ * @param {any[]} progresses
+ * @returns {object}
  */
 export const calculateProjectStats = (progresses: any[]) => {
   if (!progresses || !Array.isArray(progresses)) {
@@ -574,10 +473,8 @@ export const calculateProjectStats = (progresses: any[]) => {
     };
   }
   
-  // Separate progress data by category
   const separatedProgress = separateModuleData(progresses);
   
-  // Helper function to calculate stats for a category
   const calculateCategoryStats = (progressList: any[]) => {
     const projectsByPath: { [key: string]: any[] } = {};
     
@@ -610,21 +507,13 @@ export const calculateProjectStats = (progresses: any[]) => {
     };
   };
   
-  // Calculate stats for each category
   const bhModuleStats = calculateCategoryStats(separatedProgress.mainModule);
   const piscineStats = calculateCategoryStats(separatedProgress.allPiscines);
   const checkpointStats = calculateCategoryStats(separatedProgress.checkpoints);
   
-  // Calculate overall stats
   const overallStats = calculateCategoryStats(progresses);
   
-  console.log('📊 Project Statistics:', {
-    overall: overallStats,
-    bhModule: bhModuleStats,
-    piscines: piscineStats,
-    checkpoints: checkpointStats
-  });
-  
+
   return {
     ...overallStats,
     bhModule: bhModuleStats,
@@ -633,35 +522,22 @@ export const calculateProjectStats = (progresses: any[]) => {
   };
 };
 
-// ============================================================================
-// LEVEL & RANK UTILITIES
-// ============================================================================
-
 export const calculateLevel = (totalXP: number): number => {
   if (!totalXP || totalXP <= 0) return 1;
   return Math.floor(Math.sqrt(totalXP / 1000)) + 1;
 };
 
 /**
- * Calculate level progress using the correct square root method with BH Module XP only
- * This matches the original reboot01 level calculation system
- * Excludes piscines and checkpoints as per ALL_PATHS_STRUCTURE.md
- * @param {number} bhModuleXP - BH Module XP in bytes (excluding piscines and checkpoints)
- * @returns {object} Level information with correct progress calculation
+ * @param {number} bhModuleXP
+ * @returns {object}
  */
 export const calculateLevelProgress = (bhModuleXP: number) => {
-  console.log('🔍 Level Calculation Debug (Square Root Method - BH Module Only):', {
-    bhModuleXP,
-    bhModuleXPInKB: bhModuleXP / 1000,
-    bhModuleXPInMB: bhModuleXP / 1000000,
-    note: 'Using only true BH module XP (excluding piscines and checkpoints)'
-  });
 
   if (!bhModuleXP || bhModuleXP <= 0) {
     return {
       currentLevel: 1,
       progress: 0,
-      remainingXP: 1000, // 1kB for first level
+      remainingXP: 1000,
       nextLevelXP: 1000,
       currentLevelStartXP: 0,
       progressInKB: 0,
@@ -669,21 +545,17 @@ export const calculateLevelProgress = (bhModuleXP: number) => {
     };
   }
 
-  // Square root calculation: level = floor(sqrt(xp_in_kb)) + 1
   const xpInKB = bhModuleXP / 1000;
   const currentLevel = Math.floor(Math.sqrt(xpInKB)) + 1;
   
-  // Calculate XP thresholds for square root method
-  const currentLevelStartXP = Math.pow(currentLevel - 1, 2) * 1000; // in bytes
-  const nextLevelXP = Math.pow(currentLevel, 2) * 1000; // in bytes
+  const currentLevelStartXP = Math.pow(currentLevel - 1, 2) * 1000;
+  const nextLevelXP = Math.pow(currentLevel, 2) * 1000;
   
-  // Calculate progress within current level
   const xpInCurrentLevel = bhModuleXP - currentLevelStartXP;
   const remainingXP = nextLevelXP - bhModuleXP;
   const levelRange = nextLevelXP - currentLevelStartXP;
   const progress = levelRange > 0 ? (xpInCurrentLevel / levelRange) * 100 : 0;
   
-  // Convert to kB for display
   const progressInKB = xpInCurrentLevel / 1000;
   const remainingInKB = remainingXP / 1000;
   
@@ -697,17 +569,7 @@ export const calculateLevelProgress = (bhModuleXP: number) => {
     remainingInKB
   };
 
-  console.log('📊 Level Calculation Result (Square Root - BH Module Only):', {
-    ...result,
-    xpInCurrentLevel,
-    progressInKB: progressInKB.toFixed(1),
-    remainingInKB: remainingInKB.toFixed(1),
-    levelRange: (levelRange / 1000).toFixed(1) + 'kB',
-    expectedUserData: {
-      bhModuleXP: '691kB',
-      remainingXP: '66.6kB'
-    }
-  });
+
   
   return result;
 };
@@ -725,34 +587,26 @@ export const getRankFromLevel = (level: number) => {
 
 export const calculatePiscineLevel = (xp: number): number => {
   if (!xp || xp <= 0) return 0;
-  // Simple linear progression for piscine levels
   return Math.floor(xp / 10000);
 };
 
 /**
- * Format skill name for display (replace underscores with spaces and capitalize)
- * @param {string} skillName - Raw skill name
- * @returns {string} Formatted skill name
+ * @param {string} skillName
+ * @returns {string}
  */
 export const formatSkillName = (skillName: string) => {
   if (!skillName) return 'Unknown Skill';
   return skillName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };
 
-// ============================================================================
-// PERSONAL INFORMATION UTILITIES
-// ============================================================================
-
 /**
- * Extract personal information from user attrs
- * @param {any} attrs - User attributes object
- * @returns {object} Extracted personal information
+ * @param {any} attrs
+ * @returns {object}
  */
 export const extractPersonalInfo = (attrs: any) => {
   if (!attrs) return {};
 
   return {
-    // Personal Details (based on actual API data)
     dateOfBirth: attrs.dateOfBirth || attrs.dob || attrs.birthDate,
     placeOfBirth: attrs.placeOfBirth,
     countryOfBirth: attrs.countryOfBirth,
@@ -762,12 +616,10 @@ export const extractPersonalInfo = (attrs: any) => {
     studentId: attrs.studentId || attrs.id,
     gender: attrs.gender || attrs.genders,
     
-    // Contact Information (based on actual API data)
     email: attrs.email || attrs.emailAddress,
     phone: attrs.Phone || attrs.PhoneNumber || attrs.phone || attrs.phoneNumber || attrs.mobile,
     alternativePhone: attrs.alternativePhone || attrs.altPhone,
     
-    // Emergency Contact (based on actual API data)
     emergencyContact: {
       name: `${attrs.emergencyFirstName || ''} ${attrs.emergencyLastName || ''}`.trim() || 
             attrs.emergencyContactName || attrs.emergencyName || attrs.nextOfKinName,
@@ -776,7 +628,6 @@ export const extractPersonalInfo = (attrs: any) => {
       address: attrs.emergencyContactAddress || attrs.emergencyAddress
     },
     
-    // Address Information (based on actual API data)
     address: {
       street: attrs.addressStreet || attrs.street || attrs.address,
       complementStreet: attrs.addressComplementStreet,
@@ -786,39 +637,33 @@ export const extractPersonalInfo = (attrs: any) => {
       area: attrs.addressArea || attrs.area || attrs.district
     },
     
-    // Academic Information
     cohort: attrs.cohort || attrs.cohortName || extractCohortFromPath(attrs.path),
     cohortNumber: attrs.cohortNumber || attrs.batch || extractCohortNumber(attrs.cohort),
     academicLevel: attrs.academicLevel || attrs.educationLevel,
     
-    // Educational Background (based on actual API data)
     degree: attrs.Degree || attrs.degree || attrs.qualification,
     qualification: attrs.qualification || attrs.qualifica,
     schoolAndDegree: attrs.schoolanddegree,
     graduationDate: attrs.graddate,
     howDidYouHear: attrs.howdidyou,
     
-    // Employment Information (based on actual API data)
     employment: attrs.employment,
     jobTitle: attrs.jobtitle || attrs.jobTitle || attrs.position,
     currentEmployer: attrs.currentEmployer || attrs.employer,
     otherEmployer: attrs.otheremp,
     workExperience: attrs.workExperience || attrs.experience,
     
-    // Additional Information
     profilePicture: attrs['pro-picUploadId'] || attrs.profilePic || attrs.avatar,
     idCardUpload: attrs['id-cardUploadId'],
     linkedIn: attrs.linkedIn || attrs.linkedin,
     github: attrs.github || attrs.githubUsername,
     personalWebsite: attrs.website || attrs.personalSite,
     
-    // Medical/Health Information (based on actual API data)
     medicalInfo: attrs.medicalInfo,
     allergies: attrs.allergies || attrs.medicalAllergies,
     medicalConditions: attrs.medicalConditions || attrs.healthConditions,
     bloodType: attrs.bloodType || attrs.bloodGroup,
     
-    // Other fields
     other: attrs.other,
     ifOther: attrs.ifother,
     otherEq: attrs.othereq,
@@ -827,20 +672,17 @@ export const extractPersonalInfo = (attrs: any) => {
 };
 
 /**
- * Extract cohort information from path
- * @param {string} path - User path
- * @returns {string} Cohort name
+ * @param {string} path
+ * @returns {string}
  */
 export const extractCohortFromPath = (path: string) => {
   if (!path) return null;
   
-  // Try to extract cohort from path patterns like /bahrain/bh-<cohort>/
   const cohortMatch = path.match(/\/bahrain\/bh-([^\/]+)\//);
   if (cohortMatch) {
     return cohortMatch[1];
   }
   
-  // Try other patterns
   const moduleMatch = path.match(/\/bahrain\/([^\/]+)\//);
   if (moduleMatch) {
     return moduleMatch[1];
@@ -850,9 +692,8 @@ export const extractCohortFromPath = (path: string) => {
 };
 
 /**
- * Extract cohort number from cohort string
- * @param {string} cohort - Cohort string
- * @returns {string} Cohort number
+ * @param {string} cohort
+ * @returns {string}
  */
 export const extractCohortNumber = (cohort: string) => {
   if (!cohort) return null;
@@ -862,27 +703,22 @@ export const extractCohortNumber = (cohort: string) => {
 };
 
 /**
- * Format phone number for display
- * @param {string} phone - Phone number
- * @returns {string} Formatted phone number
+ * @param {string} phone
+ * @returns {string}
  */
 export const formatPhoneNumber = (phone: string) => {
   if (!phone) return '';
   
-  // Remove all non-numeric characters
   const cleaned = phone.replace(/\D/g, '');
   
-  // Format Bahraini numbers
   if (cleaned.startsWith('973')) {
     return `+973 ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`;
   }
   
-  // Format other international numbers
   if (cleaned.length > 10) {
     return `+${cleaned}`;
   }
   
-  // Format local numbers
   if (cleaned.length === 8) {
     return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
   }
@@ -893,14 +729,12 @@ export const formatPhoneNumber = (phone: string) => {
 
 
 /**
- * Get cohort display name
- * @param {string} cohort - Cohort identifier
- * @returns {string} Display name for cohort
+ * @param {string} cohort
+ * @returns {string}
  */
 export const getCohortDisplayName = (cohort: string) => {
   if (!cohort) return 'Cohort';
   
-  // Handle different cohort formats
   if (cohort.startsWith('bh-')) {
     const cohortName = cohort.replace('bh-', '').replace(/[-_]/g, ' ');
     return `BH ${cohortName.charAt(0).toUpperCase() + cohortName.slice(1)}`;
@@ -910,7 +744,6 @@ export const getCohortDisplayName = (cohort: string) => {
     return cohort.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
   
-  // Extract numbers for simple display
   const numberMatch = cohort.match(/(\d+)/);
   if (numberMatch) {
     return `Cohort ${numberMatch[1]}`;
@@ -920,32 +753,24 @@ export const getCohortDisplayName = (cohort: string) => {
 };
 
 /**
- * Analyze transaction history to find level achievement points and calculate remaining XP
- * @param {any[]} transactions - Array of XP transactions (sorted by date)
- * @param {number} currentLevel - User's current level
- * @returns {object} Level analysis with transaction breakdown
+ * @param {any[]} transactions
+ * @param {number} currentLevel
+ * @returns {object}
  */
 export const analyzeLevelProgression = (transactions: any[], currentLevel: number) => {
   if (!transactions || !Array.isArray(transactions) || currentLevel < 1) {
     return null;
   }
   
-  // Filter and sort XP transactions by date
   const xpTransactions = transactions
     .filter(t => t.type === 'xp')
     .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   
-  console.log('🔍 Analyzing Level Progression:', {
-    totalXPTransactions: xpTransactions.length,
-    currentLevel,
-    analyzing: 'Transaction history to find level achievement points'
-  });
+
   
-  // Calculate level thresholds
-  const levelStartXP = Math.pow(currentLevel - 1, 2) * 1000; // in bytes
-  const levelEndXP = Math.pow(currentLevel, 2) * 1000; // in bytes
+  const levelStartXP = Math.pow(currentLevel - 1, 2) * 1000;
+  const levelEndXP = Math.pow(currentLevel, 2) * 1000;
   
-  // Track cumulative XP and find when each level was achieved
   let cumulativeXP = 0;
   let levelAchievedAt = null;
   let xpAtLevelAchievement = 0;
@@ -956,36 +781,23 @@ export const analyzeLevelProgression = (transactions: any[], currentLevel: numbe
     const previousXP = cumulativeXP;
     cumulativeXP += transaction.amount || 0;
     
-    // Check if this transaction caused the level to be achieved
     const previousLevel = Math.floor(Math.sqrt(previousXP / 1000)) + 1;
     const newLevel = Math.floor(Math.sqrt(cumulativeXP / 1000)) + 1;
     
     if (newLevel >= currentLevel && !levelAchievedAt) {
       levelAchievedAt = transaction.createdAt;
-      xpAtLevelAchievement = previousXP; // XP before this transaction
+      xpAtLevelAchievement = previousXP;
       
-      console.log('🎯 Level Achievement Found:', {
-        transaction: i + 1,
-        date: levelAchievedAt,
-        xpBefore: previousXP,
-        xpAfter: cumulativeXP,
-        transactionAmount: transaction.amount,
-        levelBefore: previousLevel,
-        levelAfter: newLevel,
-        path: transaction.path
-      });
+
     }
     
-    // Collect transactions after level achievement
     if (levelAchievedAt && new Date(transaction.createdAt) > new Date(levelAchievedAt)) {
       transactionsAfterLevel.push(transaction);
     }
   }
   
-  // Calculate XP earned since level achievement
   const xpEarnedSinceLevel = transactionsAfterLevel.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  // Calculate remaining XP to next level
   const nextLevelXP = Math.pow(currentLevel + 1, 2) * 1000;
   const currentTotalXP = xpAtLevelAchievement + xpEarnedSinceLevel;
   const remainingXP = nextLevelXP - currentTotalXP;
@@ -1009,7 +821,6 @@ export const analyzeLevelProgression = (transactions: any[], currentLevel: numbe
     }))
   };
   
-  console.log('📊 Level Progression Analysis:', result);
   
   return result;
 };

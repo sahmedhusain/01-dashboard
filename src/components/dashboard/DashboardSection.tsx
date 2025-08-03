@@ -12,16 +12,13 @@ import {
   calculateSkillData
 } from '../../utils/dataFormatting'
 
-// Dashboard Section Components
 import ProfileSection from './sections/ProfileSection'
 import AnalyticsSection from './sections/AnalyticsSection'
 import StatisticsSection from './sections/StatisticsSection'
 import TransactionsSection from './sections/TransactionsSection'
 
-// Navigation icons
 import { User, BarChart3, TrendingUp, Activity, LayoutDashboard } from 'lucide-react'
 
-// Enhanced GraphQL query with proper BH Module data separation
 const ENHANCED_DASHBOARD_QUERY = gql`
   query GetEnhancedDashboard($userId: Int!, $login: String!) {
     # User information with all attributes including avatar
@@ -305,13 +302,6 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const xpTransactions = allTransactions.filter((t: any) => t.type === 'xp')
     const avgXPPerProject = xpTransactions.length > 0 ? Math.round(totalXP / xpTransactions.length) : 0
     
-    console.log('🎯 Updated XP Calculation Using Aggregates:', {
-      totalXP: (totalXP / 1000).toFixed(1) + 'kB',
-      bhModuleXP: (bhModuleXP / 1000).toFixed(1) + 'kB',
-      piscineXP: (piscineXP / 1000).toFixed(1) + 'kB',
-      otherXP: (otherXP / 1000).toFixed(1) + 'kB',
-      avgXPPerProject: (avgXPPerProject / 1000).toFixed(1) + 'kB'
-    })
     
     // Find the last level transaction to get current level and calculate progress from there
     const levelTransactions = allTransactions.filter((t: any) => t.type === 'level')
@@ -345,21 +335,6 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     
     // NO UP/DOWN transactions for level progress - audit amounts are for community/ratio only
     
-    console.log('🎯 Level Calculation (Project XP Only - No Audits):', {
-      lastLevelTransaction: lastLevelTransaction ? {
-        level: lastLevelTransaction.amount,
-        date: lastLevelTransaction.createdAt,
-        path: lastLevelTransaction.path
-      } : 'Not found',
-      currentLevel,
-      bhModuleXP: (bhModuleXP / 1000).toFixed(1) + 'kB',
-      xpTransactionsAfterLevel: xpAfterLevel.length,
-      xpEarnedAfterLevel: (xpEarnedAfterLevel / 1000).toFixed(1) + 'kB',
-      remainingToNextLevel: (remainingToNextLevel / 1000).toFixed(1) + 'kB',
-      progressPercentage: progressPercentage.toFixed(1) + '%',
-      expectedValue: '691 kB total main module XP',
-      note: 'Level progress = Project XP only (NO audit amounts)'
-    })
     
     // Create level info based on project XP only (no audit amounts)
     const correctedLevelInfo = {

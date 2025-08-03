@@ -4,14 +4,12 @@ import { User } from '../types'
 import { TOKEN_KEY } from '../utils/auth'
 
 interface AuthState {
-  // State
   user: User | null
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
 
-  // Actions
   login: (user: User, token: string) => void
   logout: () => void
   setLoading: (loading: boolean) => void
@@ -23,14 +21,11 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      // Initial state
       user: null,
       token: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
-
-      // Actions
 
       login: (user: User, token: string) => {
         set({
@@ -40,9 +35,7 @@ export const useAuthStore = create<AuthState>()(
           error: null,
           isLoading: false
         })
-        // Let Zustand persist handle localStorage
       },
-
 
       logout: () => {
         set({
@@ -52,7 +45,6 @@ export const useAuthStore = create<AuthState>()(
           error: null,
           isLoading: false
         })
-        // Let Zustand persist handle localStorage
       },
 
       setLoading: (loading: boolean) => {
@@ -77,7 +69,7 @@ export const useAuthStore = create<AuthState>()(
       }
     }),
     {
-      name: TOKEN_KEY, // Use the same key as TOKEN_KEY for consistency
+      name: TOKEN_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
@@ -89,15 +81,11 @@ export const useAuthStore = create<AuthState>()(
 )
 
 
-// Selectors for better performance - using individual selectors to avoid object recreation
-
 export const useUser = () => useAuthStore((state) => state.user)
 export const useToken = () => useAuthStore((state) => state.token)
 export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated)
 export const useIsLoading = () => useAuthStore((state) => state.isLoading)
 export const useAuthError = () => useAuthStore((state) => state.error)
-
-// Action selectors
 export const useLogin = () => useAuthStore((state) => state.login)
 export const useLogout = () => useAuthStore((state) => state.logout)
 export const useSetLoading = () => useAuthStore((state) => state.setLoading)

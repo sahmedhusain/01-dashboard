@@ -20,23 +20,21 @@ const USER_PROFILE_QUERY = gql`
 `
 
 const ProfilePage: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>()
+  const { userId: userIdParam } = useParams<{ userId: string }>()
   const isAuthenticated = useIsAuthenticated()
   
-  const userIdNum = userId ? parseInt(userId, 10) : null
+  const userIdNum = userIdParam ? parseInt(userIdParam, 10) : null
 
   const { data, loading, error } = useQuery(USER_PROFILE_QUERY, {
     variables: { userId: userIdNum },
     skip: !userIdNum,
   })
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
-  // Invalid user ID
-  if (!userIdNum || isNaN(userIdNum)) {
+  if (!userIdParam || isNaN(Number(userIdParam))) {
     return <Navigate to="/dashboard" replace />
   }
 

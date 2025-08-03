@@ -22,27 +22,20 @@ const AppContent: React.FC = () => {
       try {
         const storedData = getStoredAuthData()
         if (storedData.user && storedData.token) {
-          // Check if user data is complete (has login field)
           if (storedData.user.login) {
-            // User data is complete, use it directly
             login(storedData.user, storedData.token)
           } else if (storedData.user.id && !storedData.token.startsWith('mock-dev-token')) {
-            // User data is incomplete (only has ID) and not a mock token, fetch complete data
             try {
               const completeUser = await fetchUserData(storedData.user.id, storedData.token)
               login(completeUser, storedData.token)
             } catch (fetchError) {
-              console.error('Failed to fetch complete user data:', fetchError)
-              // If fetching fails, clear auth data and let user re-login
               localStorage.clear()
             }
           } else if (storedData.token.startsWith('mock-dev-token')) {
-            // This is a mock token from test login, use the stored user data directly
             login(storedData.user, storedData.token)
           }
         }
       } catch (error) {
-        console.error('Failed to initialize auth:', error)
       } finally {
         setLoading(false)
         setIsInitializing(false)

@@ -18,13 +18,11 @@ interface UserProfileData {
 }
 
 interface UserProfileState {
-  // State
   profiles: Map<number, UserProfileData>
   currentProfileId: number | null
   isLoading: boolean
   error: string | null
 
-  // Actions
   setProfile: (userId: number, data: Partial<UserProfileData>) => void
   setCurrentProfile: (userId: number | null) => void
   setLoading: (loading: boolean) => void
@@ -46,13 +44,11 @@ const initialProfileData: UserProfileData = {
 export const useUserProfileStore = create<UserProfileState>()(
   devtools(
     (set, get) => ({
-      // Initial state
       profiles: new Map(),
       currentProfileId: null,
       isLoading: false,
       error: null,
 
-      // Actions
       setProfile: (userId: number, data: Partial<UserProfileData>) => {
         set((state) => {
           const newProfiles = new Map(state.profiles)
@@ -107,7 +103,6 @@ export const useUserProfileStore = create<UserProfileState>()(
   )
 )
 
-// Selectors for better performance
 export const useCurrentProfile = () => useUserProfileStore((state) => {
   const currentId = state.currentProfileId
   if (!currentId) return null
@@ -133,7 +128,6 @@ export const useUserProfileStatus = () => useUserProfileStore((state) => ({
   error: state.error
 }))
 
-// Helper hook to get profile data with loading state
 export const useProfileData = (userId: number | null) => {
   const profile = useUserProfileStore((state) => 
     userId ? state.profiles.get(userId) : null

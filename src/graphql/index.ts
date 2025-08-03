@@ -1,23 +1,11 @@
-// ============================================================================
-// COMPREHENSIVE GRAPHQL EXPORTS - ALL 96 TESTED QUERIES
-// ============================================================================
 
-// Export all comprehensive queries (96 tested queries)
 export * from './allQueries';
 
-// Re-export client for convenience
 export { default as client } from './client';
 
-// ============================================================================
-// QUERY CATEGORIES FOR EASY REFERENCE - COMPREHENSIVE 96 QUERIES
-// ============================================================================
 
-// Re-export query categories from allQueries for convenience
 export { QUERY_CATEGORIES } from './allQueries';
 
-// ============================================================================
-// TESTED QUERY COUNTS - REAL DATA FROM COMPREHENSIVE TESTING
-// ============================================================================
 
 export const TESTED_QUERY_STATS = {
   TOTAL_QUERIES: 96,
@@ -25,7 +13,6 @@ export const TESTED_QUERY_STATS = {
   GRAPHQL_ERRORS: 3,
   FAILED_QUERIES: 0,
 
-  // Data counts from actual testing
   DATA_DISCOVERIES: {
     EVENT_USER_VIEW: 17963,
     REGISTRATION_USER_VIEW: 9369,
@@ -51,9 +38,6 @@ export const TESTED_QUERY_STATS = {
   }
 };
 
-// ============================================================================
-// COMPREHENSIVE QUERY USAGE GUIDE
-// ============================================================================
 
 /**
  * Get queries by category from the comprehensive collection

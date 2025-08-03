@@ -1,9 +1,7 @@
-// Export all data processors
 export * from './xpProcessor'
 export * from './progressProcessor'
 export * from './auditProcessor'
 
-// Re-export commonly used functions
 export {
   processXPTransactions,
   calculateXPSummary,
@@ -24,4 +22,3 @@ export {
   calculateAuditTrends
 } from './auditProcessor'
 
-// Note: formatAuditMB and formatAuditRatio are available in src/utils/dataFormatting.ts

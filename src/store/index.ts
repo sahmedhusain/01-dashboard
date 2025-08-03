@@ -1,9 +1,7 @@
-// Export all stores and their hooks
 export * from './authStore'
 export * from './dashboardStore'
 export * from './userProfileStore'
 
-// Re-export commonly used hooks for convenience
 export {
   useUser,
   useToken,

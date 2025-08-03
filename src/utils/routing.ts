@@ -11,16 +11,13 @@ export const useDashboardRouting = () => {
   const getCurrentTab = useCallback((): DashboardTab => {
     const path = location.pathname
 
-    // Handle root dashboard
     if (path === '/dashboard') return 'dashboard'
 
-    // Handle piscine sub-routes
     if (path.startsWith('/dashboard/piscines/')) {
       const piscineType = params.piscineType || path.split('/').pop()
       return `piscine-${piscineType}`
     }
 
-    // Handle other dashboard routes
     const segments = path.split('/')
     if (segments.length >= 3 && segments[1] === 'dashboard') {
       return segments[2] as DashboardTab
@@ -92,23 +89,18 @@ export const useDashboardRouting = () => {
     updateQueryParam,
     clearQueryParams,
     getBreadcrumbs,
-    // Legacy support
     setTab: navigateToTab,
     getTab: getCurrentTab
   }
 }
 
-// Legacy export for backward compatibility
 export const useTabRouting = useDashboardRouting
 
 export const useRouteAnalytics = () => {
-  // Placeholder for route analytics
   return {
     trackPageView: (path: string) => {
-      console.log('Page view:', path)
     },
     trackEvent: (event: string, data?: any) => {
-      console.log('Event:', event, data)
     }
   }
 }

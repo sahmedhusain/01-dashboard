@@ -30,7 +30,6 @@ interface ObjectSectionProps {
   user: UserType
 }
 
-// Complete object queries using our tested queries - NO LIMITS
 const GET_ALL_OBJECTS = gql`
   query GetAllObjects {
     object(order_by: {createdAt: desc}) {

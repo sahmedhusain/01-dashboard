@@ -1,7 +1,3 @@
-// ============================================================================
-// COMPREHENSIVE ERROR HANDLING & USER FEEDBACK SYSTEM
-// Advanced error management with user-friendly feedback and recovery options
-// ============================================================================
 
 /**
  * Error types and severity levels
@@ -50,9 +46,7 @@ export class AppError extends Error {
     this.reportable = options.reportable !== false;
   }
 
-  /**
-   * Generate user-friendly error message
-   */
+
   generateUserMessage() {
     const messages = {
       [ERROR_TYPES.NETWORK]: 'Connection issue. Please check your internet connection and try again.',
@@ -243,13 +237,6 @@ class ErrorManager {
 
     // Console logging for development
     if (import.meta.env.DEV) {
-      console.group(`🚨 ${error.severity.toUpperCase()} ERROR: ${error.type}`);
-      console.error('Message:', error.message);
-      console.error('User Message:', error.userMessage);
-      console.error('Context:', error.context);
-      console.error('Recovery Actions:', error.recoveryActions);
-      console.error('Stack:', error.stack);
-      console.groupEnd();
     }
   }
 
@@ -263,7 +250,6 @@ class ErrorManager {
       try {
         handler(error);
       } catch (handlerError) {
-        console.error('Error handler failed:', handlerError);
       }
     });
   }
@@ -277,7 +263,6 @@ class ErrorManager {
       try {
         callback(error);
       } catch (callbackError) {
-        console.error('User feedback callback failed:', callbackError);
       }
     });
   }
@@ -343,7 +328,6 @@ class ErrorManager {
    */
   reportError(error) {
     // In a real application, this would send to an error reporting service
-    console.warn('Error reported:', error.toJSON());
   }
 
   /**
@@ -370,7 +354,6 @@ class ErrorManager {
   }
 }
 
-// Create singleton instance
 const errorManager = new ErrorManager();
 
 /**

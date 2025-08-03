@@ -1,4 +1,3 @@
-// Global type declarations
 
 declare global {
   interface ImportMetaEnv {
@@ -13,7 +12,6 @@ declare global {
     readonly env: ImportMetaEnv;
   }
 
-  // Vitest globals
   const vi: typeof import('vitest')['vi'];
   const describe: typeof import('vitest')['describe'];
   const it: typeof import('vitest')['it'];

@@ -6,7 +6,6 @@ import { useUser } from '../../contexts/UserContext'
 import Card from '../ui/Card'
 import RefreshControl from '../ui/RefreshControl'
 
-// Export GraphQL queries
 const GET_ALL_USERS_EXPORT = gql`
   query Users {
     event_user(
@@ -169,12 +168,10 @@ const defaultPreferences: Preferences = {
   }
 }
 
-// Types for export functionality
 type ExportDataType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'
 type ExportFormat = 'json' | 'csv' | 'txt'
 type ExportStatus = 'idle' | 'loading' | 'success' | 'error'
 
-// Simple encryption utility using base64 and XOR cipher - Unicode safe
 const encryptData = (data: string, password: string): string => {
   // Convert to UTF-8 bytes first to handle Unicode characters
   const encoder = new TextEncoder()
@@ -202,35 +199,7 @@ const encryptData = (data: string, password: string): string => {
   return btoa(binary)
 }
 
-// Decryption utility (for reference - not used in export, but useful for developers)
-// const decryptData = (encryptedData: string, password: string): string => {
-//   const encrypted = atob(encryptedData)
-//   const encoder = new TextEncoder()
-//   const decoder = new TextDecoder()
-//   const passwordBytes = encoder.encode(password)
-//   
-//   // Convert base64 binary back to bytes
-//   const encryptedBytes = new Uint8Array(encrypted.length)
-//   for (let i = 0; i < encrypted.length; i++) {
-//     encryptedBytes[i] = encrypted.charCodeAt(i)
-//   }
-//   
-//   // Create repeating key pattern
-//   const keyPattern = new Uint8Array(encryptedBytes.length)
-//   for (let i = 0; i < encryptedBytes.length; i++) {
-//     keyPattern[i] = passwordBytes[i % passwordBytes.length]
-//   }
-//   
-//   // XOR decryption
-//   const decrypted = new Uint8Array(encryptedBytes.length)
-//   for (let i = 0; i < encryptedBytes.length; i++) {
-//     decrypted[i] = encryptedBytes[i] ^ keyPattern[i]
-//   }
-//   
-//   return decoder.decode(decrypted)
-// }
 
-// Helper function to create password-protected content
 const createProtectedContent = (content: string, password: string, format: string, dataType: string): string => {
   const encryptedContent = encryptData(content, password)
   const timestamp = new Date().toISOString()
@@ -270,7 +239,6 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
         const parsed = JSON.parse(saved)
         setPreferences({ ...defaultPreferences, ...parsed })
       } catch (error) {
-        console.error('Failed to parse preferences:', error)
       }
     }
   }, [userId])
@@ -305,7 +273,6 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
     localStorage.setItem(`user-preferences-${userId}`, JSON.stringify(preferences))
     setHasChanges(false)
     // Here you could also send to backend API
-    console.log('Preferences saved:', preferences)
   }
 
   const resetPreferences = () => {
@@ -379,7 +346,6 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
   const downloadFile = (content: string, filename: string, format: 'json' | 'csv' | 'txt', dataType: string) => {
     // Check if we have current user login for password protection
     if (!currentUser?.login) {
-      console.error('Cannot export: User login not available for password protection')
       return
     }
 
@@ -473,7 +439,6 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
       setStatus(exportKey, 'success')
       setTimeout(() => setStatus(exportKey, 'idle'), 3000)
     } catch (error) {
-      console.error('Export failed:', error)
       setStatus(exportKey, 'error')
       setTimeout(() => setStatus(exportKey, 'idle'), 5000)
     }

@@ -31,7 +31,6 @@ interface SearchSectionProps {
 
 type SearchType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results'
 
-// Complete search queries using our tested queries
 const SEARCH_USERS_COMPLETE = gql`
   query SearchUsersComplete($searchTerm: String!) {
     user(

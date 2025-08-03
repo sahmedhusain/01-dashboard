@@ -166,23 +166,13 @@ const SubjectsSection: React.FC = () => {
     
     const hierarchy: { [key: string]: string } = {};
     
-    // Debug: Check what modules are available
-    const modules = data.object.filter((obj: ProjectObject) => obj.type === 'module');
-    console.log('🔍 Available modules:', modules.map((m: ProjectObject) => ({ id: m.id, name: m.name })));
-    
     // Find Div 01 module which contains the main project structure
     const div01Module = data.object.find((obj: ProjectObject) => 
       obj.type === 'module' && 
       obj.name === 'Div 01'
     );
     
-    console.log('🔍 Div 01 module found:', !!div01Module);
-    if (div01Module) {
-      console.log('🔍 Div 01 structure:', div01Module.attrs?.graph?.innerCircle ? 'Has innerCircle' : 'No innerCircle');
-    }
-    
     if (div01Module?.attrs?.graph?.innerCircle) {
-      console.log('🔍 Found Div 01 module, extracting project hierarchy...');
       
       // Define types for the graph structure
       interface GraphSlice {
@@ -199,7 +189,6 @@ const SubjectsSection: React.FC = () => {
           contents.forEach((item: unknown) => {
             if (typeof item === 'string') {
               // Simple standalone project - no parent mapping needed
-              console.log(`📁 Standalone project: ${item}`);
             } else if (typeof item === 'object' && item !== null) {
               // Parent project with nested children
               Object.keys(item).forEach(parentName => {
@@ -207,7 +196,6 @@ const SubjectsSection: React.FC = () => {
                 if (Array.isArray(children)) {
                   children.forEach((childName: string) => {
                     hierarchy[childName] = `${parentName}/${childName}`;
-                    console.log(`📁 Mapped: ${childName} → ${parentName}/${childName}`);
                   });
                 }
               });
@@ -231,11 +219,9 @@ const SubjectsSection: React.FC = () => {
       });
     }
     
-    console.log(`🎯 Extracted ${Object.keys(hierarchy).length} project mappings from Div 01 module`);
     
     // If no hierarchy was extracted, provide fallback essential mappings
     if (Object.keys(hierarchy).length === 0) {
-      console.log('⚠️ No module hierarchy found, using fallback essential mappings');
       const fallbackMappings = {
         // Essential mappings from the original test file structure
         'color': 'ascii-art/color',
@@ -264,7 +250,6 @@ const SubjectsSection: React.FC = () => {
         'scripting': '0-shell/scripting'
       };
       Object.assign(hierarchy, fallbackMappings);
-      console.log(`🔄 Added ${Object.keys(fallbackMappings).length} fallback mappings`);
     }
     
     return hierarchy;
@@ -452,7 +437,6 @@ const SubjectsSection: React.FC = () => {
       let markdownContent = '';
       let baseUrl = '';
       
-      console.log(`🔍 Fetching README for "${projectName}" using ${possiblePaths.length} path(s)`);
       
       for (const fileUrl of possiblePaths) {
         try {
@@ -461,7 +445,6 @@ const SubjectsSection: React.FC = () => {
             markdownContent = await response.text();
             // Store the base URL for asset resolution
             baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/'));
-            console.log(`✅ Successfully loaded README for "${projectName}" (${markdownContent.length} chars)`);
             break;
           }
         } catch {
@@ -470,7 +453,6 @@ const SubjectsSection: React.FC = () => {
       }
       
       if (!markdownContent) {
-        console.error(`🚫 No ${fileName} found for "${projectName}" in any of ${possiblePaths.length} locations`);
         throw new Error(`No ${fileName} found in any expected location for "${projectName}". Tried ${possiblePaths.length} URLs.`);
       }
 
@@ -535,7 +517,6 @@ const SubjectsSection: React.FC = () => {
       return htmlContent;
       
     } catch (error) {
-      console.error(`❌ Error fetching ${fileType} for "${projectName}":`, error);
       
       const fileDisplay = fileType === 'readme' ? 'README' : 'audit.md';
       
@@ -588,7 +569,6 @@ You can try accessing the project directly:
     // Helper function to find matching path for a project
     const findProjectPath = (obj: ProjectObject, paths: PathData[]): string => {
       const projectName = obj.name;
-      console.log(`🔍 Finding path for project "${projectName}"`);
       
       // Try different path matching strategies
       for (const pathItem of paths) {
@@ -596,20 +576,17 @@ You can try accessing the project directly:
         
         // Strategy 1: Direct name match
         if (path.includes(`/${projectName}`)) {
-          console.log(`✅ Direct match found: ${path}`);
           return path;
         }
         
         // Strategy 2: Match with converted path (parent-child structure)
         const convertedPath = convertProjectNameToPath(projectName);
         if (convertedPath !== projectName && path.includes(`/${convertedPath}`)) {
-          console.log(`✅ Converted path match found: ${path} for ${convertedPath}`);
           return path;
         }
         
         // Strategy 3: Check if path ends with project name (handles nested structures)
         if (path.endsWith(`/${projectName}`)) {
-          console.log(`✅ End match found: ${path}`);
           return path;
         }
         
@@ -617,7 +594,6 @@ You can try accessing the project directly:
         const pathSegments = path.split('/');
         const lastSegment = pathSegments[pathSegments.length - 1];
         if (lastSegment === projectName) {
-          console.log(`✅ Last segment match found: ${path}`);
           return path;
         }
         
@@ -625,7 +601,6 @@ You can try accessing the project directly:
         if (convertedPath.includes('/')) {
           const [parent, child] = convertedPath.split('/');
           if (path.includes(`/${parent}`) && path.includes(child)) {
-            console.log(`✅ Parent-child match found: ${path} for ${parent}/${child}`);
             return path;
           }
         }
@@ -640,7 +615,6 @@ You can try accessing the project directly:
         
         for (const pattern of parentPatterns) {
           if (path.includes(`/${pattern}/`) && path.includes(projectName)) {
-            console.log(`✅ Parent pattern match found: ${path} for pattern ${pattern}`);
             return path;
           }
         }
@@ -648,35 +622,18 @@ You can try accessing the project directly:
         // Strategy 7: Try kebab-case variations
         const kebabCase = projectName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
         if (kebabCase !== projectName && path.includes(kebabCase)) {
-          console.log(`✅ Kebab-case match found: ${path} for ${kebabCase}`);
           return path;
         }
       }
       
-      console.log(`❌ No path found for project "${projectName}"`);
       return ''; // No matching path found
     };
-    
-    console.log(`📊 Total objects from GraphQL: ${data.object?.length || 0}`);
-    console.log(`📊 Total paths from GraphQL: ${data.path?.length || 0}`);
-    
-    // Debug: Log the types and count of objects we're getting
-    const objectTypes = data.object.reduce((acc: Record<string, number>, obj: ProjectObject) => {
-      acc[obj.type] = (acc[obj.type] || 0) + 1;
-      return acc;
-    }, {});
-    console.log('📊 Object types breakdown:', objectTypes);
     
     // Debug: Log some example objects of each type
     ['exercise', 'project', 'module'].forEach(type => {
       const examples = data.object.filter((obj: ProjectObject) => obj.type === type).slice(0, 3);
       if (examples.length > 0) {
-        console.log(`📋 Sample ${type}s:`, examples.map((obj: ProjectObject) => ({
-          name: obj.name,
-          hasAttrs: !!obj.attrs,
-          hasEvents: obj.events?.length > 0,
-          campus: obj.campus
-        })));
+        // Process examples
       }
     });
     
@@ -689,7 +646,6 @@ You can try accessing the project directly:
     // Create virtual projects for missing nested projects from the memoized hierarchy
     Object.keys(projectHierarchy).forEach(projectName => {
       if (!existingProjectNames.has(projectName)) {
-        console.log(`🔧 Creating virtual project for "${projectName}" from module data`);
         virtualProjects.push({
           id: `virtual-${projectName}`,
           name: projectName,
@@ -710,7 +666,6 @@ You can try accessing the project directly:
       }
     });
     
-    console.log(`🔧 Created ${virtualProjects.length} virtual projects`);
     
     // Combine real objects with virtual projects
     const allObjects = [...data.object, ...virtualProjects];
@@ -719,19 +674,16 @@ You can try accessing the project directly:
       .filter((obj: ProjectObject) => {
         // Only include Bahrain campus objects
         if (obj.campus !== 'bahrain') {
-          console.log(`❌ Filtered out "${obj.name}" - wrong campus: ${obj.campus}`);
           return false;
         }
         
         // Exclude module objects from display (they're only used for hierarchy extraction)
         if (obj.type === 'module') {
-          console.log(`📁 Skipping module "${obj.name}" from display`);
           return false;
         }
         
         // Ensure object has a valid name
         if (!obj.name || obj.name.trim() === '') {
-          console.log(`❌ Filtered out object with ID "${obj.id}" - no valid name`);
           return false;
         }
         
@@ -742,7 +694,6 @@ You can try accessing the project directly:
           const hasEvents = obj.events && obj.events.length > 0;
           
           if (!hasAttrs && !hasEvents) {
-            console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no meaningful content`);
             return false;
           }
         }
@@ -756,11 +707,9 @@ You can try accessing the project directly:
             // This is a nested project
             const parentProject = convertedPath.split('/')[0];
             matchingPath = `/bahrain/bh-module/${parentProject}/${obj.name}`;
-            console.log(`🔧 Created synthetic path for virtual project "${obj.name}": ${matchingPath}`);
           } else {
             // This is a standalone virtual project
             matchingPath = `/bahrain/bh-module/${obj.name}`;
-            console.log(`🔧 Created synthetic path for standalone virtual project "${obj.name}": ${matchingPath}`);
           }
         } else {
           // This is a real project - find matching path
@@ -778,12 +727,6 @@ You can try accessing the project directly:
                           (obj.attrs.language || obj.attrs.subject || obj.attrs.expectedFiles?.length > 0);
         
         const shouldInclude = hasValidPath || hasContent;
-        
-        if (!shouldInclude) {
-          console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no valid path or content`);
-        } else {
-          console.log(`✅ Including "${obj.name}" (${obj.type}) with path: ${matchingPath || 'content-based'}`);
-        }
         
         return shouldInclude;
       })
@@ -848,11 +791,9 @@ You can try accessing the project directly:
 
   // Load content based on active tab
   const loadTabContent = async (project: Project, tabType: 'readme' | 'audit') => {
-    console.log(`Loading ${tabType} for project:`, project.name, 'Type:', project.projectObject.type);
     
     // Prevent loading audit content for exercises
     if (tabType === 'audit' && project.projectObject.type === 'exercise') {
-      console.log(`⚠️ Skipping audit load for exercise "${project.name}"`);
       setMarkdownContent(`# ${project.name}\n\n**This is an exercise**\n\nExercises do not have audit questions. Only projects have audit requirements.`);
       return;
     }
@@ -860,10 +801,8 @@ You can try accessing the project directly:
     setLoadingMarkdown(true);
     try {
       const content = await fetchProjectContent(project.name, tabType, project.projectObject);
-      console.log(`Successfully loaded ${tabType} content, length:`, content.length);
       setMarkdownContent(content);
-    } catch (error) {
-      console.error(`Error loading ${tabType}:`, error);
+    } catch {
       setMarkdownContent(`# ${project.name}\n\n**Error loading ${tabType}**\n\nCould not load ${tabType} content. Please try again later.`);
     } finally {
       setLoadingMarkdown(false);
@@ -872,7 +811,6 @@ You can try accessing the project directly:
 
   // Handle project selection
   const handleProjectSelect = async (project: Project) => {
-    console.log('Selecting project:', project.name, 'Type:', project.projectObject.type);
     setSelectedProject(project);
     setActiveTab('readme'); // Reset to README tab
     await loadTabContent(project, 'readme');

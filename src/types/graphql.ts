@@ -1,6 +1,4 @@
-// GraphQL type definitions for the application
 
-// Base GraphQL types - Updated for new schema
 export interface GraphQLUser {
   id: number; // Changed from string to number to match schema
   login: string;
@@ -136,7 +134,6 @@ export interface GraphQLObject {
   events?: GraphQLEvent[];
 }
 
-// Junction table interfaces - Enhanced for comprehensive schema
 export interface GraphQLGroupUser {
   id: number;
   userId: number;
@@ -157,7 +154,6 @@ export interface GraphQLEventUser {
   event?: GraphQLEvent;
 }
 
-// Additional comprehensive entity interfaces
 export interface GraphQLUserPublicView {
   id: number;
   login: string;
@@ -316,7 +312,6 @@ export interface GraphQLMatch {
   type?: string;
 }
 
-// Aggregate interfaces - New for schema
 export interface GraphQLAggregateResult {
   count?: number;
   sum?: Record<string, number>;
@@ -337,7 +332,6 @@ export interface GraphQLAuditAggregate {
   aggregate?: GraphQLAggregateResult;
 }
 
-// Dashboard data structure - Updated for new schema
 export interface GraphQLDashboardData {
   user: GraphQLUser[];  // Changed to array to match schema
   event_user?: Array<{
@@ -362,7 +356,6 @@ export interface GraphQLDashboardData {
   groups: GraphQLGroup[];
 }
 
-// Comprehensive Query response types - All 113 tested queries
 export interface UserResponse {
   user: GraphQLUser[];
 }
@@ -543,7 +536,6 @@ export interface MatchResponse {
   match: GraphQLMatch[];
 }
 
-// Combined dashboard response - Updated for new schema
 export interface DashboardResponse {
   user: GraphQLUser[];
   event_user?: Array<{
@@ -561,7 +553,6 @@ export interface DashboardResponse {
   groups?: GraphQLGroup[];
 }
 
-// GraphQL query variables - Updated for new schema
 export interface UserQueryVariables {
   userLogin?: string;
   userId?: number; // Changed from string to number
@@ -608,7 +599,6 @@ export interface LeaderboardVariables {
   limit?: number;
 }
 
-// Error types
 export interface GraphQLError {
   message: string;
   locations?: Array<{
@@ -632,7 +622,6 @@ export interface GraphQLResponse<T> {
   };
 }
 
-// Hook return types
 export interface UseGraphQLDataResult<T> {
   data: T | null;
   loading: boolean;
@@ -640,7 +629,6 @@ export interface UseGraphQLDataResult<T> {
   refetch: () => Promise<void>;
 }
 
-// Processed data types (after transformation) - Updated for new schema
 export interface ProcessedUser {
   id: number; // Changed from string to number
   login: string;
@@ -721,7 +709,6 @@ export interface ProcessedAuditRatio {
   totalDown: number;
 }
 
-// Chart data types
 export interface ChartDataPoint {
   x: string | number;
   y: number;
@@ -740,7 +727,6 @@ export interface ProcessedChartData {
   }>;
 }
 
-// Statistics types - Updated for new schema
 export interface UserStatistics {
   totalXP: number; // Changed from string to number for better processing
   level: number;
@@ -756,7 +742,6 @@ export interface UserStatistics {
   cohortNumber: string;
 }
 
-// Leaderboard entry - Updated for new schema
 export interface LeaderboardEntry {
   id: number;
   login: string;
@@ -769,7 +754,6 @@ export interface LeaderboardEntry {
   xp_total?: GraphQLTransactionAggregate;
 }
 
-// Campus statistics - New for schema
 export interface CampusStats {
   user_stats?: {
     aggregate?: GraphQLAggregateResult;

@@ -42,7 +42,6 @@ export const exportToJSON = (data: ExportData, filename?: string) => {
 
 export const exportToCSV = (data: any[], filename: string, headers: string[]) => {
   if (!data || data.length === 0) {
-    console.warn('No data to export')
     return
   }
 
@@ -174,12 +173,10 @@ This report was generated from the reboot01 Student Dashboard.
   URL.revokeObjectURL(url)
 }
 
-// Helper function to get nested object values
 const getNestedValue = (obj: any, path: string): any => {
   return path.split('.').reduce((current, key) => current?.[key], obj)
 }
 
-// Helper function to generate performance insights
 const getPerformanceInsights = (user: any, totalXP: number, completedProjects: number, successRate: string): string => {
   const insights = []
   

@@ -34,24 +34,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
     // Find BH module joining date from event_user data
   const bhModuleJoinInfo = React.useMemo(() => {
-    console.log('🔍 Checking for events data in analytics:', {
-      hasAnalytics: !!analytics,
-      hasRawData: !!analytics?.rawData,
-      hasEvents: !!analytics?.rawData?.events,
-      eventsLength: analytics?.rawData?.events?.length || 0
-    })
 
     if (!analytics?.rawData?.events) {
-      console.log('❌ No events data available')
       return null
     }
     
-    console.log('✅ Events available:', analytics.rawData.events.length, 'events')
-    console.log('📋 First few events:', analytics.rawData.events.slice(0, 3).map((e: any) => ({
-      eventPath: e.event?.path,
-      createdAt: e.createdAt,
-      eventId: e.eventId
-    })))
     
     // Find the BH module event (path: "/bahrain/bh-module") or similar main curriculum events
     const bhModuleEvent = analytics.rawData.events.find((eventUser: any) => 
@@ -60,7 +47,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
     )
     
     if (bhModuleEvent) {
-      console.log('✅ Found BH Module join date:', bhModuleEvent.createdAt, 'for event:', bhModuleEvent.event?.path)
       return {
         date: bhModuleEvent.createdAt,
         label: 'Date Joined',
@@ -74,7 +60,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
       .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
     
     if (earliestEvent) {
-      console.log('✅ Using earliest event join date:', earliestEvent.createdAt, 'for event:', earliestEvent.event?.path)
       return {
         date: earliestEvent.createdAt,
         label: 'Date Joined Program',
@@ -82,7 +67,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
       }
     }
     
-    console.log('❌ No join date found')
     return null
   }, [analytics])
 

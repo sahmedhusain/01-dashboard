@@ -1,19 +1,18 @@
 import { useCallback, useState } from 'react'
 import { ApolloError } from '@apollo/client'
-import toast from 'react-hot-toast'
 
 interface ErrorInfo {
   message: string
   code?: string
   type: 'network' | 'graphql' | 'auth' | 'validation' | 'unknown'
   retryable: boolean
-  details?: any
+  details?: unknown
 }
 
 interface UseErrorHandlerReturn {
   error: ErrorInfo | null
   clearError: () => void
-  handleError: (error: any, context?: string) => ErrorInfo
+  handleError: (error: unknown, context?: string) => ErrorInfo
   isRetryable: boolean
 }
 
@@ -21,9 +20,8 @@ export const useErrorHandler = (): UseErrorHandlerReturn => {
   const [error, setError] = useState<ErrorInfo | null>(null)
 
   const parseApolloError = useCallback((apolloError: ApolloError): ErrorInfo => {
-    // Network errors
     if (apolloError.networkError) {
-      const networkError = apolloError.networkError as any
+      const networkError = apolloError.networkError as { statusCode?: number }
       
       if (networkError.statusCode === 401) {
         return {
@@ -45,7 +43,7 @@ export const useErrorHandler = (): UseErrorHandlerReturn => {
         }
       }
       
-      if (networkError.statusCode >= 500) {
+      if (networkError.statusCode && networkError.statusCode >= 500) {
         return {
           message: 'Server error. Please try again later.',
           code: 'SERVER_ERROR',
@@ -64,7 +62,6 @@ export const useErrorHandler = (): UseErrorHandlerReturn => {
       }
     }
 
-    // GraphQL errors
     if (apolloError.graphQLErrors && apolloError.graphQLErrors.length > 0) {
       const gqlError = apolloError.graphQLErrors[0]
       
@@ -96,7 +93,7 @@ export const useErrorHandler = (): UseErrorHandlerReturn => {
     }
   }, [])
 
-  const handleError = useCallback((error: any, context?: string): ErrorInfo => {
+  const handleError = useCallback((error: unknown, _context?: string): ErrorInfo => {
     let errorInfo: ErrorInfo
 
     if (error instanceof ApolloError) {
@@ -104,45 +101,22 @@ export const useErrorHandler = (): UseErrorHandlerReturn => {
     } else if (error instanceof Error) {
       errorInfo = {
         message: error.message,
+        code: 'GENERIC_ERROR',
         type: 'unknown',
-        retryable: true,
+        retryable: false,
         details: error
-      }
-    } else if (typeof error === 'string') {
-      errorInfo = {
-        message: error,
-        type: 'unknown',
-        retryable: true
       }
     } else {
       errorInfo = {
         message: 'An unexpected error occurred',
+        code: 'UNKNOWN_ERROR',
         type: 'unknown',
-        retryable: true,
+        retryable: false,
         details: error
       }
     }
 
-    // Add context if provided
-    if (context) {
-      errorInfo.message = `${context}: ${errorInfo.message}`
-    }
-
     setError(errorInfo)
-
-    // Show toast notification for certain error types
-    if (errorInfo.type === 'network' || errorInfo.type === 'auth') {
-      toast.error(errorInfo.message, {
-        duration: 5000,
-        position: 'top-right'
-      })
-    }
-
-    // Log error in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error handled:', errorInfo, error)
-    }
-
     return errorInfo
   }, [parseApolloError])
 

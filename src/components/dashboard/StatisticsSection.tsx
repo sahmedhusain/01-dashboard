@@ -43,7 +43,6 @@ interface StatisticsSectionProps {
 
 type StatisticsTab = 'overview' | 'analytics' | 'trends'
 
-// Complete statistics query using our tested queries
 const COMPLETE_STATS_QUERY = gql`
   query GetCompleteStatistics {
     # User statistics

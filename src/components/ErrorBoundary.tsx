@@ -30,10 +30,6 @@ class ErrorBoundary extends Component<Props, State> {
       errorInfo
     })
 
-    // Log error to console in development
-    if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo)
-    }
 
     // Call custom error handler if provided
     if (this.props.onError) {
@@ -129,7 +125,6 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-// Higher-order component for easier usage
 export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
   errorBoundaryProps?: Omit<Props, 'children'>

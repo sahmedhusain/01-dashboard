@@ -74,7 +74,6 @@ export const usePagination = <T>(
 
   const handleSetPageSize = (size: number) => {
     setPageSize(size)
-    // Adjust current page if necessary
     const newTotalPages = Math.ceil(totalItems / size)
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages)

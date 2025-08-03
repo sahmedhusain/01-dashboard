@@ -27,7 +27,6 @@ interface RegistrationSectionProps {
   user: User
 }
 
-// Complete registration queries using our tested queries
 const GET_ALL_REGISTRATIONS = gql`
   query GetAllRegistrations($limit: Int = 100, $offset: Int = 0) {
     registration(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {

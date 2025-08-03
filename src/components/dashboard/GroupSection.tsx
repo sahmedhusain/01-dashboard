@@ -24,7 +24,6 @@ interface GroupSectionProps {
   user: User
 }
 
-// Complete group queries using our tested queries
 const ALL_GROUPS_QUERY = gql`
   query GetAllGroups($limit: Int = 50, $offset: Int = 0) {
     group(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {
@@ -53,7 +52,6 @@ const ALL_GROUPS_QUERY = gql`
   }
 `;
 
-// Query for complete group statistics (not affected by pagination)
 const GROUP_STATS_QUERY = gql`
   query GetGroupStats($userId: Int!) {
     # All groups for general stats
@@ -86,7 +84,6 @@ const GROUP_STATS_QUERY = gql`
   }
 `;
 
-// Query for enhanced search that includes member information
 const ALL_GROUPS_WITH_MEMBERS_QUERY = gql`
   query GetAllGroupsWithMembers($searchTerm: String!) {
     # Search groups by member names

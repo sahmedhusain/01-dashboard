@@ -13,7 +13,6 @@ interface AuditSectionProps {
   user: User;
 }
 
-// Enhanced audit type for this component
 interface EnrichedAudit extends Omit<Audit, 'group' | 'auditor'> {
   type: 'given' | 'received';
   amount?: number;

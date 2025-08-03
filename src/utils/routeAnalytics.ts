@@ -12,11 +12,9 @@ export const trackRouteChange = (path: string, userId?: number) => {
     userId
   }
   
-  // Store in localStorage for now
   const existing = JSON.parse(localStorage.getItem('route-analytics') || '[]')
   existing.push(analytics)
   
-  // Keep only last 100 entries
   if (existing.length > 100) {
     existing.splice(0, existing.length - 100)
   }

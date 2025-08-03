@@ -201,7 +201,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     const userEvents = data.userCheckpointEvents || [];
     const allEvents = data.allCheckpointEvents || [];
     
-    console.log('🔍 Checkpoint Data Analysis:', {
+    const debugInfo = {
       rawTransactions: data.checkpointTransactions?.length || 0,
       filteredTransactions: transactions.length,
       rawProgress: data.checkpointProgress?.length || 0,
@@ -209,7 +209,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
       userEvents: userEvents.length,
       allEvents: allEvents.length,
       sampleFilteredPaths: transactions.slice(0, 5).map((t: any) => t.path)
-    });
+    };
     
     const extractPathInfo = (path: string) => {
       if (!path) return { projectName: 'Unknown Project', sectionName: 'Unknown Section', moduleName: 'Unknown Module' };

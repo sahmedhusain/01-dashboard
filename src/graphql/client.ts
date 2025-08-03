@@ -3,13 +3,6 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { ApolloLink, Observable } from '@apollo/client';
 import { GRAPHQL_ENDPOINT, getAuthHeader, clearAuthData } from '../utils/auth';
-
-// ============================================================================
-// SIMPLIFIED APOLLO CLIENT CONFIGURATION
-// Following reference patterns with essential functionality only
-// ============================================================================
-
-// Mock data for development
 const createMockUserData = (userId: number) => ({
   id: userId,
   login: 'sayedahmed',
@@ -35,22 +28,16 @@ const createMockUserData = (userId: number) => ({
   updatedAt: new Date().toISOString()
 });
 
-// Mock link for development
 const mockLink = new ApolloLink((operation, forward) => {
   const authHeaders = getAuthHeader();
   const isMockMode = authHeaders.Authorization?.includes('mock-dev-token');
 
   if (isMockMode) {
-    if (import.meta.env.DEV) {
-      console.log('Mock GraphQL - Intercepting query:', operation.operationName);
-    }
-
     return new Observable(observer => {
       setTimeout(() => {
         const variables = operation.variables;
         let mockData = {};
 
-        // Handle different query types
         const operationName = operation.operationName;
         if (operationName === 'GetUserById' || operationName === 'GET_USER_BY_PK') {
           mockData = {
@@ -62,7 +49,6 @@ const mockLink = new ApolloLink((operation, forward) => {
             user_public_view: [createMockUserData(1599)]
           };
         } else {
-          // Default mock response
           mockData = {
             user_by_pk: createMockUserData(1599)
           };
@@ -70,29 +56,19 @@ const mockLink = new ApolloLink((operation, forward) => {
 
         observer.next({ data: mockData });
         observer.complete();
-      }, 500); // Simulate network delay
+      }, 500);
     });
   }
 
-  // If not in mock mode, continue with real request
   return forward(operation);
 });
 
-// HTTP link for GraphQL endpoint
 const httpLink = createHttpLink({
   uri: GRAPHQL_ENDPOINT,
 });
 
-// Auth link to add JWT token to requests
 const authLink = setContext((_, { headers }) => {
   const authHeaders = getAuthHeader();
-
-  // Check if we're in mock mode (token starts with 'mock-dev-token')
-  const isMockMode = authHeaders.Authorization?.includes('mock-dev-token');
-
-  if (isMockMode && import.meta.env.DEV) {
-    console.log('GraphQL Client - Running in mock mode');
-  }
 
   return {
     headers: {
@@ -103,24 +79,15 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-// Error link to handle GraphQL and network errors
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
-      console.error(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-
-      // Handle JWT-specific errors
+    graphQLErrors.forEach(({ message, extensions }) => {
       if (message.includes('JWT') || message.includes('JWS') || message.includes('verify')) {
-        console.warn('JWT verification error detected, clearing auth data');
         clearAuthData();
         return;
       }
 
-      // Handle authentication errors
       if (extensions?.code === 'UNAUTHENTICATED' || extensions?.code === 'FORBIDDEN') {
-        console.warn('Authentication error detected, clearing auth data');
         clearAuthData();
         return;
       }
@@ -128,24 +95,18 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 
   if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
-
-    // Handle 401/403 network errors
-    const statusCode = (networkError as any)?.statusCode;
+    const statusCode = (networkError as { statusCode?: number })?.statusCode;
     if (statusCode === 401 || statusCode === 403) {
-      console.warn('Network authentication error, clearing auth data');
       clearAuthData();
       return;
     }
   }
 });
 
-// Enhanced cache configuration for comprehensive data support
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        // User-related caching
         user: {
           merge(_, incoming) {
             return incoming;
@@ -161,8 +122,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Transaction and XP caching
         transaction: {
           merge(_, incoming) {
             return incoming;
@@ -173,8 +132,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Audit system caching
         audit: {
           merge(_, incoming) {
             return incoming;
@@ -185,8 +142,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Progress and results caching
         progress: {
           merge(_, incoming) {
             return incoming;
@@ -202,8 +157,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Group and collaboration caching
         group: {
           merge(_, incoming) {
             return incoming;
@@ -214,8 +167,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Event management caching
         event: {
           merge(_, incoming) {
             return incoming;
@@ -231,8 +182,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Object and curriculum caching
         object: {
           merge(_, incoming) {
             return incoming;
@@ -248,8 +197,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Registration system caching
         registration: {
           merge(_, incoming) {
             return incoming;
@@ -265,8 +212,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Path and learning structure caching
         path: {
           merge(_, incoming) {
             return incoming;
@@ -277,8 +222,6 @@ const cache = new InMemoryCache({
             return incoming;
           },
         },
-
-        // Additional system entities
         role: {
           merge(_, incoming) {
             return incoming;
@@ -301,8 +244,6 @@ const cache = new InMemoryCache({
         },
       },
     },
-
-    // Enhanced type policies for better normalization
     User: {
       fields: {
         login: {
@@ -312,71 +253,49 @@ const cache = new InMemoryCache({
         },
       },
     },
-
     Group: {
       keyFields: ["id"],
     },
-
     Event: {
       keyFields: ["id"],
     },
-
     Object: {
       keyFields: ["id"],
     },
-
     Progress: {
       keyFields: ["id"],
     },
-
     Result: {
       keyFields: ["id"],
     },
-
     Transaction: {
       keyFields: ["id"],
     },
-
     Audit: {
       keyFields: ["id"],
     },
   },
-
-  // Enable result caching for better performance with large datasets
   resultCaching: true,
-
-  // Enhanced data ID generation for comprehensive entity support
   dataIdFromObject: (object) => {
-    // Handle all major entity types
     if (object.__typename && object.id) {
       return `${object.__typename}:${object.id}`;
     }
-
-    // Handle user entities by login
     if (object.__typename && object.login) {
       return `${object.__typename}:${object.login}`;
     }
-
-    // Handle path entities
     if (object.__typename === 'Path' && object.path) {
       return `Path:${object.path}`;
     }
-
-    // Handle type entities
     if (object.__typename && object.type && !object.id) {
       return `${object.__typename}:${object.type}`;
     }
-
-    // Handle name-based entities
     if (object.__typename && object.name && !object.id) {
       return `${object.__typename}:${object.name}`;
     }
-
     return null;
   },
 });
 
-// Apollo Client configuration - optimized for comprehensive data
 const client = new ApolloClient({
   link: from([errorLink, authLink, mockLink, httpLink]),
   cache,
@@ -385,28 +304,21 @@ const client = new ApolloClient({
       errorPolicy: 'all',
       fetchPolicy: 'cache-first',
       notifyOnNetworkStatusChange: true,
-      // Optimize for large datasets
       returnPartialData: true,
     },
     query: {
       errorPolicy: 'all',
       fetchPolicy: 'cache-first',
-      // Allow partial data for better UX with large datasets
       returnPartialData: true,
     },
     mutate: {
       errorPolicy: 'all',
     },
   },
-  // Enhanced dev tools for debugging comprehensive queries
   connectToDevTools: import.meta.env.DEV,
-
-  // Add query deduplication for performance
   queryDeduplication: true,
-
-  // Set reasonable timeout for large queries
   defaultContext: {
-    timeout: 30000, // 30 seconds for large dataset queries
+    timeout: 30000,
   },
 });
 

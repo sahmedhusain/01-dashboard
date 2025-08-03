@@ -11,31 +11,25 @@ interface RefreshStats {
 }
 
 interface RefreshContextType {
-  // Global refresh state
   isGlobalRefreshing: boolean
   refreshStats: RefreshStats
   
-  // Refresh functions
   refreshAll: () => Promise<void>
   refreshSpecific: (queries: string[]) => Promise<void>
   hardRefresh: () => Promise<void>
   
-  // Auto-refresh controls
   enableAutoRefresh: (interval?: number) => void
   disableAutoRefresh: () => void
   isAutoRefreshEnabled: boolean
   autoRefreshInterval: number
   
-  // Component registration for targeted refreshes
   registerComponent: (componentId: string, queries: string[]) => void
   unregisterComponent: (componentId: string) => void
   refreshComponent: (componentId: string) => Promise<void>
   
-  // Cache management
   clearCache: () => Promise<void>
   getCacheSize: () => number
   
-  // Network status
   isOnline: boolean
   lastOnlineTime: Date | null
 }
@@ -60,7 +54,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
   const componentRegistryRef = useRef<Map<string, string[]>>(new Map())
   const refreshTimesRef = useRef<number[]>([])
 
-  // State
   const [isGlobalRefreshing, setIsGlobalRefreshing] = useState(false)
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(false)
   const [autoRefreshInterval, setAutoRefreshInterval] = useState(defaultAutoRefreshInterval)
@@ -74,14 +67,12 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     successfulRefreshes: 0
   })
 
-  // Helper function to update refresh stats
   const updateRefreshStats = useCallback((success: boolean, duration: number) => {
     setRefreshStats(prev => {
       const newTotalRefreshes = prev.totalRefreshes + 1
       const newSuccessfulRefreshes = success ? prev.successfulRefreshes + 1 : prev.successfulRefreshes
       const newFailedRefreshes = success ? prev.failedRefreshes : prev.failedRefreshes + 1
       
-      // Update refresh times for average calculation
       refreshTimesRef.current.push(duration)
       if (refreshTimesRef.current.length > 10) {
         refreshTimesRef.current.shift() // Keep only last 10 refresh times
@@ -99,7 +90,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     })
   }, [])
 
-  // Refresh all active queries
   const refreshAll = useCallback(async () => {
     if (isGlobalRefreshing) return
 
@@ -110,7 +100,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
       await client.refetchQueries({
         include: 'active',
         updateCache: (cache) => {
-          // Force cache update
           cache.evict({ fieldName: 'user' })
           cache.evict({ fieldName: 'transaction' })
           cache.evict({ fieldName: 'progress' })
@@ -132,7 +121,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
       const duration = Date.now() - startTime
       updateRefreshStats(false, duration)
 
-      console.error('Global refresh failed:', error)
       
       if (showRefreshNotifications) {
         toast.error('Failed to refresh data', {
@@ -145,7 +133,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [client, isGlobalRefreshing, updateRefreshStats, showRefreshNotifications])
 
-  // Refresh specific queries
   const refreshSpecific = useCallback(async (queries: string[]) => {
     if (queries.length === 0) return
 
@@ -180,7 +167,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
       const duration = Date.now() - startTime
       updateRefreshStats(false, duration)
 
-      console.error('Specific refresh failed:', error)
       
       if (showRefreshNotifications) {
         toast.error('Failed to refresh specific data', {
@@ -191,7 +177,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [client, updateRefreshStats, showRefreshNotifications])
 
-  // Hard refresh (clear cache and refetch)
   const hardRefresh = useCallback(async () => {
     if (isGlobalRefreshing) return
 
@@ -199,10 +184,8 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     const startTime = Date.now()
 
     try {
-      // Clear the cache
       await client.clearStore()
       
-      // Refetch all active queries
       await client.refetchQueries({
         include: 'active',
         updateCache: (cache) => {
@@ -227,7 +210,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
       const duration = Date.now() - startTime
       updateRefreshStats(false, duration)
 
-      console.error('Hard refresh failed:', error)
       
       if (showRefreshNotifications) {
         toast.error('Failed to perform hard refresh', {
@@ -240,16 +222,13 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [client, isGlobalRefreshing, updateRefreshStats, showRefreshNotifications])
 
-  // Enable auto-refresh
   const enableAutoRefresh = useCallback((interval?: number) => {
     const refreshInterval = interval || autoRefreshInterval
 
-    // Clear existing interval
     if (autoRefreshIntervalRef.current) {
       clearInterval(autoRefreshIntervalRef.current)
     }
 
-    // Set new interval
     autoRefreshIntervalRef.current = setInterval(() => {
       if (isOnline && !isGlobalRefreshing) {
         refreshAll()
@@ -267,7 +246,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [autoRefreshInterval, isOnline, isGlobalRefreshing, refreshAll, showRefreshNotifications])
 
-  // Disable auto-refresh
   const disableAutoRefresh = useCallback(() => {
     if (autoRefreshIntervalRef.current) {
       clearInterval(autoRefreshIntervalRef.current)
@@ -284,17 +262,14 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [showRefreshNotifications])
 
-  // Register component for targeted refreshes
   const registerComponent = useCallback((componentId: string, queries: string[]) => {
     componentRegistryRef.current.set(componentId, queries)
   }, [])
 
-  // Unregister component
   const unregisterComponent = useCallback((componentId: string) => {
     componentRegistryRef.current.delete(componentId)
   }, [])
 
-  // Refresh specific component
   const refreshComponent = useCallback(async (componentId: string) => {
     const queries = componentRegistryRef.current.get(componentId)
     if (queries) {
@@ -302,7 +277,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [refreshSpecific])
 
-  // Clear cache
   const clearCache = useCallback(async () => {
     try {
       await client.clearStore()
@@ -314,7 +288,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
         })
       }
     } catch (error) {
-      console.error('Failed to clear cache:', error)
       
       if (showRefreshNotifications) {
         toast.error('Failed to clear cache', {
@@ -325,7 +298,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [client, showRefreshNotifications])
 
-  // Get cache size (approximate)
   const getCacheSize = useCallback(() => {
     try {
       const cache = client.cache.extract()
@@ -335,7 +307,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [client])
 
-  // Network status detection
   useEffect(() => {
     if (!enableNetworkDetection) return
 
@@ -350,7 +321,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
         })
       }
       
-      // Refresh data when coming back online
       refreshAll()
     }
 
@@ -374,7 +344,6 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
     }
   }, [enableNetworkDetection, showRefreshNotifications, refreshAll])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (autoRefreshIntervalRef.current) {

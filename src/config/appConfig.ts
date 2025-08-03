@@ -166,19 +166,11 @@ export const PERFORMANCE_CONFIG = {
  * Feature Flags - Dynamic feature enabling/disabling
  */
 export const FEATURE_FLAGS = {
-  // Core features
   enableAdvancedCharts: getEnvBoolean('VITE_FEATURE_ADVANCED_CHARTS', true),
   enableRealTimeUpdates: getEnvBoolean('VITE_FEATURE_REALTIME_UPDATES', false),
   enableOfflineMode: getEnvBoolean('VITE_FEATURE_OFFLINE_MODE', false),
   enablePWA: getEnvBoolean('VITE_FEATURE_PWA', true),
-  
-  // Analytics features
   enableAnalytics: getEnvBoolean('VITE_FEATURE_ANALYTICS', true),
-  enableErrorTracking: getEnvBoolean('VITE_FEATURE_ERROR_TRACKING', true),
-  enablePerformanceTracking: getEnvBoolean('VITE_FEATURE_PERFORMANCE_TRACKING', true),
-  enableUserTracking: getEnvBoolean('VITE_FEATURE_USER_TRACKING', false),
-  
-  // UI features
   enableDarkMode: getEnvBoolean('VITE_FEATURE_DARK_MODE', true),
   enableAnimations: getEnvBoolean('VITE_FEATURE_ANIMATIONS', true),
   enableKeyboardShortcuts: getEnvBoolean('VITE_FEATURE_KEYBOARD_SHORTCUTS', true),
@@ -255,16 +247,8 @@ export const AVATAR_CONFIG = {
  * Development Configuration - Only active in development
  */
 export const DEV_CONFIG = {
-  // Debug settings
-  enableDebugLogs: getEnvBoolean('VITE_DEBUG_LOGS', import.meta.env.DEV),
-  enablePerformanceLogs: getEnvBoolean('VITE_DEBUG_PERFORMANCE', import.meta.env.DEV),
-  enableGraphQLLogs: getEnvBoolean('VITE_DEBUG_GRAPHQL', import.meta.env.DEV),
-  
-  // Mock settings
   enableMockData: getEnvBoolean('VITE_MOCK_DATA', false),
   mockDelay: getEnvNumber('VITE_MOCK_DELAY', 1000),
-  
-  // Hot reload
   enableHotReload: getEnvBoolean('VITE_HOT_RELOAD', import.meta.env.DEV),
 };
 

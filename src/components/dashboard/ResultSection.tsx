@@ -30,7 +30,6 @@ interface ResultSectionProps {
   user: UserType
 }
 
-// Complete result queries using our tested queries - NO LIMITS
 const GET_ALL_RESULTS = gql`
   query GetAllResults {
     result(order_by: {createdAt: desc}) {

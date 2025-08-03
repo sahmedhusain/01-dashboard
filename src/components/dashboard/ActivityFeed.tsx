@@ -5,7 +5,6 @@ import { format, formatDistanceToNow } from 'date-fns'
 import { formatXPValue, formatGrade } from '../../utils/dataFormatting'
 import Card from '../ui/Card'
 
-// Define a unified activity item type
 type ActivityItem = {
   id: string | number
   type: 'xp' | 'level' | 'skill' | 'progress' | 'audit'
@@ -25,7 +24,6 @@ interface ActivityFeedProps {
 }
 
 const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, audits, limit = 20 }) => {
-  // Combine and process all activities
   const combinedActivities: ActivityItem[] = [
     ...transactions.map(t => ({
       id: t.id,
@@ -54,7 +52,6 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
     })),
   ]
 
-  // Sort activities by timestamp and take the limit
   const sortedActivities = combinedActivities
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, limit)

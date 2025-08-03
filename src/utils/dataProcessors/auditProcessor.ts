@@ -1,6 +1,5 @@
 import { formatDistanceToNow } from 'date-fns'
 
-// Types for processed audit data
 export interface ProcessedAudit {
   id: string
   grade: number
@@ -51,7 +50,6 @@ export interface AuditTrend {
   ratio: number
 }
 
-// Process raw audit data from GraphQL
 export const processAuditData = (
   auditsGiven: any[],
   auditsReceived: any[]
@@ -89,7 +87,6 @@ export const processAuditData = (
   }
 }
 
-// Calculate audit statistics
 export const calculateAuditStats = (
   auditsGiven: any[],
   auditsReceived: any[],
@@ -133,7 +130,6 @@ export const calculateAuditStats = (
   }
 }
 
-// Calculate audit trends over time
 export const calculateAuditTrends = (
   auditsGiven: any[],
   auditsReceived: any[],
@@ -199,10 +195,7 @@ export const calculateAuditTrends = (
     })
 }
 
-// Note: formatAuditMB and formatAuditRatio functions moved to src/utils/dataFormatting.ts
-// Import them from there to avoid duplication
 
-// Get audit quality analysis
 export const analyzeAuditQuality = (audits: any[]): {
   excellent: number // grade >= 1.8
   good: number      // grade >= 1.4
@@ -221,7 +214,6 @@ export const analyzeAuditQuality = (audits: any[]): {
   return { excellent, good, average, poor }
 }
 
-// Calculate audit consistency (standard deviation of grades)
 export const calculateAuditConsistency = (audits: any[]): {
   averageGrade: number
   standardDeviation: number
@@ -249,7 +241,6 @@ export const calculateAuditConsistency = (audits: any[]): {
   }
 }
 
-// Get audit activity patterns
 export const getAuditActivityPatterns = (audits: any[]): {
   hourlyDistribution: Record<number, number>
   dailyDistribution: Record<string, number>

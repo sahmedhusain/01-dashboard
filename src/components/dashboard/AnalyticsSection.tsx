@@ -33,7 +33,6 @@ interface AnalyticsSectionProps {
   user: User
 }
 
-// Complete analytics queries
 const GET_PLATFORM_ANALYTICS = gql`
   query GetPlatformAnalytics {
     user_aggregate {
@@ -280,7 +279,6 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
         refetchTemporal()
       ]);
     } catch (error) {
-      console.error('Error refreshing analytics:', error);
     } finally {
       setRefreshing(false);
     }

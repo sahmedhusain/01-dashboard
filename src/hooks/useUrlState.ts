@@ -34,7 +34,6 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
     debounceMs: _debounceMs = 300
   } = options;
 
-  // Get current state from URL with defaults
   const getCurrentState = useCallback(() => {
     const queryParams = getQueryParams();
     const state = { ...defaultState };
@@ -47,7 +46,6 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
           if (typeof defaultState[key] === 'object') {
             state[key] = deserialize(queryParams[urlKey]);
           } else {
-            // Handle primitive types
             const value = queryParams[urlKey];
             if (typeof defaultState[key] === 'boolean') {
               state[key] = value === 'true';
@@ -146,7 +144,6 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
  * Specialized hooks for common URL state patterns
  */
 
-// Hook for pagination state
 export const useUrlPagination = (defaultPage = 1, defaultPageSize = 10) => {
   return useUrlState(
     { page: defaultPage, pageSize: defaultPageSize },
@@ -154,12 +151,10 @@ export const useUrlPagination = (defaultPage = 1, defaultPageSize = 10) => {
   );
 };
 
-// Hook for filter state
 export const useUrlFilters = (defaultFilters = {}) => {
   return useUrlState(defaultFilters, { prefix: 'filter' });
 };
 
-// Hook for search state
 export const useUrlSearch = (defaultQuery = '', defaultFilters = {}) => {
   return useUrlState(
     { query: defaultQuery, ...defaultFilters },
@@ -167,7 +162,6 @@ export const useUrlSearch = (defaultQuery = '', defaultFilters = {}) => {
   );
 };
 
-// Hook for sorting state
 export const useUrlSorting = (defaultSort = 'name', defaultOrder = 'asc') => {
   return useUrlState(
     { sortBy: defaultSort, sortOrder: defaultOrder },
@@ -175,7 +169,6 @@ export const useUrlSorting = (defaultSort = 'name', defaultOrder = 'asc') => {
   );
 };
 
-// Hook for view state (list/grid/card views)
 export const useUrlView = (defaultView = 'list') => {
   return useUrlState({ view: defaultView }, { prefix: 'view' });
 };

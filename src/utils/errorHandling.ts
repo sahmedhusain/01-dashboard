@@ -1,9 +1,5 @@
-// Comprehensive Error Handling and Validation Utilities
 import { ApolloError } from '@apollo/client';
 
-// ============================================================================
-// ERROR TYPES AND CLASSIFICATIONS
-// ============================================================================
 
 export const ERROR_TYPES = {
   NETWORK: 'NETWORK_ERROR',
@@ -24,11 +20,7 @@ export const ERROR_SEVERITY = {
   CRITICAL: 'critical',
 };
 
-// ============================================================================
-// ERROR CLASSIFICATION AND PROCESSING
-// ============================================================================
 
-// Classify and process GraphQL errors
 export const processGraphQLError = (error) => {
   if (!error) return null;
 
@@ -44,22 +36,18 @@ export const processGraphQLError = (error) => {
     fallbackAction: null,
   };
 
-  // Handle ApolloError
   if (error instanceof ApolloError) {
     return processApolloError(error, processedError);
   }
 
-  // Handle network errors
   if (error.networkError) {
     return processNetworkError(error.networkError, processedError);
   }
 
-  // Handle GraphQL errors
   if (error.graphQLErrors && error.graphQLErrors.length > 0) {
     return processGraphQLErrors(error.graphQLErrors, processedError);
   }
 
-  // Handle generic errors
   if (error.message) {
     processedError.message = error.message;
     processedError.userMessage = getUserFriendlyMessage(error.message);
@@ -68,16 +56,13 @@ export const processGraphQLError = (error) => {
   return processedError;
 };
 
-// Process Apollo-specific errors
 const processApolloError = (error, baseError) => {
   const processed = { ...baseError };
 
-  // Network error handling
   if (error.networkError) {
     return processNetworkError(error.networkError, processed);
   }
 
-  // GraphQL errors handling
   if (error.graphQLErrors && error.graphQLErrors.length > 0) {
     return processGraphQLErrors(error.graphQLErrors, processed);
   }
@@ -88,7 +73,6 @@ const processApolloError = (error, baseError) => {
   return processed;
 };
 
-// Process network errors
 const processNetworkError = (networkError, baseError) => {
   const processed = { ...baseError };
   processed.type = ERROR_TYPES.NETWORK;
@@ -144,12 +128,10 @@ const processNetworkError = (networkError, baseError) => {
   return processed;
 };
 
-// Process GraphQL-specific errors
 const processGraphQLErrors = (graphQLErrors, baseError) => {
   const processed = { ...baseError };
   processed.type = ERROR_TYPES.GRAPHQL;
 
-  // Take the first error for primary processing
   const primaryError = graphQLErrors[0];
   
   if (primaryError.extensions) {
@@ -202,15 +184,10 @@ const processGraphQLErrors = (graphQLErrors, baseError) => {
   return processed;
 };
 
-// ============================================================================
-// USER-FRIENDLY MESSAGE GENERATION
-// ============================================================================
 
-// Convert technical error messages to user-friendly ones
 const getUserFriendlyMessage = (technicalMessage) => {
   const lowerMessage = technicalMessage.toLowerCase();
 
-  // Common error patterns and their user-friendly equivalents
   const errorPatterns = [
     {
       pattern: /jwt|token|authentication/i,
@@ -252,13 +229,9 @@ const getUserFriendlyMessage = (technicalMessage) => {
     }
   }
 
-  // Default fallback
   return 'An unexpected error occurred. Please try again';
 };
 
-// ============================================================================
-// INPUT VALIDATION
-// ============================================================================
 
 interface ValidationRule {
   required?: boolean
@@ -270,7 +243,6 @@ interface ValidationSchema {
   [field: string]: ValidationRule
 }
 
-// Validate GraphQL query variables
 export const validateQueryVariables = (variables: any, schema?: ValidationSchema) => {
   const errors = [];
 
@@ -283,12 +255,10 @@ export const validateQueryVariables = (variables: any, schema?: ValidationSchema
     return errors;
   }
 
-  // Validate based on schema if provided
   if (schema) {
     Object.entries(schema).forEach(([field, rules]) => {
       const value = variables[field];
       
-      // Required field validation
       if (rules.required && (value === undefined || value === null)) {
         errors.push({
           field,
@@ -298,7 +268,6 @@ export const validateQueryVariables = (variables: any, schema?: ValidationSchema
         return;
       }
 
-      // Type validation
       if (value !== undefined && rules.type) {
         if (!validateFieldType(value, rules.type)) {
           errors.push({
@@ -309,7 +278,6 @@ export const validateQueryVariables = (variables: any, schema?: ValidationSchema
         }
       }
 
-      // Custom validation
       if (value !== undefined && rules.validate) {
         const customError = rules.validate(value);
         if (customError) {
@@ -326,7 +294,6 @@ export const validateQueryVariables = (variables: any, schema?: ValidationSchema
   return errors;
 };
 
-// Validate field type
 const validateFieldType = (value, expectedType) => {
   switch (expectedType) {
     case 'string':
@@ -346,15 +313,11 @@ const validateFieldType = (value, expectedType) => {
   }
 };
 
-// ============================================================================
-// RETRY LOGIC
-// ============================================================================
 
-// Retry configuration
 export const RETRY_CONFIG = {
   maxAttempts: 3,
-  baseDelay: 1000, // 1 second
-  maxDelay: 10000, // 10 seconds
+  baseDelay: 1000,
+  maxDelay: 10000,
   backoffFactor: 2,
   retryableErrors: [
     ERROR_TYPES.NETWORK,
@@ -363,7 +326,6 @@ export const RETRY_CONFIG = {
   ],
 };
 
-// Implement exponential backoff retry
 export const retryWithBackoff = async (operation, config = RETRY_CONFIG) => {
   let lastError;
   
@@ -374,23 +336,19 @@ export const retryWithBackoff = async (operation, config = RETRY_CONFIG) => {
       lastError = error;
       const processedError = processGraphQLError(error);
       
-      // Don't retry if error is not retryable
       if (!processedError.retryable || !config.retryableErrors.includes(processedError.type)) {
         throw error;
       }
       
-      // Don't retry on last attempt
       if (attempt === config.maxAttempts) {
         throw error;
       }
       
-      // Calculate delay with exponential backoff
       const delay = Math.min(
         config.baseDelay * Math.pow(config.backoffFactor, attempt - 1),
         config.maxDelay
       );
       
-      // Add jitter to prevent thundering herd
       const jitteredDelay = delay + Math.random() * 1000;
       
       await new Promise(resolve => setTimeout(resolve, jitteredDelay));
@@ -400,11 +358,7 @@ export const retryWithBackoff = async (operation, config = RETRY_CONFIG) => {
   throw lastError;
 };
 
-// ============================================================================
-// ERROR LOGGING AND REPORTING
-// ============================================================================
 
-// Log error for debugging and monitoring
 export const logError = (error: any, context: Record<string, any> = {}) => {
   const processedError = processGraphQLError(error);
   
@@ -417,29 +371,13 @@ export const logError = (error: any, context: Record<string, any> = {}) => {
     sessionId: context.sessionId,
   };
 
-  // Log to console in development
-  if (import.meta.env.DEV) {
-    console.error('GraphQL Error:', logEntry);
-  }
-
-  // In production, you would send this to your error tracking service
-  // Example: Sentry, LogRocket, etc.
-  if (import.meta.env.PROD) {
-    // sendToErrorTrackingService(logEntry);
-  }
-
   return logEntry;
 };
 
-// ============================================================================
-// FALLBACK MECHANISMS
-// ============================================================================
 
-// Provide fallback data when queries fail
 export const getFallbackData = (queryType, error) => {
   const processedError = processGraphQLError(error);
 
-  // Return appropriate fallback based on query type and error
   switch (queryType) {
     case 'user_profile':
     case 'user_info':

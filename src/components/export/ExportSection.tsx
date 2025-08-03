@@ -31,7 +31,6 @@ interface ExportSectionProps {
 type ExportFormat = 'json' | 'csv' | 'txt'
 type DataType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'
 
-// Complete export queries using our tested queries
 const GET_ALL_USERS_EXPORT = gql`
   query GetAllUsersExport {
     user(order_by: { totalUp: desc }) {
@@ -154,7 +153,6 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('json')
   const [includeMetadata, setIncludeMetadata] = useState(true)
 
-  // Lazy queries for on-demand data export
   const [exportUsers] = useLazyQuery(GET_ALL_USERS_EXPORT, { errorPolicy: 'all' })
   const [exportObjects] = useLazyQuery(GET_ALL_OBJECTS_EXPORT, { errorPolicy: 'all' })
   const [exportEvents] = useLazyQuery(GET_ALL_EVENTS_EXPORT, { errorPolicy: 'all' })
@@ -164,7 +162,6 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
   const [exportAudits] = useLazyQuery(GET_ALL_AUDITS_EXPORT, { errorPolicy: 'all' })
   const [exportResults] = useLazyQuery(GET_ALL_RESULTS_EXPORT, { errorPolicy: 'all' })
 
-  // Get statistics for export overview
   const { data: statsData, loading: statsLoading } = useQuery(gql`
     query GetExportStats {
       user_aggregate { aggregate { count } }
@@ -379,7 +376,6 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
       downloadFile(content, filename, type)
       setStatus(exportKey, 'success')
     } catch (error) {
-      console.error('Export error:', error)
       setStatus(exportKey, 'error')
     }
   }

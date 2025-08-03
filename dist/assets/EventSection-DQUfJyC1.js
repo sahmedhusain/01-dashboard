@@ -1,4 +1,4 @@
-import{r as m,j as e,m as i}from"./animation-vendor-BWQ_wUI_.js";import{L as X,b as Z,e as ee}from"./index-klJbW4i3.js";import{e as j,j as L,t as te,s as B,w as T,B as se,x as ae,O as ie,U as Q,a4 as D,a3 as re}from"./ui-vendor-bEJ0_QxH.js";import{d as w,e as v}from"./apollo-vendor-8AJvV5pX.js";import"./react-vendor-DJG_os-6.js";const ne=v`
+import{r as m,j as e,m as i}from"./animation-vendor-BWQ_wUI_.js";import{L as X,b as Z,e as ee}from"./index-C4FaYD6o.js";import{e as j,j as L,t as te,s as B,w as T,B as se,x as ae,O as ie,U as Q,a4 as D,a3 as re}from"./ui-vendor-D_fcl71Q.js";import{d as w,e as v}from"./apollo-vendor-8AJvV5pX.js";import"./react-vendor-DJG_os-6.js";const ne=v`
   query GetAllEvents($limit: Int = 50, $offset: Int = 0) {
     event(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {
       id

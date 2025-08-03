@@ -22,12 +22,26 @@ const GET_ALL_BH_PROJECTS = gql`
     }
     
     # Get objects data with complete metadata (including modules for hierarchy extraction)
+    # Expanded query to capture more exercises and projects with all necessary attributes
     object(
       where: {
-        campus: { _eq: "bahrain" }
-        type: { _in: ["exercise", "project", "module"] }
+        _and: [
+          { campus: { _eq: "bahrain" } },
+          { type: { _in: ["exercise", "project", "module"] } },
+          # Ensure we get objects that have meaningful content
+          {
+            _or: [
+              { type: { _eq: "module" } }, # Always include modules for hierarchy
+              { name: { _is_null: false } }, # Include objects with names
+              { attrs: { _is_null: false } } # Include objects with attributes
+            ]
+          }
+        ]
       }
-      order_by: { name: asc }
+      order_by: [
+        { type: asc }, # Modules first, then exercises and projects
+        { name: asc }
+      ]
     ) {
       id
       name
@@ -37,6 +51,7 @@ const GET_ALL_BH_PROJECTS = gql`
       createdAt
       updatedAt
       authorId
+      # Include events to get path relationships
       events {
         id
         path
@@ -111,6 +126,15 @@ interface Project {
   projectObject: ProjectObject;
 }
 
+interface TreeNode {
+  name: string;
+  path: string;
+  flattenedPath: string;
+  children: Record<string, TreeNode>;
+  isProject: boolean;
+  project: Project | null;
+}
+
 const SubjectsSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [languageFilter, setLanguageFilter] = useState<string>('');
@@ -143,11 +167,11 @@ const SubjectsSection: React.FC = () => {
     const hierarchy: { [key: string]: string } = {};
     
     // Debug: Check what modules are available
-    const modules = data.object.filter((obj: any) => obj.type === 'module');
-    console.log('🔍 Available modules:', modules.map((m: any) => ({ id: m.id, name: m.name })));
+    const modules = data.object.filter((obj: ProjectObject) => obj.type === 'module');
+    console.log('🔍 Available modules:', modules.map((m: ProjectObject) => ({ id: m.id, name: m.name })));
     
     // Find Div 01 module which contains the main project structure
-    const div01Module = data.object.find((obj: any) => 
+    const div01Module = data.object.find((obj: ProjectObject) => 
       obj.type === 'module' && 
       obj.name === 'Div 01'
     );
@@ -160,16 +184,26 @@ const SubjectsSection: React.FC = () => {
     if (div01Module?.attrs?.graph?.innerCircle) {
       console.log('🔍 Found Div 01 module, extracting project hierarchy...');
       
-      div01Module.attrs.graph.innerCircle.forEach((slice: any) => {
-        const processContents = (contents: any[]) => {
-          contents.forEach((item: any) => {
+      // Define types for the graph structure
+      interface GraphSlice {
+        innerArc?: {
+          contents?: unknown[];
+        };
+        outerArcs?: Array<{
+          contents?: unknown[];
+        }>;
+      }
+      
+      div01Module.attrs.graph.innerCircle.forEach((slice: GraphSlice) => {
+        const processContents = (contents: unknown[]) => {
+          contents.forEach((item: unknown) => {
             if (typeof item === 'string') {
               // Simple standalone project - no parent mapping needed
               console.log(`📁 Standalone project: ${item}`);
-            } else if (typeof item === 'object') {
+            } else if (typeof item === 'object' && item !== null) {
               // Parent project with nested children
               Object.keys(item).forEach(parentName => {
-                const children = item[parentName];
+                const children = (item as Record<string, unknown>)[parentName];
                 if (Array.isArray(children)) {
                   children.forEach((childName: string) => {
                     hierarchy[childName] = `${parentName}/${childName}`;
@@ -188,7 +222,7 @@ const SubjectsSection: React.FC = () => {
         
         // Process outer arcs contents
         if (slice.outerArcs) {
-          slice.outerArcs.forEach((arc: any) => {
+          slice.outerArcs.forEach((arc) => {
             if (arc.contents) {
               processContents(arc.contents);
             }
@@ -430,7 +464,7 @@ const SubjectsSection: React.FC = () => {
             console.log(`✅ Successfully loaded README for "${projectName}" (${markdownContent.length} chars)`);
             break;
           }
-        } catch (urlError) {
+        } catch {
           // Silently continue to next URL
         }
       }
@@ -626,6 +660,26 @@ You can try accessing the project directly:
     console.log(`📊 Total objects from GraphQL: ${data.object?.length || 0}`);
     console.log(`📊 Total paths from GraphQL: ${data.path?.length || 0}`);
     
+    // Debug: Log the types and count of objects we're getting
+    const objectTypes = data.object.reduce((acc: Record<string, number>, obj: ProjectObject) => {
+      acc[obj.type] = (acc[obj.type] || 0) + 1;
+      return acc;
+    }, {});
+    console.log('📊 Object types breakdown:', objectTypes);
+    
+    // Debug: Log some example objects of each type
+    ['exercise', 'project', 'module'].forEach(type => {
+      const examples = data.object.filter((obj: ProjectObject) => obj.type === type).slice(0, 3);
+      if (examples.length > 0) {
+        console.log(`📋 Sample ${type}s:`, examples.map((obj: ProjectObject) => ({
+          name: obj.name,
+          hasAttrs: !!obj.attrs,
+          hasEvents: obj.events?.length > 0,
+          campus: obj.campus
+        })));
+      }
+    });
+    
     // Get all project names from GraphQL objects
     const existingProjectNames = new Set(data.object.map((obj: ProjectObject) => obj.name));
     
@@ -665,12 +719,32 @@ You can try accessing the project directly:
       .filter((obj: ProjectObject) => {
         // Only include Bahrain campus objects
         if (obj.campus !== 'bahrain') {
+          console.log(`❌ Filtered out "${obj.name}" - wrong campus: ${obj.campus}`);
           return false;
         }
         
         // Exclude module objects from display (they're only used for hierarchy extraction)
         if (obj.type === 'module') {
+          console.log(`📁 Skipping module "${obj.name}" from display`);
           return false;
+        }
+        
+        // Ensure object has a valid name
+        if (!obj.name || obj.name.trim() === '') {
+          console.log(`❌ Filtered out object with ID "${obj.id}" - no valid name`);
+          return false;
+        }
+        
+        // For exercises and projects, ensure they have some meaningful attributes
+        if (obj.type === 'exercise' || obj.type === 'project') {
+          // Check if it has attrs object or at least some events
+          const hasAttrs = obj.attrs && typeof obj.attrs === 'object';
+          const hasEvents = obj.events && obj.events.length > 0;
+          
+          if (!hasAttrs && !hasEvents) {
+            console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no meaningful content`);
+            return false;
+          }
         }
         
         // For virtual projects, create synthetic paths
@@ -694,17 +768,24 @@ You can try accessing the project directly:
         }
         
         // Include objects that have corresponding paths in bh-module or bh-piscine
+        // OR exercises/projects that have meaningful content even without explicit paths
         const hasValidPath = matchingPath && 
                (matchingPath.includes('/bahrain/bh-module/') || 
                 matchingPath.includes('/bahrain/bh-piscine/'));
+                
+        const hasContent = (obj.type === 'exercise' || obj.type === 'project') && 
+                          obj.attrs && 
+                          (obj.attrs.language || obj.attrs.subject || obj.attrs.expectedFiles?.length > 0);
         
-        if (!hasValidPath) {
-          console.log(`❌ Filtered out "${obj.name}" - no valid path found`);
+        const shouldInclude = hasValidPath || hasContent;
+        
+        if (!shouldInclude) {
+          console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no valid path or content`);
         } else {
-          console.log(`✅ Including "${obj.name}" with path: ${matchingPath}`);
+          console.log(`✅ Including "${obj.name}" (${obj.type}) with path: ${matchingPath || 'content-based'}`);
         }
         
-        return hasValidPath;
+        return shouldInclude;
       })
       .map((obj: ProjectObject) => {
         // Ensure name is always a string
@@ -736,21 +817,21 @@ You can try accessing the project directly:
       });
   }, [data, getProjectPath, projectHierarchy]);
 
-  // Filter projects based on search and filters
-  const filteredProjects = useMemo(() => {
-    return projects.filter(project => {
-      const matchesSearch = !searchTerm || 
-        project.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesLanguage = !languageFilter || 
-        project.language.toLowerCase() === languageFilter.toLowerCase();
-      const matchesDifficulty = !difficultyFilter || 
-        project.difficulty === difficultyFilter;
-      const matchesType = !typeFilter || 
-        project.projectObject.type === typeFilter;
+  // Filter projects based on search and filters (currently unused but available for future features)
+  // const filteredProjects = useMemo(() => {
+  //   return projects.filter(project => {
+  //     const matchesSearch = !searchTerm || 
+  //       project.name.toLowerCase().includes(searchTerm.toLowerCase());
+  //     const matchesLanguage = !languageFilter || 
+  //       project.language.toLowerCase() === languageFilter.toLowerCase();
+  //     const matchesDifficulty = !difficultyFilter || 
+  //       project.difficulty === difficultyFilter;
+  //     const matchesType = !typeFilter || 
+  //       project.projectObject.type === typeFilter;
       
-      return matchesSearch && matchesLanguage && matchesDifficulty && matchesType;
-    });
-  }, [projects, searchTerm, languageFilter, difficultyFilter, typeFilter]);
+  //     return matchesSearch && matchesLanguage && matchesDifficulty && matchesType;
+  //   });
+  // }, [projects, searchTerm, languageFilter, difficultyFilter, typeFilter]);
 
   // Get unique languages and difficulties
   const availableLanguages = useMemo(() => {
@@ -767,7 +848,15 @@ You can try accessing the project directly:
 
   // Load content based on active tab
   const loadTabContent = async (project: Project, tabType: 'readme' | 'audit') => {
-    console.log(`Loading ${tabType} for project:`, project.name);
+    console.log(`Loading ${tabType} for project:`, project.name, 'Type:', project.projectObject.type);
+    
+    // Prevent loading audit content for exercises
+    if (tabType === 'audit' && project.projectObject.type === 'exercise') {
+      console.log(`⚠️ Skipping audit load for exercise "${project.name}"`);
+      setMarkdownContent(`# ${project.name}\n\n**This is an exercise**\n\nExercises do not have audit questions. Only projects have audit requirements.`);
+      return;
+    }
+    
     setLoadingMarkdown(true);
     try {
       const content = await fetchProjectContent(project.name, tabType, project.projectObject);
@@ -809,7 +898,7 @@ You can try accessing the project directly:
   const treeStructure = useMemo(() => {
     if (!data?.path || !data?.object) return {};
     
-    const tree = {};
+    const tree: Record<string, TreeNode> = {};
     const projectPaths = data.path.filter((p: PathData) => 
       p.path.includes('/bahrain/bh-module/') || 
       p.path.includes('/bahrain/bh-piscine/')
@@ -855,7 +944,7 @@ You can try accessing the project directly:
   const treeWithProjects = useMemo(() => {
     if (!treeStructure || !projects.length) return treeStructure;
     
-    const attachProjects = (node: any): any => {
+    const attachProjects = (node: TreeNode): TreeNode => {
       const updatedNode = { ...node };
       
       // If this is a project node, find and attach the matching project
@@ -864,7 +953,7 @@ You can try accessing the project directly:
       }
       
       // Recursively process children
-      const updatedChildren: any = {};
+      const updatedChildren: Record<string, TreeNode> = {};
       Object.keys(updatedNode.children || {}).forEach(key => {
         updatedChildren[key] = attachProjects(updatedNode.children[key]);
       });
@@ -873,9 +962,9 @@ You can try accessing the project directly:
       return updatedNode;
     };
     
-    const result: any = {};
+    const result: Record<string, TreeNode> = {};
     Object.keys(treeStructure).forEach(key => {
-      result[key] = attachProjects((treeStructure as any)[key]);
+      result[key] = attachProjects(treeStructure[key]);
     });
     
     return result;
@@ -919,7 +1008,7 @@ You can try accessing the project directly:
   };
 
   // TreeNode component for rendering the navigation tree
-  const TreeNode: React.FC<{ node: any; depth: number }> = ({ node, depth }) => {
+  const TreeNodeComponent: React.FC<{ node: TreeNode; depth: number }> = ({ node, depth }) => {
     const isExpanded = expandedFolders.has(node.flattenedPath || node.name);
     const hasChildren = Object.keys(node.children).length > 0;
     const isSelected = selectedProject?.path === node.path;
@@ -986,7 +1075,7 @@ You can try accessing the project directly:
             exit={{ opacity: 0, height: 0 }}
           >
             {Object.values(node.children)
-              .sort((a: any, b: any) => {
+              .sort((a: TreeNode, b: TreeNode) => {
                 // Folders first, then files
                 const aHasChildren = Object.keys(a.children).length > 0;
                 const bHasChildren = Object.keys(b.children).length > 0;
@@ -997,8 +1086,8 @@ You can try accessing the project directly:
                 // If both are folders or both are files, sort alphabetically
                 return a.name.localeCompare(b.name);
               })
-              .map((child: any) => (
-                <TreeNode key={child.flattenedPath || child.name} node={child} depth={depth + 1} />
+              .map((child: TreeNode) => (
+                <TreeNodeComponent key={child.flattenedPath || child.name} node={child} depth={depth + 1} />
               ))}
           </motion.div>
         )}
@@ -1218,7 +1307,7 @@ You can try accessing the project directly:
               </div>
               <div className="p-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-white/30">
                 {Object.values(treeWithProjects)
-                  .sort((a: any, b: any) => {
+                  .sort((a: TreeNode, b: TreeNode) => {
                     // Folders first, then files
                     const aHasChildren = Object.keys(a.children).length > 0;
                     const bHasChildren = Object.keys(b.children).length > 0;
@@ -1229,8 +1318,8 @@ You can try accessing the project directly:
                     // If both are folders or both are files, sort alphabetically
                     return a.name.localeCompare(b.name);
                   })
-                  .map((node: any) => (
-                    <TreeNode key={node.path} node={node} depth={0} />
+                  .map((node: TreeNode) => (
+                    <TreeNodeComponent key={node.path} node={node} depth={0} />
                   ))}
               </div>
             </div>

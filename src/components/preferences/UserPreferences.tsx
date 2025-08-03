@@ -1,22 +1,162 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Settings, Palette, Save, RotateCcw, RefreshCw, Database, GripVertical, ArrowUp, ArrowDown } from 'lucide-react'
+import { Settings, Palette, Save, RotateCcw, RefreshCw, Database, GripVertical, ArrowUp, ArrowDown, Download, FileText, BarChart3, Users, Calendar, Activity, Target, CheckCircle, Award, TrendingUp, Lock } from 'lucide-react'
+import { useQuery, useLazyQuery, gql } from '@apollo/client'
+import { useUser } from '../../contexts/UserContext'
 import Card from '../ui/Card'
 import RefreshControl from '../ui/RefreshControl'
+
+// Export GraphQL queries
+const GET_ALL_USERS_EXPORT = gql`
+  query Users {
+    event_user(
+      order_by: { createdAt: desc }
+      where: { 
+        event: { 
+          path: { _like: "/bahrain%" }
+        },
+      }
+    ) {
+      userLogin
+      userName
+      createdAt
+      userAuditRatio
+      level
+      event {
+        campus
+      }
+    }
+  }
+`;
+
+const GET_ALL_OBJECTS_EXPORT = gql`
+  query GetAllObjectsExport {
+    object(order_by: { createdAt: desc }) {
+      id
+      name
+      type
+      attrs
+      createdAt
+      campus
+      authorId
+    }
+  }
+`;
+
+const GET_ALL_EVENTS_EXPORT = gql`
+  query GetAllEventsExport {
+    event(order_by: { createdAt: desc }) {
+      id
+      path
+      campus
+      createdAt
+      endAt
+      objectId
+    }
+  }
+`;
+
+const GET_ALL_GROUPS_EXPORT = gql`
+  query GetAllGroupsExport {
+    group(order_by: { createdAt: desc }) {
+      id
+      path
+      campus
+      createdAt
+      updatedAt
+      objectId
+      eventId
+    }
+  }
+`;
+
+const GET_ALL_TRANSACTIONS_EXPORT = gql`
+  query GetAllTransactionsExport {
+    transaction(order_by: { createdAt: desc }) {
+      id
+      type
+      amount
+      createdAt
+      path
+      userId
+      objectId
+      eventId
+      campus
+    }
+  }
+`;
+
+const GET_ALL_PROGRESS_EXPORT = gql`
+  query GetAllProgressExport {
+    progress(order_by: { createdAt: desc }) {
+      id
+      userId
+      objectId
+      grade
+      path
+      campus
+      createdAt
+      isDone
+    }
+  }
+`;
+
+const GET_ALL_AUDITS_EXPORT = gql`
+  query GetAllAuditsExport {
+    audit(order_by: { createdAt: desc }) {
+      id
+      auditorId
+      groupId
+      grade
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const GET_ALL_RESULTS_EXPORT = gql`
+  query GetAllResultsExport {
+    result(order_by: { createdAt: desc }) {
+      id
+      userId
+      objectId
+      grade
+      type
+      path
+      createdAt
+    }
+  }
+`;
+
+const GET_EXPORT_STATS = gql`
+  query GetExportStats {
+    event_user_aggregate(
+      where: { 
+        event: { 
+          path: { _like: "/bahrain%" }
+        }
+      }
+    ) { aggregate { count } }
+    object_aggregate { aggregate { count } }
+    event_aggregate { aggregate { count } }
+    group_aggregate { aggregate { count } }
+    transaction_aggregate { aggregate { count } }
+    progress_aggregate { aggregate { count } }
+    audit_aggregate { aggregate { count } }
+    result_aggregate { aggregate { count } }
+  }
+`;
 
 interface UserPreferencesProps {
   userId: number
   onClose: () => void
-  defaultTabs?: Array<{ id: string; label: string; icon: any }>
+  defaultTabs?: Array<{ id: string; label: string; icon: React.ComponentType<{ className?: string }> }>
 }
 
 interface Preferences {
   theme: 'dark' | 'light' | 'auto'
   dashboard: {
-    compactMode: boolean
-    showAnimations: boolean
     defaultTab: string
-    chartsEnabled: boolean
     tabOrder: string[]
   }
 }
@@ -24,18 +164,103 @@ interface Preferences {
 const defaultPreferences: Preferences = {
   theme: 'dark',
   dashboard: {
-    compactMode: false,
-    showAnimations: true,
     defaultTab: 'dashboard',
-    chartsEnabled: true,
-    tabOrder: ['dashboard', 'piscines', 'leaderboard', 'groups', 'audits', 'checkpoints', 'events', 'export']
+    tabOrder: ['dashboard', 'piscines', 'leaderboard', 'groups', 'audits', 'checkpoints', 'events', 'subjects']
   }
+}
+
+// Types for export functionality
+type ExportDataType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'
+type ExportFormat = 'json' | 'csv' | 'txt'
+type ExportStatus = 'idle' | 'loading' | 'success' | 'error'
+
+// Simple encryption utility using base64 and XOR cipher - Unicode safe
+const encryptData = (data: string, password: string): string => {
+  // Convert to UTF-8 bytes first to handle Unicode characters
+  const encoder = new TextEncoder()
+  const dataBytes = encoder.encode(data)
+  const passwordBytes = encoder.encode(password)
+  
+  // Create repeating key pattern
+  const keyPattern = new Uint8Array(dataBytes.length)
+  for (let i = 0; i < dataBytes.length; i++) {
+    keyPattern[i] = passwordBytes[i % passwordBytes.length]
+  }
+  
+  // XOR encryption
+  const encrypted = new Uint8Array(dataBytes.length)
+  for (let i = 0; i < dataBytes.length; i++) {
+    encrypted[i] = dataBytes[i] ^ keyPattern[i]
+  }
+  
+  // Convert to base64
+  let binary = ''
+  for (let i = 0; i < encrypted.length; i++) {
+    binary += String.fromCharCode(encrypted[i])
+  }
+  
+  return btoa(binary)
+}
+
+// Decryption utility (for reference - not used in export, but useful for developers)
+// const decryptData = (encryptedData: string, password: string): string => {
+//   const encrypted = atob(encryptedData)
+//   const encoder = new TextEncoder()
+//   const decoder = new TextDecoder()
+//   const passwordBytes = encoder.encode(password)
+//   
+//   // Convert base64 binary back to bytes
+//   const encryptedBytes = new Uint8Array(encrypted.length)
+//   for (let i = 0; i < encrypted.length; i++) {
+//     encryptedBytes[i] = encrypted.charCodeAt(i)
+//   }
+//   
+//   // Create repeating key pattern
+//   const keyPattern = new Uint8Array(encryptedBytes.length)
+//   for (let i = 0; i < encryptedBytes.length; i++) {
+//     keyPattern[i] = passwordBytes[i % passwordBytes.length]
+//   }
+//   
+//   // XOR decryption
+//   const decrypted = new Uint8Array(encryptedBytes.length)
+//   for (let i = 0; i < encryptedBytes.length; i++) {
+//     decrypted[i] = encryptedBytes[i] ^ keyPattern[i]
+//   }
+//   
+//   return decoder.decode(decrypted)
+// }
+
+// Helper function to create password-protected content
+const createProtectedContent = (content: string, password: string, format: string, dataType: string): string => {
+  const encryptedContent = encryptData(content, password)
+  const timestamp = new Date().toISOString()
+  
+  const protectedFile = {
+    _encrypted: true,
+    _format: format,
+    _dataType: dataType,
+    _timestamp: timestamp,
+    _instructions: {
+      message: "This file is password protected. Use the decryption tool with your credentials.",
+      decryption: "To decrypt: 1) Use your credential 2) Apply XOR decryption with base64 encoding 3) Parse the resulting content"
+    },
+    _encryptedData: encryptedContent
+  }
+  
+  return JSON.stringify(protectedFile, null, 2)
 }
 
 const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defaultTabs = [] }) => {
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences)
   const [hasChanges, setHasChanges] = useState(false)
-  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data'>('appearance')
+  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data' | 'export'>('appearance')
+  const [exportStatus, setExportStatus] = useState<{ [key: string]: 'idle' | 'loading' | 'success' | 'error' }>({})
+  const [selectedDataType, setSelectedDataType] = useState<'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'>('users')
+  const [selectedFormat, setSelectedFormat] = useState<'json' | 'csv' | 'txt'>('json')
+  const [includeMetadata, setIncludeMetadata] = useState(true)
+
+  // Get current user for password protection
+  const { user: currentUser } = useUser()
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -50,11 +275,26 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
     }
   }, [userId])
 
-  const updatePreference = (section: keyof Preferences, key: string, value: any) => {
+  // Export queries and stats
+  const { data: statsData } = useQuery(GET_EXPORT_STATS, {
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  })
+
+  const [exportUsers] = useLazyQuery(GET_ALL_USERS_EXPORT, { errorPolicy: 'all' })
+  const [exportObjects] = useLazyQuery(GET_ALL_OBJECTS_EXPORT, { errorPolicy: 'all' })
+  const [exportEvents] = useLazyQuery(GET_ALL_EVENTS_EXPORT, { errorPolicy: 'all' })
+  const [exportGroups] = useLazyQuery(GET_ALL_GROUPS_EXPORT, { errorPolicy: 'all' })
+  const [exportTransactions] = useLazyQuery(GET_ALL_TRANSACTIONS_EXPORT, { errorPolicy: 'all' })
+  const [exportProgress] = useLazyQuery(GET_ALL_PROGRESS_EXPORT, { errorPolicy: 'all' })
+  const [exportAudits] = useLazyQuery(GET_ALL_AUDITS_EXPORT, { errorPolicy: 'all' })
+  const [exportResults] = useLazyQuery(GET_ALL_RESULTS_EXPORT, { errorPolicy: 'all' })
+
+  const updatePreference = (section: keyof Preferences, key: string, value: string | boolean | string[]) => {
     setPreferences(prev => ({
       ...prev,
       [section]: {
-        ...(prev[section] as any),
+        ...(prev[section] as Record<string, unknown>),
         [key]: value
       }
     }))
@@ -85,10 +325,165 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
     updatePreference('dashboard', 'tabOrder', defaultPreferences.dashboard.tabOrder)
   }
 
+  // Export utility functions
+  const setStatus = (key: string, status: 'idle' | 'loading' | 'success' | 'error') => {
+    setExportStatus(prev => ({ ...prev, [key]: status }))
+  }
+
+  const formatDataForExport = (data: Record<string, unknown>[], dataType: string, format: 'json' | 'csv' | 'txt') => {
+    if (!data || data.length === 0) return ''
+
+    const exportData = includeMetadata 
+      ? {
+          metadata: {
+            exportedAt: new Date().toISOString(),
+            dataType,
+            format,
+            recordCount: data.length,
+            exportedBy: userId
+          },
+          data
+        }
+      : data
+
+    switch (format) {
+      case 'json':
+        return JSON.stringify(exportData, null, 2)
+      case 'csv': {
+        if (data.length === 0) return ''
+        const headers = Object.keys(data[0]).join(',')
+        const rows = data.map(item => 
+          Object.values(item).map(value => 
+            typeof value === 'string' && value.includes(',') 
+              ? `"${value.replace(/"/g, '""')}"` 
+              : value
+          ).join(',')
+        )
+        return includeMetadata 
+          ? `# Exported on ${new Date().toISOString()}\n# Data type: ${dataType}\n# Records: ${data.length}\n${headers}\n${rows.join('\n')}`
+          : `${headers}\n${rows.join('\n')}`
+      }
+      case 'txt': {
+        const txtContent = data.map(item => 
+          Object.entries(item).map(([key, value]) => `${key}: ${value}`).join('\n')
+        ).join('\n---\n')
+        return includeMetadata 
+          ? `Export Date: ${new Date().toISOString()}\nData Type: ${dataType}\nTotal Records: ${data.length}\nExported By: User ${userId}\n\n---\n${txtContent}`
+          : txtContent
+      }
+      default:
+        return JSON.stringify(exportData, null, 2)
+    }
+  }
+
+  const downloadFile = (content: string, filename: string, format: 'json' | 'csv' | 'txt', dataType: string) => {
+    // Check if we have current user login for password protection
+    if (!currentUser?.login) {
+      console.error('Cannot export: User login not available for password protection')
+      return
+    }
+
+    // Create password-protected content
+    const protectedContent = createProtectedContent(content, currentUser.login, format, dataType)
+    
+    // Determine file type based on selected format
+    const mimeTypes = {
+      json: 'application/json',
+      csv: 'text/csv',
+      txt: 'text/plain'
+    }
+    
+    const fileExtensions = {
+      json: 'protected.json',
+      csv: 'protected.csv',
+      txt: 'protected.txt'
+    }
+    
+    const mimeType = mimeTypes[format]
+    const fileExtension = fileExtensions[format]
+    
+    const blob = new Blob([protectedContent], { type: mimeType })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${filename}.${fileExtension}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const performExport = async (dataType: 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all') => {
+    const exportKey = `${dataType}-${selectedFormat}`
+    setStatus(exportKey, 'loading')
+
+    try {
+      const queries = {
+        users: exportUsers,
+        objects: exportObjects,
+        events: exportEvents,
+        groups: exportGroups,
+        transactions: exportTransactions,
+        progress: exportProgress,
+        audits: exportAudits,
+        results: exportResults
+      }
+
+      if (dataType === 'all') {
+        // Export all data types
+        const allPromises = Object.entries(queries).map(async ([key, queryFn]) => {
+          const result = await queryFn()
+          const dataKey = key === 'users' ? 'event_user' : 
+                         key === 'objects' ? 'object' :
+                         key === 'events' ? 'event' :
+                         key === 'groups' ? 'group' :
+                         key === 'transactions' ? 'transaction' :
+                         key === 'progress' ? 'progress' :
+                         key === 'audits' ? 'audit' :
+                         'result'
+          return { [key]: result.data?.[dataKey] || [] }
+        })
+
+        const allResults = await Promise.all(allPromises)
+        const combinedData = Object.assign({}, ...allResults)
+        
+        const content = formatDataForExport([combinedData], 'all', selectedFormat)
+        const timestamp = new Date().toISOString().split('T')[0]
+        downloadFile(content, `reboot01_all_data_${timestamp}`, selectedFormat, 'all')
+      } else {
+        // Export single data type
+        const queryFn = queries[dataType]
+        const result = await queryFn()
+        
+        const dataKey = dataType === 'users' ? 'event_user' : 
+                       dataType === 'objects' ? 'object' :
+                       dataType === 'events' ? 'event' :
+                       dataType === 'groups' ? 'group' :
+                       dataType === 'transactions' ? 'transaction' :
+                       dataType === 'progress' ? 'progress' :
+                       dataType === 'audits' ? 'audit' :
+                       'result'
+        
+        const data = result.data?.[dataKey] || []
+        const content = formatDataForExport(data, dataType, selectedFormat)
+        const timestamp = new Date().toISOString().split('T')[0]
+        downloadFile(content, `reboot01_${dataType}_${timestamp}`, selectedFormat, dataType)
+      }
+
+      setStatus(exportKey, 'success')
+      setTimeout(() => setStatus(exportKey, 'idle'), 3000)
+    } catch (error) {
+      console.error('Export failed:', error)
+      setStatus(exportKey, 'error')
+      setTimeout(() => setStatus(exportKey, 'idle'), 5000)
+    }
+  }
+
   const sections = [
     { id: 'appearance' as const, label: 'Appearance', icon: Palette },
     { id: 'dashboard' as const, label: 'Dashboard', icon: Settings },
-    { id: 'data' as const, label: 'Data Refresh', icon: Database }
+    { id: 'data' as const, label: 'Data Refresh', icon: Database },
+    { id: 'export' as const, label: 'Data Export', icon: Download }
   ]
 
   return (
@@ -216,7 +611,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                               <option value="audits">Audits</option>
                               <option value="checkpoints">Checkpoints</option>
                               <option value="events">Events</option>
-                              <option value="export">Export</option>
+                              <option value="subjects">Subjects</option>
                             </select>
                           </div>
                         )
@@ -269,19 +664,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                         )
                       }
                       
-                      return (
-                        <label key={key} className="flex items-center justify-between">
-                          <span className="text-white/80 capitalize">
-                            {key.replace(/([A-Z])/g, ' $1').trim()}
-                          </span>
-                          <input
-                            type="checkbox"
-                            checked={value as boolean}
-                            onChange={(e) => updatePreference('dashboard', key, e.target.checked)}
-                            className="ml-3"
-                          />
-                        </label>
-                      )
+                      return null // Skip other properties
                     })}
                   </div>
                 </Card>
@@ -297,6 +680,168 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                     Manage data refresh settings, cache, and synchronization options.
                   </p>
                   <RefreshControl showStats={true} showAutoRefreshToggle={true} />
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'export' && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-white">Data Export</h3>
+                <p className="text-white/60">Export comprehensive data from the platform in various formats</p>
+
+                {/* Export Statistics */}
+                {statsData && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    {[
+                      { icon: Users, label: 'Users', count: statsData.event_user_aggregate?.aggregate?.count || 0, color: 'bg-blue-500/20 text-blue-400' },
+                      { icon: FileText, label: 'Objects', count: statsData.object_aggregate?.aggregate?.count || 0, color: 'bg-green-500/20 text-green-400' },
+                      { icon: Calendar, label: 'Events', count: statsData.event_aggregate?.aggregate?.count || 0, color: 'bg-orange-500/20 text-orange-400' },
+                      { icon: Users, label: 'Groups', count: statsData.group_aggregate?.aggregate?.count || 0, color: 'bg-purple-500/20 text-purple-400' },
+                      { icon: Activity, label: 'Transactions', count: statsData.transaction_aggregate?.aggregate?.count || 0, color: 'bg-indigo-500/20 text-indigo-400' },
+                      { icon: Target, label: 'Progress', count: statsData.progress_aggregate?.aggregate?.count || 0, color: 'bg-pink-500/20 text-pink-400' },
+                      { icon: CheckCircle, label: 'Audits', count: statsData.audit_aggregate?.aggregate?.count || 0, color: 'bg-yellow-500/20 text-yellow-400' },
+                      { icon: Award, label: 'Results', count: statsData.result_aggregate?.aggregate?.count || 0, color: 'bg-red-500/20 text-red-400' }
+                    ].map(({ icon: Icon, label, count, color }) => (
+                      <div key={label} className={`${color} rounded-lg p-3 border border-current border-opacity-30`}>
+                        <div className="flex items-center space-x-2">
+                          <Icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{label}</span>
+                        </div>
+                        <div className="text-lg font-bold mt-1">{count.toLocaleString()}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Export Controls */}
+                <div className="bg-white/5 rounded-lg p-6 border border-white/10 space-y-6">
+                  {/* Data Type Selection */}
+                  <div className="space-y-3">
+                    <label className="block text-white/80 font-medium">Data Type</label>
+                    <select
+                      value={selectedDataType}
+                      onChange={(e) => setSelectedDataType(e.target.value as ExportDataType)}
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="users">Users</option>
+                      <option value="objects">Objects</option>
+                      <option value="events">Events</option>
+                      <option value="groups">Groups</option>
+                      <option value="transactions">Transactions</option>
+                      <option value="progress">Progress</option>
+                      <option value="audits">Audits</option>
+                      <option value="results">Results</option>
+                      <option value="all">All Data (Combined)</option>
+                    </select>
+                  </div>
+
+                  {/* Format Selection */}
+                  <div className="space-y-3">
+                    <label className="block text-white/80 font-medium">Export Format</label>
+                    <div className="flex space-x-4">
+                      {[
+                        { value: 'json' as const, label: 'JSON', icon: FileText },
+                        { value: 'csv' as const, label: 'CSV', icon: BarChart3 },
+                        { value: 'txt' as const, label: 'TXT', icon: FileText }
+                      ].map(({ value, label, icon: Icon }) => (
+                        <button
+                          key={value}
+                          onClick={() => setSelectedFormat(value)}
+                          className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-all ${
+                            selectedFormat === value
+                              ? 'bg-primary-500/20 border-primary-500/30 text-primary-300'
+                              : 'bg-gray-700/50 border-gray-600/50 text-white/70 hover:bg-gray-700 hover:border-gray-600'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Export Options */}
+                  <div className="space-y-3">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={includeMetadata}
+                        onChange={(e) => setIncludeMetadata(e.target.checked)}
+                        className="rounded border-gray-600 bg-gray-700 text-primary-500 focus:ring-primary-500"
+                      />
+                      <span className="text-white/80">Include metadata (export date, record count, etc.)</span>
+                    </label>
+                  </div>
+
+                  {/* Export Button */}
+                  <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                    <div className="text-sm text-white/60">
+                      {selectedDataType === 'all' ? 'Export all data types' : `Export ${selectedDataType} data`} as {selectedFormat.toLowerCase()}
+                    </div>
+                    <button
+                      onClick={() => performExport(selectedDataType)}
+                      disabled={exportStatus[`${selectedDataType}-${selectedFormat}`] === 'loading' || !currentUser?.login}
+                      className="flex items-center space-x-2 px-6 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                      title={!currentUser?.login ? 'Export disabled: User login not available for password protection' : 'Export data with password protection'}
+                    >
+                      {exportStatus[`${selectedDataType}-${selectedFormat}`] === 'loading' ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <span>Exporting...</span>
+                        </>
+                      ) : exportStatus[`${selectedDataType}-${selectedFormat}`] === 'success' ? (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          <span>Downloaded!</span>
+                        </>
+                      ) : exportStatus[`${selectedDataType}-${selectedFormat}`] === 'error' ? (
+                        <>
+                          <span className="text-red-300">Export Failed</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          <span>Export Secured</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Security Notice */}
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Lock className="w-3 h-3 text-amber-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-amber-200 text-sm font-medium">Security Protection</p>
+                      <div className="text-amber-100/70 text-xs mt-2 space-y-1">
+                        <p>• All exported files are password-protected for security</p>
+                        <p>• Your login credential (<strong>{currentUser?.login || 'Not Available'}</strong>) is used as the password</p>
+                        <p>• Files are encrypted and saved with .protected extension in your selected format</p>
+                        <p>• Use decryption tools or contact support to access the data</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Export Info */}
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-5 h-5 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-blue-200 text-sm font-medium">Export Information</p>
+                      <div className="text-blue-100/70 text-xs mt-2 space-y-1">
+                        <p>• Exports include all available fields and data for the selected type</p>
+                        <p>• Large datasets may take some time to process</p>
+                        <p>• All exports are generated fresh from the current database state</p>
+                        <p>• Metadata includes export timestamp, record counts, and user information</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

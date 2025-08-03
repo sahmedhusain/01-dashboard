@@ -11,7 +11,6 @@ import { useDashboardRouting } from '../../utils/routing';
 const DashboardSection = lazy(() => import('./DashboardSection'))
 const PiscinesDashboard = lazy(() => import('./PiscinesDashboard'))
 const LeaderboardSection = lazy(() => import('./LeaderboardSection'))
-const ExportSection = lazy(() => import('../export/ExportSection'))
 const PiscineSection = lazy(() => import('./PiscineSection'))
 const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
 const AuditSection = lazy(() => import('./AuditSection'))
@@ -32,30 +31,45 @@ const Dashboard: React.FC = () => {
   const [piscineTypes, setPiscineTypes] = useState<string[]>([])
   const [showPreferences, setShowPreferences] = useState(false)
   const [preferences, setPreferences] = useState<any>(null)
+  const [hasHandledInitialRedirect, setHasHandledInitialRedirect] = useState(false)
 
   const currentTab = getCurrentTab()
   const setActiveTab = navigateToTab
   
-  // Use default tab from preferences if we're on root dashboard and preferences are loaded
-  const activeTab = React.useMemo(() => {
-    if (currentTab === 'dashboard' && preferences?.dashboard?.defaultTab && preferences.dashboard.defaultTab !== 'dashboard') {
-      // Check if we're on the root dashboard path and should redirect to default tab
-      if (window.location.pathname === '/dashboard') {
-        return preferences.dashboard.defaultTab
-      }
-    }
-    return currentTab
-  }, [currentTab, preferences])
+  // Use current tab directly - no complex redirection logic
+  const activeTab = currentTab
 
-  // Effect to navigate to default tab if needed
+  // Handle initial default tab redirect - only on first load, not on user navigation
   React.useEffect(() => {
-    if (preferences?.dashboard?.defaultTab && 
-        preferences.dashboard.defaultTab !== 'dashboard' && 
-        window.location.pathname === '/dashboard' &&
-        currentTab === 'dashboard') {
-      navigateToTab(preferences.dashboard.defaultTab)
+    // Only run once when preferences are first loaded
+    if (preferences && !hasHandledInitialRedirect) {
+      setHasHandledInitialRedirect(true)
+      
+      // Check if user explicitly navigated to dashboard (not initial page load)
+      const userNavigatedToDashboard = sessionStorage.getItem('userNavigatedToDashboard')
+      
+      // If we're on root dashboard, have a non-dashboard default tab, and user didn't explicitly navigate here
+      if (preferences?.dashboard?.defaultTab && 
+          preferences.dashboard.defaultTab !== 'dashboard' && 
+          window.location.pathname === '/dashboard' &&
+          currentTab === 'dashboard' &&
+          !userNavigatedToDashboard) {
+        navigateToTab(preferences.dashboard.defaultTab)
+      }
+      
+      // Clear the navigation flag after checking
+      sessionStorage.removeItem('userNavigatedToDashboard')
     }
-  }, [preferences, navigateToTab, currentTab])
+  }, [preferences, hasHandledInitialRedirect, currentTab, navigateToTab])
+  
+  // Custom navigation function that tracks user intent
+  const handleTabNavigation = React.useCallback((tabId: string) => {
+    // If navigating to dashboard, mark it as user-initiated
+    if (tabId === 'dashboard') {
+      sessionStorage.setItem('userNavigatedToDashboard', 'true')
+    }
+    setActiveTab(tabId)
+  }, [setActiveTab])
 
   // Redirect if no user (shouldn't happen with routing, but safety check)
   if (!user) {
@@ -152,7 +166,7 @@ const Dashboard: React.FC = () => {
     }
   }, [user.id])
 
-  // Default tab order as requested: dashboard, piscines, leaderboard, groups, audits, checkpoints, events, subjects, export
+  // Default tab order as requested: dashboard, piscines, leaderboard, groups, audits, checkpoints, events, subjects
   const defaultTabs = [
     { id: 'dashboard' as TabType, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'piscines' as TabType, label: 'Piscines', icon: BookOpen },
@@ -162,7 +176,6 @@ const Dashboard: React.FC = () => {
     { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
     { id: 'events' as TabType, label: 'Events', icon: Calendar },
     { id: 'subjects' as TabType, label: 'Subjects', icon: Book },
-    { id: 'export' as TabType, label: 'Export', icon: Download },
   ]
 
   // Apply user's custom tab order if available
@@ -212,8 +225,6 @@ const Dashboard: React.FC = () => {
         return <LeaderboardSection user={user} />
       case 'subjects':
         return <SubjectsSection analytics={null} />
-      case 'export':
-        return <ExportSection user={user} />
       case 'audits':
         return <AuditSection user={user} />
       default:
@@ -304,7 +315,7 @@ const Dashboard: React.FC = () => {
               return (
                 <motion.button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabNavigation(tab.id)}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ opacity: 0, y: 20 }}

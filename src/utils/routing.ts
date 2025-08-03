@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 
-export type DashboardTab = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'export' | string
+export type DashboardTab = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'audits' | 'subjects' | string
 
 export const useDashboardRouting = () => {
   const navigate = useNavigate()

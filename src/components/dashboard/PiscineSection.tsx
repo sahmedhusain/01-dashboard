@@ -117,7 +117,7 @@ const PiscineSection: React.FC<PiscineSectionProps> = ({ user, piscineType }) =>
   })
 
   return (
-    <div className="space-y-6">
+    <div className="h-full w-full p-6 space-y-6 overflow-y-auto">
       {/* Piscine Overview Cards */}
       <PiscineStats
         piscineType={piscineType}

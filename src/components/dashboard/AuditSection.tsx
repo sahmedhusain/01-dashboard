@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery, gql } from '@apollo/client';
-import { User } from '../../types';
+import { User, Audit, Group } from '../../types';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -11,6 +11,28 @@ import { formatXPValue, formatDate } from '../../utils/dataFormatting';
 
 interface AuditSectionProps {
   user: User;
+}
+
+// Enhanced audit type for this component
+interface EnrichedAudit extends Omit<Audit, 'group' | 'auditor'> {
+  type: 'given' | 'received';
+  amount?: number;
+  transactionType?: string;
+  group?: {
+    path: string;
+    members?: Array<{
+      user: {
+        login: string;
+        firstName?: string;
+        lastName?: string;
+      };
+    }>;
+  };
+  auditor?: {
+    login: string;
+    firstName?: string;
+    lastName?: string;
+  };
 }
 
 const GET_AUDIT_DATA = gql`
@@ -109,13 +131,13 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
     if (!auditData || !transactionData) return [];
 
     const allAudits = [
-      ...(auditData.auditsGiven || []).map((a: any) => ({ ...a, type: 'given' })),
-      ...(auditData.auditsReceived || []).map((a: any) => ({ ...a, type: 'received' }))
+      ...(auditData.auditsGiven || []).map((a: Audit) => ({ ...a, type: 'given' as const })),
+      ...(auditData.auditsReceived || []).map((a: Audit) => ({ ...a, type: 'received' as const }))
     ];
 
     return allAudits.map(audit => {
       // Find matching transaction by auditId in attrs
-      const matchingTransaction = transactionData.transaction.find((t: any) => {
+      const matchingTransaction = transactionData.transaction.find((t: { attrs?: Record<string, unknown>; amount: number; type: string }) => {
         return t.attrs && t.attrs.auditId === audit.id;
       });
 
@@ -124,10 +146,10 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
           ...audit, 
           amount: matchingTransaction.amount,
           transactionType: matchingTransaction.type 
-        };
+        } as EnrichedAudit;
       }
 
-      return { ...audit, amount: undefined, transactionType: undefined };
+      return { ...audit, amount: undefined, transactionType: undefined } as EnrichedAudit;
     });
   }, [auditData, transactionData]);
 
@@ -145,12 +167,53 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
 
   const totalPages = Math.ceil(totalAudits / itemsPerPage);
 
-  const filteredAudits = audits.filter(audit => {
+  // Enhanced search functions
+  const extractProjectName = (path: string): string => {
+    if (!path) return '';
+    const parts = path.split('/');
+    return parts[parts.length - 1] || '';
+  };
+
+  const getAuditorName = (audit: EnrichedAudit): string => {
+    if (!audit.auditor) return '';
+    const { login, firstName, lastName } = audit.auditor;
+    return `${login} ${firstName || ''} ${lastName || ''}`.trim();
+  };
+
+  const doesAuditMatchSearch = (audit: EnrichedAudit, searchTerm: string): boolean => {
+    if (!searchTerm) return true;
+    
     const searchTermLower = searchTerm.toLowerCase();
-    const path = audit.group?.path?.toLowerCase() || '';
-    const auditor = audit.auditor?.login.toLowerCase() || '';
-    const members = audit.group?.members?.map((m: any) => m.user.login.toLowerCase()).join(' ') || '';
-    const matchesSearch = path.includes(searchTermLower) || auditor.includes(searchTermLower) || members.includes(searchTermLower);
+    
+    // Search by project name (extracted from path)
+    const projectName = extractProjectName(audit.group?.path || '').toLowerCase();
+    if (projectName.includes(searchTermLower)) return true;
+    
+    // Search by full path
+    const fullPath = (audit.group?.path || '').toLowerCase();
+    if (fullPath.includes(searchTermLower)) return true;
+    
+    // Search by auditor (for received audits)
+    if (audit.auditor) {
+      const auditorName = getAuditorName(audit).toLowerCase();
+      if (auditorName.includes(searchTermLower)) return true;
+    }
+    
+    // Search by members (for given audits or any audit with member data)
+    if (audit.group?.members?.length && audit.group.members.length > 0) {
+      const memberMatches = audit.group.members.some((member) => {
+        const { login, firstName, lastName } = member.user;
+        const memberName = `${login} ${firstName || ''} ${lastName || ''}`.trim().toLowerCase();
+        return memberName.includes(searchTermLower);
+      });
+      if (memberMatches) return true;
+    }
+    
+    return false;
+  };
+
+  const filteredAudits = audits.filter(audit => {
+    const matchesSearch = doesAuditMatchSearch(audit, searchTerm);
 
     if (statusFilter === 'all') return matchesSearch;
     const isCompleted = audit.grade !== null;
@@ -161,7 +224,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   });
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-indigo-900/20 to-slate-900 min-h-full relative">
+    <div className="bg-gradient-to-br from-slate-900 via-indigo-900/20 to-slate-900 h-full w-full relative">
       {/* Full Screen Background */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5"></div>
@@ -170,7 +233,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
           backgroundSize: '60px 60px'
         }}></div>
       </div>
-      <div className="relative z-10 overflow-hidden">
+      <div className="relative z-10 h-full w-full overflow-y-auto">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}
@@ -316,7 +379,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search audits by project path, auditor..."
+            placeholder="Search by project, auditor, or members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -448,7 +511,7 @@ const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient
   </motion.div>
 );
 
-const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
+const AuditCard = ({ audit, index }: { audit: EnrichedAudit, index: number }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isCompleted = audit.grade !== null;
   const isSuccess = isCompleted && audit.grade >= 1;
@@ -532,7 +595,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
               {isCompleted ? (isSuccess ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />) : <Clock className="w-4 h-4" />}
             </div>
             <div>
-              <div className="text-white font-medium">{isCompleted ? audit.grade.toFixed(2)*100+'%': 'Pending'}</div>
+              <div className="text-white font-medium">{isCompleted ? (Number(audit.grade.toFixed(2)) * 100) + '%': 'Pending'}</div>
               <div className="text-slate-400 text-sm">Grade</div>
             </div>
           </div>
@@ -593,7 +656,7 @@ const AuditCard = ({ audit, index }: { audit: any, index: number }) => {
                   <span className="text-white font-semibold">Audited Members</span>
                 </div>
                 <div className="max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
-                  {audit.group.members.map((m: any) => (
+                  {audit.group?.members?.map((m) => (
                     <div key={m.user.login} className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-gradient-to-br from-primary-500/30 to-primary-600/30 rounded-full flex items-center justify-center border border-primary-500/20">

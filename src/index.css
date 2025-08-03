@@ -18,18 +18,164 @@
 @layer components {
   .glass-card {
     @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-material-lg;
+    @apply p-4 sm:p-6 lg:p-8; /* Responsive padding */
   }
 
   .glass-button {
     @apply bg-primary-500/20 hover:bg-primary-500/30 backdrop-blur-sm border border-primary-400/30;
-    @apply rounded-lg px-4 py-2 text-primary-100 font-medium transition-all duration-200;
+    @apply rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3 text-primary-100 font-medium transition-all duration-200;
     @apply hover:shadow-material-md hover:scale-105 active:scale-95;
+    @apply text-sm sm:text-base; /* Responsive text size */
   }
 
   .material-input {
-    @apply bg-slate-800/50 border border-slate-600 rounded-lg px-4 py-3;
+    @apply bg-slate-800/50 border border-slate-600 rounded-lg px-3 py-2.5 sm:px-4 sm:py-3;
     @apply text-white placeholder-slate-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20;
     @apply transition-all duration-200 outline-none;
+    @apply text-sm sm:text-base; /* Responsive text size */
+  }
+
+  /* Enhanced responsive grid layouts */
+  .responsive-grid-1 {
+    @apply grid grid-cols-1 gap-4 sm:gap-6;
+  }
+  
+  .responsive-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+  }
+  
+  .responsive-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+  }
+  
+  .responsive-grid-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  /* Enhanced responsive flex layouts */
+  .responsive-flex-col {
+    @apply flex flex-col gap-4 sm:gap-6;
+  }
+  
+  .responsive-flex-row {
+    @apply flex flex-col sm:flex-row gap-4 sm:gap-6;
+  }
+
+  /* Container utilities */
+  .container-responsive {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-section {
+    @apply py-6 sm:py-8 lg:py-12;
+  }
+
+  /* Enhanced mobile navigation utilities */
+  .mobile-nav-scroll {
+    @apply overflow-x-auto scrollbar-hide;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Responsive text utilities */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-md {
+    @apply text-base sm:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+
+  /* Enhanced spacing utilities */
+  .space-responsive-sm {
+    @apply space-y-3 sm:space-y-4;
+  }
+  
+  .space-responsive-md {
+    @apply space-y-4 sm:space-y-6;
+  }
+  
+  .space-responsive-lg {
+    @apply space-y-6 sm:space-y-8 lg:space-y-12;
+  }
+
+  /* Enhanced padding utilities */
+  .p-responsive-sm {
+    @apply p-3 sm:p-4 lg:p-6;
+  }
+  
+  .p-responsive-md {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  
+  .p-responsive-lg {
+    @apply p-6 sm:p-8 lg:p-12;
+  }
+
+  /* Enhanced button utilities */
+  .btn-responsive {
+    @apply px-3 py-2 sm:px-4 sm:py-2.5 lg:px-6 lg:py-3;
+    @apply text-sm sm:text-base;
+    @apply rounded-lg sm:rounded-xl;
+  }
+
+  /* Full width/height utilities for dashboard sections */
+  .dashboard-section-full {
+    @apply h-full w-full overflow-y-auto;
+  }
+
+  .dashboard-content-container {
+    @apply h-full w-full relative;
+  }
+
+  .dashboard-inner-content {
+    @apply relative z-10 h-full w-full overflow-y-auto;
+  }
+
+  /* Icon-only button utilities for mobile/tablet */
+  .btn-icon-only {
+    @apply w-10 h-10 sm:w-12 sm:h-12 lg:w-auto lg:h-auto;
+    @apply flex items-center justify-center;
+    @apply lg:justify-start lg:px-6 lg:py-3;
+  }
+
+  .btn-icon-spacing {
+    @apply lg:mr-2; /* Only add margin on desktop when text is visible */
+  }
+
+  /* Touch-friendly sizing */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Safe area utilities for mobile devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Enhanced scrollbar for all devices */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   .gradient-text {
@@ -142,5 +288,157 @@
 
   .markdown-content td {
     @apply text-white/80;
+  }
+}
+
+/* Enhanced responsive media queries */
+@media (max-width: 475px) {
+  /* Extra small devices */
+  .xs-hide {
+    display: none !important;
+  }
+  
+  .xs-show {
+    display: block !important;
+  }
+  
+  .xs-text-xs {
+    font-size: 0.75rem !important;
+  }
+  
+  .xs-p-2 {
+    padding: 0.5rem !important;
+  }
+  
+  .xs-space-y-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+  }
+}
+
+@media (max-width: 640px) {
+  /* Small devices - mobile */
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .mobile-center {
+    text-align: center !important;
+  }
+  
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  .mobile-show {
+    display: block !important;
+  }
+  
+  /* Enhanced touch targets for mobile */
+  .mobile-touch-target {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Mobile-specific spacing */
+  .mobile-compact {
+    padding: 0.75rem !important;
+    margin: 0.5rem !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  /* Tablet portrait */
+  .tablet-hide {
+    display: none !important;
+  }
+  
+  .tablet-show {
+    display: block !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet landscape */
+  .tablet-lg-hide {
+    display: none !important;
+  }
+  
+  .tablet-lg-show {
+    display: block !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Desktop and up */
+  .desktop-hide {
+    display: none !important;
+  }
+  
+  .desktop-show {
+    display: block !important;
+  }
+}
+
+/* High DPI / Retina display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .glass-card {
+    backdrop-filter: blur(20px) !important;
+  }
+  
+  .glass-button {
+    backdrop-filter: blur(10px) !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support (system preference) */
+@media (prefers-color-scheme: light) {
+  .dark-mode-hide {
+    display: none !important;
+  }
+}
+
+/* Orientation-specific styles */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Landscape mobile - reduce vertical spacing */
+  .landscape-compact {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+@media (orientation: portrait) {
+  .portrait-show {
+    display: block !important;
+  }
+  
+  .portrait-hide {
+    display: none !important;
   }
 }

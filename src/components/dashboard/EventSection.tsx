@@ -112,7 +112,7 @@ const EVENT_USER_VIEW_QUERY = gql`
 `;
 
 const EventSection: React.FC<EventSectionProps> = ({ user }) => {
-  const [selectedView, setSelectedView] = useState<'all' | 'my-events' | 'active'>('all');
+  const [selectedView, setSelectedView] = useState<'all' | 'my-events'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
@@ -201,12 +201,6 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         // Use the nested event data directly from user's event participation
         events = userEventsData?.event_user?.map((eu: any) => eu.event).filter(Boolean) || [];
         break;
-      case 'active':
-        const now = new Date();
-        events = eventsData?.event?.filter((e: any) => 
-          e.endAt && new Date(e.endAt) > now
-        ) || [];
-        break;
       default:
         events = eventsData?.event || [];
     }
@@ -279,7 +273,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900 min-h-full relative">
+    <div className="bg-gradient-to-br from-slate-900 via-orange-900/20 to-slate-900 h-full w-full relative">
       {/* Full Screen Background */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-red-500/5"></div>
@@ -288,7 +282,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           backgroundSize: '70px 70px'
         }}></div>
       </div>
-      <div className="relative z-10 overflow-hidden">
+      <div className="relative z-10 h-full w-full overflow-y-auto">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}
@@ -412,21 +406,6 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                   <span>My Events</span>
                 </div>
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedView('active')}
-                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
-                  selectedView === 'active'
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-5 h-5" />
-                  <span>Active Events</span>
-                </div>
-              </motion.button>
             </div>
           </motion.div>
 
@@ -442,7 +421,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search events by name, module, path, or participants..."
+            placeholder="Search events by name, module, or participants..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"

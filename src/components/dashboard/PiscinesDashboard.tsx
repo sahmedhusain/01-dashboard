@@ -459,7 +459,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-            <input type="text" placeholder="Search by project name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg" />
+            <input type="text" placeholder="Search by excersice name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg" />
           </div>
           <div className="flex gap-3">
             <div className="flex items-center space-x-2">

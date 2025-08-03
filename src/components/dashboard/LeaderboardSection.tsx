@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   Trophy,
@@ -606,22 +606,111 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
     })
 
-    // Update ranks after sorting
-    const finalUsers = users.map((user, index) => ({ ...user, rank: index + 1 }))
-    console.log('Final filtered and sorted users:', finalUsers.length)
-    return finalUsers
+    // Preserve original ranks when searching/filtering - don't renumber positions
+    // This ensures users see their actual leaderboard position, not filtered position
+    console.log('Final filtered and sorted users:', users.length)
+    return users
   }, [processedUsers, cohortFilter, searchTerm, cohortSearchTerm, minLevel, activeLeaderboard, sortOrder])
 
-  // Get user's current rank
+  // Get user's actual current rank in the complete leaderboard (not filtered position)
   const currentUserRank = useMemo(() => {
-    const userIndex = filteredAndSortedUsers.findIndex(u => u.id === user.id)
+    // Create a sorted list based on the active leaderboard type using all processed users
+    const sortedUsers = [...processedUsers].sort((a, b) => {
+      let aValue: number, bValue: number
+      
+      switch (activeLeaderboard) {
+        case 'level':
+          aValue = a.level || 0
+          bValue = b.level || 0
+          break
+        case 'audit':
+          aValue = Number(a.auditRatio) || 0
+          bValue = Number(b.auditRatio) || 0
+          break
+        default:
+          aValue = a.level || 0
+          bValue = b.level || 0
+      }
+      
+      // Handle infinity values in audit ratio
+      if (activeLeaderboard === 'audit') {
+        if (!isFinite(aValue)) aValue = 0
+        if (!isFinite(bValue)) bValue = 0
+      }
+      
+      // Apply sort order
+      const comparison = sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+      if (comparison !== 0) return comparison
+      
+      // Secondary sort by level for audit leaderboard, by login for level leaderboard
+      if (activeLeaderboard === 'audit') {
+        const secondaryComparison = sortOrder === 'desc' ? (b.level || 0) - (a.level || 0) : (a.level || 0) - (b.level || 0)
+        if (secondaryComparison !== 0) return secondaryComparison
+      }
+      
+      return a.login.localeCompare(b.login)
+    })
+    
+    // Find user's position in the complete sorted leaderboard
+    const userIndex = sortedUsers.findIndex(u => u.id === user.id)
     return userIndex >= 0 ? userIndex + 1 : null
-  }, [filteredAndSortedUsers, user.id])
+  }, [processedUsers, user.id, activeLeaderboard, sortOrder])
+
+  // Helper function to get actual position for any user in the complete leaderboard
+  const getActualUserPosition = useCallback((userId: number) => {
+    // Create sorted list of all users for current leaderboard type
+    const allSortedUsers = [...processedUsers].sort((a, b) => {
+      let aValue: number, bValue: number
+      
+      switch (activeLeaderboard) {
+        case 'level':
+          aValue = a.level || 0
+          bValue = b.level || 0
+          break
+        case 'audit':
+          aValue = Number(a.auditRatio) || 0
+          bValue = Number(b.auditRatio) || 0
+          break
+        default:
+          aValue = a.level || 0
+          bValue = b.level || 0
+      }
+      
+      // Handle infinity values in audit ratio
+      if (activeLeaderboard === 'audit') {
+        if (!isFinite(aValue)) aValue = 0
+        if (!isFinite(bValue)) bValue = 0
+      }
+      
+      // Apply sort order
+      const comparison = sortOrder === 'desc' ? bValue - aValue : aValue - bValue
+      if (comparison !== 0) return comparison
+      
+      // Secondary sort
+      if (activeLeaderboard === 'audit') {
+        const secondaryComparison = sortOrder === 'desc' ? (b.level || 0) - (a.level || 0) : (a.level || 0) - (b.level || 0)
+        if (secondaryComparison !== 0) return secondaryComparison
+      }
+      
+      return a.login.localeCompare(b.login)
+    })
+    
+    // Find user's actual position
+    const userIndex = allSortedUsers.findIndex(u => u.id === userId)
+    return userIndex >= 0 ? userIndex + 1 : null
+  }, [processedUsers, activeLeaderboard, sortOrder])
 
   const totalUsers = comprehensiveData?.bhModuleStats?.aggregate?.count || processedUsers.length
   const maxLevel = comprehensiveData?.bhModuleStats?.aggregate?.max?.level || Math.max(...processedUsers.map(u => u.level || 0), 0)
   const avgLevel = comprehensiveData?.bhModuleStats?.aggregate?.avg?.level || (processedUsers.reduce((sum, u) => sum + (u.level || 0), 0) / Math.max(totalUsers, 1))
-  const avgAuditRatio = processedUsers.reduce((sum, u) => sum + (Number(u.auditRatio) || 0), 0) / Math.max(totalUsers, 1)
+  
+  // Calculate average audit ratio excluding infinity values
+  const validAuditRatios = processedUsers
+    .map(u => Number(u.auditRatio) || 0)
+    .filter(ratio => isFinite(ratio) && ratio > 0)
+  const avgAuditRatio = validAuditRatios.length > 0 
+    ? validAuditRatios.reduce((sum, ratio) => sum + ratio, 0) / validAuditRatios.length 
+    : 0
 
   // Helper functions
   const getCohortDisplayName = (cohort: string) => {
@@ -684,7 +773,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full relative">
+    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 h-full w-full relative">
       {/* Background Effects */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
@@ -694,7 +783,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         }}></div>
       </div>
 
-      <div className="relative z-10 space-y-8 p-6">
+      <div className="relative z-10 h-full w-full overflow-y-auto space-y-8 p-6">
         {/* Label Access Status - Show if we have limited label data */}
         {(labelData?.label_user?.length || 0) <= 1 && !labelLoading && (
           <motion.div
@@ -726,7 +815,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             <Trophy className="w-10 h-10 text-blue-400" />
           </div>
           <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-            Leaderboard
+            Leaderboard Dashboard
           </h1>
           <p className="text-xl text-white/70 max-w-2xl mx-auto">
             Rankings for <span className="text-blue-400 font-semibold">{totalUsers}</span> Students
@@ -851,22 +940,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
               <UserSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search users by login, name..."
+                placeholder="Search by username, full name"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
-            </div>
-
-            {/* Cohort Search - NEW */}
-            <div className="relative flex-1 max-w-md">
-              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search cohort labels (e.g., Cohort1, Cohort4-SP9)..."
-                value={cohortSearchTerm}
-                onChange={(e) => setCohortSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
             </div>
 
@@ -894,9 +971,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 <option value={1}>All Levels</option>
                 <option value={5}>Level 5+</option>
                 <option value={10}>Level 10+</option>
-                <option value={15}>Level 15+</option>
                 <option value={20}>Level 20+</option>
-                <option value={25}>Level 25+</option>
+                <option value={40}>Level 40+</option>
+                <option value={80}>Level 80+</option>
+                <option value={100}>Level 100+</option>
               </select>
 
               {/* Sort Order */}
@@ -929,7 +1007,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-primary-400">#{currentUserRank}</p>
-                  <p className="text-white/60 text-sm">of {filteredAndSortedUsers.length}</p>
+                  <p className="text-white/60 text-sm">of {totalUsers}</p>
                 </div>
               </div>
             </Card>
@@ -967,7 +1045,8 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {filteredAndSortedUsers.slice(0, limit).map((userData: EnhancedUser, index: number) => {
-              const position = userData.rank || (index + 1)
+              // Get actual position in complete leaderboard for current leaderboard type
+              const position = getActualUserPosition(userData.id) || (index + 1)
               const isCurrentUser = userData.id === user.id
               const displayData = getValueDisplay(userData)
 
@@ -1051,7 +1130,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             {filteredAndSortedUsers.length > limit && (
               <div className="text-center py-4">
                 <p className="text-white/60 text-sm">
-                  Showing {limit} of {filteredAndSortedUsers.length} users
+                  Showing {limit} of {totalUsers} users
                 </p>
               </div>
             )}

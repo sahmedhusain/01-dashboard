@@ -53,6 +53,80 @@ const ALL_GROUPS_QUERY = gql`
   }
 `;
 
+// Query for complete group statistics (not affected by pagination)
+const GROUP_STATS_QUERY = gql`
+  query GetGroupStats($userId: Int!) {
+    # All groups for general stats
+    all_groups: group {
+      id
+      status
+      captainId
+    }
+
+    # Total groups count
+    group_aggregate {
+      aggregate {
+        count
+      }
+    }
+
+    # User's captain groups count
+    captain_groups_aggregate: group_aggregate(where: {captainId: {_eq: $userId}}) {
+      aggregate {
+        count
+      }
+    }
+
+    # User's member groups count  
+    member_groups_aggregate: group_user_aggregate(where: {userId: {_eq: $userId}}) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+// Query for enhanced search that includes member information
+const ALL_GROUPS_WITH_MEMBERS_QUERY = gql`
+  query GetAllGroupsWithMembers($searchTerm: String!) {
+    # Search groups by member names
+    group_user(
+      where: {
+        _or: [
+          { user: { login: { _ilike: $searchTerm } } },
+          { user: { firstName: { _ilike: $searchTerm } } },
+          { user: { lastName: { _ilike: $searchTerm } } }
+        ]
+      }
+      distinct_on: groupId
+    ) {
+      groupId
+      user {
+        login
+        firstName
+        lastName
+      }
+      group {
+        id
+        objectId
+        eventId
+        captainId
+        createdAt
+        updatedAt
+        status
+        path
+        campus
+        captain {
+          id
+          login
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
 const GROUP_MEMBERS_QUERY = gql`
   query GetGroupMembers($groupId: Int!) {
     group_user(where: {groupId: {_eq: $groupId}}) {
@@ -85,7 +159,7 @@ const USER_GROUPS_QUERY = gql`
 const MY_GROUPS_QUERY = gql`
   query GetMyGroups($userId: Int!) {
     # Groups where user is a captain
-    captainGroups: group(where: {captainId: {_eq: $userId}}) {
+    captainGroups: group(where: {captainId: {_eq: $userId}}, order_by: {createdAt: desc}) {
       id
       objectId
       eventId
@@ -164,6 +238,13 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
+  // Query complete group statistics (not affected by pagination)
+  const { data: statsData } = useQuery(GROUP_STATS_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
   // Query selected group members
   const { data: membersData, loading: membersLoading } = useQuery(GROUP_MEMBERS_QUERY, {
     variables: { groupId: selectedGroup || 0 },
@@ -171,6 +252,78 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
+
+  // Query groups by member search (triggered when search includes potential member names)
+  const { data: memberSearchData, loading: memberSearchLoading } = useQuery(ALL_GROUPS_WITH_MEMBERS_QUERY, {
+    variables: { searchTerm: `%${searchTerm}%` },
+    skip: !searchTerm || searchTerm.length < 2, // Only search when term is meaningful
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  // Helper function to extract project name from path
+  const extractProjectName = (path: string): string => {
+    if (!path) return '';
+    
+    // Extract project name from various path patterns
+    // Examples: "/bahrain/bh-module/piscine-go/groupie-tracker" -> "groupie-tracker"
+    //          "/bahrain/bh-module/checkpoint/mini-framework" -> "mini-framework"
+    const pathParts = path.split('/');
+    const projectName = pathParts[pathParts.length - 1] || '';
+    
+    return projectName.replace(/-/g, ' '); // Convert dashes to spaces for better search
+  };
+
+  // Helper function to get all member names from a group (not available in main query, returns empty for now)
+  const getGroupMemberNames = (_group: any): string[] => {
+    // Since we can't include member data directly in the main queries due to schema limitations,
+    // this will return empty array for now. Member search can be enhanced later with separate queries.
+    return [];
+  };
+
+  // Helper function to get captain name
+  const getCaptainName = (group: any): string => {
+    if (!group.captain) return '';
+    
+    const names = [];
+    if (group.captain.login) names.push(group.captain.login);
+    if (group.captain.firstName) names.push(group.captain.firstName);  
+    if (group.captain.lastName) names.push(group.captain.lastName);
+    
+    return names.join(' ');
+  };
+
+  // Enhanced search function
+  const doesGroupMatchSearch = (group: any, searchTerm: string): boolean => {
+    if (!searchTerm) return true;
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    
+    // 1. Search by project name (extracted from path)
+    const projectName = extractProjectName(group.path);
+    if (projectName.toLowerCase().includes(lowerSearchTerm)) {
+      return true;
+    }
+    
+    // 2. Search by path (original functionality)
+    if (group.path?.toLowerCase().includes(lowerSearchTerm)) {
+      return true;
+    }
+    
+    // 3. Search by captain name
+    const captainName = getCaptainName(group);
+    if (captainName.toLowerCase().includes(lowerSearchTerm)) {
+      return true;
+    }
+    
+    // 4. Search by member names
+    const memberNames = getGroupMemberNames(group);
+    if (memberNames.some(name => name.toLowerCase().includes(lowerSearchTerm))) {
+      return true;
+    }
+    
+    return false;
+  };
 
   const getFilteredGroups = () => {
     let groups = [];
@@ -190,13 +343,18 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           const uniqueGroups = allMyGroups.filter((group, index, self) =>
             index === self.findIndex(g => g.id === group.id)
           );
-          groups = uniqueGroups;
+          
+          // Sort by creation date (newest first)
+          groups = uniqueGroups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         } else {
           // Fallback to old method if new query fails
           const myGroupIds = userGroupsData?.group_user?.map((gu: any) => gu.groupId) || [];
-          groups = groupsData?.group?.filter((g: any) =>
+          const filteredGroups = groupsData?.group?.filter((g: any) =>
             myGroupIds.includes(g.id) || g.captainId === user.id
           ) || [];
+          
+          // Sort by creation date (newest first) for fallback as well
+          groups = filteredGroups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         }
         break;
       }
@@ -204,10 +362,18 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         groups = groupsData?.group || [];
     }
 
-    // Apply filters
+    // Apply enhanced search filters
     if (searchTerm) {
-      groups = groups.filter((group: any) =>
-        group.path?.toLowerCase().includes(searchTerm.toLowerCase())
+      // First, filter by project name and captain name
+      const regularSearchGroups = groups.filter((group: any) => doesGroupMatchSearch(group, searchTerm));
+      
+      // Add groups from member search if available
+      const memberSearchGroups = memberSearchData?.group_user?.map((gu: any) => gu.group).filter(Boolean) || [];
+      
+      // Combine and deduplicate
+      const allSearchGroups = [...regularSearchGroups, ...memberSearchGroups];
+      groups = allSearchGroups.filter((group, index, self) =>
+        index === self.findIndex(g => g.id === group.id)
       );
     }
 
@@ -231,17 +397,37 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
 
   const formatDate = formatDateUtil;
 
-  const extractProjectName = (path: string) => {
-    if (!path) return 'Unknown Project';
-    const parts = path.split('/');
-    return parts[parts.length - 1] || 'Unknown Project';
-  };
-
   const getCaptainUsername = (group: any) => {
     if (group.captain?.login) {
       return group.captain.login;
     }
     return `User #${group.captainId}`;
+  };
+
+  // Helper function to check if a group belongs to the current user
+  const isMyGroup = (group: any): boolean => {
+    // Check if user is captain
+    if (group.captainId === user.id) {
+      return true;
+    }
+    
+    // Check if user is a member (using the userGroupsData)
+    const myGroupIds = userGroupsData?.group_user?.map((gu: any) => gu.groupId) || [];
+    return myGroupIds.includes(group.id);
+  };
+
+  // Helper function to get user's role in a group
+  const getUserRoleInGroup = (group: any): string => {
+    if (group.captainId === user.id) {
+      return 'Captain';
+    }
+    
+    const myGroupIds = userGroupsData?.group_user?.map((gu: any) => gu.groupId) || [];
+    if (myGroupIds.includes(group.id)) {
+      return 'Member';
+    }
+    
+    return '';
   };
 
   const getMyGroupsCount = () => {
@@ -270,6 +456,33 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     return uniqueGroups.length;
   };
   
+  // Complete statistics calculations (not affected by pagination/filtering)
+  const getCompleteStats = () => {
+    const allGroups = statsData?.all_groups || [];
+    const totalCount = statsData?.group_aggregate?.aggregate?.count || 0;
+    const captainCount = statsData?.captain_groups_aggregate?.aggregate?.count || 0;
+    const memberCount = statsData?.member_groups_aggregate?.aggregate?.count || 0;
+    
+    // Calculate status-based counts from all groups
+    const activeCount = allGroups.filter((g: any) => g.status === 'working' || g.status === 'audit').length;
+    const completedCount = allGroups.filter((g: any) => g.status === 'finished').length;
+    const userCaptainCount = allGroups.filter((g: any) => g.captainId === user.id).length;
+    
+    // Total unique groups user is involved in (avoid double counting if captain and member of same group)
+    const totalUserGroups = Math.max(captainCount, memberCount, captainCount + memberCount - captainCount); // Simple deduplication estimate
+    const userMemberOnlyCount = Math.max(0, totalUserGroups - userCaptainCount);
+    
+    return {
+      total: totalCount,
+      active: activeCount,
+      completed: completedCount,
+      userTotal: totalUserGroups,
+      userAsCaptain: userCaptainCount,
+      userAsMember: userMemberOnlyCount
+    };
+  };
+  
+  const completeStats = getCompleteStats();
   const totalGroups = groupsData?.group_aggregate?.aggregate?.count || 0;
   const totalPages = Math.ceil(totalGroups / itemsPerPage);
 
@@ -282,7 +495,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative">
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 h-full w-full relative">
       {/* Full Screen Background */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
@@ -291,7 +504,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           backgroundSize: '80px 80px'
         }}></div>
       </div>
-      <div className="relative z-10 overflow-hidden">
+      <div className="relative z-10 h-full w-full overflow-y-auto">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}
@@ -322,7 +535,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         <StatCard 
           icon={Users} 
           title="Total Groups" 
-          value={totalGroups} 
+          value={completeStats.total} 
           color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
           bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
           subValue="All collaborative groups"
@@ -331,7 +544,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         <StatCard 
           icon={Crown} 
           title="My Groups" 
-          value={getMyGroupsCount()} 
+          value={completeStats.userTotal} 
           color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
           bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
           subValue="Your active participation"
@@ -340,18 +553,18 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         <StatCard 
           icon={Activity} 
           title="Active Groups" 
-          value={getFilteredGroups().filter(g => g.status === 'working' || g.status === 'audit').length} 
+          value={completeStats.active} 
           color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
           bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
           subValue="Currently working"
-          trend={getFilteredGroups().filter(g => g.status === 'working' || g.status === 'audit').length > totalGroups * 0.6 ? 
+          trend={completeStats.active > completeStats.total * 0.6 ? 
             { value: 15, isPositive: true } : undefined}
         />
 
         <StatCard 
           icon={Calendar} 
           title="Completed" 
-          value={getFilteredGroups().filter(g => g.status === 'finished').length} 
+          value={completeStats.completed} 
           color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
           bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
           subValue="Successfully finished"
@@ -360,7 +573,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         <StatCard 
           icon={UserPlus} 
           title="As Captain" 
-          value={getFilteredGroups().filter(g => g.captainId === user.id).length} 
+          value={completeStats.userAsCaptain} 
           color="bg-gradient-to-r from-red-500/30 to-rose-500/30"
           bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
           subValue="Leadership roles"
@@ -369,7 +582,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         <StatCard 
           icon={Users} 
           title="As Member" 
-          value={getMyGroupsCount() - getFilteredGroups().filter(g => g.captainId === user.id).length} 
+          value={completeStats.userAsMember} 
           color="bg-gradient-to-r from-indigo-500/30 to-blue-500/30"
           bgGradient="bg-gradient-to-br from-indigo-900/20 to-blue-900/20"
           subValue="Team collaborations"
@@ -429,7 +642,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search groups by project..."
+            placeholder="Search by project, members, or captain..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -460,76 +673,118 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         transition={{ duration: 0.5, delay: 0.3 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {getFilteredGroups().map((group: any, index: number) => (
-          <motion.div
-            key={group.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="bg-slate-800/50 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 shadow-lg"
-          >
-            {/* Group Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-primary-400" />
+        {getFilteredGroups().map((group: any, index: number) => {
+          const userGroup = isMyGroup(group);
+          const userRole = getUserRoleInGroup(group);
+          
+          return (
+            <motion.div
+              key={group.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className={`backdrop-blur-lg rounded-xl p-6 transition-all duration-300 shadow-lg relative ${
+                userGroup 
+                  ? 'bg-emerald-900/30 border-2 border-emerald-500/50 hover:bg-emerald-900/40 hover:border-emerald-400/60 shadow-emerald-500/20' 
+                  : 'bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50'
+              }`}
+            >
+              {/* Your Group Indicator */}
+              {userGroup && (
+                <div className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white/20">
+                  <div className="flex items-center space-x-1">
+                    <Crown className="w-3 h-3" />
+                    <span>Your Group ({userRole})</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-white font-semibold text-lg">#{extractProjectName(group.path)}</span>
+              )}
+
+              {/* Group Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    userGroup ? 'bg-emerald-500/20' : 'bg-primary-500/20'
+                  }`}>
+                    <Users className={`w-5 h-5 ${userGroup ? 'text-emerald-400' : 'text-primary-400'}`} />
+                  </div>
+                  <div>
+                    <span className={`font-semibold text-lg ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                      #{extractProjectName(group.path)}
+                    </span>
+                  </div>
+                </div>
+                <div className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(group.status)}`}>
+                  {group.status}
                 </div>
               </div>
-              <div className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(group.status)}`}>
-                {group.status}
-              </div>
-            </div>
 
             {/* Group Details */}
             <div className="space-y-4">
 
               {group.captainId && (
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                    <Crown className="w-4 h-4 text-yellow-400" />
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    userGroup ? 'bg-emerald-500/20' : 'bg-yellow-500/20'
+                  }`}>
+                    <Crown className={`w-4 h-4 ${userGroup ? 'text-emerald-400' : 'text-yellow-400'}`} />
                   </div>
                   <div>
-                    <div className="text-white font-medium">{getCaptainUsername(group)}</div>
-                    <div className="text-slate-400 text-sm">Captain</div>
+                    <div className={`font-medium ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                      {getCaptainUsername(group)}
+                    </div>
+                    <div className={`text-sm ${userGroup ? 'text-emerald-300' : 'text-slate-400'}`}>
+                      Captain
+                    </div>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-purple-400" />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  userGroup ? 'bg-emerald-500/20' : 'bg-purple-500/20'
+                }`}>
+                  <Calendar className={`w-4 h-4 ${userGroup ? 'text-emerald-400' : 'text-purple-400'}`} />
                 </div>
                 <div>
-                  <div className="text-white font-medium">{formatDate(group.createdAt)}</div>
-                  <div className="text-slate-400 text-sm">Created</div>
+                  <div className={`font-medium ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                    {formatDate(group.createdAt)}
+                  </div>
+                  <div className={`text-sm ${userGroup ? 'text-emerald-300' : 'text-slate-400'}`}>
+                    Created
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Members Dropdown */}
             <div
-              className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700/50 cursor-pointer hover:bg-slate-700/30 rounded-lg p-3 transition-colors"
+              className={`flex items-center justify-between mt-6 pt-4 border-t transition-colors cursor-pointer rounded-lg p-3 ${
+                userGroup 
+                  ? 'border-emerald-700/50 hover:bg-emerald-700/30' 
+                  : 'border-slate-700/50 hover:bg-slate-700/30'
+              }`}
               onClick={() => setSelectedGroup(selectedGroup === group.id ? null : group.id)}
             >
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                  <Users className="w-4 h-4 text-primary-400" />
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  userGroup ? 'bg-emerald-500/20' : 'bg-primary-500/20'
+                }`}>
+                  <Users className={`w-4 h-4 ${userGroup ? 'text-emerald-400' : 'text-primary-400'}`} />
                 </div>
                 <div>
-                  <div className="text-white font-medium">
+                  <div className={`font-medium ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
                     Group Members
                   </div>
-                  <div className="text-slate-400 text-sm">{selectedGroup === group.id ? 'Click to hide members' : 'Click to view members'}</div>
+                  <div className={`text-sm ${userGroup ? 'text-emerald-300' : 'text-slate-400'}`}>
+                    {selectedGroup === group.id ? 'Click to hide members' : 'Click to view members'}
+                  </div>
                 </div>
               </div>
               <div className="transition-transform duration-200">
                 {selectedGroup === group.id ? (
-                  <ChevronUp className="w-5 h-5 text-slate-400" />
+                  <ChevronUp className={`w-5 h-5 ${userGroup ? 'text-emerald-400' : 'text-slate-400'}`} />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-slate-400" />
+                  <ChevronDown className={`w-5 h-5 ${userGroup ? 'text-emerald-400' : 'text-slate-400'}`} />
                 )}
               </div>
             </div>
@@ -595,7 +850,8 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
               </motion.div>
             )}
           </motion.div>
-        ))}
+          );
+        })}
       </motion.div>
 
       {/* Pagination Controls */}

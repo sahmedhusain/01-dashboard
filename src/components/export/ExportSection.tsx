@@ -405,7 +405,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
   ]
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-green-900/20 to-slate-900 min-h-full relative">
+    <div className="bg-gradient-to-br from-slate-900 via-green-900/20 to-slate-900 h-full w-full relative">
       {/* Full Screen Background */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5"></div>
@@ -414,7 +414,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
           backgroundSize: '50px 50px'
         }}></div>
       </div>
-      <div className="relative z-10 overflow-hidden">
+      <div className="relative z-10 h-full w-full overflow-y-auto">
         
         <div className="relative space-y-8 p-6">
           {/* Enhanced Header */}

@@ -430,7 +430,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
           value={formatXPValue(currentStats.totalXP || 0)} 
           color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30" 
           bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
-          subValue={`From ${currentStats.totalProjects || 0} checkpoints`}
+          subValue={`From ${currentStats.totalProjects || 0} exams`}
         />
         <StatCard 
           icon={Target} 
@@ -496,7 +496,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                 <Trophy className="w-6 h-6 mr-3" />
                 <div className="text-left">
                   <div>All Modules</div>
-                  <div className="text-xs opacity-80">({checkpointAnalysis.overallStats.totalProjects} checkpoints)</div>
+                  <div className="text-xs opacity-80">({checkpointAnalysis.overallStats.totalProjects} exams)</div>
                 </div>
               </motion.button>
               {Object.keys(modules).map((module, index) => (
@@ -517,7 +517,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                   <Award className="w-6 h-6 mr-3" />
                   <div className="text-left">
                     <div>{module}</div>
-                    <div className="text-xs opacity-80">({modules[module]?.projects?.length || 0} checkpoints)</div>
+                    <div className="text-xs opacity-80">({modules[module]?.projects?.length || 0} exams)</div>
                   </div>
                 </motion.button>
               ))}
@@ -564,7 +564,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                     <Calendar className="w-5 h-5 mr-2" />
                     <div className="text-left">
                       <div>{formatDate(date)}</div>
-                      <div className="text-xs opacity-80">({modules[selectedModule]?.checkpoints[date]?.length || 0} checkpoints)</div>
+                      <div className="text-xs opacity-80">({modules[selectedModule]?.checkpoints[date]?.length || 0} exams)</div>
                     </div>
                   </motion.button>
                 ))}
@@ -585,7 +585,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
             <input 
               type="text" 
-              placeholder="Search by project, section, or module name..." 
+              placeholder="Search by exam, section, or module name..." 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
               className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500" 

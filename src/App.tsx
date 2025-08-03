@@ -53,7 +53,7 @@ const AppContent: React.FC = () => {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     )
@@ -85,6 +85,7 @@ const AppContent: React.FC = () => {
         <Route path="/dashboard/piscines/:piscineType" element={<DashboardPage />} />
         <Route path="/dashboard/checkpoints" element={<DashboardPage />} />
         <Route path="/dashboard/leaderboard" element={<DashboardPage />} />
+        <Route path="/dashboard/subjects" element={<DashboardPage />} />
         <Route path="/dashboard/export" element={<DashboardPage />} />
         <Route path="/dashboard/audits" element={<DashboardPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />

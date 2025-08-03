@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { LogOut, LayoutDashboard, Trophy, Download, BookOpen, Settings, CheckCircle, Users, Calendar, User as UserIcon, History } from 'lucide-react';
+import { LogOut, LayoutDashboard, Trophy, Download, BookOpen, Settings, CheckCircle, Users, Calendar, User as UserIcon, History, Book } from 'lucide-react';
 import { useQuery, gql } from '@apollo/client';
 import { useUser, useLogout } from '../../store';
 import { User } from '../../types';
@@ -15,6 +15,7 @@ const ExportSection = lazy(() => import('../export/ExportSection'))
 const PiscineSection = lazy(() => import('./PiscineSection'))
 const CheckpointDashboard = lazy(() => import('./CheckpointDashboard'))
 const AuditSection = lazy(() => import('./AuditSection'))
+const SubjectsSection = lazy(() => import('./sections/SubjectsSection'))
 
 // New complete dashboard sections
 const GroupSection = lazy(() => import('./GroupSection'))
@@ -151,7 +152,7 @@ const Dashboard: React.FC = () => {
     }
   }, [user.id])
 
-  // Default tab order as requested: dashboard, piscines, leaderboard, groups, audits, checkpoints, events, export
+  // Default tab order as requested: dashboard, piscines, leaderboard, groups, audits, checkpoints, events, subjects, export
   const defaultTabs = [
     { id: 'dashboard' as TabType, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'piscines' as TabType, label: 'Piscines', icon: BookOpen },
@@ -160,6 +161,7 @@ const Dashboard: React.FC = () => {
     { id: 'audits' as TabType, label: 'Audits', icon: History },
     { id: 'checkpoints' as TabType, label: 'Checkpoints', icon: CheckCircle },
     { id: 'events' as TabType, label: 'Events', icon: Calendar },
+    { id: 'subjects' as TabType, label: 'Subjects', icon: Book },
     { id: 'export' as TabType, label: 'Export', icon: Download },
   ]
 
@@ -208,6 +210,8 @@ const Dashboard: React.FC = () => {
         return <CheckpointDashboard user={user} />
       case 'leaderboard':
         return <LeaderboardSection user={user} />
+      case 'subjects':
+        return <SubjectsSection analytics={null} />
       case 'export':
         return <ExportSection user={user} />
       case 'audits':

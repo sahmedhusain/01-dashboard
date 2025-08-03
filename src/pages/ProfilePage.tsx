@@ -42,7 +42,7 @@ const ProfilePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     )
@@ -52,7 +52,7 @@ const ProfilePage: React.FC = () => {
 
   if (error || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header with Back Button */}
           <div className="mb-8">
@@ -87,7 +87,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header with Back Button */}
         <motion.div

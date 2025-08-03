@@ -823,16 +823,6 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
     }
   }
 `;e`
-  query GetAllLabels {
-    label {
-      id
-      name
-      description
-      createdAt
-      updatedAt
-    }
-  }
-`;e`
   query GetLabelAggregates {
     label_aggregate {
       aggregate {
@@ -850,14 +840,17 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
       updatedAt
     }
   }
-`;e`
+`;const a=e`
   query GetAllLabelUsers {
     label_user {
       id
       labelId
       userId
-      createdAt
-      updatedAt
+      label {
+        id
+        name
+        description
+      }
     }
   }
 `;e`
@@ -875,7 +868,6 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
       labelId
       userId
       createdAt
-      updatedAt
     }
   }
 `;e`
@@ -1271,12 +1263,11 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
       }
     }
   }
-`;const a=e`
-  query GetEnhancedLeaderboardData {
-    # Get only BH Module users with their comprehensive data
-    bhModuleUsers: event_user(
-      where: { 
-        event: { 
+`;e`
+  query GetBasicEventUsers {
+    event_user(
+      where: {
+        event: {
           path: { _eq: "/bahrain/bh-module" }
         }
       }
@@ -1284,32 +1275,34 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
     ) {
       id
       userId
+      eventId
       level
       createdAt
-      user {
-        id
-        login
-        firstName
-        lastName
-        auditRatio
-        totalUp
-        totalDown
-        createdAt
-        updatedAt
-        profile
-        attrs
-        label_users {
-          label {
-            id
-            name
-            description
-          }
+    }
+  }
+`;e`
+  query GetDetailedEventUsersView {
+    event_user_view(
+      where: {
+        event: {
+          path: { _eq: "/bahrain/bh-module" }
         }
       }
+    ) {
+      userId
+      userLogin
+      userName
+      userAuditRatio
+      totalUp
+      totalDown
+      xp {
+        amount
+      }
     }
-    
-    # Get BH Module event statistics
-    bhModuleStats: event_user_aggregate(
+  }
+`;e`
+  query GetBhModuleStats {
+    event_user_aggregate(
       where: {
         event: { path: { _eq: "/bahrain/bh-module" } }
       }
@@ -1324,14 +1317,28 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
         }
       }
     }
-    
-    # Get all available labels (cohorts)
-    allLabels: label(
+  }
+`;const d=e`
+  query GetAllLabels {
+    label(
       order_by: { name: asc }
     ) {
       id
       name
       description
+    }
+  }
+`;e`
+  query GetUserLabels {
+    label_user {
+      id
+      userId
+      labelId
+      label {
+        id
+        name
+        description
+      }
     }
   }
 `;e`
@@ -1526,4 +1533,100 @@ import{e}from"./apollo-vendor-8AJvV5pX.js";e`
       }
     }
   }
-`;export{a as G,r as a};
+`;const s=e`
+  query GetComprehensiveLeaderboardData {
+    # Get BH Module event users with audit ratios and user logins
+    bhModuleUsers: event_user(
+      where: {
+        event: { path: { _eq: "/bahrain/bh-module" } }
+      }
+      order_by: { level: desc }
+    ) {
+      id
+      userId
+      eventId
+      level
+      createdAt
+      userLogin
+      userAuditRatio
+      userName
+      event {
+        id
+        path
+        campus
+      }
+    }
+    
+    # Get ALL users for basic information
+    allUsersWithEvents: user {
+      id
+      login
+      firstName
+      lastName
+      profile
+      attrs
+      auditRatio
+      totalUp
+      totalDown
+      createdAt
+      updatedAt
+    }
+    
+    # Get ALL event_user relationships for dynamic cohort mapping
+    allEventUsers: event_user {
+      id
+      userId
+      eventId
+      level
+      createdAt
+      event {
+        id
+        path
+        campus
+      }
+    }
+    
+    # Fallback: Get public user data (names and logins)
+    publicUsers: user_public_view {
+      id
+      login
+      firstName
+      lastName
+      profile
+      campus
+    }
+    
+    # BH Module statistics
+    bhModuleStats: event_user_aggregate(
+      where: {
+        event: { path: { _eq: "/bahrain/bh-module" } }
+      }
+    ) {
+      aggregate {
+        count
+        max {
+          level
+        }
+        avg {
+          level
+        }
+      }
+    }
+    
+    # Get ALL user label assignments (from label_user table)
+    userLabels: label_user(
+      order_by: { id: asc }
+    ) {
+      id
+      userId
+      labelId
+      createdAt
+      label {
+        id
+        name
+        description
+        createdAt
+      }
+    }
+  }
+`;export{s as G,a,d as b,r as c};

@@ -5,7 +5,7 @@ import { Home, ArrowLeft, Search } from 'lucide-react'
 
 const NotFoundPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-primary-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 flex items-center justify-center p-4">
       <div className="text-center max-w-md mx-auto">
         {/* 404 Animation */}
         <motion.div

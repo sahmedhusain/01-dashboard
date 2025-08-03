@@ -250,7 +250,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-and-network'
   });
 
-  // Extract complete data from the new query structure
+  
   const userData = data?.user?.[0]
   
   const allTransactions = useMemo(() => data?.userTransactions || [], [data])
@@ -261,10 +261,10 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   const allAuditsReceived = useMemo(() => {
     if (!data?.allAudits || !data?.userGroups) return []
     
-    // Get all group IDs where the user is a member
+    
     const userGroupIds = data.userGroups.map((ug: any) => ug.groupId)
     
-    // Filter audits where the user was in the group being audited (but not the auditor)
+    
     return data.allAudits.filter((audit: any) => 
       userGroupIds.includes(audit.groupId) && audit.auditorId !== user.id
     )
@@ -272,11 +272,11 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   const allGroups = useMemo(() => data?.userGroups || [], [data])
   const allEvents = useMemo(() => data?.userEvents || [], [data])
   
-  // Enhanced data processing with proper BH Module separation
+  
   const analytics = useMemo(() => {
     if (!userData) return null
     
-    // Separate BH Module data from piscines using proper path analysis
+    
     const separatedTransactions = separateModuleData(allTransactions)
     const separatedProgress = separateModuleData(allProgress)
     const separatedResults = separateModuleData(allResults)
@@ -284,26 +284,26 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const separatedAuditsReceived = separateModuleData(allAuditsReceived)
     const separatedGroups = separateModuleData(allGroups.map(ug => ({ ...ug.group, userId: ug.userId })))
     
-    // Focus on BH Module data only (excluding piscines)
+    
     const transactions = separatedTransactions.mainModule
     const progress = separatedProgress.mainModule
 
-    // Complete Analytics using all available data
     
-    // XP Analytics using aggregated data from GraphQL
+    
+    
     const totalXP = data?.totalXP?.aggregate?.sum?.amount || 0
     const bhModuleXP = data?.bhModuleXP?.aggregate?.sum?.amount || 0
     const piscineXP = data?.piscineXP?.aggregate?.sum?.amount || 0
     
-    // Calculate remaining XP categories by subtraction
+    
     const otherXP = totalXP - bhModuleXP - piscineXP
     
-    // Keep transaction-based calculation for average (fallback)
+    
     const xpTransactions = allTransactions.filter((t: any) => t.type === 'xp')
     const avgXPPerProject = xpTransactions.length > 0 ? Math.round(totalXP / xpTransactions.length) : 0
     
     
-    // Find the last level transaction to get current level and calculate progress from there
+    
     const levelTransactions = allTransactions.filter((t: any) => t.type === 'level')
     const lastLevelTransaction = levelTransactions.length > 0 ? 
       levelTransactions.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] : null
@@ -311,16 +311,16 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     const currentLevel = lastLevelTransaction ? lastLevelTransaction.amount : 1
     const lastLevelDate = lastLevelTransaction ? lastLevelTransaction.createdAt : null
     
-    // Get XP transactions after the last level transaction (exclude piscines/checkpoints/audits)
+    
     const xpAfterLevel = allTransactions.filter((t: any) => 
       t.type === 'xp' && 
       lastLevelDate && 
       new Date(t.createdAt) > new Date(lastLevelDate) &&
-      t.path && // Must have a path
-      t.path.includes('bh-module') && // Must be BH module
-      !t.path.includes('piscine') && // Exclude piscines
-      !t.path.includes('checkpoint') && // Exclude checkpoints
-      // Exclude audit-related XP
+      t.path && 
+      t.path.includes('bh-module') && 
+      !t.path.includes('piscine') && 
+      !t.path.includes('checkpoint') && 
+      
       !(t.attrs && (
         JSON.stringify(t.attrs).toLowerCase().includes('audit') ||
         JSON.stringify(t.attrs).toLowerCase().includes('review') ||
@@ -330,43 +330,43 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     )
     
     const xpEarnedAfterLevel = xpAfterLevel.reduce((sum: number, t: any) => sum + (t.amount || 0), 0)
-    const remainingToNextLevel = 100000 - xpEarnedAfterLevel // 100kB - earned XP
+    const remainingToNextLevel = 100000 - xpEarnedAfterLevel 
     const progressPercentage = (xpEarnedAfterLevel / 100000) * 100
     
-    // NO UP/DOWN transactions for level progress - audit amounts are for community/ratio only
     
     
-    // Create level info based on project XP only (no audit amounts)
+    
+    
     const correctedLevelInfo = {
       currentLevel: currentLevel,
       progress: Math.max(0, Math.min(100, progressPercentage)),
       remainingXP: remainingToNextLevel,
-      nextLevelXP: 100000, // 100kB to next level
-      currentLevelStartXP: 0, // Progress resets at each level
+      nextLevelXP: 100000, 
+      currentLevelStartXP: 0, 
       progressInKB: xpEarnedAfterLevel / 1000,
       remainingInKB: remainingToNextLevel / 1000,
-      includesUpDown: false // No audit amounts in progress
+      includesUpDown: false 
     }
     
     const progressToNextLevel = correctedLevelInfo.progress
     
-    // Analyze transaction history for level progression
+    
     const levelProgression = analyzeLevelProgression(allTransactions, currentLevel)
 
-    // Enhanced Skills Analytics - Use latest skill amounts as percentages
+    
     const skillTransactions = allTransactions.filter((t: any) => t.type?.startsWith('skill_'))
     const skillData = calculateSkillData(skillTransactions)
     
-    // Get top skills (latest amounts as percentages)
+    
     const topSkills = skillData.skills.slice(0, 10).map(skill => ({
       name: skill.name,
-      currentAmount: skill.currentAmount, // This is the percentage (e.g., 55 = 55%)
-      percentage: skill.percentage, // Same as currentAmount
-      progress: skill.progress, // For transaction display (+X%)
+      currentAmount: skill.currentAmount, 
+      percentage: skill.percentage, 
+      progress: skill.progress, 
       latestDate: skill.latestDate
     }))
       
-    // Audit Analytics - complete view with given and received
+    
     const totalAuditsGiven = allAuditsGiven.length
     const totalAuditsReceived = allAuditsReceived.length
     const completedAuditsGiven = allAuditsGiven.filter((a: any) => a.grade !== null).length
@@ -382,42 +382,42 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       allAuditsReceived.filter((a: any) => a.grade !== null)
                .reduce((sum: number, a: any) => sum + (a.grade || 0), 0) / completedAuditsReceived : 0
     
-    // Enhanced Project Analytics with proper BH Module filtering
+    
     const projectStats = calculateProjectStats(allProgress)
     const bhModuleProjectStats = projectStats.bhModule
     
-    // Overall project metrics (all projects including piscines)
+    
     const totalProjects = projectStats.total
     const completedProjects = projectStats.passed + projectStats.failed
     const passedProjects = projectStats.passed
     const failedProjects = projectStats.failed
     const inProgressProjects = totalProjects - completedProjects
     
-    // Results Analytics
+    
     const totalResults = allResults.length
     const avgProjectGrade = totalResults > 0 ? 
       allResults.reduce((sum: number, r: any) => sum + (r.grade || 0), 0) / totalResults : 0
     
-    // Group Analytics
+    
     const totalGroups = allGroups.length
     const captainedGroups = allGroups.filter((ug: any) => ug.group?.captainId === user.id).length
     const memberGroups = totalGroups - captainedGroups
     
-    // UP/DOWN audit analytics from user data (more accurate than transaction calculation)
+    
     const totalUp = userData?.totalUp || 0
     const totalDown = userData?.totalDown || 0
     const auditRatio = userData?.auditRatio || 0
 
-    // Performance and Activity Analytics (use only module XP for level calculation)
+    
     const performanceData = getRankFromLevel(currentLevel)
 
-    // Activity Analytics (Last 30 days)
+    
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     const recentActivity = transactions.filter(t => 
       new Date(t.createdAt) > thirtyDaysAgo
     ).length
 
-    // Performance trends (last 12 months)
+    
     const monthlyData = []
     
     for (let i = 11; i >= 0; i--) {
@@ -455,19 +455,19 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         projects: monthProjects,
         auditsGiven: monthAuditsGiven,
         auditsReceived: monthAuditsReceived,
-        audits: monthAuditsGiven + monthAuditsReceived // For backward compatibility
+        audits: monthAuditsGiven + monthAuditsReceived 
       })
     }
 
     return {
       user: userData,
       xp: {
-        total: totalXP, // Total XP across all modules using aggregated query
-        bhModule: bhModuleXP, // BH Module XP only using aggregated query
-        piscines: piscineXP, // Piscine XP using aggregated query
-        other: otherXP, // Other XP (checkpoints, etc.) calculated by subtraction
-        earnedAfterLevel: xpEarnedAfterLevel, // XP earned since last level transaction
-        allTime: totalXP, // Same as total for backward compatibility
+        total: totalXP, 
+        bhModule: bhModuleXP, 
+        piscines: piscineXP, 
+        other: otherXP, 
+        earnedAfterLevel: xpEarnedAfterLevel, 
+        allTime: totalXP, 
         average: avgXPPerProject,
         recent: recentActivity,
         upTotal: totalUp,
@@ -475,25 +475,25 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         monthlyData
       },
       level: {
-        current: currentLevel, // From level transaction
-        progress: progressToNextLevel, // Percentage to next level (0-100)
-        nextLevelXP: correctedLevelInfo.nextLevelXP, // 100kB to next level
-        remainingXP: correctedLevelInfo.remainingXP, // Remaining XP in bytes
-        progressInKB: correctedLevelInfo.progressInKB, // XP earned since level in kB
-        remainingInKB: correctedLevelInfo.remainingInKB, // Remaining XP in kB
-        // Transaction data
+        current: currentLevel, 
+        progress: progressToNextLevel, 
+        nextLevelXP: correctedLevelInfo.nextLevelXP, 
+        remainingXP: correctedLevelInfo.remainingXP, 
+        progressInKB: correctedLevelInfo.progressInKB, 
+        remainingInKB: correctedLevelInfo.remainingInKB, 
+        
         levelTransaction: lastLevelTransaction,
         xpAfterLevelCount: xpAfterLevel.length,
         progression: levelProgression
       },
       skills: {
-        top: topSkills, // Latest skill amounts as percentages
-        total: skillData.totalSkills, // Total number of different skills
-        transactions: skillTransactions, // All skill transactions
-        skillData: skillData.skills // Full skill data with progress info
+        top: topSkills, 
+        total: skillData.totalSkills, 
+        transactions: skillTransactions, 
+        skillData: skillData.skills 
       },
       projects: {
-        // Overall project metrics (all projects)
+        
         completed: completedProjects,
         total: totalProjects,
         passed: passedProjects,
@@ -503,7 +503,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         completionRate: totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0,
         passRate: completedProjects > 0 ? (passedProjects / completedProjects) * 100 : 0,
         
-        // BH Module specific metrics (true module projects only, excluding piscines/checkpoints)
+        
         bhModule: {
           total: bhModuleProjectStats.total,
           passed: bhModuleProjectStats.passed,
@@ -513,7 +513,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
           inProgress: bhModuleProjectStats.total - (bhModuleProjectStats.passed + bhModuleProjectStats.failed)
         },
         
-        // Category breakdown
+        
         piscines: {
           total: projectStats.piscines.total,
           passed: projectStats.piscines.passed,
@@ -538,7 +538,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         pendingReceived: pendingAuditsReceived,
         avgGradeGiven: avgAuditGradeGiven,
         avgGradeReceived: avgAuditGradeReceived,
-        // Legacy fields for backward compatibility
+        
         completed: completedAuditsGiven,
         pending: pendingAuditsGiven,
         avgGrade: avgAuditGradeGiven,
@@ -571,7 +571,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         piscines: Object.keys(separatedTransactions.piscines).length,
         totalPiscineTransactions: separatedTransactions.allPiscines.length
       },
-      // Raw data for detailed sections
+      
       rawData: {
         transactions: allTransactions,
         progress: allProgress,
@@ -581,7 +581,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         allAudits: allAudits,
         groups: allGroups,
         events: allEvents,
-        userEvents: allEvents, // For backward compatibility
+        userEvents: allEvents, 
         userRoles: data?.userRoles || [],
         userLabels: data?.userLabels || []
       }

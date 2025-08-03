@@ -1,7 +1,4 @@
 
-/**
- * Cache configuration and constants
- */
 
 interface CacheEntry {
   data: unknown;
@@ -21,18 +18,18 @@ interface PerformanceMetrics {
 import config from '../../config/appConfig';
 
 const CACHE_CONFIG = {
-  // Cache durations from configuration
+  
   USER_DATA: config.cache.durations.userData,
   STATISTICS: config.cache.durations.statistics,
   ANALYTICS: config.cache.durations.analytics,
   CHARTS: config.cache.durations.charts,
   ACHIEVEMENTS: config.cache.durations.achievements,
 
-  // Cache size limits from configuration
+  
   MAX_ENTRIES: config.cache.maxEntries,
   MAX_MEMORY_MB: config.cache.maxMemoryMB,
 
-  // Dynamic cache keys
+  
   KEYS: {
     USER_PROFILE: 'user_profile',
     USER_STATISTICS: 'user_statistics',
@@ -46,10 +43,6 @@ const CACHE_CONFIG = {
   }
 };
 
-/**
- * Advanced Cache Manager Class
- * Implements intelligent caching with TTL, LRU eviction, and memory management
- */
 class CacheManager {
   private cache: Map<string, CacheEntry>;
   private accessTimes: Map<string, number>;
@@ -70,7 +63,7 @@ class CacheManager {
     this.hitCount = 0;
     this.missCount = 0;
     
-    // Initialize performance monitoring
+    
     this.performanceMetrics = {
       hitRate: 0,
       averageResponseTime: 0,
@@ -78,17 +71,10 @@ class CacheManager {
       cacheSize: 0
     };
     
-    // Start periodic cleanup
+    
     this.startCleanupInterval();
   }
 
-  /**
-   * Store data in cache with TTL
-   * @param {string} key - Cache key
-   * @param {any} data - Data to cache
-   * @param {number} ttl - Time to live in milliseconds
-   * @param {string} userLogin - User identifier for scoped caching
-   */
   set(key, data, ttl = CACHE_CONFIG.USER_DATA, userLogin = 'default') {
     const scopedKey = `${userLogin}:${key}`;
     const now = Date.now();
@@ -102,12 +88,12 @@ class CacheManager {
       createdAt: now
     };
 
-    // Check memory limits before adding
+    
     if (this.memoryUsage + cacheEntry.size > CACHE_CONFIG.MAX_MEMORY_MB * 1024 * 1024) {
       this.evictLRU();
     }
 
-    // Remove existing entry if present
+    
     if (this.cache.has(scopedKey)) {
       const oldEntry = this.cache.get(scopedKey);
       this.memoryUsage -= oldEntry.size;
@@ -117,7 +103,7 @@ class CacheManager {
     this.accessTimes.set(scopedKey, now);
     this.memoryUsage += cacheEntry.size;
 
-    // Enforce max entries limit
+    
     if (this.cache.size > CACHE_CONFIG.MAX_ENTRIES) {
       this.evictLRU();
     }
@@ -125,12 +111,6 @@ class CacheManager {
     this.updateMetrics();
   }
 
-  /**
-   * Retrieve data from cache
-   * @param {string} key - Cache key
-   * @param {string} userLogin - User identifier for scoped caching
-   * @returns {any|null} Cached data or null if not found/expired
-   */
   get(key, userLogin = 'default') {
     const scopedKey = `${userLogin}:${key}`;
     const now = Date.now();
@@ -143,7 +123,7 @@ class CacheManager {
 
     const entry = this.cache.get(scopedKey);
     
-    // Check if expired
+    
     if (now > entry.expiresAt) {
       this.delete(scopedKey);
       this.missCount++;
@@ -151,7 +131,7 @@ class CacheManager {
       return null;
     }
 
-    // Update access statistics
+    
     entry.accessCount++;
     entry.lastAccessed = now;
     this.accessTimes.set(scopedKey, now);
@@ -162,11 +142,6 @@ class CacheManager {
     return entry.data;
   }
 
-  /**
-   * Delete specific cache entry
-   * @param {string} key - Cache key
-   * @param {string} userLogin - User identifier for scoped caching
-   */
   delete(key, userLogin = 'default') {
     const scopedKey = `${userLogin}:${key}`;
     
@@ -179,10 +154,6 @@ class CacheManager {
     }
   }
 
-  /**
-   * Clear all cache entries for a user
-   * @param {string} userLogin - User identifier
-   */
   clearUserCache(userLogin) {
     const keysToDelete = [];
     
@@ -202,9 +173,6 @@ class CacheManager {
     this.updateMetrics();
   }
 
-  /**
-   * Clear all cache entries
-   */
   clear() {
     this.cache.clear();
     this.accessTimes.clear();
@@ -214,12 +182,6 @@ class CacheManager {
     this.updateMetrics();
   }
 
-  /**
-   * Check if key exists and is not expired
-   * @param {string} key - Cache key
-   * @param {string} userLogin - User identifier
-   * @returns {boolean} True if key exists and is valid
-   */
   has(key, userLogin = 'default') {
     const scopedKey = `${userLogin}:${key}`;
     
@@ -238,10 +200,6 @@ class CacheManager {
     return true;
   }
 
-  /**
-   * Get cache statistics
-   * @returns {Object} Cache performance metrics
-   */
   getStats() {
     return {
       ...this.performanceMetrics,
@@ -252,13 +210,10 @@ class CacheManager {
     };
   }
 
-  /**
-   * Evict least recently used entries
-   */
   evictLRU() {
     if (this.cache.size === 0) return;
 
-    // Find least recently used entry
+    
     let oldestKey = null;
     let oldestTime = Date.now();
 
@@ -277,41 +232,27 @@ class CacheManager {
     }
   }
 
-  /**
-   * Calculate approximate size of data in bytes
-   * @param {any} data - Data to measure
-   * @returns {number} Approximate size in bytes
-   */
   calculateSize(data) {
     const jsonString = JSON.stringify(data);
     return new Blob([jsonString]).size;
   }
 
-  /**
-   * Update performance metrics
-   */
   updateMetrics() {
     const total = this.hitCount + this.missCount;
     this.performanceMetrics = {
       hitRate: total > 0 ? parseFloat(((this.hitCount / total) * 100).toFixed(2)) : 0,
-      averageResponseTime: 0, // This would be calculated from actual response times
+      averageResponseTime: 0, 
       memoryUsage: parseFloat((this.memoryUsage / (1024 * 1024)).toFixed(2)),
       cacheSize: this.cache.size
     };
   }
 
-  /**
-   * Start periodic cleanup of expired entries
-   */
   startCleanupInterval() {
     setInterval(() => {
       this.cleanupExpired();
-    }, 60000); // Run every minute
+    }, 60000); 
   }
 
-  /**
-   * Remove expired entries
-   */
   cleanupExpired() {
     const now = Date.now();
     const keysToDelete = [];
@@ -334,13 +275,6 @@ class CacheManager {
     }
   }
 
-  /**
-   * Preload data into cache
-   * @param {string} key - Cache key
-   * @param {Function} dataLoader - Function that returns a promise with data
-   * @param {number} ttl - Time to live
-   * @param {string} userLogin - User identifier
-   */
   async preload(key, dataLoader, ttl = CACHE_CONFIG.USER_DATA, userLogin = 'default') {
     if (this.has(key, userLogin)) {
       return this.get(key, userLogin);
@@ -358,18 +292,12 @@ class CacheManager {
 
 const cacheManager = new CacheManager();
 
-/**
- * Cache decorator for GraphQL service methods
- * @param {string} cacheKey - Cache key
- * @param {number} ttl - Time to live
- * @returns {Function} Decorator function
- */
 export const withCache = (cacheKey, ttl = CACHE_CONFIG.USER_DATA) => {
   return (target, propertyName, descriptor) => {
     const method = descriptor.value;
 
     descriptor.value = async function(...args) {
-      const userLogin = args[0]; // Assume first argument is userLogin
+      const userLogin = args[0]; 
       const cachedResult = cacheManager.get(cacheKey, userLogin);
       
       if (cachedResult !== null) {
@@ -393,26 +321,23 @@ export const withCache = (cacheKey, ttl = CACHE_CONFIG.USER_DATA) => {
   };
 };
 
-/**
- * Cache utility functions
- */
 export const CacheUtils = {
-  // Get cache manager instance
+  
   getInstance: () => cacheManager,
   
-  // Cache configuration
+  
   config: CACHE_CONFIG,
   
-  // Invalidate user cache
+  
   invalidateUser: (userLogin) => cacheManager.clearUserCache(userLogin),
   
-  // Get cache statistics
+  
   getStats: () => cacheManager.getStats(),
   
-  // Clear all cache
+  
   clearAll: () => cacheManager.clear(),
   
-  // Preload critical data
+  
   preloadCriticalData: async (userLogin, dataService) => {
     const preloadTasks = [
       cacheManager.preload(
@@ -436,10 +361,6 @@ export const CacheUtils = {
 export default cacheManager;
 
 
-/**
- * Performance Monitor Class
- * Tracks application performance metrics and provides optimization insights
- */
 class PerformanceMonitor {
   private metrics: {
     pageLoadTimes: Array<{
@@ -486,15 +407,12 @@ class PerformanceMonitor {
     this.observers = [];
     this.startTime = performance.now();
 
-    // Initialize performance observers
+    
     this.initializeObservers();
   }
 
-  /**
-   * Initialize performance observers
-   */
   initializeObservers() {
-    // Navigation timing observer
+    
     if ('PerformanceObserver' in window) {
       const navObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
@@ -511,7 +429,7 @@ class PerformanceMonitor {
       }
     }
 
-    // Resource timing observer
+    
     if ('PerformanceObserver' in window) {
       const resourceObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
@@ -529,10 +447,6 @@ class PerformanceMonitor {
     }
   }
 
-  /**
-   * Record page load performance
-   * @param {PerformanceNavigationTiming} entry - Navigation timing entry
-   */
   recordPageLoad(entry) {
     const loadTime = entry.loadEventEnd - entry.navigationStart;
     this.metrics.pageLoadTimes.push({
@@ -542,16 +456,12 @@ class PerformanceMonitor {
       firstPaint: entry.responseEnd - entry.navigationStart
     });
 
-    // Keep only last 50 entries
+    
     if (this.metrics.pageLoadTimes.length > 50) {
       this.metrics.pageLoadTimes.shift();
     }
   }
 
-  /**
-   * Record API response performance
-   * @param {PerformanceResourceTiming} entry - Resource timing entry
-   */
   recordApiResponse(entry) {
     const responseTime = entry.responseEnd - entry.requestStart;
     this.metrics.apiResponseTimes.push({
@@ -561,17 +471,12 @@ class PerformanceMonitor {
       transferSize: entry.transferSize || 0
     });
 
-    // Keep only last 100 entries
+    
     if (this.metrics.apiResponseTimes.length > 100) {
       this.metrics.apiResponseTimes.shift();
     }
   }
 
-  /**
-   * Record component render time
-   * @param {string} componentName - Name of the component
-   * @param {number} renderTime - Render time in milliseconds
-   */
   recordRenderTime(componentName, renderTime) {
     this.metrics.renderTimes.push({
       timestamp: Date.now(),
@@ -579,15 +484,12 @@ class PerformanceMonitor {
       renderTime
     });
 
-    // Keep only last 100 entries
+    
     if (this.metrics.renderTimes.length > 100) {
       this.metrics.renderTimes.shift();
     }
   }
 
-  /**
-   * Record memory usage
-   */
   recordMemoryUsage() {
     if ('memory' in performance) {
       const memory = performance.memory as {
@@ -602,23 +504,19 @@ class PerformanceMonitor {
         limit: memory.jsHeapSizeLimit
       });
 
-      // Keep only last 50 entries
+      
       if (this.metrics.memoryUsage.length > 50) {
         this.metrics.memoryUsage.shift();
       }
     }
   }
 
-  /**
-   * Get performance summary
-   * @returns {Object} Performance metrics summary
-   */
   getSummary() {
     const now = Date.now();
     const uptime = now - this.startTime;
 
     return {
-      uptime: Math.round(uptime / 1000), // in seconds
+      uptime: Math.round(uptime / 1000), 
       pageLoad: this.getAveragePageLoadTime(),
       apiResponse: this.getAverageApiResponseTime(),
       render: this.getAverageRenderTime(),
@@ -628,10 +526,6 @@ class PerformanceMonitor {
     };
   }
 
-  /**
-   * Get average page load time
-   * @returns {number} Average load time in milliseconds
-   */
   getAveragePageLoadTime() {
     if (this.metrics.pageLoadTimes.length === 0) return 0;
 
@@ -639,10 +533,6 @@ class PerformanceMonitor {
     return Math.round(total / this.metrics.pageLoadTimes.length);
   }
 
-  /**
-   * Get average API response time
-   * @returns {number} Average response time in milliseconds
-   */
   getAverageApiResponseTime() {
     if (this.metrics.apiResponseTimes.length === 0) return 0;
 
@@ -650,10 +540,6 @@ class PerformanceMonitor {
     return Math.round(total / this.metrics.apiResponseTimes.length);
   }
 
-  /**
-   * Get average render time
-   * @returns {number} Average render time in milliseconds
-   */
   getAverageRenderTime() {
     if (this.metrics.renderTimes.length === 0) return 0;
 
@@ -661,10 +547,6 @@ class PerformanceMonitor {
     return Math.round(total / this.metrics.renderTimes.length);
   }
 
-  /**
-   * Get current memory usage
-   * @returns {Object} Memory usage information
-   */
   getCurrentMemoryUsage() {
     if ('memory' in performance) {
       const memory = performance.memory as {
@@ -673,23 +555,19 @@ class PerformanceMonitor {
         jsHeapSizeLimit: number;
       };
       return {
-        used: Math.round(memory.usedJSHeapSize / 1024 / 1024), // MB
-        total: Math.round(memory.totalJSHeapSize / 1024 / 1024), // MB
+        used: Math.round(memory.usedJSHeapSize / 1024 / 1024), 
+        total: Math.round(memory.totalJSHeapSize / 1024 / 1024), 
         percentage: Math.round((memory.usedJSHeapSize / memory.totalJSHeapSize) * 100)
       };
     }
     return { used: 0, total: 0, percentage: 0 };
   }
 
-  /**
-   * Get optimization recommendations
-   * @returns {Array} Array of optimization suggestions
-   */
   getOptimizationRecommendations() {
     const recommendations = [];
     const cacheStats = cacheManager.getStats();
 
-    // Cache hit rate recommendations
+    
     if (cacheStats.hitRate < 70) {
       recommendations.push({
         type: 'cache',
@@ -698,7 +576,7 @@ class PerformanceMonitor {
       });
     }
 
-    // API response time recommendations
+    
     const avgApiTime = this.getAverageApiResponseTime();
     if (avgApiTime > 1000) {
       recommendations.push({
@@ -708,7 +586,7 @@ class PerformanceMonitor {
       });
     }
 
-    // Memory usage recommendations
+    
     const memoryUsage = this.getCurrentMemoryUsage();
     if (memoryUsage.percentage > 80) {
       recommendations.push({
@@ -718,7 +596,7 @@ class PerformanceMonitor {
       });
     }
 
-    // Page load recommendations
+    
     const avgLoadTime = this.getAveragePageLoadTime();
     if (avgLoadTime > 3000) {
       recommendations.push({
@@ -731,16 +609,13 @@ class PerformanceMonitor {
     return recommendations;
   }
 
-  /**
-   * Start periodic monitoring
-   */
   startMonitoring() {
-    // Record memory usage every 30 seconds
+    
     setInterval(() => {
       this.recordMemoryUsage();
     }, 30000);
 
-    // Record cache hit rates every minute
+    
     setInterval(() => {
       const cacheStats = cacheManager.getStats();
       this.metrics.cacheHitRates.push({
@@ -749,16 +624,13 @@ class PerformanceMonitor {
         memoryUsage: parseFloat(cacheStats.memoryUsageMB)
       });
 
-      // Keep only last 60 entries (1 hour)
+      
       if (this.metrics.cacheHitRates.length > 60) {
         this.metrics.cacheHitRates.shift();
       }
     }, 60000);
   }
 
-  /**
-   * Cleanup observers
-   */
   cleanup() {
     this.observers.forEach(observer => observer.disconnect());
     this.observers = [];

@@ -197,25 +197,25 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'overview' | 'transactions' | 'campus' | 'temporal'>('overview');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Query platform analytics
+  
   const { data: platformData, loading: platformLoading, error: platformError, refetch: refetchPlatform } = useQuery(GET_PLATFORM_ANALYTICS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query transaction analytics
+  
   const { data: transactionData, loading: transactionLoading, refetch: refetchTransactions } = useQuery(GET_TRANSACTION_ANALYTICS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query campus analytics
+  
   const { data: campusData, loading: campusLoading, refetch: refetchCampus } = useQuery(GET_CAMPUS_ANALYTICS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query temporal analytics
+  
   const { data: temporalData, loading: temporalLoading, refetch: refetchTemporal } = useQuery(GET_TEMPORAL_ANALYTICS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
@@ -233,7 +233,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
     );
   }
 
-  // Process analytics data
+  
   const platform = platformData || {};
   const userStats = platform.user_aggregate?.aggregate;
   const transactionStats = platform.transaction_aggregate?.aggregate;
@@ -249,7 +249,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
   const campusAnalytics = campusData?.user_aggregate || [];
   const temporalAnalytics = temporalData || {};
 
-  // Calculate complete metrics
+  
   const totalUsers = userStats?.count || 0;
   const avgAuditRatio = userStats?.avg?.auditRatio || 0;
   const avgXP = userStats?.avg?.totalUp || 0;
@@ -268,7 +268,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ user }) => {
   const totalResults = resultStats?.count || 0;
   const avgResultGrade = resultStats?.avg?.grade || 0;
 
-  // Handle refresh
+  
   const handleRefresh = async () => {
     setRefreshing(true);
     try {

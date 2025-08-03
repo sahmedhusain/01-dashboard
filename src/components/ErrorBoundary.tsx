@@ -31,7 +31,7 @@ class ErrorBoundary extends Component<Props, State> {
     })
 
 
-    // Call custom error handler if provided
+    
     if (this.props.onError) {
       this.props.onError(error, errorInfo)
     }
@@ -47,12 +47,12 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback UI
+      
       if (this.props.fallback) {
         return this.props.fallback
       }
 
-      // Default error UI
+      
       return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 flex items-center justify-center p-4">
           <motion.div

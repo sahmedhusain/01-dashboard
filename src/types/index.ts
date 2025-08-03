@@ -1,8 +1,5 @@
 import { ReactNode, ComponentType } from 'react';
-
 export * from './graphql';
-
-
 export interface User {
   id: number;
   login: string;
@@ -20,7 +17,6 @@ export interface User {
   profile?: string;
   attrs?: Record<string, any>;
   githubLogin?: string;
-  // Additional personal information fields from attrs
   emergencyContact?: {
     name?: string;
     phone?: string;
@@ -40,7 +36,6 @@ export interface User {
   cohortNumber?: string;
   studentId?: string;
 }
-
 export interface UserProfile extends User {
   fullName: string;
   initials: string;
@@ -59,8 +54,6 @@ export interface UserProfile extends User {
     skillsCount: number;
   };
 }
-
-
 export interface Transaction {
   id: number;
   type: 'xp' | 'up' | 'down' | string;
@@ -83,7 +76,6 @@ export interface Transaction {
     path: string;
   };
 }
-
 export interface TransactionAggregates {
   xp: {
     total: number;
@@ -108,8 +100,6 @@ export interface TransactionAggregates {
     received: number;
   };
 }
-
-
 export interface Project {
   id: number;
   name: string;
@@ -121,7 +111,6 @@ export interface Project {
   campus?: string;
   attrs?: Record<string, any>;
 }
-
 export interface Progress {
   id: number;
   userId: number;
@@ -137,7 +126,6 @@ export interface Progress {
   eventId?: number;
   object?: Project;
 }
-
 export interface Result {
   id: number;
   userId: number;
@@ -155,7 +143,6 @@ export interface Result {
   attrs?: Record<string, any>;
   object?: Project;
 }
-
 export interface ProgressStats {
   total: number;
   completed: number;
@@ -170,8 +157,6 @@ export interface ProgressStats {
     averageGrade: number;
   }>;
 }
-
-
 export interface Skill {
   id: number;
   name: string;
@@ -181,7 +166,6 @@ export interface Skill {
   category?: string;
   description?: string;
 }
-
 export interface SkillCategory {
   name: string;
   skills: Skill[];
@@ -189,8 +173,6 @@ export interface SkillCategory {
   averageLevel: number;
   topSkills: Skill[];
 }
-
-
 export interface Audit {
   id: number;
   grade: number;
@@ -208,7 +190,6 @@ export interface Audit {
   group?: Group;
   result?: Result;
 }
-
 export interface AuditStats {
   given: {
     count: number;
@@ -226,8 +207,6 @@ export interface AuditStats {
   performance: 'excellent' | 'good' | 'average' | 'poor';
   trend: 'improving' | 'stable' | 'declining';
 }
-
-
 export interface Group {
   id: number;
   status: string;
@@ -243,7 +222,6 @@ export interface Group {
   captain?: User;
   members?: User[];
 }
-
 export interface Event {
   id: number;
   path: string;
@@ -258,7 +236,6 @@ export interface Event {
   object?: Project;
   parent?: Event;
 }
-
 export interface GroupUser {
   id: number;
   userId: number;
@@ -269,7 +246,6 @@ export interface GroupUser {
   user?: User;
   group?: Group;
 }
-
 export interface EventUser {
   id: number;
   userId: number;
@@ -279,7 +255,6 @@ export interface EventUser {
   user?: User;
   event?: Event;
 }
-
 export interface GraphQLResponse<T> {
   data?: T;
   errors?: Array<{
@@ -291,27 +266,22 @@ export interface GraphQLResponse<T> {
     path?: string[];
   }>;
 }
-
 export interface LoadingState {
   loading: boolean;
   error: Error | null;
 }
-
 export interface PaginationState {
   page: number;
   pageSize: number;
   total?: number;
 }
-
 export interface FilterState {
   [key: string]: any;
 }
-
 export interface SortState {
   sortBy: string;
   sortOrder: 'asc' | 'desc';
 }
-
 export interface ChartData {
   labels: string[];
   datasets: Array<{
@@ -322,12 +292,10 @@ export interface ChartData {
     borderWidth?: number;
   }>;
 }
-
 export interface ComponentProps {
   className?: string;
   children?: ReactNode;
 }
-
 export interface ButtonProps extends ComponentProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
@@ -336,17 +304,14 @@ export interface ButtonProps extends ComponentProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
 }
-
 export interface CardProps extends ComponentProps {
   title?: string;
   description?: string;
   footer?: ReactNode;
 }
-
 export interface LoadingError {
   userMessage?: string;
 }
-
 export interface LoadingProps {
   size?: 'sm' | 'md' | 'lg';
   text?: string;
@@ -354,20 +319,17 @@ export interface LoadingProps {
   error?: LoadingError | null;
   retry?: (() => void) | null;
 }
-
 export interface AuthState {
   isAuthenticated: boolean;
   isInitialized: boolean;
   user: User | null;
   token: string | null;
 }
-
 export interface AuthContextType extends AuthState {
   login: (token: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
-
 export interface DataState {
   user: User | null;
   transactions: Transaction[];
@@ -377,26 +339,21 @@ export interface DataState {
   loading: boolean;
   error: Error | null;
 }
-
 export interface DataContextType extends DataState {
   refetch: () => Promise<void>;
   updateUser: (user: User) => void;
 }
-
 export interface AppError extends Error {
   code?: string;
   statusCode?: number;
   context?: Record<string, any>;
 }
-
 export interface RouteConfig {
   path: string;
   component: ComponentType;
   exact?: boolean;
   title?: string;
 }
-
-
 export interface SVGChartData {
   labels: string[];
   datasets: Array<{
@@ -408,7 +365,6 @@ export interface SVGChartData {
     fill?: boolean;
   }>;
 }
-
 export interface ChartPoint {
   x: number;
   y: number;
@@ -416,7 +372,6 @@ export interface ChartPoint {
   value?: number;
   color?: string;
 }
-
 export interface ChartConfig {
   type: 'line' | 'bar' | 'pie' | 'donut' | 'gauge' | 'area';
   width: number;
@@ -434,7 +389,6 @@ export interface ChartConfig {
   title?: string;
   description?: string;
 }
-
 export interface XPTimelineData {
   date: string;
   xp: number;
@@ -442,29 +396,24 @@ export interface XPTimelineData {
   project?: string;
   type?: string;
 }
-
 export interface ProjectSuccessData {
   passed: number;
   failed: number;
   inProgress: number;
   total: number;
 }
-
 export interface AuditRatioData {
   ratio: number;
   totalUp: number;
   totalDown: number;
   performance: 'excellent' | 'good' | 'average' | 'poor';
 }
-
 export interface SkillRadarData {
   skill: string;
   level: number;
   maxLevel: number;
   category: string;
 }
-
-
 export interface DashboardData {
   user: UserProfile;
   statistics: {
@@ -508,26 +457,22 @@ export interface DashboardData {
     maxProgress?: number;
   }>;
 }
-
 export interface ApiResponse<T = any> {
   data: T;
   message?: string;
   success: boolean;
 }
-
 export interface ApiError {
   message: string;
   code?: string;
   statusCode?: number;
   details?: any;
 }
-
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
-
 export interface ImportMetaEnv {
   readonly VITE_API_URL?: string;
   readonly VITE_APP_TITLE?: string;
@@ -535,7 +480,6 @@ export interface ImportMetaEnv {
   readonly PROD: boolean;
   readonly MODE: string;
 }
-
 export interface ImportMeta {
   readonly env: ImportMetaEnv;
 }

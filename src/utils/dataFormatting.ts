@@ -1,9 +1,3 @@
-import config from '../config/appConfig';
-
-/**
- * @param num
- * @returns
- */
 export const formatXPValue = (num: number | null | undefined): string => {
   if (num === null || num === undefined || isNaN(num)) return '0 B';
 
@@ -16,18 +10,10 @@ export const formatXPValue = (num: number | null | undefined): string => {
   return `${(num / 1000000).toFixed(2)} MB`;
 };
 
-/**
- * @param auditValue
- * @returns
- */
 export const formatAuditMB = (auditValue: number | null | undefined): string => {
   return formatXPValue(auditValue);
 };
 
-/**
- * @param ratio
- * @returns
- */
 export const formatAuditRatio = (ratio: number | null | undefined): string => {
   if (ratio == null || isNaN(ratio)) return '0.0';
   return ratio.toFixed(1);
@@ -38,11 +24,6 @@ export const formatModuleXP = (xp: number) => formatXPValue(xp);
 export const formatXP = (xp: number) => formatXPValue(xp);
 export const formatXPForQuickStats = (xp: number) => formatXPValue(xp);
 
-/**
- * @param currentXP
- * @param level
- * @returns
- */
 export const getXPProgress = (currentXP: number | null | undefined, level: number | null | undefined): number => {
   if (!currentXP || !level) return 0;
   
@@ -54,10 +35,6 @@ export const getXPProgress = (currentXP: number | null | undefined, level: numbe
   return Math.min(100, Math.max(0, (progressXP / requiredXP) * 100));
 };
 
-/**
- * @param skillTransactions
- * @returns
- */
 export const calculateSkillData = (skillTransactions: any[]) => {
   if (!skillTransactions || skillTransactions.length === 0) {
     return { skills: [], totalSkills: 0 };
@@ -72,8 +49,6 @@ export const calculateSkillData = (skillTransactions: any[]) => {
     }
     skillGroups[skillName].push(transaction);
   });
-  
-
   const skills = Object.keys(skillGroups).map(skillName => {
     const skillTxs = skillGroups[skillName].sort((a, b) => 
       new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -99,44 +74,22 @@ export const calculateSkillData = (skillTransactions: any[]) => {
   });
   
   skills.sort((a, b) => b.currentAmount - a.currentAmount);
-  
-  
   return {
     skills,
     totalSkills: skills.length
   };
 };
 
-/**
- * Legacy function for backward compatibility
- * @deprecated Use calculateSkillData instead
- */
 export const calculateTotalSkillPoints = (skillTransactions: any[]): number => {
   if (!skillTransactions || skillTransactions.length === 0) return 0;
   return skillTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
 };
 
-/**
- * Formats skill percentage correctly (skill amount = percentage)
- * @param skillAmount - The skill amount (which IS the percentage)
- * @returns The formatted percentage string (e.g., "55%").
- */
 export const formatSkillPercentage = (skillAmount: number): string => {
   if (skillAmount == null || isNaN(skillAmount)) return '0%';
   return `${skillAmount}%`;
 };
 
-// ============================================================================
-// GRADE FORMATTING
-// ============================================================================
-
-/**
- * Formats grades as percentages with bonus handling.
- * Grades are multiplied by 100 and displayed as percentages.
- * If grade exceeds 100%, the excess is shown as bonus.
- * @param grade - The grade value (e.g., 1.2 becomes "100% + 20%")
- * @returns The formatted grade string
- */
 export const formatGrade = (grade: number | null | undefined): string => {
   if (grade === null || grade === undefined || isNaN(grade)) return '0%';
   
@@ -150,12 +103,6 @@ export const formatGrade = (grade: number | null | undefined): string => {
   }
 };
 
-/**
- * Formats grades with decimal precision for detailed display.
- * @param grade - The grade value
- * @param decimals - Number of decimal places (default: 1)
- * @returns The formatted grade string with decimals
- */
 export const formatGradeDetailed = (grade: number | null | undefined, decimals: number = 1): string => {
   if (grade === null || grade === undefined || isNaN(grade)) return '0.0%';
   
@@ -169,10 +116,6 @@ export const formatGradeDetailed = (grade: number | null | undefined, decimals: 
   }
 };
 
-// ============================================================================
-// USER DATA FORMATTING
-// ============================================================================
-
 interface User {
   firstName?: string;
   lastName?: string;
@@ -185,9 +128,6 @@ export const getUserDisplayName = (user: User | null | undefined): string => {
   return user.firstName || user.lastName || user.login || 'Unknown User';
 };
 
-// ============================================================================
-// DATE FORMATTING
-// ============================================================================
 
 export const formatDate = (dateInput: string | Date | null | undefined, options?: Intl.DateTimeFormatOptions): string => {
   if (!dateInput) return '';
@@ -288,16 +228,6 @@ export const getRelativeTime = (dateInput: string | Date) => {
   }
 };
 
-// ============================================================================
-// MODULE & PROJECT UTILITIES
-// ============================================================================
-
-/**
- * Separate BH Module data from piscines and checkpoints based on ALL_PATHS_STRUCTURE.md
- * True BH module projects are the 74 direct projects that don't contain "piscine-" or "checkpoint"
- * @param {any[]} data - Array of transactions, progress, or other data with path property
- * @returns {object} Separated data with mainModule (true BH), piscines, checkpoints, and all
- */
 export const separateModuleData = (data: any[]) => {
   if (!data || !Array.isArray(data)) {
     return { mainModule: [], piscines: {}, checkpoints: [], allPiscines: [], all: [] };
@@ -310,22 +240,19 @@ export const separateModuleData = (data: any[]) => {
   
   data.forEach(item => {
     if (!item.path) {
-      // Items without path are considered mainModule (legacy data)
       mainModule.push(item);
       return;
     }
     
-    // Check for piscine patterns FIRST (but be more specific about piscine checkpoints)
     if (item.path.includes('piscine-') || item.path.includes('/bh-piscine/')) {
-      // Extract piscine type for categorization
       let piscineType = 'unknown';
       
       if (item.path.includes('/bh-piscine/')) {
-        piscineType = 'go'; // Legacy Go piscine
+        piscineType = 'go';
       } else {
         const piscineMatch = item.path.match(/piscine-(\w+)/);
         if (piscineMatch) {
-          piscineType = piscineMatch[1]; // js, rust, etc.
+          piscineType = piscineMatch[1];
         }
       }
       
@@ -335,31 +262,17 @@ export const separateModuleData = (data: any[]) => {
       return;
     }
     
-    // Check for main module checkpoints (NOT piscine checkpoints)
-    // These are checkpoints that are NOT part of any piscine
     if (item.path.includes('checkpoint')) {
       checkpoints.push(item);
       return;
     }
     
-    // Everything else is considered true BH module (the 74 direct projects)
     mainModule.push(item);
   });
-  
-  
-
   
   return { mainModule, piscines, checkpoints, allPiscines, all: data };
 };
 
-/**
- * Calculate XP totals with proper BH Module filtering 
- * BH Module XP = Total Project XP - All Piscines XP (including piscine checkpoints)
- * EXCLUDES: audit/review XP (audits are for ratio/community, not XP progress)
- * Expected result: 691 kB for main module total
- * @param {any[]} transactions - Array of XP transactions
- * @returns {object} XP totals separated by category
- */
 export const calculateModuleXPTotals = (transactions: any[]) => {
   if (!transactions || !Array.isArray(transactions)) {
     return { 
@@ -373,17 +286,9 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
     };
   }
   
-  // Filter only TRUE XP transactions (exclude up/down which are audit-related)
   const xpTransactions = transactions.filter(t => t.type === 'xp');
   
-  // Also exclude up/down transactions completely as they are not XP
-  const nonAuditTransactions = transactions.filter(t => 
-    t.type !== 'up' && t.type !== 'down'
-  );
-  
-  // Proper separation: Exclude audit/review XP as they are for community/ratio, not XP progress
   const auditXPTransactions = xpTransactions.filter(t => {
-    // Check attrs field for audit indicators
     if (t.attrs) {
       const attrsStr = typeof t.attrs === 'string' ? t.attrs : JSON.stringify(t.attrs);
       if (attrsStr.toLowerCase().includes('audit') || 
@@ -393,12 +298,9 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
       }
     }
     
-    // Check path for audit indicators
     if (t.path && (t.path.includes('audit') || t.path.includes('review'))) {
       return true;
     }
-    
-    // Note: up/down transactions are already filtered out at the XP level
     
     return false;
   });
@@ -406,10 +308,7 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
   const projectXPTransactions = xpTransactions.filter(t => 
     !auditXPTransactions.includes(t)
   );
-  
 
-  
-  // Separate ONLY project XP data (excluding audit/review XP and piscines)
   const separatedXP = separateModuleData(projectXPTransactions);
   
   const totals = {
@@ -422,44 +321,32 @@ export const calculateModuleXPTotals = (transactions: any[]) => {
     projectXP: 0
   };
   
-  // Calculate checkpoint XP (main module checkpoints only)
   totals.checkpoints = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  // Calculate total piscine XP (includes piscine checkpoints)
   totals.allPiscines = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  // Calculate piscine XP by type
   Object.keys(separatedXP.piscines).forEach(piscineType => {
     totals.piscines[piscineType] = separatedXP.piscines[piscineType]
       .reduce((sum, t) => sum + (t.amount || 0), 0);
   });
   
-  // Debug: Calculate individual components
-  const mainModuleXP = separatedXP.mainModule.reduce((sum, t) => sum + (t.amount || 0), 0);
-  const mainCheckpointsXP = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
-  const piscinesXP = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const piscinesXP = separatedXP.allPiscines.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  
-  // Calculate audit XP (for tracking purposes, but not included in main XP)
   totals.auditXP = auditXPTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
   
-  // Calculate project XP (all non-audit XP) - use the component sum
+  const mainModuleXP = separatedXP.mainModule.reduce((sum, t) => sum + (t.amount || 0), 0);
+  const mainCheckpointsXP = separatedXP.checkpoints.reduce((sum, t) => sum + (t.amount || 0), 0);
+  
   totals.projectXP = mainModuleXP + mainCheckpointsXP + piscinesXP;
   
-  // Calculate grand total (project XP only, excluding audit XP)
   totals.total = totals.projectXP;
   
-  // Calculate BH Module XP = Total Project XP - All Piscines XP
   totals.bhModule = totals.projectXP - piscinesXP;
   
   
   return totals;
 };
 
-/**
- * @param {any[]} progresses
- * @returns {object}
- */
 export const calculateProjectStats = (progresses: any[]) => {
   if (!progresses || !Array.isArray(progresses)) {
     return {
@@ -512,7 +399,6 @@ export const calculateProjectStats = (progresses: any[]) => {
   const checkpointStats = calculateCategoryStats(separatedProgress.checkpoints);
   
   const overallStats = calculateCategoryStats(progresses);
-  
 
   return {
     ...overallStats,
@@ -527,10 +413,6 @@ export const calculateLevel = (totalXP: number): number => {
   return Math.floor(Math.sqrt(totalXP / 1000)) + 1;
 };
 
-/**
- * @param {number} bhModuleXP
- * @returns {object}
- */
 export const calculateLevelProgress = (bhModuleXP: number) => {
 
   if (!bhModuleXP || bhModuleXP <= 0) {
@@ -590,19 +472,11 @@ export const calculatePiscineLevel = (xp: number): number => {
   return Math.floor(xp / 10000);
 };
 
-/**
- * @param {string} skillName
- * @returns {string}
- */
 export const formatSkillName = (skillName: string) => {
   if (!skillName) return 'Unknown Skill';
   return skillName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };
 
-/**
- * @param {any} attrs
- * @returns {object}
- */
 export const extractPersonalInfo = (attrs: any) => {
   if (!attrs) return {};
 
@@ -671,19 +545,15 @@ export const extractPersonalInfo = (attrs: any) => {
   };
 };
 
-/**
- * @param {string} path
- * @returns {string}
- */
 export const extractCohortFromPath = (path: string) => {
   if (!path) return null;
   
-  const cohortMatch = path.match(/\/bahrain\/bh-([^\/]+)\//);
+  const cohortMatch = path.match(/\/bahrain\/bh-([^/]+)\//);
   if (cohortMatch) {
     return cohortMatch[1];
   }
   
-  const moduleMatch = path.match(/\/bahrain\/([^\/]+)\//);
+  const moduleMatch = path.match(/\/bahrain\/([^/]+)\//);
   if (moduleMatch) {
     return moduleMatch[1];
   }
@@ -691,10 +561,6 @@ export const extractCohortFromPath = (path: string) => {
   return null;
 };
 
-/**
- * @param {string} cohort
- * @returns {string}
- */
 export const extractCohortNumber = (cohort: string) => {
   if (!cohort) return null;
   
@@ -702,10 +568,6 @@ export const extractCohortNumber = (cohort: string) => {
   return numberMatch ? numberMatch[1] : null;
 };
 
-/**
- * @param {string} phone
- * @returns {string}
- */
 export const formatPhoneNumber = (phone: string) => {
   if (!phone) return '';
   
@@ -728,10 +590,6 @@ export const formatPhoneNumber = (phone: string) => {
 
 
 
-/**
- * @param {string} cohort
- * @returns {string}
- */
 export const getCohortDisplayName = (cohort: string) => {
   if (!cohort) return 'Cohort';
   
@@ -752,11 +610,6 @@ export const getCohortDisplayName = (cohort: string) => {
   return cohort.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };
 
-/**
- * @param {any[]} transactions
- * @param {number} currentLevel
- * @returns {object}
- */
 export const analyzeLevelProgression = (transactions: any[], currentLevel: number) => {
   if (!transactions || !Array.isArray(transactions) || currentLevel < 1) {
     return null;
@@ -781,7 +634,6 @@ export const analyzeLevelProgression = (transactions: any[], currentLevel: numbe
     const previousXP = cumulativeXP;
     cumulativeXP += transaction.amount || 0;
     
-    const previousLevel = Math.floor(Math.sqrt(previousXP / 1000)) + 1;
     const newLevel = Math.floor(Math.sqrt(cumulativeXP / 1000)) + 1;
     
     if (newLevel >= currentLevel && !levelAchievedAt) {

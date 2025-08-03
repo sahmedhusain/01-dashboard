@@ -20,7 +20,7 @@ const EventSection = lazy(() => import('./EventSection'))
 
 const UserPreferences = lazy(() => import('../preferences/UserPreferences'))
 
-type TabType = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'export' | 'audits' | string // Allow dynamic piscine tabs
+type TabType = 'dashboard' | 'groups' | 'events' | 'piscines' | 'checkpoints' | 'leaderboard' | 'export' | 'audits' | string 
 
 const Dashboard: React.FC = () => {
   const user = useUser()
@@ -34,19 +34,19 @@ const Dashboard: React.FC = () => {
   const currentTab = getCurrentTab()
   const setActiveTab = navigateToTab
   
-  // Use current tab directly - no complex redirection logic
+  
   const activeTab = currentTab
 
-  // Handle initial default tab redirect - only on first load, not on user navigation
+  
   React.useEffect(() => {
-    // Only run once when preferences are first loaded
+    
     if (preferences && !hasHandledInitialRedirect) {
       setHasHandledInitialRedirect(true)
       
-      // Check if user explicitly navigated to dashboard (not initial page load)
+      
       const userNavigatedToDashboard = sessionStorage.getItem('userNavigatedToDashboard')
       
-      // If we're on root dashboard, have a non-dashboard default tab, and user didn't explicitly navigate here
+      
       if (preferences?.dashboard?.defaultTab && 
           preferences.dashboard.defaultTab !== 'dashboard' && 
           window.location.pathname === '/dashboard' &&
@@ -55,26 +55,26 @@ const Dashboard: React.FC = () => {
         navigateToTab(preferences.dashboard.defaultTab)
       }
       
-      // Clear the navigation flag after checking
+      
       sessionStorage.removeItem('userNavigatedToDashboard')
     }
   }, [preferences, hasHandledInitialRedirect, currentTab, navigateToTab])
   
-  // Custom navigation function that tracks user intent
+  
   const handleTabNavigation = React.useCallback((tabId: string) => {
-    // If navigating to dashboard, mark it as user-initiated
+    
     if (tabId === 'dashboard') {
       sessionStorage.setItem('userNavigatedToDashboard', 'true')
     }
     setActiveTab(tabId)
   }, [setActiveTab])
 
-  // Redirect if no user (shouldn't happen with routing, but safety check)
+  
   if (!user) {
     return null
   }
 
-  // Query to detect user's piscine types dynamically (CORRECTED)
+  
   const { data: piscineData } = useQuery(gql`
     query GetUserPiscineTypes($userId: Int!) {
       # Standard piscines: /bahrain/bh-module/piscine-{{name}}/
@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
     errorPolicy: 'all'
   })
 
-  // Load user preferences
+  
   useEffect(() => {
     const loadPreferences = () => {
       const saved = localStorage.getItem(`user-preferences-${user.id}`)
@@ -122,12 +122,12 @@ const Dashboard: React.FC = () => {
     }
   }, [user?.id])
 
-  // Extract piscine types from transaction paths (CORRECTED)
+  
   useEffect(() => {
     if (piscineData) {
       const types = new Set<string>()
 
-      // Standard piscines
+      
       if (piscineData.standard_piscines) {
         piscineData.standard_piscines.forEach((t: any) => {
           const match = t.path?.match(/piscine-(\w+)/)
@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
         })
       }
 
-      // Go piscine
+      
       if (piscineData.go_piscine && piscineData.go_piscine.length > 0) {
         types.add('go')
       }
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
   }, [logout])
 
   const handlePreferencesUpdate = useCallback(() => {
-    // Reload preferences when the modal is closed and changes are saved
+    
     const saved = localStorage.getItem(`user-preferences-${user.id}`)
     if (saved) {
       try {
@@ -162,7 +162,7 @@ const Dashboard: React.FC = () => {
     }
   }, [user.id])
 
-  // Default tab order as requested: dashboard, piscines, leaderboard, groups, audits, checkpoints, events, subjects
+  
   const defaultTabs = [
     { id: 'dashboard' as TabType, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'piscines' as TabType, label: 'Piscines', icon: BookOpen },
@@ -174,13 +174,13 @@ const Dashboard: React.FC = () => {
     { id: 'subjects' as TabType, label: 'Subjects', icon: Book },
   ]
 
-  // Apply user's custom tab order if available
+  
   const tabs = React.useMemo(() => {
     if (preferences?.dashboard?.tabOrder && Array.isArray(preferences.dashboard.tabOrder)) {
       const orderedTabs = []
       const tabMap = new Map(defaultTabs.map(tab => [tab.id, tab]))
       
-      // Add tabs in user's preferred order
+      
       for (const tabId of preferences.dashboard.tabOrder) {
         const tab = tabMap.get(tabId)
         if (tab) {
@@ -189,7 +189,7 @@ const Dashboard: React.FC = () => {
         }
       }
       
-      // Add any remaining tabs that weren't in the user's order
+      
       orderedTabs.push(...Array.from(tabMap.values()))
       
       return orderedTabs
@@ -199,13 +199,13 @@ const Dashboard: React.FC = () => {
   }, [preferences])
 
   const renderContent = () => {
-    // Handle piscine sub-tabs dynamically
+    
     if (activeTab.startsWith('piscine-')) {
       const piscineType = activeTab.replace('piscine-', '')
       return <PiscineSection user={user} piscineType={piscineType} />
     }
 
-    // Handle main tabs
+    
     switch (activeTab) {
       case 'dashboard':
         return <DashboardSection user={user} />
@@ -326,10 +326,10 @@ const Dashboard: React.FC = () => {
                   aria-current={isActive ? 'page' : undefined}
                   role="tab"
                   tabIndex={0}
-                  title={tab.label} // Show full label in tooltip on mobile/tablet
+                  title={tab.label} 
                 >
                   <Icon className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 flex-shrink-0 ${
-                    // Add margin only on desktop when text is shown
+                    
                     'lg:mr-2'
                   }`} />
                   {/* Show text only on desktop (lg and up) */}

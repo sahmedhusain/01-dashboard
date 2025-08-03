@@ -33,7 +33,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
-    // Create scales
+    
     const xScale = d3.scaleTime()
       .domain(d3.extent(data, d => new Date(d.date)) as [Date, Date])
       .range([0, innerWidth])
@@ -42,11 +42,11 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
       .domain([0, d3.max(data, d => d.cumulativeXP) || 0])
       .range([innerHeight, 0])
 
-    // Create main group
+    
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`)
 
-    // Add gradient definition
+    
     const defs = svg.append("defs")
     const gradient = defs.append("linearGradient")
       .attr("id", "xpGradient")
@@ -64,26 +64,26 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
       .attr("stop-color", "#3B82F6")
       .attr("stop-opacity", 0.8)
 
-    // Create line generator
+    
     const line = d3.line<XPDataPoint>()
       .x(d => xScale(new Date(d.date)))
       .y(d => yScale(d.cumulativeXP))
       .curve(d3.curveMonotoneX)
 
-    // Create area generator
+    
     const area = d3.area<XPDataPoint>()
       .x(d => xScale(new Date(d.date)))
       .y0(innerHeight)
       .y1(d => yScale(d.cumulativeXP))
       .curve(d3.curveMonotoneX)
 
-    // Add area
+    
     g.append("path")
       .datum(data)
       .attr("fill", "url(#xpGradient)")
       .attr("d", area)
 
-    // Add line
+    
     g.append("path")
       .datum(data)
       .attr("fill", "none")
@@ -91,7 +91,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
       .attr("stroke-width", 3)
       .attr("d", line)
 
-    // Add dots for data points
+    
     g.selectAll(".dot")
       .data(data)
       .enter().append("circle")
@@ -104,7 +104,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
       .attr("stroke-width", 2)
       .style("cursor", "pointer")
       .on("mouseover", function(event, d) {
-        // Tooltip
+        
         d3.select(this)
           .transition()
           .duration(200)
@@ -157,7 +157,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
         g.select("#tooltip").remove()
       })
 
-    // Add X axis
+    
     const xAxis = d3.axisBottom(xScale)
       .tickFormat(d3.timeFormat("%b %d"))
       .ticks(6)
@@ -172,7 +172,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
     g.selectAll(".domain, .tick line")
       .attr("stroke", "#374151")
 
-    // Add Y axis
+    
     const yAxis = d3.axisLeft(yScale)
       .tickFormat(d => `${(d as number / 1000).toFixed(0)}kB`)
       .ticks(5)
@@ -186,7 +186,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
     g.selectAll(".domain, .tick line")
       .attr("stroke", "#374151")
 
-    // Add axis labels
+    
     g.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left)

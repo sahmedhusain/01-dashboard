@@ -96,19 +96,19 @@ export const calculateAuditStats = (
 ): AuditStats => {
   const processed = processAuditData(auditsGiven, auditsReceived)
   
-  // Calculate given stats
+  
   const givenCount = auditsGiven.length
   const givenTotalGrade = auditsGiven.reduce((sum, audit) => sum + audit.grade, 0)
   const givenAverageGrade = givenCount > 0 ? givenTotalGrade / givenCount : 0
   const givenTotalMB = userTotalUp || 0
   
-  // Calculate received stats
+  
   const receivedCount = auditsReceived.length
   const receivedTotalGrade = auditsReceived.reduce((sum, audit) => sum + audit.grade, 0)
   const receivedAverageGrade = receivedCount > 0 ? receivedTotalGrade / receivedCount : 0
   const receivedTotalMB = userTotalDown || 0
   
-  // Calculate ratio
+  
   const ratio = userAuditRatio || (receivedTotalMB > 0 ? givenTotalMB / receivedTotalMB : 0)
   
   return {
@@ -135,7 +135,7 @@ export const calculateAuditTrends = (
   auditsReceived: any[],
   period: 'week' | 'month' = 'month'
 ): AuditTrend[] => {
-  // Group audits by time period
+  
   const givenGroups: Record<string, any[]> = {}
   const receivedGroups: Record<string, any[]> = {}
   
@@ -162,7 +162,7 @@ export const calculateAuditTrends = (
     receivedGroups[key].push(audit)
   })
   
-  // Get all periods
+  
   const allPeriods = new Set([
     ...Object.keys(givenGroups),
     ...Object.keys(receivedGroups)
@@ -197,10 +197,10 @@ export const calculateAuditTrends = (
 
 
 export const analyzeAuditQuality = (audits: any[]): {
-  excellent: number // grade >= 1.8
-  good: number      // grade >= 1.4
-  average: number   // grade >= 1.0
-  poor: number      // grade < 1.0
+  excellent: number 
+  good: number      
+  average: number   
+  poor: number      
 } => {
   let excellent = 0, good = 0, average = 0, poor = 0
   
@@ -250,7 +250,7 @@ export const getAuditActivityPatterns = (audits: any[]): {
   const hourlyDistribution: Record<number, number> = {}
   const dailyDistribution: Record<string, number> = {}
   
-  // Initialize distributions
+  
   for (let i = 0; i < 24; i++) {
     hourlyDistribution[i] = 0
   }
@@ -260,7 +260,7 @@ export const getAuditActivityPatterns = (audits: any[]): {
     dailyDistribution[day] = 0
   })
   
-  // Count audits by hour and day
+  
   audits.forEach(audit => {
     const date = new Date(audit.createdAt)
     const hour = date.getHours()
@@ -270,7 +270,7 @@ export const getAuditActivityPatterns = (audits: any[]): {
     dailyDistribution[day]++
   })
   
-  // Find peaks
+  
   const peakHour = Object.entries(hourlyDistribution)
     .reduce((max, [hour, count]) => count > max.count ? { hour: parseInt(hour), count } : max, { hour: 0, count: 0 })
     .hour

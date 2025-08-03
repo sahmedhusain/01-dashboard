@@ -57,7 +57,6 @@ const AppContent: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Root route - redirect based on auth status */}
         <Route
           path="/"
           element={
@@ -69,10 +68,8 @@ const AppContent: React.FC = () => {
           }
         />
 
-        {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Protected routes */}
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/groups" element={<DashboardPage />} />
         <Route path="/dashboard/events" element={<DashboardPage />} />
@@ -85,7 +82,6 @@ const AppContent: React.FC = () => {
         <Route path="/dashboard/audits" element={<DashboardPage />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
 
-        {/* 404 route */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
@@ -97,7 +93,7 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <ApolloProvider client={client}>
         <RefreshProvider
-          defaultAutoRefreshInterval={60000} // 1 minute
+          defaultAutoRefreshInterval={60000}
           enableNetworkDetection={true}
           showRefreshNotifications={true}
         >

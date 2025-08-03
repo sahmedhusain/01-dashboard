@@ -130,20 +130,20 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
   const [gradeFilter, setGradeFilter] = useState<string>('all');
   const [selectedResult, setSelectedResult] = useState<number | null>(null);
 
-  // Query all results
+  
   const { data: allResultsData, loading: allResultsLoading, error: allResultsError } = useQuery(GET_ALL_RESULTS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query user's results
+  
   const { data: userResultsData, loading: userResultsLoading } = useQuery(GET_USER_RESULTS, {
     variables: { userId: user.id },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query result types
+  
   const { data: resultTypesData, loading: resultTypesLoading } = useQuery(GET_RESULT_TYPES, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
@@ -168,23 +168,23 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
   const resultTypes = resultTypesData?.result_type || [];
   const totalResultTypes = resultTypesData?.result_type_aggregate?.aggregate?.count || 0;
 
-  // Calculate complete statistics
+  
   const totalResults = allResultsStats?.count || 0;
   const averageGrade = allResultsStats?.avg?.grade || 0;
   const maxGrade = allResultsStats?.max?.grade || 0;
   const minGrade = allResultsStats?.min?.grade || 0;
 
-  // User specific statistics
+  
   const userTotalResults = userResultsStats?.count || 0;
   const userAverageGrade = userResultsStats?.avg?.grade || 0;
   const userMaxGrade = userResultsStats?.max?.grade || 0;
   const userMinGrade = userResultsStats?.min?.grade || 0;
 
-  // Calculate achievements
+  
   const achievements = {
     totalCompleted: userResults.filter((r: any) => r.grade >= 1).length,
-    perfectScores: userResults.filter((r: any) => r.grade >= 1).length, // 100% or higher
-    highGrades: userResults.filter((r: any) => r.grade >= 0.8).length, // 80% or higher
+    perfectScores: userResults.filter((r: any) => r.grade >= 1).length, 
+    highGrades: userResults.filter((r: any) => r.grade >= 0.8).length, 
     recentActivity: userResults.filter((r: any) => {
       const resultDate = new Date(r.createdAt);
       const weekAgo = new Date();
@@ -193,7 +193,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
     }).length
   };
 
-  // Filter results based on view and filters
+  
   const getFilteredResults = () => {
     let filtered = [];
     
@@ -208,13 +208,13 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
         filtered = allResults;
         break;
       case 'achievements':
-        filtered = userResults.filter((r: any) => r.grade >= 0.8); // High achievers (80%+)
+        filtered = userResults.filter((r: any) => r.grade >= 0.8); 
         break;
       default:
         filtered = allResults;
     }
 
-    // Apply search filter
+    
     if (searchTerm) {
       filtered = filtered.filter((result: any) => 
         result.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -223,25 +223,25 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
       );
     }
 
-    // Apply type filter
+    
     if (typeFilter !== 'all') {
       filtered = filtered.filter((result: any) => result.type === typeFilter);
     }
 
-    // Apply grade filter
+    
     if (gradeFilter !== 'all') {
       switch (gradeFilter) {
         case 'perfect':
-          filtered = filtered.filter((result: any) => result.grade >= 1); // 100% or higher
+          filtered = filtered.filter((result: any) => result.grade >= 1); 
           break;
         case 'high':
-          filtered = filtered.filter((result: any) => result.grade >= 0.8); // 80% or higher
+          filtered = filtered.filter((result: any) => result.grade >= 0.8); 
           break;
         case 'pass':
-          filtered = filtered.filter((result: any) => result.grade >= 1); // 100% or higher (passing)
+          filtered = filtered.filter((result: any) => result.grade >= 1); 
           break;
         case 'fail':
-          filtered = filtered.filter((result: any) => result.grade < 1); // Below 100%
+          filtered = filtered.filter((result: any) => result.grade < 1); 
           break;
       }
     }
@@ -249,7 +249,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
     return filtered;
   };
 
-  // Get result status and color (updated for decimal grades)
+  
   const getResultStatus = (grade: number) => {
     if (grade >= 1) {
       return { status: 'Perfect', color: 'text-yellow-400 bg-yellow-400/20', icon: Medal };
@@ -262,7 +262,7 @@ const ResultSection: React.FC<ResultSectionProps> = ({ user }) => {
     }
   };
 
-  // Get unique types for filter
+  
   const uniqueTypes = [...new Set(allResults.map((result: any) => result.type).filter(Boolean))];
 
   return (

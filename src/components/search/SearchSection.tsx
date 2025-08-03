@@ -211,9 +211,9 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
   const [results, setResults] = useState<any[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
-  // Campus filtering removed - all users are Bahrain-based
+  
 
-  // Complete search queries
+  
   const [searchUsers] = useLazyQuery(SEARCH_USERS_COMPLETE, {
     errorPolicy: 'all',
     onCompleted: (data) => {
@@ -310,7 +310,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     }
   })
 
-  // Debounced search function
+  
   const debouncedSearch = useCallback(
     debounce((term: string, type: SearchType) => {
       if (!term.trim()) {
@@ -390,13 +390,13 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     setIsSearching(false)
   }
 
-  // Filter results based on campus filter
+  
   const filteredResults = useMemo(() => {
-    // All results are already Bahrain-based, no campus filtering needed
+    
     return results
   }, [results])
 
-  // Get search type icon
+  
   const getSearchTypeIcon = (type: SearchType) => {
     switch (type) {
       case 'users': return UserIcon
@@ -411,7 +411,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     }
   }
 
-  // Get search type label
+  
   const getSearchTypeLabel = (type: SearchType) => {
     switch (type) {
       case 'users': return 'Users'
@@ -426,9 +426,9 @@ const SearchSection: React.FC<SearchSectionProps> = ({ user }) => {
     }
   }
 
-  // Get unique campuses from results for filter
+  
   const uniqueCampuses = [...new Set(results.map((item: any) => item.campus).filter(Boolean))]
-  // Search type options
+  
   const searchTypes: { id: SearchType; label: string; icon: any }[] = [
     { id: 'users', label: 'Users', icon: UserIcon },
     { id: 'objects', label: 'Learning Objects', icon: Database },

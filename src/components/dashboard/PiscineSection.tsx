@@ -17,16 +17,16 @@ import PiscineStats from './PiscineStats'
 
 interface PiscineSectionProps {
   user: User
-  piscineType: string // js, go, rust, flutter, etc.
+  piscineType: string 
 }
 
 const PiscineSection: React.FC<PiscineSectionProps> = ({ user, piscineType }) => {
-  // Create dynamic query based on piscine type
+  
   const piscinePathPattern = piscineType === 'go' 
     ? '/bahrain/bh-piscine/%' 
     : `/bahrain/bh-module/piscine-${piscineType}/%`
 
-  // Query piscine-specific XP transactions using proper path patterns
+  
   const { data: xpData, loading: xpLoading } = useQuery(gql`
     query GetPiscineXPTransactions($userId: Int!, $pathPattern: String!) {
       transaction(
@@ -55,7 +55,7 @@ const PiscineSection: React.FC<PiscineSectionProps> = ({ user, piscineType }) =>
     errorPolicy: 'all'
   })
 
-  // Query piscine-specific progress
+  
   const { data: progressData, loading: progressLoading } = useQuery(gql`
     query GetPiscineProgress($userId: Int!, $pathPattern: String!) {
       progress(
@@ -87,19 +87,19 @@ const PiscineSection: React.FC<PiscineSectionProps> = ({ user, piscineType }) =>
   const transactions = xpData?.transaction || []
   const progresses = progressData?.progress || []
 
-  // Calculate enhanced piscine statistics
+  
   const totalXP = transactions.reduce((sum, t) => sum + (t.amount || 0), 0)
   const projectStats = calculateProjectStats(progresses)
   const recentTransactions = transactions.slice(0, 10)
   
-  // Additional statistics
+  
   const completedProjects = progresses.filter(p => p.isDone).length
   const totalProjects = progresses.length
   const averageGrade = progresses.filter(p => p.grade)
     .reduce((sum, p) => sum + p.grade, 0) / progresses.filter(p => p.grade).length || 0
   const recentProgress = progresses.slice(0, 5)
   
-  // Filtering transactions by piscine type
+  
   const filteredTransactions = transactions.filter(t => {
     if (piscineType === 'go') {
       return t.path.includes('/bahrain/bh-piscine/')

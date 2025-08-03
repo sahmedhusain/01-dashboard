@@ -27,29 +27,29 @@ const XPTimelineChart: React.FC<XPTimelineChartProps> = ({
     const chartWidth = width - margin.left - margin.right
     const chartHeight = height - margin.top - margin.bottom
 
-    // Find min/max values
+    
     const maxXP = Math.max(...data.map(d => d.cumulative))
     const minDate = new Date(Math.min(...data.map(d => new Date(d.date).getTime())))
     const maxDate = new Date(Math.max(...data.map(d => new Date(d.date).getTime())))
     const dateRange = maxDate.getTime() - minDate.getTime()
 
-    // Create points for the line
+    
     const points = data.map((d, i) => {
       const x = ((new Date(d.date).getTime() - minDate.getTime()) / dateRange) * chartWidth
       const y = chartHeight - (d.cumulative / maxXP) * chartHeight
       return { x: x + margin.left, y: y + margin.top, data: d, index: i }
     })
 
-    // Create path string for the line
+    
     const pathData = points.reduce((path, point, i) => {
       const command = i === 0 ? 'M' : 'L'
       return `${path} ${command} ${point.x} ${point.y}`
     }, '')
 
-    // Create area path (filled area under the line)
+    
     const areaPath = `${pathData} L ${points[points.length - 1].x} ${chartHeight + margin.top} L ${margin.left} ${chartHeight + margin.top} Z`
 
-    // Generate Y-axis labels
+    
     const yAxisLabels = []
     const steps = 5
     for (let i = 0; i <= steps; i++) {
@@ -62,7 +62,7 @@ const XPTimelineChart: React.FC<XPTimelineChartProps> = ({
       })
     }
 
-    // Generate X-axis labels
+    
     const xAxisLabels = []
     const timeSteps = Math.min(5, points.length)
     for (let i = 0; i < timeSteps; i++) {

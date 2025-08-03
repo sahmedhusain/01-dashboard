@@ -173,24 +173,24 @@ type ExportFormat = 'json' | 'csv' | 'txt'
 type ExportStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const encryptData = (data: string, password: string): string => {
-  // Convert to UTF-8 bytes first to handle Unicode characters
+  
   const encoder = new TextEncoder()
   const dataBytes = encoder.encode(data)
   const passwordBytes = encoder.encode(password)
   
-  // Create repeating key pattern
+  
   const keyPattern = new Uint8Array(dataBytes.length)
   for (let i = 0; i < dataBytes.length; i++) {
     keyPattern[i] = passwordBytes[i % passwordBytes.length]
   }
   
-  // XOR encryption
+  
   const encrypted = new Uint8Array(dataBytes.length)
   for (let i = 0; i < dataBytes.length; i++) {
     encrypted[i] = dataBytes[i] ^ keyPattern[i]
   }
   
-  // Convert to base64
+  
   let binary = ''
   for (let i = 0; i < encrypted.length; i++) {
     binary += String.fromCharCode(encrypted[i])
@@ -228,10 +228,10 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
   const [selectedFormat, setSelectedFormat] = useState<'json' | 'csv' | 'txt'>('json')
   const [includeMetadata, setIncludeMetadata] = useState(true)
 
-  // Get current user for password protection
+  
   const { user: currentUser } = useUser()
 
-  // Load preferences from localStorage
+  
   useEffect(() => {
     const saved = localStorage.getItem(`user-preferences-${userId}`)
     if (saved) {
@@ -243,7 +243,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
     }
   }, [userId])
 
-  // Export queries and stats
+  
   const { data: statsData } = useQuery(GET_EXPORT_STATS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
@@ -272,7 +272,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
   const savePreferences = () => {
     localStorage.setItem(`user-preferences-${userId}`, JSON.stringify(preferences))
     setHasChanges(false)
-    // Here you could also send to backend API
+    
   }
 
   const resetPreferences = () => {
@@ -292,7 +292,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
     updatePreference('dashboard', 'tabOrder', defaultPreferences.dashboard.tabOrder)
   }
 
-  // Export utility functions
+  
   const setStatus = (key: string, status: 'idle' | 'loading' | 'success' | 'error') => {
     setExportStatus(prev => ({ ...prev, [key]: status }))
   }
@@ -344,15 +344,15 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
   }
 
   const downloadFile = (content: string, filename: string, format: 'json' | 'csv' | 'txt', dataType: string) => {
-    // Check if we have current user login for password protection
+    
     if (!currentUser?.login) {
       return
     }
 
-    // Create password-protected content
+    
     const protectedContent = createProtectedContent(content, currentUser.login, format, dataType)
     
-    // Determine file type based on selected format
+    
     const mimeTypes = {
       json: 'application/json',
       csv: 'text/csv',
@@ -396,7 +396,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
       }
 
       if (dataType === 'all') {
-        // Export all data types
+        
         const allPromises = Object.entries(queries).map(async ([key, queryFn]) => {
           const result = await queryFn()
           const dataKey = key === 'users' ? 'event_user' : 
@@ -417,7 +417,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
         const timestamp = new Date().toISOString().split('T')[0]
         downloadFile(content, `reboot01_all_data_${timestamp}`, selectedFormat, 'all')
       } else {
-        // Export single data type
+        
         const queryFn = queries[dataType]
         const result = await queryFn()
         
@@ -629,7 +629,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                         )
                       }
                       
-                      return null // Skip other properties
+                      return null 
                     })}
                   </div>
                 </Card>

@@ -100,7 +100,7 @@ export const calculateProjectTrends = (
   const processed = processProgressData(progressData)
   const completed = processed.filter(p => p.isDone)
   
-  // Group by time period
+  
   const groups: Record<string, ProcessedProgress[]> = {}
   
   completed.forEach(progress => {
@@ -121,7 +121,7 @@ export const calculateProjectTrends = (
     groups[key].push(progress)
   })
   
-  // Calculate trends for each period
+  
   return Object.entries(groups)
     .map(([period, progresses]) => {
       const passed = progresses.filter(p => p.isPassed).length
@@ -164,7 +164,7 @@ export const analyzeRetries = (progressData: any[]): {
   multipleAttempts: number
   averageAttempts: number
 } => {
-  // Group by project path to identify retries
+  
   const projectGroups: Record<string, any[]> = {}
   
   progressData.forEach(progress => {
@@ -229,7 +229,7 @@ export const calculateCompletionVelocity = (
     p => p.isDone && p.grade >= 1 && new Date(p.updatedAt) >= cutoffDate
   )
   
-  return recentCompletions.length / days // Projects per day
+  return recentCompletions.length / days 
 }
 
 export const getLearningPathProgress = (progressData: any[]): {
@@ -238,14 +238,14 @@ export const getLearningPathProgress = (progressData: any[]): {
   total: number
   progress: number
 }[] => {
-  // Group by learning path (inferred from project paths)
+  
   const pathGroups: Record<string, any[]> = {}
   
   progressData.forEach(progress => {
     const path = progress.path || ''
     let pathName = 'General'
     
-    // Extract learning path from project path
+    
     if (path.includes('/div-01/')) pathName = 'Division 01'
     else if (path.includes('/div-02/')) pathName = 'Division 02'
     else if (path.includes('/checkpoint/')) pathName = 'Checkpoints'

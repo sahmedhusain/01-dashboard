@@ -142,7 +142,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
-  // Reset pagination when filters change
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedModule, selectedCheckpoint, searchTerm, sortBy, sortOrder, statusFilter]);
@@ -156,20 +156,20 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
   const checkpointAnalysis = useMemo(() => {
     if (!data) return null;
 
-    // Filter out checkpoint endpoint transactions (paths ending with checkpoint names like 'checkpoint-3')
+    
     const transactions = data.checkpointTransactions.filter((t: any) => {
       const path = t.path || '';
       
-      // Split path and check if it ends with a checkpoint name pattern
+      
       const pathParts = path.split('/');
       const lastPart = pathParts[pathParts.length - 1];
       
-      // Exclude if the last part is just "checkpoint" or matches "checkpoint-X" pattern
+      
       if (lastPart === 'checkpoint' || /^checkpoint-\d+$/.test(lastPart)) {
         return false;
       }
       
-      // Exclude transaction endpoints
+      
       if (lastPart === 'transaction') {
         return false;
       }
@@ -180,16 +180,16 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     const progress = data.checkpointProgress.filter((p: any) => {
       const path = p.path || '';
       
-      // Split path and check if it ends with a checkpoint name pattern
+      
       const pathParts = path.split('/');
       const lastPart = pathParts[pathParts.length - 1];
       
-      // Exclude if the last part is just "checkpoint" or matches "checkpoint-X" pattern
+      
       if (lastPart === 'checkpoint' || /^checkpoint-\d+$/.test(lastPart)) {
         return false;
       }
       
-      // Exclude transaction endpoints
+      
       if (lastPart === 'transaction') {
         return false;
       }
@@ -197,7 +197,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
       return true;
     });
 
-    // Get checkpoint events data
+    
     const userEvents = data.userCheckpointEvents || [];
     const allEvents = data.allCheckpointEvents || [];
     
@@ -249,7 +249,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
       projectAttempts[projectPath].attempts.push(prog);
     });
 
-    // Match checkpoint projects with attended events
+    
     Object.values(projectAttempts).forEach(project => {
       if (project.eventId) {
         const attendedEvent = userEvents.find((event: any) => event.eventId === project.eventId);
@@ -310,7 +310,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     if (!checkpointAnalysis) return [];
     let filtered = checkpointAnalysis.projectList;
 
-    // Apply filters
+    
     if (selectedModule !== 'all') {
       filtered = filtered.filter(project => project.moduleName === selectedModule);
     }
@@ -329,7 +329,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
       filtered = filtered.filter(project => project.status === statusFilter);
     }
 
-    // Apply sorting
+    
     filtered.sort((a, b) => {
       let aVal, bVal;
       if (sortBy === 'date') {
@@ -348,7 +348,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
     return filtered;
   }, [checkpointAnalysis, selectedModule, selectedCheckpoint, searchTerm, statusFilter, sortBy, sortOrder]);
 
-  // Paginated projects
+  
   const paginatedProjects = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;

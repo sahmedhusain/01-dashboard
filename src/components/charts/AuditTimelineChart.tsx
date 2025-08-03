@@ -27,17 +27,17 @@ const AuditTimelineChart: React.FC<AuditTimelineChartProps> = ({
     const chartWidth = width - margin.left - margin.right
     const chartHeight = height - margin.top - margin.bottom
 
-    // Find min/max values
+    
     const maxAudits = Math.max(...data.map(d => Math.max(d.auditsGiven, d.auditsReceived)))
     const maxRatio = Math.max(...data.map(d => d.ratio))
     const minDate = new Date(Math.min(...data.map(d => new Date(d.date).getTime())))
     const maxDate = new Date(Math.max(...data.map(d => new Date(d.date).getTime())))
     const dateRange = maxDate.getTime() - minDate.getTime()
 
-    // Create points for audits given/received
+    
     const givenPoints = data.map((d, i) => {
       const x = ((new Date(d.date).getTime() - minDate.getTime()) / dateRange) * chartWidth
-      const y = chartHeight - (d.auditsGiven / maxAudits) * (chartHeight * 0.7) // Use 70% of height for audits
+      const y = chartHeight - (d.auditsGiven / maxAudits) * (chartHeight * 0.7) 
       return { x: x + margin.left, y: y + margin.top, data: d, index: i }
     })
 
@@ -47,14 +47,14 @@ const AuditTimelineChart: React.FC<AuditTimelineChartProps> = ({
       return { x: x + margin.left, y: y + margin.top, data: d, index: i }
     })
 
-    // Create points for ratio (using top 30% of chart)
+    
     const ratioPoints = data.map((d, i) => {
       const x = ((new Date(d.date).getTime() - minDate.getTime()) / dateRange) * chartWidth
       const y = margin.top + (chartHeight * 0.3) - (d.ratio / maxRatio) * (chartHeight * 0.3)
       return { x: x + margin.left, y, data: d, index: i }
     })
 
-    // Create path strings
+    
     const givenPath = givenPoints.reduce((path, point, i) => {
       const command = i === 0 ? 'M' : 'L'
       return `${path} ${command} ${point.x} ${point.y}`
@@ -70,7 +70,7 @@ const AuditTimelineChart: React.FC<AuditTimelineChartProps> = ({
       return `${path} ${command} ${point.x} ${point.y}`
     }, '')
 
-    // Generate axis labels
+    
     const yAxisLabels = []
     for (let i = 0; i <= 5; i++) {
       const value = (maxAudits / 5) * i

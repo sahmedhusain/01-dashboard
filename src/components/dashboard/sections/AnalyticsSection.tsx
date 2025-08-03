@@ -9,7 +9,7 @@ interface AnalyticsSectionProps {
 
 const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
   
-  // SVG Graph 1: XP Progression Over Time (Line Chart)
+  
   const XPProgressionChart = ({ data }: { data: any[] }) => {
     const maxXP = Math.max(...data.map(d => d.xp), 1000)
     const width = 800
@@ -117,7 +117,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
     )
   }
 
-  // SVG Graph 2: Skills Radar Chart
+  
   const SkillsRadarChart = ({ skills }: { skills: Array<{ name: string, points: number }> }) => {
     const size = 300
     const center = size / 2
@@ -130,7 +130,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
       return { x, y }
     }
 
-    const skillsToShow = skills.slice(0, 8) // Show top 8 skills
+    const skillsToShow = skills.slice(0, 8) 
 
     return (
       <div className="flex justify-center">
@@ -221,7 +221,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
     )
   }
 
-  // SVG Graph 3: Project Success Rate Pie Chart
+  
   const ProjectSuccessPieChart = () => {
     const total = analytics.projects.bhModule.total || 1
     const passed = analytics.projects.bhModule.passed
@@ -306,7 +306,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
     )
   }
 
-  // SVG Graph 4: Audit Activity Timeline
+  
   const AuditTimelineChart = ({ data }: { data: any[] }) => {
     const maxAudits = Math.max(...data.map(d => d.audits), 5)
     const width = 600

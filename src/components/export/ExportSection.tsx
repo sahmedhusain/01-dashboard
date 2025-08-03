@@ -182,7 +182,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     return <LoadingSpinner />
   }
 
-  // Get statistics for display
+  
   const stats = statsData || {}
   const userCount = stats.user_aggregate?.aggregate?.count || 0
   const objectCount = stats.object_aggregate?.aggregate?.count || 0
@@ -202,7 +202,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     }
   }
 
-  // Export utility functions
+  
   const downloadFile = (content: string, filename: string, type: string) => {
     const blob = new Blob([content], { type })
     const url = URL.createObjectURL(blob)
@@ -302,7 +302,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     return { content: '', filename: '', type: '' }
   }
 
-  // Handle complete data export
+  
   const handleExport = async (dataType: DataType) => {
     const exportKey = `${dataType}_${selectedFormat}`
     setStatus(exportKey, 'loading')
@@ -336,7 +336,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
           queryResult = await exportResults()
           break
         case 'all':
-          // Export all data types
+          
           const allQueries = await Promise.all([
             exportUsers(),
             exportObjects(),
@@ -380,7 +380,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     }
   }
 
-  // Data type options with statistics
+  
   const dataTypeOptions = [
     { id: 'users' as DataType, label: 'Users', icon: Users, count: userCount, description: 'All platform users with profiles and statistics' },
     { id: 'objects' as DataType, label: 'Learning Objects', icon: Database, count: objectCount, description: 'Curriculum objects, projects, and learning materials' },
@@ -393,7 +393,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     { id: 'all' as DataType, label: 'Complete Dataset', icon: Database, count: userCount + objectCount + eventCount + groupCount + transactionCount + progressCount + auditCount + resultCount, description: 'Export all data types in a single file' }
   ]
 
-  // Format options
+  
   const formatOptions = [
     { id: 'json' as ExportFormat, label: 'JSON', icon: FileText, description: 'Structured data format, ideal for developers' },
     { id: 'csv' as ExportFormat, label: 'CSV', icon: BarChart3, description: 'Spreadsheet format, ideal for analysis' },
@@ -713,7 +713,7 @@ const ExportSection: React.FC<ExportSectionProps> = ({ user }) => {
     </div>
   )
 
-  // Helper functions
+  
   function getDataTypeLabel(dataType: DataType): string {
     return dataTypeOptions.find(option => option.id === dataType)?.label || 'Data'
   }

@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { useApolloClient } from '@apollo/client'
 
 interface RefreshOptions {
-  interval?: number // Auto-refresh interval in milliseconds
+  interval?: number 
   onSuccess?: () => void
   onError?: (error: Error) => void
   enableAutoRefresh?: boolean
@@ -17,7 +17,7 @@ interface RefreshState {
 
 export const useDataRefresh = (queries: string[] = [], options: RefreshOptions = {}) => {
   const {
-    interval = 30000, // 30 seconds default
+    interval = 30000, 
     onSuccess,
     onError,
     enableAutoRefresh = false
@@ -32,7 +32,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     refreshCount: 0
   })
 
-  // Manual refresh function
+  
   const refresh = useCallback(async (specificQueries?: string[]) => {
     const queriesToRefresh = specificQueries || queries
     
@@ -47,7 +47,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }))
 
     try {
-      // Refetch all specified queries
+      
       await Promise.all(
         queriesToRefresh.map(query => 
           client.refetchQueries({
@@ -84,7 +84,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }
   }, [client, queries, onSuccess, onError])
 
-  // Refresh all cached data
+  
   const refreshAll = useCallback(async () => {
     setRefreshState(prev => ({
       ...prev,
@@ -125,7 +125,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }
   }, [client, onSuccess, onError])
 
-  // Clear cache and refetch
+  
   const hardRefresh = useCallback(async () => {
     setRefreshState(prev => ({
       ...prev,
@@ -134,10 +134,10 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }))
 
     try {
-      // Clear cache first
+      
       await client.clearStore()
       
-      // Then refetch all active queries
+      
       await client.refetchQueries({
         include: 'active',
         updateCache: (cache) => {
@@ -170,7 +170,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }
   }, [client, onSuccess, onError])
 
-  // Start auto-refresh
+  
   const startAutoRefresh = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
@@ -181,7 +181,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }, interval)
   }, [refresh, interval])
 
-  // Stop auto-refresh
+  
   const stopAutoRefresh = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
@@ -189,7 +189,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }
   }, [])
 
-  // Setup auto-refresh if enabled
+  
   useEffect(() => {
     if (enableAutoRefresh) {
       startAutoRefresh()
@@ -200,7 +200,7 @@ export const useDataRefresh = (queries: string[] = [], options: RefreshOptions =
     }
   }, [enableAutoRefresh, startAutoRefresh, stopAutoRefresh])
 
-  // Cleanup on unmount
+  
   useEffect(() => {
     return () => {
       stopAutoRefresh()
@@ -231,7 +231,7 @@ export const useOptimisticRefresh = <T>(
     setIsRefreshing(true)
     setError(null)
 
-    // Apply optimistic update if provided
+    
     if (optimisticData) {
       setData(optimisticData)
     }
@@ -244,7 +244,7 @@ export const useOptimisticRefresh = <T>(
       const refreshError = err instanceof Error ? err : new Error('Refresh failed')
       setError(refreshError)
       
-      // Revert optimistic update on error
+      
       if (optimisticData) {
         setData(initialData)
       }
@@ -260,7 +260,7 @@ export const useOptimisticRefresh = <T>(
     isRefreshing,
     error,
     refresh,
-    setData // For manual optimistic updates
+    setData 
   }
 }
 
@@ -268,15 +268,15 @@ export const useStaleWhileRevalidate = <T>(
   key: string,
   fetchFn: () => Promise<T>,
   options: {
-    staleTime?: number // Time in ms before data is considered stale
-    cacheTime?: number // Time in ms to keep data in cache
+    staleTime?: number 
+    cacheTime?: number 
     refetchOnWindowFocus?: boolean
     refetchOnReconnect?: boolean
   } = {}
 ) => {
   const {
-    staleTime = 5 * 60 * 1000, // 5 minutes
-    cacheTime = 10 * 60 * 1000, // 10 minutes
+    staleTime = 5 * 60 * 1000, 
+    cacheTime = 10 * 60 * 1000, 
     refetchOnWindowFocus = true,
     refetchOnReconnect = true
   } = options
@@ -301,7 +301,7 @@ export const useStaleWhileRevalidate = <T>(
       const newData = await fetchFn()
       const now = Date.now()
       
-      // Update cache
+      
       cacheRef.current.set(key, { data: newData, timestamp: now })
       lastFetchRef.current = now
       
@@ -325,28 +325,28 @@ export const useStaleWhileRevalidate = <T>(
     }
   }, [fetchData, isStale])
 
-  // Initial fetch or serve from cache
+  
   useEffect(() => {
     const cached = cacheRef.current.get(key)
     const now = Date.now()
 
     if (cached && now - cached.timestamp < cacheTime) {
-      // Serve from cache
+      
       setData(cached.data)
       setIsLoading(false)
       lastFetchRef.current = cached.timestamp
 
-      // Revalidate if stale
+      
       if (now - cached.timestamp > staleTime) {
         fetchData(true)
       }
     } else {
-      // Fetch fresh data
+      
       fetchData()
     }
   }, [key, fetchData, staleTime, cacheTime])
 
-  // Refetch on window focus
+  
   useEffect(() => {
     if (!refetchOnWindowFocus) return
 
@@ -360,7 +360,7 @@ export const useStaleWhileRevalidate = <T>(
     return () => window.removeEventListener('focus', handleFocus)
   }, [refetchOnWindowFocus, revalidate, isStale])
 
-  // Refetch on reconnect
+  
   useEffect(() => {
     if (!refetchOnReconnect) return
 
@@ -380,6 +380,6 @@ export const useStaleWhileRevalidate = <T>(
     isValidating,
     error,
     revalidate,
-    mutate: setData // For manual cache updates
+    mutate: setData 
   }
 }

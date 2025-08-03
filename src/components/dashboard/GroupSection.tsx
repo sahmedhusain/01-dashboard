@@ -206,12 +206,12 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination when filters change
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedView, searchTerm, statusFilter]);
 
-  // Query all groups
+  
   const { data: groupsData, loading: groupsLoading, error: groupsError } = useQuery(ALL_GROUPS_QUERY, {
     variables: {
       limit: itemsPerPage,
@@ -221,28 +221,28 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
-  // Query user's groups (for backward compatibility)
+  
   const { data: userGroupsData } = useQuery(USER_GROUPS_QUERY, {
     variables: { userId: user.id },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query my groups (member + captain) - load immediately for accurate count
+  
   const { data: myGroupsData, loading: myGroupsLoading } = useQuery(MY_GROUPS_QUERY, {
     variables: { userId: user.id },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query complete group statistics (not affected by pagination)
+  
   const { data: statsData } = useQuery(GROUP_STATS_QUERY, {
     variables: { userId: user.id },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query selected group members
+  
   const { data: membersData, loading: membersLoading } = useQuery(GROUP_MEMBERS_QUERY, {
     variables: { groupId: selectedGroup || 0 },
     skip: !selectedGroup,
@@ -250,35 +250,35 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
-  // Query groups by member search (triggered when search includes potential member names)
+  
   const { data: memberSearchData, loading: memberSearchLoading } = useQuery(ALL_GROUPS_WITH_MEMBERS_QUERY, {
     variables: { searchTerm: `%${searchTerm}%` },
-    skip: !searchTerm || searchTerm.length < 2, // Only search when term is meaningful
+    skip: !searchTerm || searchTerm.length < 2, 
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Helper function to extract project name from path
+  
   const extractProjectName = (path: string): string => {
     if (!path) return '';
     
-    // Extract project name from various path patterns
-    // Examples: "/bahrain/bh-module/piscine-go/groupie-tracker" -> "groupie-tracker"
-    //          "/bahrain/bh-module/checkpoint/mini-framework" -> "mini-framework"
+    
+    
+    
     const pathParts = path.split('/');
     const projectName = pathParts[pathParts.length - 1] || '';
     
-    return projectName.replace(/-/g, ' '); // Convert dashes to spaces for better search
+    return projectName.replace(/-/g, ' '); 
   };
 
-  // Helper function to get all member names from a group (not available in main query, returns empty for now)
+  
   const getGroupMemberNames = (_group: any): string[] => {
-    // Since we can't include member data directly in the main queries due to schema limitations,
-    // this will return empty array for now. Member search can be enhanced later with separate queries.
+    
+    
     return [];
   };
 
-  // Helper function to get captain name
+  
   const getCaptainName = (group: any): string => {
     if (!group.captain) return '';
     
@@ -290,30 +290,30 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     return names.join(' ');
   };
 
-  // Enhanced search function
+  
   const doesGroupMatchSearch = (group: any, searchTerm: string): boolean => {
     if (!searchTerm) return true;
     
     const lowerSearchTerm = searchTerm.toLowerCase();
     
-    // 1. Search by project name (extracted from path)
+    
     const projectName = extractProjectName(group.path);
     if (projectName.toLowerCase().includes(lowerSearchTerm)) {
       return true;
     }
     
-    // 2. Search by path (original functionality)
+    
     if (group.path?.toLowerCase().includes(lowerSearchTerm)) {
       return true;
     }
     
-    // 3. Search by captain name
+    
     const captainName = getCaptainName(group);
     if (captainName.toLowerCase().includes(lowerSearchTerm)) {
       return true;
     }
     
-    // 4. Search by member names
+    
     const memberNames = getGroupMemberNames(group);
     if (memberNames.some(name => name.toLowerCase().includes(lowerSearchTerm))) {
       return true;
@@ -330,27 +330,27 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         groups = groupsData?.group || [];
         break;
       case 'my-groups': {
-        // Use the dedicated my groups query for better performance
+        
         if (myGroupsData) {
           const captainGroups = myGroupsData.captainGroups || [];
           const memberGroups = myGroupsData.group_user?.map((gu: any) => gu.group).filter(Boolean) || [];
 
-          // Combine and deduplicate groups (in case user is both member and captain of same group)
+          
           const allMyGroups = [...captainGroups, ...memberGroups];
           const uniqueGroups = allMyGroups.filter((group, index, self) =>
             index === self.findIndex(g => g.id === group.id)
           );
           
-          // Sort by creation date (newest first)
+          
           groups = uniqueGroups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         } else {
-          // Fallback to old method if new query fails
+          
           const myGroupIds = userGroupsData?.group_user?.map((gu: any) => gu.groupId) || [];
           const filteredGroups = groupsData?.group?.filter((g: any) =>
             myGroupIds.includes(g.id) || g.captainId === user.id
           ) || [];
           
-          // Sort by creation date (newest first) for fallback as well
+          
           groups = filteredGroups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         }
         break;
@@ -359,15 +359,15 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         groups = groupsData?.group || [];
     }
 
-    // Apply enhanced search filters
+    
     if (searchTerm) {
-      // First, filter by project name and captain name
+      
       const regularSearchGroups = groups.filter((group: any) => doesGroupMatchSearch(group, searchTerm));
       
-      // Add groups from member search if available
+      
       const memberSearchGroups = memberSearchData?.group_user?.map((gu: any) => gu.group).filter(Boolean) || [];
       
-      // Combine and deduplicate
+      
       const allSearchGroups = [...regularSearchGroups, ...memberSearchGroups];
       groups = allSearchGroups.filter((group, index, self) =>
         index === self.findIndex(g => g.id === group.id)
@@ -401,19 +401,19 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     return `User #${group.captainId}`;
   };
 
-  // Helper function to check if a group belongs to the current user
+  
   const isMyGroup = (group: any): boolean => {
-    // Check if user is captain
+    
     if (group.captainId === user.id) {
       return true;
     }
     
-    // Check if user is a member (using the userGroupsData)
+    
     const myGroupIds = userGroupsData?.group_user?.map((gu: any) => gu.groupId) || [];
     return myGroupIds.includes(group.id);
   };
 
-  // Helper function to get user's role in a group
+  
   const getUserRoleInGroup = (group: any): string => {
     if (group.captainId === user.id) {
       return 'Captain';
@@ -432,7 +432,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
       const captainGroups = myGroupsData.captainGroups || [];
       const memberGroups = myGroupsData.group_user?.map((gu: any) => gu.group).filter(Boolean) || [];
 
-      // Combine and deduplicate to get accurate count
+      
       const allMyGroups = [...captainGroups, ...memberGroups];
       const uniqueGroups = allMyGroups.filter((group, index, self) =>
         index === self.findIndex(g => g.id === group.id)
@@ -440,12 +440,12 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
       return uniqueGroups.length;
     }
 
-    // Fallback to old method
+    
     const myGroupIds = userGroupsData?.group_user?.map((gu: any) => gu.groupId) || [];
     const captainGroups = groupsData?.group?.filter((g: any) => g.captainId === user.id) || [];
     const memberGroups = groupsData?.group?.filter((g: any) => myGroupIds.includes(g.id)) || [];
 
-    // Combine and deduplicate
+    
     const allGroups = [...memberGroups, ...captainGroups];
     const uniqueGroups = allGroups.filter((group, index, self) =>
       index === self.findIndex(g => g.id === group.id)
@@ -453,20 +453,20 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     return uniqueGroups.length;
   };
   
-  // Complete statistics calculations (not affected by pagination/filtering)
+  
   const getCompleteStats = () => {
     const allGroups = statsData?.all_groups || [];
     const totalCount = statsData?.group_aggregate?.aggregate?.count || 0;
     const captainCount = statsData?.captain_groups_aggregate?.aggregate?.count || 0;
     const memberCount = statsData?.member_groups_aggregate?.aggregate?.count || 0;
     
-    // Calculate status-based counts from all groups
+    
     const activeCount = allGroups.filter((g: any) => g.status === 'working' || g.status === 'audit').length;
     const completedCount = allGroups.filter((g: any) => g.status === 'finished').length;
     const userCaptainCount = allGroups.filter((g: any) => g.captainId === user.id).length;
     
-    // Total unique groups user is involved in (avoid double counting if captain and member of same group)
-    const totalUserGroups = Math.max(captainCount, memberCount, captainCount + memberCount - captainCount); // Simple deduplication estimate
+    
+    const totalUserGroups = Math.max(captainCount, memberCount, captainCount + memberCount - captainCount); 
     const userMemberOnlyCount = Math.max(0, totalUserGroups - userCaptainCount);
     
     return {

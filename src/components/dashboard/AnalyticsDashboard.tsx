@@ -81,7 +81,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ user }) => {
   if (loading) return <LoadingSpinner />
   if (error) return <div className="text-red-400">Error loading analytics data</div>
 
-  // Process XP progression data
+  
   const xpProgression = data?.xp_progression || []
   let cumulativeXP = 0
   const xpProgressionData = xpProgression.map((transaction: any) => {
@@ -95,7 +95,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ user }) => {
     }
   })
 
-  // Process skills data
+  
   const skillsData = data?.skills || []
   const processedSkills = skillsData.reduce((acc: Record<string, SkillRadarData>, skill: any) => {
     const skillName = skill.type.replace('skill_', '')
@@ -105,9 +105,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ user }) => {
     acc[skillName].level += skill.amount
     return acc
   }, {})
-  const skillsArray: SkillRadarData[] = (Object.values(processedSkills) as SkillRadarData[]).slice(0, 8) // Top 8 skills
+  const skillsArray: SkillRadarData[] = (Object.values(processedSkills) as SkillRadarData[]).slice(0, 8) 
 
-  // Fallback skills data if no skills are available
+  
   const fallbackSkills: SkillRadarData[] = [
     { skill: 'JavaScript', level: 75, maxLevel: 100, category: 'technical' },
     { skill: 'Go', level: 60, maxLevel: 100, category: 'technical' },
@@ -119,7 +119,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ user }) => {
 
   const finalSkillsArray: SkillRadarData[] = skillsArray.length > 0 ? skillsArray : fallbackSkills
 
-  // Process audit performance data (monthly aggregation)
+  
   const auditsGiven = data?.audits_given || []
   const auditsReceived = data?.audits_received || []
   
@@ -147,7 +147,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ user }) => {
     avgGradeGiven: month.auditsGiven > 0 ? month.totalGradeGiven / month.auditsGiven : 0,
     avgGradeReceived: month.auditsReceived > 0 ? month.totalGradeReceived / month.auditsReceived : 0,
     ratio: month.auditsReceived > 0 ? month.auditsGiven / month.auditsReceived : 0
-  })).slice(-6) // Last 6 months
+  })).slice(-6) 
 
   return (
     <div className="space-y-8">

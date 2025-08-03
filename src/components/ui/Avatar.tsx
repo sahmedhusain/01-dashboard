@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User } from 'lucide-react'
+import { User as UserIcon } from 'lucide-react'
+import { User } from '../../types'
 
 interface AvatarProps {
-  user: any
+  user: User
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   className?: string
   showBorder?: boolean
@@ -22,7 +23,7 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false)
   
-  // Size configurations
+  
   const sizeClasses = {
     xs: 'w-6 h-6',
     sm: 'w-8 h-8',
@@ -41,32 +42,32 @@ const Avatar: React.FC<AvatarProps> = ({
     '2xl': 'w-16 h-16',
   }
 
-  // Enhanced avatar URL generation with better fallback logic
-  const getAvatarUrl = (user: any) => {
+  
+  const getAvatarUrl = (user: User) => {
     if (!user) return null
 
-    // Try different avatar sources in order of preference
+    
     const attrs = user.attrs || {}
 
-    // 1. Check for direct avatar URLs in attrs
+    
     if (attrs.avatar) {
-      // Handle base64 encoded images
+      
       if (typeof attrs.avatar === 'string') {
         if (attrs.avatar.startsWith('data:image/')) {
           return attrs.avatar
         }
-        // Handle URL strings
+        
         if (attrs.avatar.startsWith('http')) {
           return attrs.avatar
         }
-        // Handle base64 without data prefix
+        
         if (attrs.avatar.length > 100 && !attrs.avatar.includes(' ')) {
           return `data:image/jpeg;base64,${attrs.avatar}`
         }
       }
     }
 
-    // 2. Check for other avatar fields
+    
     if (attrs.avatarUrl && typeof attrs.avatarUrl === 'string') {
       return attrs.avatarUrl.startsWith('http') ? attrs.avatarUrl : null
     }
@@ -77,14 +78,14 @@ const Avatar: React.FC<AvatarProps> = ({
       return attrs.image.startsWith('http') ? attrs.image : null
     }
 
-    // 3. Check user profile field
+    
     if (user.profile && typeof user.profile === 'string') {
       if (user.profile.startsWith('data:image/') || user.profile.startsWith('http')) {
         return user.profile
       }
     }
 
-    // 4. Generate GitHub avatar if available (fallback)
+    
     if (user.login && typeof user.login === 'string') {
       return `https://github.com/${user.login}.png`
     }
@@ -92,13 +93,13 @@ const Avatar: React.FC<AvatarProps> = ({
     return null
   }
 
-  // Enhanced display name generation with attrs support
-  const getDisplayName = (user: any) => {
+  
+  const getDisplayName = (user: User) => {
     if (!user) return 'U'
 
     const attrs = user.attrs || {}
 
-    // Try to get name from user object first
+    
     const firstName = user.firstName || attrs.firstName || attrs.first_name
     const lastName = user.lastName || attrs.lastName || attrs.last_name
 
@@ -109,12 +110,12 @@ const Avatar: React.FC<AvatarProps> = ({
     if (firstName) return firstName[0].toUpperCase()
     if (lastName) return lastName[0].toUpperCase()
 
-    // Try display name or full name from attrs
+    
     if (attrs.displayName) return attrs.displayName[0].toUpperCase()
     if (attrs.fullName) return attrs.fullName[0].toUpperCase()
     if (attrs.name) return attrs.name[0].toUpperCase()
 
-    // Fallback to login
+    
     if (user.login) return user.login[0].toUpperCase()
 
     return 'U'
@@ -124,7 +125,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const displayName = getDisplayName(user)
   const shouldShowImage = avatarUrl && !imageError
 
-  // Generate gradient colors based on user login
+  
   const getGradientColors = (login: string = 'default') => {
     const colors = [
       'from-blue-500 to-purple-600',
@@ -180,7 +181,7 @@ const Avatar: React.FC<AvatarProps> = ({
               {displayName}
             </span>
           ) : (
-            <User className={`${iconSizes[size]} text-white`} />
+            <UserIcon className={`${iconSizes[size]} text-white`} />
           )}
         </div>
       )}

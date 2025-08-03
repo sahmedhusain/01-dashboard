@@ -93,29 +93,29 @@ const GET_USER_REGISTRATIONS = gql`
 const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all-registrations' | 'registration-users' | 'my-registrations' | 'statistics'>('all-registrations');
   const [searchTerm, setSearchTerm] = useState('');
-  // Campus filtering removed - all registrations are Bahrain-based
+  
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedRegistration, setSelectedRegistration] = useState<number | null>(null);
 
-  // Query all registrations
+  
   const { data: registrationsData, loading: registrationsLoading, error: registrationsError } = useQuery(GET_ALL_REGISTRATIONS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query all registration users
+  
   const { data: registrationUsersData, loading: registrationUsersLoading } = useQuery(GET_ALL_REGISTRATION_USERS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query registration user view
+  
   const { data: registrationUserViewData } = useQuery(GET_REGISTRATION_USER_VIEW, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query user's registrations
+  
   const { data: userRegistrationsData, loading: userRegistrationsLoading } = useQuery(GET_USER_REGISTRATIONS, {
     variables: { userId: user.id },
     errorPolicy: 'all',
@@ -142,7 +142,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
   const totalRegistrationUserView = registrationUserViewData?.registration_user_view_aggregate?.aggregate?.count || 0;
   const userRegistrations = userRegistrationsData?.registration_user || [];
 
-  // Filter registrations based on view and filters
+  
   const getFilteredData = () => {
     let filtered = [];
     
@@ -163,7 +163,7 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
         filtered = registrations;
     }
 
-    // Apply search filter
+    
     if (searchTerm && selectedView === 'all-registrations') {
       filtered = filtered.filter((reg: any) => 
         reg.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -171,10 +171,10 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
       );
     }
 
-    // Apply campus filter
-    // All registrations are Bahrain-based by default
+    
+    
 
-    // Apply status filter
+    
     if (statusFilter !== 'all' && selectedView === 'all-registrations') {
       const now = new Date();
       filtered = filtered.filter((reg: any) => {
@@ -197,10 +197,10 @@ const RegistrationSection: React.FC<RegistrationSectionProps> = ({ user }) => {
     return filtered;
   };
 
-  // Get unique campuses for filter
+  
   const uniqueCampuses = [...new Set(registrations.map((reg: any) => reg.campus).filter(Boolean))];
 
-  // Get registration status
+  
   const getRegistrationStatus = (registration: any) => {
     const now = new Date();
     const startDate = registration.startAt ? new Date(registration.startAt) : null;

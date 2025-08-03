@@ -34,7 +34,7 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
-    // Create scales
+    
     const xScale = d3.scaleBand()
       .domain(data.map(d => d.month))
       .range([0, innerWidth])
@@ -48,11 +48,11 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .domain(d3.extent(data, d => d.ratio) as [number, number])
       .range([innerHeight, 0])
 
-    // Create main group
+    
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`)
 
-    // Add bars for audits given
+    
     g.selectAll(".bar-given")
       .data(data)
       .enter().append("rect")
@@ -64,7 +64,7 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .attr("fill", "#10B981")
       .attr("opacity", 0.8)
 
-    // Add bars for audits received
+    
     g.selectAll(".bar-received")
       .data(data)
       .enter().append("rect")
@@ -76,7 +76,7 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .attr("fill", "#3B82F6")
       .attr("opacity", 0.8)
 
-    // Add ratio line
+    
     const line = d3.line<AuditData>()
       .x(d => xScale(d.month)! + xScale.bandwidth() / 2)
       .y(d => ratioScale(d.ratio))
@@ -89,7 +89,7 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .attr("stroke-width", 3)
       .attr("d", line)
 
-    // Add ratio dots
+    
     g.selectAll(".ratio-dot")
       .data(data)
       .enter().append("circle")
@@ -101,7 +101,7 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .attr("stroke", "#D97706")
       .attr("stroke-width", 2)
 
-    // Add X axis
+    
     g.append("g")
       .attr("transform", `translate(0,${innerHeight})`)
       .call(d3.axisBottom(xScale))
@@ -109,14 +109,14 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .attr("fill", "#9CA3AF")
       .style("font-size", "12px")
 
-    // Add left Y axis (for audit counts)
+    
     g.append("g")
       .call(d3.axisLeft(yScale))
       .selectAll("text")
       .attr("fill", "#9CA3AF")
       .style("font-size", "12px")
 
-    // Add right Y axis (for ratio)
+    
     g.append("g")
       .attr("transform", `translate(${innerWidth},0)`)
       .call(d3.axisRight(ratioScale))
@@ -124,11 +124,11 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .attr("fill", "#9CA3AF")
       .style("font-size", "12px")
 
-    // Style axes
+    
     g.selectAll(".domain, .tick line")
       .attr("stroke", "#374151")
 
-    // Add legends
+    
     const legend = g.append("g")
       .attr("transform", `translate(${innerWidth + 10}, 20)`)
 
@@ -172,7 +172,7 @@ const AuditPerformanceChart: React.FC<AuditPerformanceChartProps> = ({
       .style("font-size", "11px")
       .text("Ratio")
 
-    // Add axis labels
+    
     g.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left)

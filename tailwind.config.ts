@@ -17,7 +17,6 @@ export default {
     },
     extend: {
       colors: {
-        // Material Design 3 inspired color palette with teal/cyan theme
         primary: {
           50: '#f0fdfa',
           100: '#ccfbf1',

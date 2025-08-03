@@ -85,7 +85,7 @@ const TimelineVisualization: React.FC<TimelineVisualizationProps> = ({
     }
   }
 
-  // Sort events by date (most recent first)
+  
   const sortedEvents = [...events]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, maxEvents)

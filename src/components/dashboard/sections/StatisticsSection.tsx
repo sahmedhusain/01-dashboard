@@ -12,7 +12,7 @@ interface StatisticsSectionProps {
 
 const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
   
-  // Calculate various statistics
+  
   const averageXPPerMonth = analytics.xp.monthlyData.reduce((sum: number, month: any) => sum + month.xp, 0) / 12
   const mostActiveMonth = analytics.xp.monthlyData.reduce((prev: any, current: any) => 
     current.xp > prev.xp ? current : prev, { month: 'N/A', xp: 0 }

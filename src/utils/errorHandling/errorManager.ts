@@ -1,7 +1,4 @@
 
-/**
- * Error types and severity levels
- */
 export const ERROR_TYPES = {
   NETWORK: 'network',
   GRAPHQL: 'graphql',
@@ -19,10 +16,6 @@ export const ERROR_SEVERITY = {
   CRITICAL: 'critical'
 };
 
-/**
- * Enhanced Error Class
- * Provides structured error information with user-friendly messages
- */
 export class AppError extends Error {
   public type: string;
   public severity: string;
@@ -61,9 +54,6 @@ export class AppError extends Error {
     return messages[this.type] || messages[ERROR_TYPES.SYSTEM];
   }
 
-  /**
-   * Generate recovery actions based on error type
-   */
   generateRecoveryActions() {
     const actions = {
       [ERROR_TYPES.NETWORK]: [
@@ -96,9 +86,6 @@ export class AppError extends Error {
     return actions[this.type] || actions[ERROR_TYPES.SYSTEM];
   }
 
-  /**
-   * Convert to JSON for logging/reporting
-   */
   toJSON() {
     return {
       name: this.name,
@@ -116,10 +103,6 @@ export class AppError extends Error {
   }
 }
 
-/**
- * Error Manager Class
- * Centralized error handling, logging, and user feedback
- */
 class ErrorManager {
   private errorLog: AppError[];
   private errorHandlers: Map<string, ((error: AppError) => void)[]>;
@@ -132,15 +115,12 @@ class ErrorManager {
     this.userFeedbackCallbacks = [];
     this.maxLogSize = 100;
     
-    // Initialize global error handlers
+    
     this.initializeGlobalHandlers();
   }
 
-  /**
-   * Initialize global error handlers
-   */
   initializeGlobalHandlers() {
-    // Handle unhandled promise rejections
+    
     window.addEventListener('unhandledrejection', (event) => {
       const error = new AppError(
         event.reason?.message || 'Unhandled promise rejection',
@@ -151,7 +131,7 @@ class ErrorManager {
       this.handleError(error);
     });
 
-    // Handle JavaScript errors
+    
     window.addEventListener('error', (event) => {
       const error = new AppError(
         event.message || 'JavaScript error',
@@ -169,27 +149,22 @@ class ErrorManager {
     });
   }
 
-  /**
-   * Handle error with appropriate response
-   * @param {Error|AppError} error - Error to handle
-   * @param {Object} context - Additional context
-   */
   handleError(error, context = {}) {
-    // Convert regular errors to AppError
+    
     if (!(error instanceof AppError)) {
       error = this.convertToAppError(error, context);
     }
 
-    // Add to error log
+    
     this.logError(error);
 
-    // Execute registered error handlers
+    
     this.executeErrorHandlers(error);
 
-    // Provide user feedback
+    
     this.provideUserFeedback(error);
 
-    // Report critical errors
+    
     if (error.severity === ERROR_SEVERITY.CRITICAL && error.reportable) {
       this.reportError(error);
     }
@@ -197,17 +172,11 @@ class ErrorManager {
     return error;
   }
 
-  /**
-   * Convert regular Error to AppError
-   * @param {Error} error - Regular error
-   * @param {Object} context - Additional context
-   * @returns {AppError} Converted AppError
-   */
   convertToAppError(error, context = {}) {
     let type = ERROR_TYPES.SYSTEM;
     let severity = ERROR_SEVERITY.MEDIUM;
 
-    // Determine error type based on error message/properties
+    
     if (error.message?.includes('fetch') || error.message?.includes('network')) {
       type = ERROR_TYPES.NETWORK;
     } else if (error.message?.includes('GraphQL') || error.message?.includes('query')) {
@@ -220,30 +189,22 @@ class ErrorManager {
     return new AppError(error.message, type, severity, { context });
   }
 
-  /**
-   * Log error to internal log
-   * @param {AppError} error - Error to log
-   */
   logError(error) {
     this.errorLog.push({
       ...error.toJSON(),
       id: this.generateErrorId()
     });
 
-    // Maintain log size
+    
     if (this.errorLog.length > this.maxLogSize) {
       this.errorLog.shift();
     }
 
-    // Console logging for development
+    
     if (import.meta.env.DEV) {
     }
   }
 
-  /**
-   * Execute registered error handlers
-   * @param {AppError} error - Error to handle
-   */
   executeErrorHandlers(error) {
     const handlers = this.errorHandlers.get(error.type) || [];
     handlers.forEach(handler => {
@@ -254,10 +215,6 @@ class ErrorManager {
     });
   }
 
-  /**
-   * Provide user feedback through registered callbacks
-   * @param {AppError} error - Error to show to user
-   */
   provideUserFeedback(error) {
     this.userFeedbackCallbacks.forEach(callback => {
       try {
@@ -267,11 +224,6 @@ class ErrorManager {
     });
   }
 
-  /**
-   * Register error handler for specific error type
-   * @param {string} errorType - Error type to handle
-   * @param {Function} handler - Handler function
-   */
   registerErrorHandler(errorType, handler) {
     if (!this.errorHandlers.has(errorType)) {
       this.errorHandlers.set(errorType, []);
@@ -279,18 +231,10 @@ class ErrorManager {
     this.errorHandlers.get(errorType).push(handler);
   }
 
-  /**
-   * Register user feedback callback
-   * @param {Function} callback - Callback function
-   */
   registerUserFeedbackCallback(callback) {
     this.userFeedbackCallbacks.push(callback);
   }
 
-  /**
-   * Get error statistics
-   * @returns {Object} Error statistics
-   */
   getErrorStats() {
     const stats = {
       total: this.errorLog.length,
@@ -307,33 +251,18 @@ class ErrorManager {
     return stats;
   }
 
-  /**
-   * Clear error log
-   */
   clearErrorLog() {
     this.errorLog = [];
   }
 
-  /**
-   * Generate unique error ID
-   * @returns {string} Unique error ID
-   */
   generateErrorId() {
     return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  /**
-   * Report error to external service (placeholder)
-   * @param {AppError} error - Error to report
-   */
   reportError(error) {
-    // In a real application, this would send to an error reporting service
+    
   }
 
-  /**
-   * Create error boundary handler
-   * @returns {Function} Error boundary handler
-   */
   createErrorBoundaryHandler() {
     return (error, errorInfo) => {
       const appError = new AppError(
@@ -356,30 +285,27 @@ class ErrorManager {
 
 const errorManager = new ErrorManager();
 
-/**
- * Utility functions for error handling
- */
 export const ErrorUtils = {
-  // Get error manager instance
+  
   getInstance: () => errorManager,
   
-  // Handle error
+  
   handle: (error, context) => errorManager.handleError(error, context),
   
-  // Create AppError
+  
   create: (message, type, severity, options) => new AppError(message, type, severity, options),
   
-  // Register handlers
+  
   onError: (type, handler) => errorManager.registerErrorHandler(type, handler),
   onUserFeedback: (callback) => errorManager.registerUserFeedbackCallback(callback),
   
-  // Get statistics
+  
   getStats: () => errorManager.getErrorStats(),
   
-  // Clear log
+  
   clearLog: () => errorManager.clearErrorLog(),
   
-  // Create error boundary
+  
   createBoundary: () => errorManager.createErrorBoundaryHandler()
 };
 

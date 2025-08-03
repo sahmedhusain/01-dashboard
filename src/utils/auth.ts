@@ -1,13 +1,3 @@
-/**
- * Get both stored token and user data
- * @returns {{ token: string | null, user: object | null }}
- */
-export const getStoredAuthData = () => {
-  return {
-    token: getStoredToken(),
-    user: getStoredUser(),
-  };
-};
 import { jwtDecode } from 'jwt-decode';
 import config from '../config/appConfig';
 
@@ -37,24 +27,12 @@ export const GRAPHQL_ENDPOINT = config.api.graphqlEndpoint;
 export const TOKEN_KEY = config.auth.tokenKey;
 export const USER_KEY = config.auth.userKey;
 
-/**
- * Encode credentials for Basic authentication
- * @param {string} identifier - Username or email
- * @param {string} password - User password
- * @returns {string} Base64 encoded credentials
- */
-export const encodeCredentials = (identifier, password) => {
+export const encodeCredentials = (identifier: string, password: string) => {
   const credentials = `${identifier}:${password}`;
   return btoa(credentials);
 };
 
-/**
- * Authenticate user with the signin endpoint
- * @param {string} identifier - Username or email
- * @param {string} password - User password
- * @returns {Promise<{token: string, user: object}>} Authentication result
- */
-export const authenticateUser = async (identifier, password) => {
+export const authenticateUser = async (identifier: string, password: string) => {
   try {
     const encodedCredentials = encodeCredentials(identifier, password);
     
@@ -84,29 +62,19 @@ export const authenticateUser = async (identifier, password) => {
       throw new Error('No token received from server');
     }
 
-    // Clean the token (remove any whitespace or quotes)
     const cleanToken = token.trim().replace(/^["']|["']$/g, '');
 
-    // Debug logging in development
-    if (import.meta.env.DEV) {
-    }
-
-    // Validate token format (basic JWT structure check)
     if (!cleanToken.includes('.') || cleanToken.split('.').length !== 3) {
       throw new Error('Invalid token format received from server');
     }
 
-    // Additional validation
     if (!isValidTokenFormat(cleanToken)) {
       throw new Error('Token format validation failed');
     }
 
-    // Decode JWT to get user ID only
     const decodedToken = jwtDecode(cleanToken) as any;
     const userId = parseInt(decodedToken.sub, 10);
 
-    // Create minimal user object with just ID and token metadata
-    // The actual user data should be fetched separately using GraphQL
     const user = {
       id: userId,
       exp: decodedToken.exp,
@@ -122,18 +90,10 @@ export const authenticateUser = async (identifier, password) => {
   }
 };
 
-/**
- * Complete authentication with user data fetching
- * @param {string} identifier - Username or email
- * @param {string} password - User password
- * @returns {Promise<{token: string, user: object}>} Authentication result with complete user data
- */
-export const authenticateUserComplete = async (identifier, password) => {
+export const authenticateUserComplete = async (identifier: string, password: string) => {
   try {
-    // First, authenticate and get token
     const authResult = await authenticateUser(identifier, password);
 
-    // Then fetch complete user data
     const completeUser = await fetchUserData(authResult.user.id, authResult.token);
 
     return {
@@ -146,13 +106,7 @@ export const authenticateUserComplete = async (identifier, password) => {
   }
 };
 
-/**
- * Fetch complete user data from GraphQL API
- * @param {number} userId - User ID
- * @param {string} token - JWT token for authorization
- * @returns {Promise<object>} Complete user data
- */
-export const fetchUserData = async (userId, token) => {
+export const fetchUserData = async (userId: number, token: string) => {
   try {
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: 'POST',
@@ -186,13 +140,7 @@ export const fetchUserData = async (userId, token) => {
   }
 };
 
-/**
- * Store authentication data in localStorage (compatible with Zustand persist)
- * @param {string} token - JWT token
- * @param {object} user - User data
- */
-export const storeAuthData = (token, user) => {
-  // Store in Zustand persist format for compatibility
+export const storeAuthData = (token: string, user: any) => {
   const zustandData = {
     state: {
       token,
@@ -203,23 +151,16 @@ export const storeAuthData = (token, user) => {
   };
   localStorage.setItem(TOKEN_KEY, JSON.stringify(zustandData));
 
-  // Also store separately for backward compatibility
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 };
 
-/**
- * Get stored authentication token
- * @returns {string|null} JWT token or null if not found
- */
 export const getStoredToken = () => {
   try {
-    // First try to get from direct storage (new format)
     const directToken = localStorage.getItem(TOKEN_KEY);
     if (directToken && !directToken.startsWith('{')) {
       return directToken;
     }
 
-    // Then try Zustand persist format (legacy)
     if (directToken) {
       const data = JSON.parse(directToken);
       return data.state?.token ?? null;
@@ -231,19 +172,13 @@ export const getStoredToken = () => {
   }
 };
 
-/**
- * Get stored user data
- * @returns {object|null} User data or null if not found
- */
 export const getStoredUser = () => {
   try {
-    // First try to get from direct storage (new format)
     const directUser = localStorage.getItem(USER_KEY);
     if (directUser) {
       return JSON.parse(directUser);
     }
 
-    // Then try Zustand persist format (legacy) - check TOKEN_KEY for combined storage
     const persisted = localStorage.getItem(TOKEN_KEY);
     if (persisted && persisted.startsWith('{')) {
       const data = JSON.parse(persisted);
@@ -251,27 +186,27 @@ export const getStoredUser = () => {
     }
 
     return null;
-  } catch (e) {
+  } catch {
     return null;
   }
 };
 
-/**
- * Validate JWT token format
- * @param {string} token - JWT token
- * @returns {boolean} True if token format is valid
- */
-export const isValidTokenFormat = (token) => {
+export const getStoredAuthData = () => {
+  return {
+    token: getStoredToken(),
+    user: getStoredUser(),
+  };
+};
+
+export const isValidTokenFormat = (token: string) => {
   if (!token || typeof token !== 'string') return false;
 
   const parts = token.split('.');
   if (parts.length !== 3) return false;
 
-  // Check if each part is valid base64url
   try {
     parts.forEach(part => {
       if (!part) throw new Error('Empty part');
-      // Basic base64url validation
       if (!/^[A-Za-z0-9_-]+$/.test(part)) throw new Error('Invalid characters');
     });
     return true;
@@ -280,12 +215,7 @@ export const isValidTokenFormat = (token) => {
   }
 };
 
-/**
- * Check if token is expired
- * @param {string} token - JWT token
- * @returns {boolean} True if token is expired
- */
-export const isTokenExpired = (token) => {
+export const isTokenExpired = (token: string) => {
   try {
     if (!isValidTokenFormat(token)) return true;
 
@@ -297,10 +227,6 @@ export const isTokenExpired = (token) => {
   }
 };
 
-/**
- * Check if user is authenticated
- * @returns {boolean} True if user is authenticated with valid token
- */
 export const isAuthenticated = () => {
   const token = getStoredToken();
   if (!token) return false;
@@ -308,21 +234,13 @@ export const isAuthenticated = () => {
   return !isTokenExpired(token);
 };
 
-/**
- * Clear authentication data
- */
 export const clearAuthData = () => {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
-  // Also clear any other auth-related keys
   localStorage.removeItem('auth-storage');
   localStorage.removeItem('dashboard-preferences');
 };
 
-/**
- * Get authorization header for API requests
- * @returns {object} Authorization header object
- */
 export const getAuthHeader = () => {
   const token = getStoredToken();
 
@@ -345,21 +263,12 @@ export const getAuthHeader = () => {
   };
 };
 
-/**
- * Validate email format
- * @param {string} email - Email to validate
- * @returns {boolean} True if email is valid
- */
-export const isValidEmail = (email) => {
+export const isValidEmail = (email: string) => {
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
-/**
- * Determine if identifier is email or username
- * @param {string} identifier - User input
- * @returns {string} 'email' or 'username'
- */
-export const getIdentifierType = (identifier) => {
+export const getIdentifierType = (identifier: string) => {
   return isValidEmail(identifier) ? 'email' : 'username';
 };

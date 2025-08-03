@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import { User as UserType } from '../../../types'
 import {
   User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, TrendingUp,
-  Phone, CreditCard, Heart, Home, Shield, FileText, UserCheck, AlertTriangle,
-  Briefcase, Building, ExternalLink, Github, Linkedin, Globe, UserCog, Tag
+  Phone, CreditCard, Heart, Shield, UserCheck,
+  Briefcase, UserCog
 } from 'lucide-react'
 import Avatar from '../../ui/Avatar'
 import {
@@ -13,9 +13,76 @@ import {
 } from '../../../utils/dataFormatting'
 import { useToken } from '../../../store'
 
+interface AnalyticsData {
+  user: UserType;
+  performance: {
+    notation: string;
+    badge?: string;
+  };
+  level: {
+    current: number;
+    progress: number;
+    progressInKB?: number;
+    remainingInKB?: number;
+  };
+  xp: {
+    total: number;
+    average: number;
+    bhModule?: number;
+    piscines?: number;
+  };
+  audits: {
+    totalUp: number;
+    totalDown: number;
+    ratio: number;
+    received: number;
+    given: number;
+  };
+  projects: {
+    passed: number;
+    failed: number;
+    total: number;
+    bhModule?: number;
+    piscines?: number;
+  };
+  skills: {
+    total: number;
+  };
+  groups: {
+    captain: number;
+    member: number;
+    captained?: number;
+    total?: number;
+  };
+  moduleData?: any;
+  rawData: {
+    events: Array<{
+      id: number;
+      createdAt: string;
+      event?: {
+        path: string;
+      };
+    }>;
+    userLabels?: Array<{
+      id: number;
+      label: {
+        name: string;
+        description: string;
+      };
+    }>;
+    userRoles?: Array<{
+      id: number;
+      role: {
+        name: string;
+        description: string;
+      };
+    }>;
+  };
+}
+
 interface ProfileSectionProps {
   user: UserType
-  analytics: any
+  analytics: AnalyticsData
 }
 
 const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
@@ -32,7 +99,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
   const personalInfo = extractPersonalInfo(userData.attrs || {});
 
-    // Find BH module joining date from event_user data
+    
   const bhModuleJoinInfo = React.useMemo(() => {
 
     if (!analytics?.rawData?.events) {
@@ -40,8 +107,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
     }
     
     
-    // Find the BH module event (path: "/bahrain/bh-module") or similar main curriculum events
-    const bhModuleEvent = analytics.rawData.events.find((eventUser: any) => 
+    
+    const bhModuleEvent = analytics.rawData.events.find((eventUser) => 
       eventUser.event?.path === '/bahrain/bh-module' || 
       eventUser.event?.path?.includes('bh-module')
     )
@@ -54,10 +121,10 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
       }
     }
     
-    // Fallback: find the earliest event joining date as program start date
+    
     const earliestEvent = analytics.rawData.events
-      .filter((eventUser: any) => eventUser.createdAt)
-      .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
+      .filter((eventUser) => eventUser.createdAt)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())[0]
     
     if (earliestEvent) {
       return {
@@ -134,7 +201,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     </div>
                     {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        {analytics.rawData.userLabels.map((userLabel: any) => (
+                        {analytics.rawData.userLabels.map((userLabel) => (
                           <div
                             key={userLabel.id}
                             className="bg-cyan-400/20 px-3 py-1 rounded-lg border border-cyan-400/30"
@@ -359,7 +426,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 </h3>
 
                 <div className="flex flex-wrap gap-2">
-                  {analytics.rawData.userRoles.map((userRole: any) => (
+                  {analytics.rawData.userRoles.map((userRole) => (
                     <div
                       key={userRole.id}
                       className="bg-yellow-400/20 px-3 py-2 rounded-lg border border-yellow-400/30"

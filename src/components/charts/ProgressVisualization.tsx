@@ -6,7 +6,7 @@ import { formatGradeDetailed } from '../../utils/dataFormatting'
 interface ProgressItem {
   id: string
   name: string
-  progress: number // 0-100
+  progress: number 
   status: 'completed' | 'in-progress' | 'failed' | 'pending'
   xp?: number
   grade?: number

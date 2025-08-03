@@ -51,7 +51,7 @@ export const calculateXPSummary = (
 ): XPSummary => {
   const bhModuleXP = bhTransactions.reduce((sum, t) => sum + t.amount, 0)
   
-  // Group piscine XP by type
+  
   const piscineXP: Record<string, number> = {}
   piscineTransactions.forEach(transaction => {
     const path = transaction.path || ''
@@ -66,7 +66,7 @@ export const calculateXPSummary = (
   })
   
   const totalXP = bhModuleXP + Object.values(piscineXP).reduce((sum, xp) => sum + xp, 0)
-  const level = Math.floor(totalXP / 1000) // 1000 XP per level
+  const level = Math.floor(totalXP / 1000) 
   const projectCount = bhTransactions.length
   const averageXP = projectCount > 0 ? bhModuleXP / projectCount : 0
   
@@ -81,7 +81,7 @@ export const calculateXPSummary = (
 }
 
 export const createXPProgressionData = (transactions: any[]): XPProgressionData[] => {
-  // Sort transactions by date
+  
   const sortedTransactions = [...transactions].sort(
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   )
@@ -135,7 +135,7 @@ export const calculateXPGrowthRate = (transactions: any[], days: number = 30): n
   )
   
   const totalXP = recentTransactions.reduce((sum, t) => sum + t.amount, 0)
-  return totalXP / days // XP per day
+  return totalXP / days 
 }
 
 export const getXPMilestones = (currentXP: number): { 

@@ -99,7 +99,7 @@ interface EnhancedUser {
   createdAt?: string
   rank?: number
   userLabels?: UserLabel[]
-  labelNames?: string[] // Array of label names for easy display
+  labelNames?: string[] 
 }
 
 
@@ -107,43 +107,43 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const [activeLeaderboard, setActiveLeaderboard] = useState<LeaderboardType>('level')
   const [cohortFilter, setCohortFilter] = useState<CohortFilter>('all')
   const [searchTerm, setSearchTerm] = useState('')
-  const [cohortSearchTerm, setCohortSearchTerm] = useState('') // New state for cohort search
+  const [cohortSearchTerm, setCohortSearchTerm] = useState('') 
   const [minLevel, setMinLevel] = useState(1)
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [limit, setLimit] = useState(100)
 
-  // Use comprehensive query that tries multiple approaches in one call
+  
   const { data: comprehensiveData, loading: comprehensiveLoading } = useQuery(GET_COMPREHENSIVE_LEADERBOARD_DATA, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network'
   })
 
-  // Separate query for ALL user labels (public data)
+  
   const { data: labelData, loading: labelLoading } = useQuery(GET_ALL_LABEL_USERS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network'
   })
 
-  // Query for all available labels to build dynamic cohort mapping
+  
   const { data: allLabelsData, loading: allLabelsLoading } = useQuery(GET_ALL_LABELS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network'
   })
 
-  // Extract and normalize cohort labels from available labels
+  
   const cohortLabels = useMemo(() => {
     const availableLabels = allLabelsData?.label || []
     
-    // Filter labels that contain "cohort" (case-insensitive)
+    
     const cohortLabels = availableLabels.filter((label: { name: string }) => 
       label.name.toLowerCase().includes('cohort')
     ).map((label: { id: number, name: string, description?: string }) => {
       const labelName = label.name.toLowerCase()
       
-      // Normalize cohort names - merge Cohort4 variants
+      
       let normalizedName = label.name
       if (labelName.includes('cohort4') || labelName.includes('cohort-4')) {
-        normalizedName = "Cohort 4" // Merge all Cohort4-SP variants
+        normalizedName = "Cohort 4" 
       } else if (labelName.includes('cohort1')) {
         normalizedName = "Cohort 1"
       } else if (labelName.includes('cohort2')) {
@@ -159,7 +159,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       }
     })
     
-    // Remove duplicates after normalization (keep the first occurrence)
+    
     const uniqueCohortLabels = cohortLabels.filter((label, index, array) => 
       array.findIndex(l => l.name === label.name) === index
     )
@@ -168,29 +168,29 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     return uniqueCohortLabels
   }, [allLabelsData?.label])
 
-  // Create event ID to cohort mapping dynamically from label descriptions
+  
   const eventToCohortMapping = useMemo(() => {
     const mapping = new Map<number, string>()
     
     
-    // Extract event IDs from label descriptions dynamically
+    
     if (allLabelsData?.label) {
       
       allLabelsData.label.forEach(label => {
         const labelName = label.name.toLowerCase()
         const description = label.description || ""
         
-        // Skip non-cohort labels
+        
         if (!labelName.includes('cohort')) return
         
         
-        // Extract event ID from description using multiple patterns
+        
         const eventIdPatterns = [
-          /module #(\d+)/i,           // "module #763"
-          /event #(\d+)/i,            // "event #763"  
-          /event (\d+)/i,             // "event 763"
-          /#(\d+)/i,                  // "#763"
-          /id:?\s*(\d+)/i             // "id: 763" or "id763"
+          /module #(\d+)/i,           
+          /event #(\d+)/i,            
+          /event (\d+)/i,             
+          /#(\d+)/i,                  
+          /id:?\s*(\d+)/i             
         ]
         
         let eventId: number | null = null
@@ -203,10 +203,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         }
         
         if (eventId) {
-          // Normalize cohort names - merge Cohort4 variants into single cohort
+          
           let cohortName = label.name
           if (labelName.includes('cohort4') || labelName.includes('cohort-4')) {
-            cohortName = "Cohort 4" // Merge all Cohort4-SP variants (SP7&8, SP9, etc.)
+            cohortName = "Cohort 4" 
           } else if (labelName.includes('cohort1')) {
             cohortName = "Cohort 1"
           } else if (labelName.includes('cohort2')) {
@@ -220,7 +220,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       })
     }
     
-    // If no dynamic mappings found, log warning but don't use fallback
+    
     if (mapping.size === 0) {
       return mapping
     }
@@ -228,17 +228,17 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     return mapping
   }, [allLabelsData?.label])
 
-  // Create a map of all user labels for quick lookup (real labels + event-based cohorts)
+  
   const userLabelsMap = useMemo(() => {
     const map = new Map<number, UserLabelData[]>()
     
-    // Try multiple data sources for user labels
+    
     const labelFromDedicated = labelData?.label_user || []
     const labelFromComprehensive = comprehensiveData?.userLabels || []
     const allUserLabels = [...labelFromDedicated, ...labelFromComprehensive]
     
     
-    // Process direct database labels (only cohort labels) with normalization
+    
     allUserLabels.forEach((userLabel: UserLabelData) => {
       if (userLabel.label?.name?.toLowerCase().includes('cohort')) {
         const userId = userLabel.userId
@@ -246,13 +246,13 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           map.set(userId, [])
         }
         
-        // Normalize the label name for Cohort 4 variants
+        
         const originalLabel = userLabel.label
         const labelName = originalLabel.name.toLowerCase()
         let normalizedName = originalLabel.name
         
         if (labelName.includes('cohort4') || labelName.includes('cohort-4')) {
-          normalizedName = "Cohort 4" // Merge all Cohort4-SP variants
+          normalizedName = "Cohort 4" 
         } else if (labelName.includes('cohort1')) {
           normalizedName = "Cohort 1"
         } else if (labelName.includes('cohort2')) {
@@ -261,7 +261,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           normalizedName = "Cohort 3"
         }
         
-        // Create normalized label
+        
         const normalizedLabel: UserLabelData = {
           ...userLabel,
           label: {
@@ -274,7 +274,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       }
     })
     
-    // Add event-based cohort labels for ALL users (avoid duplicates with direct labels)
+    
     const allEventUsers = comprehensiveData?.allEventUsers || []
     
     allEventUsers.forEach((eventUser: { userId: number, eventId: number, createdAt?: string }) => {
@@ -287,20 +287,20 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           map.set(userId, [])
         }
         
-        // Check if user already has this NORMALIZED cohort label (avoid duplicates)
+        
         const existingLabels = map.get(userId) || []
         const alreadyHasLabel = existingLabels.some(label => {
-          // Compare normalized cohort names to avoid duplicates
+          
           const existingNormalizedName = label.label.name
           return existingNormalizedName === cohortName
         })
         
         if (!alreadyHasLabel) {
-          // Create a synthetic label for the event-based cohort
+          
           const syntheticLabel: UserLabelData = {
-            id: eventId * 1000000 + userId, // Create unique numeric ID
+            id: eventId * 1000000 + userId, 
             userId: userId,
-            labelId: eventId, // Use eventId as labelId for synthetic labels
+            labelId: eventId, 
             label: {
               id: eventId,
               name: cohortName,
@@ -312,7 +312,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       }
     })
     
-    // Final deduplication pass - remove any remaining duplicate cohort names per user
+    
     map.forEach((labels, userId) => {
       const seenCohortNames = new Set<string>()
       const uniqueLabels = labels.filter(label => {
@@ -330,9 +330,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     return map
   }, [labelData?.label_user, comprehensiveData?.userLabels, comprehensiveData?.allEventUsers, eventToCohortMapping])
 
-  // Enhanced debugging for leaderboard
+  
   React.useEffect(() => {
-    // Simplified effect
+    
   }, [comprehensiveLoading, comprehensiveData, labelLoading, labelData, allLabelsLoading, allLabelsData])
 
   const isLoading = comprehensiveLoading || labelLoading || allLabelsLoading
@@ -344,18 +344,18 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     }
 
 
-    // Create user data maps for quick lookup
+    
     const allUsersMap = new Map()
     const publicUsersMap = new Map()
 
-    // Process users with their basic data
+    
     if (comprehensiveData.allUsersWithEvents) {
       comprehensiveData.allUsersWithEvents.forEach((user: UserData) => {
         allUsersMap.set(user.id, user)
       })
     }
 
-    // Fallback to public users data (names/logins only)
+    
     if (comprehensiveData.publicUsers) {
       comprehensiveData.publicUsers.forEach((user: UserData) => {
         publicUsersMap.set(user.id, user)
@@ -372,34 +372,34 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         return null
       }
 
-      // Try to get additional user data (names, profile, etc.)
+      
       let userData = allUsersMap.get(userId)
       
-      // If not available, try public user data (names/logins only)
+      
       if (!userData) {
         userData = publicUsersMap.get(userId)
       }
 
-      // Get real user labels from the API - FILTER TO ONLY COHORT LABELS
+      
       const realUserLabels = userLabelsMap.get(userId) || []
       const cohortUserLabels = realUserLabels.filter(userLabel => 
         userLabel.label?.name?.toLowerCase().includes('cohort')
       )
       
-      // Use only cohort labels for display
+      
       const cohortLabelNames = cohortUserLabels.map(userLabel => userLabel.label.name)
       
-      // Use the first cohort label as primary cohort, or "No Cohort" if none
+      
       let cohort = 'No Cohort'
       if (cohortLabelNames.length > 0) {
-        cohort = cohortLabelNames[0] // Use first cohort label as primary cohort
+        cohort = cohortLabelNames[0] 
       }
       
-      // Use only cohort labels from label_user table
+      
       const combinedLabels = cohortUserLabels
 
       if (!userData) {
-        // Use basic data with userLogin and userName from event_user
+        
         const nameParts = userName ? userName.split(' ') : []
         return {
           id: userId,
@@ -417,15 +417,15 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           eventPath: '/bahrain/bh-module',
           createdAt: eventUserView.createdAt,
           rank: index + 1,
-          userLabels: combinedLabels, // Use combined cohort labels only
-          labelNames: cohortLabelNames // Array of cohort label names for filtering and display
+          userLabels: combinedLabels, 
+          labelNames: cohortLabelNames 
         }
       }
 
 
-      // Enhanced logging for users with cohort labels
+      
       if (index < 10) {
-        // Processing user data
+        
       }
 
       return {
@@ -435,7 +435,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         lastName: userData.lastName || '',
         profile: userData.profile || '',
         attrs: userData.attrs || {},
-        auditRatio: userAuditRatio, // Use audit ratio directly from event_user
+        auditRatio: userAuditRatio, 
         totalUp: userData.totalUp || 0,
         totalDown: userData.totalDown || 0,
         level: eventUserView.level || 0,
@@ -444,24 +444,24 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
         eventPath: '/bahrain/bh-module',
         createdAt: userData.createdAt || eventUserView.createdAt,
         rank: index + 1,
-        userLabels: combinedLabels, // Use actual cohort labels from the API only
-        labelNames: cohortLabelNames // Array of cohort label names for easy display and filtering
+        userLabels: combinedLabels, 
+        labelNames: cohortLabelNames 
       }
     }).filter(Boolean) as EnhancedUser[]
   }, [comprehensiveData, userLabelsMap])
 
-    // Extract available cohorts from processed users (based on real labels only)
+    
     const availableCohorts = useMemo((): string[] => {
       const cohorts = new Set<string>(['all'])
       
-      // Add cohorts from all user labels (only real labels from database)
+      
       processedUsers.forEach(user => {
         if (user.labelNames && user.labelNames.length > 0) {
           user.labelNames.forEach(label => {
             cohorts.add(label)
           })
         }
-        // Also add the cohort field if it exists
+        
         if (user.cohort && user.cohort !== 'No Cohort') {
           cohorts.add(user.cohort)
         }
@@ -470,19 +470,19 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       const cohortArray = Array.from(cohorts).sort()
       return cohortArray
     }, [processedUsers])
-  // Sort and filter users
+  
   const filteredAndSortedUsers = useMemo(() => {
     let users = [...processedUsers]
     
-    // Apply cohort filter
+    
     if (cohortFilter !== 'all') {
       users = users.filter(user => {
-        // Check if user has the selected label/cohort
+        
         return user.labelNames?.includes(cohortFilter) || user.cohort === cohortFilter
       })
     }
     
-    // Apply general search filter (names/login)
+    
     if (searchTerm) {
       users = users.filter(user =>
         user.login.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -491,10 +491,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       )
     }
 
-    // Apply cohort-specific search filter
+    
     if (cohortSearchTerm) {
       users = users.filter(user => {
-        // Search in user's cohort labels
+        
         const userCohortLabels = user.userLabels?.filter(label => 
           label.label.name.toLowerCase().includes('cohort')
         ) || []
@@ -505,12 +505,12 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       })
     }
 
-    // Apply level filter
+    
     if (minLevel > 1) {
       users = users.filter(user => (user.level || 0) >= minLevel)
     }
 
-    // Sort based on active leaderboard type
+    
     users.sort((a, b) => {
       let aValue: number, bValue: number
       
@@ -531,14 +531,14 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       return sortOrder === 'desc' ? bValue - aValue : aValue - bValue
     })
 
-    // Preserve original ranks when searching/filtering - don't renumber positions
-    // This ensures users see their actual leaderboard position, not filtered position
+    
+    
     return users
   }, [processedUsers, cohortFilter, searchTerm, cohortSearchTerm, minLevel, activeLeaderboard, sortOrder])
 
-  // Get user's actual current rank in the complete leaderboard (not filtered position)
+  
   const currentUserRank = useMemo(() => {
-    // Create a sorted list based on the active leaderboard type using all processed users
+    
     const sortedUsers = [...processedUsers].sort((a, b) => {
       let aValue: number, bValue: number
       
@@ -556,17 +556,17 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           bValue = b.level || 0
       }
       
-      // Handle infinity values in audit ratio
+      
       if (activeLeaderboard === 'audit') {
         if (!isFinite(aValue)) aValue = 0
         if (!isFinite(bValue)) bValue = 0
       }
       
-      // Apply sort order
+      
       const comparison = sortOrder === 'desc' ? bValue - aValue : aValue - bValue
       if (comparison !== 0) return comparison
       
-      // Secondary sort by level for audit leaderboard, by login for level leaderboard
+      
       if (activeLeaderboard === 'audit') {
         const secondaryComparison = sortOrder === 'desc' ? (b.level || 0) - (a.level || 0) : (a.level || 0) - (b.level || 0)
         if (secondaryComparison !== 0) return secondaryComparison
@@ -575,14 +575,14 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       return a.login.localeCompare(b.login)
     })
     
-    // Find user's position in the complete sorted leaderboard
+    
     const userIndex = sortedUsers.findIndex(u => u.id === user.id)
     return userIndex >= 0 ? userIndex + 1 : null
   }, [processedUsers, user.id, activeLeaderboard, sortOrder])
 
-  // Helper function to get actual position for any user in the complete leaderboard
+  
   const getActualUserPosition = useCallback((userId: number) => {
-    // Create sorted list of all users for current leaderboard type
+    
     const allSortedUsers = [...processedUsers].sort((a, b) => {
       let aValue: number, bValue: number
       
@@ -600,17 +600,17 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           bValue = b.level || 0
       }
       
-      // Handle infinity values in audit ratio
+      
       if (activeLeaderboard === 'audit') {
         if (!isFinite(aValue)) aValue = 0
         if (!isFinite(bValue)) bValue = 0
       }
       
-      // Apply sort order
+      
       const comparison = sortOrder === 'desc' ? bValue - aValue : aValue - bValue
       if (comparison !== 0) return comparison
       
-      // Secondary sort
+      
       if (activeLeaderboard === 'audit') {
         const secondaryComparison = sortOrder === 'desc' ? (b.level || 0) - (a.level || 0) : (a.level || 0) - (b.level || 0)
         if (secondaryComparison !== 0) return secondaryComparison
@@ -619,7 +619,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
       return a.login.localeCompare(b.login)
     })
     
-    // Find user's actual position
+    
     const userIndex = allSortedUsers.findIndex(u => u.id === userId)
     return userIndex >= 0 ? userIndex + 1 : null
   }, [processedUsers, activeLeaderboard, sortOrder])
@@ -628,7 +628,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   const maxLevel = comprehensiveData?.bhModuleStats?.aggregate?.max?.level || Math.max(...processedUsers.map(u => u.level || 0), 0)
   const avgLevel = comprehensiveData?.bhModuleStats?.aggregate?.avg?.level || (processedUsers.reduce((sum, u) => sum + (u.level || 0), 0) / Math.max(totalUsers, 1))
   
-  // Calculate average audit ratio excluding infinity values
+  
   const validAuditRatios = processedUsers
     .map(u => Number(u.auditRatio) || 0)
     .filter(ratio => isFinite(ratio) && ratio > 0)
@@ -636,7 +636,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     ? validAuditRatios.reduce((sum, ratio) => sum + ratio, 0) / validAuditRatios.length 
     : 0
 
-  // Helper functions
+  
   const getCohortDisplayName = (cohort: string) => {
     if (cohort === 'all') return 'All Cohorts'
     return cohort.charAt(0).toUpperCase() + cohort.slice(1)
@@ -682,7 +682,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     }
   }
 
-  // Loading and error states
+  
   if (isLoading) return <LoadingSpinner />
 
   if (hasError) {
@@ -969,7 +969,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {filteredAndSortedUsers.slice(0, limit).map((userData: EnhancedUser, index: number) => {
-              // Get actual position in complete leaderboard for current leaderboard type
+              
               const position = getActualUserPosition(userData.id) || (index + 1)
               const isCurrentUser = userData.id === user.id
               const displayData = getValueDisplay(userData)
@@ -1089,7 +1089,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   )
 }
 
-// Enhanced Stat Card Component
+
 const StatCard = ({ 
   icon: Icon, 
   title, 

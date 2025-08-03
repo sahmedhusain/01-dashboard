@@ -32,7 +32,7 @@ const DataDistributionChart: React.FC<DataDistributionChartProps> = ({
     '#FB7185', '#38BDF8', '#4ADE80', '#FACC15', '#F472B6'
   ]
 
-  // Calculate percentages and add colors
+  
   const total = data.reduce((sum, item) => sum + item.value, 0)
   const processedData = data
     .map((item, index) => ({

@@ -112,29 +112,29 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'all' | 'by-type' | 'hierarchy' | 'availability'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  // Campus filtering removed - all objects are Bahrain-based
+  
   const [selectedObject, setSelectedObject] = useState<number | null>(null);
   const [expandedObjects, setExpandedObjects] = useState<Set<number>>(new Set());
 
-  // Query all objects
+  
   const { data: objectsData, loading: objectsLoading, error: objectsError } = useQuery(GET_ALL_OBJECTS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query object types
+  
   const { data: typesData, loading: typesLoading } = useQuery(GET_OBJECT_TYPES, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query object availability
+  
   const { data: availabilityData, loading: availabilityLoading } = useQuery(GET_OBJECT_AVAILABILITY, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query object children for selected object
+  
   const { data: childrenData, loading: childrenLoading } = useQuery(GET_OBJECT_CHILDREN, {
     variables: { parentId: selectedObject || 0 },
     skip: !selectedObject,
@@ -162,11 +162,11 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
   const totalAvailability = availabilityData?.object_availability_aggregate?.aggregate?.count || 0;
   const children = childrenData?.object_child || [];
 
-  // Filter objects based on view and filters
+  
   const getFilteredObjects = () => {
     let filtered = objects;
 
-    // Apply search filter
+    
     if (searchTerm) {
       filtered = filtered.filter((obj: any) => 
         obj.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -174,21 +174,21 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
       );
     }
 
-    // Apply type filter
+    
     if (typeFilter !== 'all') {
       filtered = filtered.filter((obj: any) => obj.type === typeFilter);
     }
 
-    // Apply campus filter
-    // All objects are Bahrain-based by default
+    
+    
 
     return filtered;
   };
 
-  // Get unique campuses for filter
+  
   const uniqueCampuses = [...new Set(objects.map((obj: any) => obj.campus).filter(Boolean))];
 
-  // Get object icon based on type
+  
   const getObjectIcon = (type: string) => {
     switch (type?.toLowerCase()) {
       case 'project': return Code;
@@ -201,7 +201,7 @@ const ObjectSection: React.FC<ObjectSectionProps> = ({ user }) => {
     }
   };
 
-  // Get object color based on type
+  
   const getObjectColor = (type: string) => {
     switch (type?.toLowerCase()) {
       case 'project': return 'text-blue-400 bg-blue-400/20';

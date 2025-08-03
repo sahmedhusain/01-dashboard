@@ -118,12 +118,12 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination when filters change
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedView, searchTerm, statusFilter]);
 
-  // Helper functions for path parsing
+  
   const extractEventName = (path: string) => {
     if (!path) return 'Unknown Event';
     const parts = path.split('/').filter(part => part);
@@ -148,7 +148,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     return 'Module';
   };
 
-  // Query all events
+  
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useQuery(ALL_EVENTS_QUERY, {
     variables: {
       limit: itemsPerPage,
@@ -158,20 +158,20 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
-  // Query user's event participation
+  
   const { data: userEventsData, loading: userEventsLoading } = useQuery(USER_EVENT_PARTICIPATION_QUERY, {
     variables: { userId: user.id },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query event user view statistics
+  
   const { data: eventStatsData } = useQuery(EVENT_USER_VIEW_QUERY, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query selected event participants
+  
   const { data: participantsData, loading: participantsLoading } = useQuery(EVENT_PARTICIPANTS_QUERY, {
     variables: { eventId: selectedEvent || 0 },
     skip: !selectedEvent,
@@ -179,7 +179,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
-  // Get user IDs from participants and query user data
+  
   const participantUserIds = participantsData?.event_user?.map((p: any) => p.userId) || [];
   
   const { data: participantUsersData, loading: participantUsersLoading } = useQuery(USERS_BY_IDS_QUERY, {
@@ -197,25 +197,25 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         events = eventsData?.event || [];
         break;
       case 'my-events':
-        // Use the nested event data directly from user's event participation
+        
         events = userEventsData?.event_user?.map((eu: any) => eu.event).filter(Boolean) || [];
         break;
       default:
         events = eventsData?.event || [];
     }
 
-    // Apply enhanced search filter (name, module, participants)
+    
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       events = events.filter((event: any) => {
-        // Search by event name
+        
         const eventName = extractEventName(event.path).toLowerCase();
-        // Search by module name
+        
         const moduleName = extractModuleName(event.path).toLowerCase();
-        // Search by path
+        
         const path = event.path?.toLowerCase() || '';
         
-        // Search by participants (if participant data is available)
+        
         let participantMatch = false;
         if (participantUsersData?.user_public_view) {
           participantMatch = participantUsersData.user_public_view.some((user: any) => 
@@ -233,7 +233,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
       });
     }
 
-    // Apply status filter
+    
     if (statusFilter !== 'all') {
       events = events.filter((event: any) => {
         const eventStatus = getEventStatus(event);
@@ -249,7 +249,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
     return new Date(endAt) > new Date();
   };
 
-  // Use standardized date formatting functions
+  
   const formatDate = formatDateUtil;
   const formatDateTime = formatDateTimeUtil;
 
@@ -550,7 +550,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                       </div>
                       <div className="max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
                         {participantsData?.event_user?.map((participant: any) => {
-                          // Find matching user data
+                          
                           const userData = participantUsersData?.user_public_view?.find((u: any) => u.id === participant.userId);
                           
                           return (

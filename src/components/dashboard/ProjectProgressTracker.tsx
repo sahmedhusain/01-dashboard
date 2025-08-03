@@ -127,20 +127,20 @@ const GET_PROJECT_PROGRESS = gql`
 const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user }) => {
   const [selectedView, setSelectedView] = useState<'projects' | 'all-progress' | 'completed'>('projects');
 
-  // Query project progress (existing)
+  
   const { data, loading, error } = useQuery(GET_PROJECT_PROGRESS, {
     variables: { userId: user.id },
     errorPolicy: 'all'
   });
 
-  // Query all user progress for complete view
+  
   const { data: allProgressData, loading: allProgressLoading } = useQuery(GET_ALL_USER_PROGRESS, {
     variables: { userId: user.id },
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
 
-  // Query progress by path view
+  
   const { data: pathViewData } = useQuery(GET_PROGRESS_BY_PATH_VIEW, {
     variables: { userId: user.id },
     errorPolicy: 'all',
@@ -154,12 +154,12 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
   const recentCompletions = data?.recent_completions || [];
   const projectStats = calculateProjectStats(progresses);
 
-  // Complete progress data
+  
   const allProgress = allProgressData?.progress || [];
   const progressStats = allProgressData?.progress_aggregate?.aggregate;
   const pathViewProgress = pathViewData?.progress_by_path_view || [];
 
-  // Enhanced statistics
+  
   const completeStats = {
     totalProgress: progressStats?.count || 0,
     averageGrade: progressStats?.avg?.grade || 0,
@@ -170,7 +170,7 @@ const ProjectProgressTracker: React.FC<ProjectProgressTrackerProps> = ({ user })
     pathCount: pathViewProgress.length
   };
 
-  // Calculate success rate trend (last 10 vs previous 10)
+  
   const recentProjects = progresses.slice(0, 10)
   const previousProjects = progresses.slice(10, 20)
   const recentSuccessRate = recentProjects.length > 0 

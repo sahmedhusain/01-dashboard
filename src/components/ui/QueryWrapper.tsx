@@ -37,7 +37,7 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({
 }) => {
   const { handleError } = useErrorHandler()
 
-  // Handle loading state
+  
   if (loading) {
     return (
       <div className={`${minHeight} ${className} flex items-center justify-center`}>
@@ -46,7 +46,7 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({
     )
   }
 
-  // Handle error state
+  
   if (error) {
     const errorInfo = handleError(error, 'Data loading failed')
     
@@ -63,7 +63,7 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({
     )
   }
 
-  // Handle empty data state
+  
   if (!data || (Array.isArray(data) && data.length === 0)) {
     if (emptyState) {
       return (
@@ -86,7 +86,7 @@ const QueryWrapper: React.FC<QueryWrapperProps> = ({
     )
   }
 
-  // Render children with data
+  
   return (
     <div className={className}>
       {children}

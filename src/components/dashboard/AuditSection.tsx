@@ -84,7 +84,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination when filters change
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, view]);
@@ -135,7 +135,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
     ];
 
     return allAudits.map(audit => {
-      // Find matching transaction by auditId in attrs
+      
       const matchingTransaction = transactionData.transaction.find((t: { attrs?: Record<string, unknown>; amount: number; type: string }) => {
         return t.attrs && t.attrs.auditId === audit.id;
       });
@@ -166,7 +166,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
 
   const totalPages = Math.ceil(totalAudits / itemsPerPage);
 
-  // Enhanced search functions
+  
   const extractProjectName = (path: string): string => {
     if (!path) return '';
     const parts = path.split('/');
@@ -184,21 +184,21 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
     
     const searchTermLower = searchTerm.toLowerCase();
     
-    // Search by project name (extracted from path)
+    
     const projectName = extractProjectName(audit.group?.path || '').toLowerCase();
     if (projectName.includes(searchTermLower)) return true;
     
-    // Search by full path
+    
     const fullPath = (audit.group?.path || '').toLowerCase();
     if (fullPath.includes(searchTermLower)) return true;
     
-    // Search by auditor (for received audits)
+    
     if (audit.auditor) {
       const auditorName = getAuditorName(audit).toLowerCase();
       if (auditorName.includes(searchTermLower)) return true;
     }
     
-    // Search by members (for given audits or any audit with member data)
+    
     if (audit.group?.members?.length && audit.group.members.length > 0) {
       const memberMatches = audit.group.members.some((member) => {
         const { login, firstName, lastName } = member.user;

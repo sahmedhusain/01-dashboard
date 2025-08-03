@@ -45,7 +45,7 @@ interface RefreshProviderProps {
 
 export const RefreshProvider: React.FC<RefreshProviderProps> = ({
   children,
-  defaultAutoRefreshInterval = 60000, // 1 minute
+  defaultAutoRefreshInterval = 60000, 
   enableNetworkDetection = true,
   showRefreshNotifications = true
 }) => {
@@ -75,7 +75,7 @@ export const RefreshProvider: React.FC<RefreshProviderProps> = ({
       
       refreshTimesRef.current.push(duration)
       if (refreshTimesRef.current.length > 10) {
-        refreshTimesRef.current.shift() // Keep only last 10 refresh times
+        refreshTimesRef.current.shift() 
       }
       
       const averageRefreshTime = refreshTimesRef.current.reduce((a, b) => a + b, 0) / refreshTimesRef.current.length

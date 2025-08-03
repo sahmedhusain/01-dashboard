@@ -1,17 +1,7 @@
-/**
- * URL State Management Hook
- * Provides easy URL state management for components
- */
 
 import { useCallback } from 'react';
 import { useTabRouting } from '../utils/routing';
 
-/**
- * Hook for managing component state via URL parameters
- * @param {Object} defaultState - Default state values
- * @param {Object} options - Configuration options
- * @returns {Object} State management utilities
- */
 interface UseUrlStateOptions {
   serialize?: (value: any) => string;
   deserialize?: (value: string) => any;
@@ -42,7 +32,7 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
       const urlKey = prefix ? `${prefix}_${key}` : key;
       if (queryParams[urlKey] !== undefined) {
         try {
-          // Try to deserialize complex values
+          
           if (typeof defaultState[key] === 'object') {
             state[key] = deserialize(queryParams[urlKey]);
           } else {
@@ -56,7 +46,7 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
             }
           }
         } catch {
-          // Keep default value if parsing fails
+          
           state[key] = defaultState[key];
         }
       }
@@ -65,7 +55,7 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
     return state;
   }, [getQueryParams, defaultState, prefix, deserialize]);
 
-  // Update state in URL
+  
   const updateState = useCallback((newState) => {
     const currentParams = getQueryParams();
     const updatedParams = { ...currentParams };
@@ -74,10 +64,10 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
       const urlKey = prefix ? `${prefix}_${key}` : key;
       
       if (value === defaultState[key] || value === null || value === undefined) {
-        // Remove parameter if it's the default value
+        
         delete updatedParams[urlKey];
       } else {
-        // Serialize complex values
+        
         if (typeof value === 'object') {
           updatedParams[urlKey] = serialize(value);
         } else {
@@ -89,17 +79,17 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
     updateQueryParams(updatedParams);
   }, [getQueryParams, updateQueryParams, defaultState, prefix, serialize]);
 
-  // Update single state value
+  
   const updateStateValue = useCallback((key, value) => {
     updateState({ [key]: value });
   }, [updateState]);
 
-  // Reset state to defaults
+  
   const resetState = useCallback(() => {
     const currentParams = getQueryParams();
     const updatedParams = { ...currentParams };
 
-    // Remove all prefixed parameters
+    
     Object.keys(defaultState).forEach(key => {
       const urlKey = prefix ? `${prefix}_${key}` : key;
       delete updatedParams[urlKey];
@@ -114,7 +104,7 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
     updateStateValue,
     resetState,
     
-    // Utility functions
+    
     hasChanges: () => {
       const current = getCurrentState();
       return JSON.stringify(current) !== JSON.stringify(defaultState);
@@ -140,9 +130,6 @@ export const useUrlState = (defaultState: any = {}, options: UseUrlStateOptions 
   };
 };
 
-/**
- * Specialized hooks for common URL state patterns
- */
 
 export const useUrlPagination = (defaultPage = 1, defaultPageSize = 10) => {
   return useUrlState(
@@ -173,9 +160,6 @@ export const useUrlView = (defaultView = 'list') => {
   return useUrlState({ view: defaultView }, { prefix: 'view' });
 };
 
-/**
- * Combined hook for common component patterns
- */
 interface ComponentStateConfig {
   pagination?: { page: number; pageSize: number };
   filters?: Record<string, any>;
@@ -206,7 +190,7 @@ export const useUrlComponentState = (config: ComponentStateConfig = {}) => {
     sorting: sortingState,
     view: viewState,
     
-    // Reset all states
+    
     resetAll: () => {
       paginationState.resetState();
       filtersState.resetState();
@@ -215,7 +199,7 @@ export const useUrlComponentState = (config: ComponentStateConfig = {}) => {
       viewState.resetState();
     },
     
-    // Check if any state has changes
+    
     hasAnyChanges: () => {
       return paginationState.hasChanges() ||
              filtersState.hasChanges() ||

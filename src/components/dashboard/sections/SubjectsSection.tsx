@@ -4,10 +4,8 @@ import { Book, Search, Code, FileText, ExternalLink, Target, Users, Star, Folder
 import { useQuery, gql } from '@apollo/client';
 import { marked } from 'marked';
 
-// GraphQL query to fetch ALL BH projects with complete metadata
 const GET_ALL_BH_PROJECTS = gql`
   query GetAllBHProjects {
-    # Get all BH paths (modules and piscines)
     path(
       where: { 
         _or: [
@@ -21,14 +19,11 @@ const GET_ALL_BH_PROJECTS = gql`
       updatedAt
     }
     
-    # Get objects data with complete metadata (including modules for hierarchy extraction)
-    # Expanded query to capture more exercises and projects with all necessary attributes
     object(
       where: {
         _and: [
           { campus: { _eq: "bahrain" } },
           { type: { _in: ["exercise", "project", "module"] } },
-          # Ensure we get objects that have meaningful content
           {
             _or: [
               { type: { _eq: "module" } }, # Always include modules for hierarchy
@@ -51,7 +46,6 @@ const GET_ALL_BH_PROJECTS = gql`
       createdAt
       updatedAt
       authorId
-      # Include events to get path relationships
       events {
         id
         path
@@ -146,10 +140,8 @@ const SubjectsSection: React.FC = () => {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['piscine-go']));
   const [activeTab, setActiveTab] = useState<'readme' | 'audit'>('readme');
 
-  // Fetch ALL BH projects from GraphQL
   const { data, loading, error } = useQuery(GET_ALL_BH_PROJECTS);
 
-  // Function to determine difficulty based on project attributes
   const getDifficulty = (projectObject: ProjectObject): 'Beginner' | 'Intermediate' | 'Advanced' => {
     const allowedFunctions = projectObject.attrs.allowedFunctions?.length || 0;
     const expectedFiles = projectObject.attrs.expectedFiles?.length || 0;
@@ -160,21 +152,27 @@ const SubjectsSection: React.FC = () => {
     return 'Advanced';
   };
 
-  // Memoize the project hierarchy extraction to prevent infinite loops
   const projectHierarchy = useMemo(() => {
     if (!data?.object) return {};
     
     const hierarchy: { [key: string]: string } = {};
     
-    // Find Div 01 module which contains the main project structure
+    const modules = data.object.filter((obj: ProjectObject) => obj.type === 'module');
+    console.log('🔍 Available modules:', modules.map((m: ProjectObject) => ({ id: m.id, name: m.name })));
+    
     const div01Module = data.object.find((obj: ProjectObject) => 
       obj.type === 'module' && 
       obj.name === 'Div 01'
     );
     
+    console.log('🔍 Div 01 module found:', !!div01Module);
+    if (div01Module) {
+      console.log('🔍 Div 01 structure:', div01Module.attrs?.graph?.innerCircle ? 'Has innerCircle' : 'No innerCircle');
+    }
+    
     if (div01Module?.attrs?.graph?.innerCircle) {
+      console.log('🔍 Found Div 01 module, extracting project hierarchy...');
       
-      // Define types for the graph structure
       interface GraphSlice {
         innerArc?: {
           contents?: unknown[];
@@ -188,14 +186,14 @@ const SubjectsSection: React.FC = () => {
         const processContents = (contents: unknown[]) => {
           contents.forEach((item: unknown) => {
             if (typeof item === 'string') {
-              // Simple standalone project - no parent mapping needed
+              console.log(`📁 Standalone project: ${item}`);
             } else if (typeof item === 'object' && item !== null) {
-              // Parent project with nested children
               Object.keys(item).forEach(parentName => {
                 const children = (item as Record<string, unknown>)[parentName];
                 if (Array.isArray(children)) {
                   children.forEach((childName: string) => {
                     hierarchy[childName] = `${parentName}/${childName}`;
+                    console.log(`📁 Mapped: ${childName} → ${parentName}/${childName}`);
                   });
                 }
               });
@@ -203,12 +201,10 @@ const SubjectsSection: React.FC = () => {
           });
         };
         
-        // Process inner arc contents
         if (slice.innerArc?.contents) {
           processContents(slice.innerArc.contents);
         }
         
-        // Process outer arcs contents
         if (slice.outerArcs) {
           slice.outerArcs.forEach((arc) => {
             if (arc.contents) {
@@ -219,11 +215,11 @@ const SubjectsSection: React.FC = () => {
       });
     }
     
+    console.log(`🎯 Extracted ${Object.keys(hierarchy).length} project mappings from Div 01 module`);
     
-    // If no hierarchy was extracted, provide fallback essential mappings
     if (Object.keys(hierarchy).length === 0) {
+      console.log('⚠️ No module hierarchy found, using fallback essential mappings');
       const fallbackMappings = {
-        // Essential mappings from the original test file structure
         'color': 'ascii-art/color',
         'output': 'ascii-art/output',
         'fs': 'ascii-art/fs',
@@ -250,20 +246,18 @@ const SubjectsSection: React.FC = () => {
         'scripting': '0-shell/scripting'
       };
       Object.assign(hierarchy, fallbackMappings);
+      console.log(`🔄 Added ${Object.keys(fallbackMappings).length} fallback mappings`);
     }
     
     return hierarchy;
   }, [data?.object]);
 
   const getProjectPath = useCallback((projectName: string): string => {
-    // Use the memoized project hierarchy
     if (projectHierarchy[projectName]) {
       return projectHierarchy[projectName];
     }
     
-    // Fallback to minimal static mappings for projects not in Div 01 module
     const staticMappings: { [key: string]: string } = {
-      // Non-Div 01 projects that still need mapping
       'checkpoints': 'java/checkpoints',
       'piscine': 'java/piscine', 
       'projects': 'java/projects',
@@ -274,54 +268,43 @@ const SubjectsSection: React.FC = () => {
     return staticMappings[projectName] || projectName;
   }, [projectHierarchy]);
 
-  // Function to fetch content (README.md or audit.md) with comprehensive path handling
   const fetchProjectContent = async (projectName: string, fileType: 'readme' | 'audit', projectObject?: ProjectObject): Promise<string> => {
-    // Use the comprehensive path mapping function
     const convertProjectNameToPath = (name: string) => getProjectPath(name);
 
     try {
       const fileName = fileType === 'readme' ? 'README.md' : 'audit.md';
       const possiblePaths: string[] = [];
       
-      // Helper function to convert various GraphQL paths to GitHub URLs
       const convertGraphQLPathToGitHub = (graphqlPath: string, targetFileName: string): string[] => {
         const urls: string[] = [];
         
         if (graphqlPath.includes('/markdown/root/public/subjects/')) {
-          // Pattern: /markdown/root/public/subjects/... -> subjects/...
           const afterSubjects = graphqlPath.split('/subjects/')[1];
           const dirPath = afterSubjects.replace('/README.md', '').replace('/audit/README.md', '');
           
-          // Try converted path for nested projects
           const convertedPath = convertProjectNameToPath(dirPath);
           urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${convertedPath}/${targetFileName}`);
           
-          // Also try original path if different
           if (convertedPath !== dirPath) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${dirPath}/${targetFileName}`);
           }
           
         } else if (graphqlPath.includes('/api/content/root/01-edu_module/content/')) {
-          // Pattern: /api/content/root/01-edu_module/content/... -> subjects/...
           const afterContent = graphqlPath.split('/content/')[1];
           const projectPath = afterContent.replace('/README.md', '').replace('/audit/README.md', '');
           
-          // First try to convert project name to nested path
           const convertedPath = convertProjectNameToPath(projectPath);
           urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${convertedPath}/${targetFileName}`);
           
-          // Also try original path if different
           if (convertedPath !== projectPath) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${projectPath}/${targetFileName}`);
           }
           
-          // Try kebab-case variation
           const kebabCase = projectPath.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
           if (kebabCase !== projectPath) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${kebabCase}/${targetFileName}`);
           }
           
-          // Try other possible root directories found in the repository
           const rootDirs = ['js', 'sh', 'dom'];
           for (const rootDir of rootDirs) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/${rootDir}/${convertedPath}/${targetFileName}`);
@@ -334,38 +317,31 @@ const SubjectsSection: React.FC = () => {
           }
           
         } else if (graphqlPath.includes('/api/content/root/01-edu_imperative-piscine/content/')) {
-          // Pattern: /api/content/root/01-edu_imperative-piscine/content/... -> subjects/...
           const afterContent = graphqlPath.split('/content/')[1];
           const dirPath = afterContent.replace('/README.md', '').replace('/audit/README.md', '');
           
-          // Try converted path for nested projects
           const convertedPath = convertProjectNameToPath(dirPath);
           urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${convertedPath}/${targetFileName}`);
           
-          // Also try original path if different
           if (convertedPath !== dirPath) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${dirPath}/${targetFileName}`);
           }
         } else {
-          // For other paths, try to extract the project name and convert
           const pathParts = graphqlPath.split('/');
           const projectName = pathParts[pathParts.length - 1].replace('/README.md', '').replace('/audit/README.md', '');
           
           const convertedPath = convertProjectNameToPath(projectName);
           urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${convertedPath}/${targetFileName}`);
           
-          // Try original project name
           if (convertedPath !== projectName) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${projectName}/${targetFileName}`);
           }
           
-          // Try kebab-case
           const kebabCase = projectName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
           if (kebabCase !== projectName) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${kebabCase}/${targetFileName}`);
           }
           
-          // Also try under different root directories
           const rootDirs = ['js', 'sh', 'dom'];
           for (const rootDir of rootDirs) {
             urls.push(`https://raw.githubusercontent.com/01-edu/public/master/${rootDir}/${convertedPath}/${targetFileName}`);
@@ -381,32 +357,24 @@ const SubjectsSection: React.FC = () => {
         return [...new Set(urls)]; // Remove duplicates
       };
 
-      // Always start with hardcoded mapping first - this should be our primary source
       const convertedProjectPath = convertProjectNameToPath(projectName);
       
-      // Primary path using hardcoded mapping
       if (convertedProjectPath !== projectName) {
-        // This is a nested project - use the exact mapping
         possiblePaths.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${convertedProjectPath}/${fileName}`);
       } else {
-        // This is a standalone project
         possiblePaths.push(`https://raw.githubusercontent.com/01-edu/public/master/subjects/${projectName}/${fileName}`);
       }
       
-      // Only use GraphQL paths as backup if hardcoded mapping didn't work
       if (projectObject?.attrs?.subject) {
         const subjectPath = typeof projectObject.attrs.subject === 'string' 
           ? projectObject.attrs.subject 
           : projectObject.attrs.subject.name || '';
           
-        // Only add GraphQL paths if they're different from our hardcoded paths
         if (subjectPath && fileType === 'readme' && !subjectPath.includes('getSubject')) {
           const graphqlPaths = convertGraphQLPathToGitHub(subjectPath, fileName);
-          // Filter out any paths we already have
           const newPaths = graphqlPaths.filter(path => !possiblePaths.includes(path));
           possiblePaths.push(...newPaths);
         } else if (fileType === 'audit') {
-          // For audit files, look for validation forms
           if (projectObject.attrs.validations && Array.isArray(projectObject.attrs.validations)) {
             for (const validation of projectObject.attrs.validations) {
               if (validation.form && typeof validation.form === 'string' && !validation.form.includes('getSubject')) {
@@ -419,46 +387,41 @@ const SubjectsSection: React.FC = () => {
         }
       }
 
-      // Add minimal fallbacks only if needed
       if (possiblePaths.length === 0) {
-        // Final fallback paths (should be very rare with comprehensive hardcoded mappings)
         possiblePaths.push(
           `https://raw.githubusercontent.com/01-edu/public/master/subjects/${projectName.toLowerCase()}/${fileName}`,
         );
         
-        // Try alternative root directories as last resort
         const rootDirs = ['js', 'sh', 'dom'];
         for (const rootDir of rootDirs) {
           possiblePaths.push(`https://raw.githubusercontent.com/01-edu/public/master/${rootDir}/${projectName}/${fileName}`);
         }
       }
 
-      // Try each possible path until one works
       let markdownContent = '';
       let baseUrl = '';
       
+      console.log(`🔍 Fetching README for "${projectName}" using ${possiblePaths.length} path(s)`);
       
       for (const fileUrl of possiblePaths) {
         try {
           const response = await fetch(fileUrl);
           if (response.ok) {
             markdownContent = await response.text();
-            // Store the base URL for asset resolution
             baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/'));
+            console.log(`✅ Successfully loaded README for "${projectName}" (${markdownContent.length} chars)`);
             break;
           }
         } catch {
-          // Silently continue to next URL
         }
       }
       
       if (!markdownContent) {
+        console.error(`🚫 No ${fileName} found for "${projectName}" in any of ${possiblePaths.length} locations`);
         throw new Error(`No ${fileName} found in any expected location for "${projectName}". Tried ${possiblePaths.length} URLs.`);
       }
 
-      // Process markdown content to fix relative links and assets with improved decoding
       const processMarkdownAssets = (content: string, baseUrl: string): string => {
-        // First, decode any HTML entities that might be in the raw markdown
         const decodedContent = content
           .replace(/&lt;/g, '<')
           .replace(/&gt;/g, '>')
@@ -472,140 +435,119 @@ const SubjectsSection: React.FC = () => {
           .replace(/&#x3D;/g, '=');
         
         return decodedContent
-          // Fix relative image links
           .replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, `![$1](${baseUrl}/$2)`)
-          // Fix relative links
           .replace(/\[([^\]]+)\]\((?!https?:\/\/)([^)#]+)(?:#([^)]*))?\)/g, (_, text, url, fragment) => {
             if (url.startsWith('../')) {
-              // Handle parent directory references
               const parentUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/'));
               const resolvedUrl = url.replace('../', `${parentUrl}/`);
               return `[${text}](${resolvedUrl}${fragment ? '#' + fragment : ''})`;
             } else if (url.endsWith('.md')) {
-              // Convert markdown links to GitHub blob view
               const githubUrl = baseUrl.replace('raw.githubusercontent.com', 'github.com').replace('/master/', '/blob/master/');
               return `[${text}](${githubUrl}/${url}${fragment ? '#' + fragment : ''})`;
             } else {
-              // Regular relative file
               return `[${text}](${baseUrl}/${url}${fragment ? '#' + fragment : ''})`;
             }
           })
-          // Clean up any malformed HTML that might have been introduced
           .replace(/<\s*br\s*\/?>/gi, '\n')
           .replace(/<\s*p\s*>/gi, '\n\n')
           .replace(/<\/\s*p\s*>/gi, '')
-          // Normalize line breaks
           .replace(/\r\n/g, '\n')
           .replace(/\r/g, '\n')
-          // Clean up excessive whitespace
           .replace(/\n{3,}/g, '\n\n')
           .trim();
       };
 
-      // Process the markdown content
       const processedContent = processMarkdownAssets(markdownContent, baseUrl);
       
-      // Configure marked for better markdown processing
       marked.setOptions({
         breaks: true,
         gfm: true
       });
       
-      // Convert markdown to HTML using marked with improved processing
       const htmlContent = marked(processedContent);
       
       return htmlContent;
       
     } catch (error) {
+      console.error(`❌ Error fetching ${fileType} for "${projectName}":`, error);
       
       const fileDisplay = fileType === 'readme' ? 'README' : 'audit.md';
       
-      // Try to construct a helpful GitHub link for manual access
       const convertedPath = getProjectPath(projectName);
       const githubUrl = `https://github.com/01-edu/public/tree/master/subjects/${convertedPath}`;
       
       return `# ${projectName}
 
-## Project Information
 
 ${projectObject ? `
 **Language:** ${projectObject.attrs.language || 'Not specified'}  
 **Type:** ${projectObject.type}  
 **Created:** ${new Date(projectObject.createdAt).toLocaleDateString()}
 
-### Expected Files:
 ${projectObject.attrs.expectedFiles ? projectObject.attrs.expectedFiles.map(file => `- \`${file}\``).join('\n') : 'Not specified'}
 
-### Requirements:
 This project requires specific implementation details. Please check the project repository for complete instructions.
 ` : ''}
 
-### 📋 ${fileDisplay} Not Available
 
 The ${fileDisplay} content could not be loaded automatically. This might be because:
 - The file doesn't exist in the expected location
 - The project structure is different than expected
 - Network connectivity issues
 
-### 🔗 Manual Access
 
 You can try accessing the project directly:
 - **GitHub Repository:** [View ${projectName} on GitHub](${githubUrl})
 - **Direct README:** [${projectName}/README.md](${githubUrl}/README.md)
 
-### 🔧 Debug Information
 
 **Error:** ${error instanceof Error ? error.message : String(error)}`;
     }
   };
 
-  // Transform data into projects array
   const projects: Project[] = useMemo(() => {
     if (!data?.object) return [];
     
-    // Use the comprehensive path mapping function
     const convertProjectNameToPath = (name: string) => getProjectPath(name);
     
-    // Helper function to find matching path for a project
     const findProjectPath = (obj: ProjectObject, paths: PathData[]): string => {
       const projectName = obj.name;
+      console.log(`🔍 Finding path for project "${projectName}"`);
       
-      // Try different path matching strategies
       for (const pathItem of paths) {
         const path = pathItem.path;
         
-        // Strategy 1: Direct name match
         if (path.includes(`/${projectName}`)) {
+          console.log(`✅ Direct match found: ${path}`);
           return path;
         }
         
-        // Strategy 2: Match with converted path (parent-child structure)
         const convertedPath = convertProjectNameToPath(projectName);
         if (convertedPath !== projectName && path.includes(`/${convertedPath}`)) {
+          console.log(`✅ Converted path match found: ${path} for ${convertedPath}`);
           return path;
         }
         
-        // Strategy 3: Check if path ends with project name (handles nested structures)
         if (path.endsWith(`/${projectName}`)) {
+          console.log(`✅ End match found: ${path}`);
           return path;
         }
         
-        // Strategy 4: Match by project path segments (for complex nested structures)
         const pathSegments = path.split('/');
         const lastSegment = pathSegments[pathSegments.length - 1];
         if (lastSegment === projectName) {
+          console.log(`✅ Last segment match found: ${path}`);
           return path;
         }
         
-        // Strategy 5: Check parent directory patterns
         if (convertedPath.includes('/')) {
           const [parent, child] = convertedPath.split('/');
           if (path.includes(`/${parent}`) && path.includes(child)) {
+            console.log(`✅ Parent-child match found: ${path} for ${parent}/${child}`);
             return path;
           }
         }
         
-        // Strategy 6: Check if project name is part of the path with parent context
         const parentPatterns = [
           'piscine-js', 'piscine-rust', 'piscine-flutter', 'piscine-ai', 'piscine-blockchain', 
           'piscine-java', 'piscine-ux', 'piscine-ui', 'piscine-go',
@@ -615,37 +557,50 @@ You can try accessing the project directly:
         
         for (const pattern of parentPatterns) {
           if (path.includes(`/${pattern}/`) && path.includes(projectName)) {
+            console.log(`✅ Parent pattern match found: ${path} for pattern ${pattern}`);
             return path;
           }
         }
         
-        // Strategy 7: Try kebab-case variations
         const kebabCase = projectName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
         if (kebabCase !== projectName && path.includes(kebabCase)) {
+          console.log(`✅ Kebab-case match found: ${path} for ${kebabCase}`);
           return path;
         }
       }
       
+      console.log(`❌ No path found for project "${projectName}"`);
       return ''; // No matching path found
     };
     
-    // Debug: Log some example objects of each type
+    console.log(`📊 Total objects from GraphQL: ${data.object?.length || 0}`);
+    console.log(`📊 Total paths from GraphQL: ${data.path?.length || 0}`);
+    
+    const objectTypes = data.object.reduce((acc: Record<string, number>, obj: ProjectObject) => {
+      acc[obj.type] = (acc[obj.type] || 0) + 1;
+      return acc;
+    }, {});
+    console.log('📊 Object types breakdown:', objectTypes);
+    
     ['exercise', 'project', 'module'].forEach(type => {
       const examples = data.object.filter((obj: ProjectObject) => obj.type === type).slice(0, 3);
       if (examples.length > 0) {
-        // Process examples
+        console.log(`📋 Sample ${type}s:`, examples.map((obj: ProjectObject) => ({
+          name: obj.name,
+          hasAttrs: !!obj.attrs,
+          hasEvents: obj.events?.length > 0,
+          campus: obj.campus
+        })));
       }
     });
     
-    // Get all project names from GraphQL objects
     const existingProjectNames = new Set(data.object.map((obj: ProjectObject) => obj.name));
     
-    // Create virtual objects for nested projects from module data
     const virtualProjects: ProjectObject[] = [];
     
-    // Create virtual projects for missing nested projects from the memoized hierarchy
     Object.keys(projectHierarchy).forEach(projectName => {
       if (!existingProjectNames.has(projectName)) {
+        console.log(`🔧 Creating virtual project for "${projectName}" from module data`);
         virtualProjects.push({
           id: `virtual-${projectName}`,
           name: projectName,
@@ -666,58 +621,52 @@ You can try accessing the project directly:
       }
     });
     
+    console.log(`🔧 Created ${virtualProjects.length} virtual projects`);
     
-    // Combine real objects with virtual projects
     const allObjects = [...data.object, ...virtualProjects];
     
     return allObjects
       .filter((obj: ProjectObject) => {
-        // Only include Bahrain campus objects
         if (obj.campus !== 'bahrain') {
+          console.log(`❌ Filtered out "${obj.name}" - wrong campus: ${obj.campus}`);
           return false;
         }
         
-        // Exclude module objects from display (they're only used for hierarchy extraction)
         if (obj.type === 'module') {
+          console.log(`📁 Skipping module "${obj.name}" from display`);
           return false;
         }
         
-        // Ensure object has a valid name
         if (!obj.name || obj.name.trim() === '') {
+          console.log(`❌ Filtered out object with ID "${obj.id}" - no valid name`);
           return false;
         }
         
-        // For exercises and projects, ensure they have some meaningful attributes
         if (obj.type === 'exercise' || obj.type === 'project') {
-          // Check if it has attrs object or at least some events
           const hasAttrs = obj.attrs && typeof obj.attrs === 'object';
           const hasEvents = obj.events && obj.events.length > 0;
           
           if (!hasAttrs && !hasEvents) {
+            console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no meaningful content`);
             return false;
           }
         }
         
-        // For virtual projects, create synthetic paths
         let matchingPath = '';
         if (String(obj.id).startsWith('virtual-')) {
-          // This is a virtual project - create a synthetic path
           const convertedPath = getProjectPath(obj.name);
           if (convertedPath !== obj.name) {
-            // This is a nested project
             const parentProject = convertedPath.split('/')[0];
             matchingPath = `/bahrain/bh-module/${parentProject}/${obj.name}`;
+            console.log(`🔧 Created synthetic path for virtual project "${obj.name}": ${matchingPath}`);
           } else {
-            // This is a standalone virtual project
             matchingPath = `/bahrain/bh-module/${obj.name}`;
+            console.log(`🔧 Created synthetic path for standalone virtual project "${obj.name}": ${matchingPath}`);
           }
         } else {
-          // This is a real project - find matching path
           matchingPath = findProjectPath(obj, data.path || []);
         }
         
-        // Include objects that have corresponding paths in bh-module or bh-piscine
-        // OR exercises/projects that have meaningful content even without explicit paths
         const hasValidPath = matchingPath && 
                (matchingPath.includes('/bahrain/bh-module/') || 
                 matchingPath.includes('/bahrain/bh-piscine/'));
@@ -728,17 +677,21 @@ You can try accessing the project directly:
         
         const shouldInclude = hasValidPath || hasContent;
         
+        if (!shouldInclude) {
+          console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no valid path or content`);
+        } else {
+          console.log(`✅ Including "${obj.name}" (${obj.type}) with path: ${matchingPath || 'content-based'}`);
+        }
+        
         return shouldInclude;
       })
       .map((obj: ProjectObject) => {
-        // Ensure name is always a string
         const projectName = typeof obj.attrs.displayedName === 'string' 
           ? obj.attrs.displayedName 
           : typeof obj.name === 'string' 
             ? obj.name 
             : 'Project';
             
-        // Find the actual path for this project
         const projectPath = findProjectPath(obj, data.path || []);
             
         return {
@@ -760,23 +713,8 @@ You can try accessing the project directly:
       });
   }, [data, getProjectPath, projectHierarchy]);
 
-  // Filter projects based on search and filters (currently unused but available for future features)
-  // const filteredProjects = useMemo(() => {
-  //   return projects.filter(project => {
-  //     const matchesSearch = !searchTerm || 
-  //       project.name.toLowerCase().includes(searchTerm.toLowerCase());
-  //     const matchesLanguage = !languageFilter || 
-  //       project.language.toLowerCase() === languageFilter.toLowerCase();
-  //     const matchesDifficulty = !difficultyFilter || 
-  //       project.difficulty === difficultyFilter;
-  //     const matchesType = !typeFilter || 
-  //       project.projectObject.type === typeFilter;
       
-  //     return matchesSearch && matchesLanguage && matchesDifficulty && matchesType;
-  //   });
-  // }, [projects, searchTerm, languageFilter, difficultyFilter, typeFilter]);
 
-  // Get unique languages and difficulties
   const availableLanguages = useMemo(() => {
     const languages = [...new Set(projects.map(p => p.language))].filter(Boolean).sort();
     return languages;
@@ -789,11 +727,11 @@ You can try accessing the project directly:
     return types;
   }, [projects]);
 
-  // Load content based on active tab
   const loadTabContent = async (project: Project, tabType: 'readme' | 'audit') => {
+    console.log(`Loading ${tabType} for project:`, project.name, 'Type:', project.projectObject.type);
     
-    // Prevent loading audit content for exercises
     if (tabType === 'audit' && project.projectObject.type === 'exercise') {
+      console.log(`⚠️ Skipping audit load for exercise "${project.name}"`);
       setMarkdownContent(`# ${project.name}\n\n**This is an exercise**\n\nExercises do not have audit questions. Only projects have audit requirements.`);
       return;
     }
@@ -801,22 +739,23 @@ You can try accessing the project directly:
     setLoadingMarkdown(true);
     try {
       const content = await fetchProjectContent(project.name, tabType, project.projectObject);
+      console.log(`Successfully loaded ${tabType} content, length:`, content.length);
       setMarkdownContent(content);
-    } catch {
+    } catch (error) {
+      console.error(`Error loading ${tabType}:`, error);
       setMarkdownContent(`# ${project.name}\n\n**Error loading ${tabType}**\n\nCould not load ${tabType} content. Please try again later.`);
     } finally {
       setLoadingMarkdown(false);
     }
   };
 
-  // Handle project selection
   const handleProjectSelect = async (project: Project) => {
+    console.log('Selecting project:', project.name, 'Type:', project.projectObject.type);
     setSelectedProject(project);
     setActiveTab('readme'); // Reset to README tab
     await loadTabContent(project, 'readme');
   };
 
-  // Handle tab change
   const handleTabChange = async (newTab: 'readme' | 'audit') => {
     if (selectedProject && newTab !== activeTab) {
       setActiveTab(newTab);
@@ -824,7 +763,6 @@ You can try accessing the project directly:
     }
   };
 
-  // Clear all filters
   const clearFilters = () => {
     setSearchTerm('');
     setLanguageFilter('');
@@ -832,7 +770,6 @@ You can try accessing the project directly:
     setTypeFilter('');
   };
 
-  // Build flattened tree structure from paths and projects
   const treeStructure = useMemo(() => {
     if (!data?.path || !data?.object) return {};
     
@@ -845,13 +782,10 @@ You can try accessing the project directly:
     projectPaths.forEach((pathItem: PathData) => {
       const pathParts = pathItem.path.split('/').filter(Boolean);
       
-      // Remove "bahrain" and extract actual project structure
       let relevantParts = [];
       if (pathItem.path.includes('/bahrain/bh-module/')) {
-        // Remove "bahrain" and "bh-module", keep the rest
         relevantParts = pathParts.slice(2);
       } else if (pathItem.path.includes('/bahrain/bh-piscine/')) {
-        // Remove "bahrain", replace "bh-piscine" with "piscine-go", keep the rest
         relevantParts = ['piscine-go', ...pathParts.slice(2)];
       }
       
@@ -878,19 +812,16 @@ You can try accessing the project directly:
     return tree;
   }, [data]);
 
-  // Attach projects to tree structure after both are calculated
   const treeWithProjects = useMemo(() => {
     if (!treeStructure || !projects.length) return treeStructure;
     
     const attachProjects = (node: TreeNode): TreeNode => {
       const updatedNode = { ...node };
       
-      // If this is a project node, find and attach the matching project
       if (updatedNode.isProject && updatedNode.path) {
         updatedNode.project = projects.find(p => p.path === updatedNode.path) || null;
       }
       
-      // Recursively process children
       const updatedChildren: Record<string, TreeNode> = {};
       Object.keys(updatedNode.children || {}).forEach(key => {
         updatedChildren[key] = attachProjects(updatedNode.children[key]);
@@ -908,7 +839,6 @@ You can try accessing the project directly:
     return result;
   }, [treeStructure, projects]);
 
-  // Toggle folder expansion
   const toggleFolder = (path: string) => {
     const newExpanded = new Set(expandedFolders);
     if (newExpanded.has(path)) {
@@ -919,7 +849,6 @@ You can try accessing the project directly:
     setExpandedFolders(newExpanded);
   };
 
-  // Get difficulty color
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner': return 'text-green-400 bg-green-500/20 border-green-500/30';
@@ -929,7 +858,6 @@ You can try accessing the project directly:
     }
   };
 
-  // Get language color
   const getLanguageColor = (language: string) => {
     const colors: Record<string, string> = {
       'go': 'text-cyan-400 bg-cyan-500/20 border-cyan-500/30',
@@ -945,7 +873,6 @@ You can try accessing the project directly:
     return colors[language.toLowerCase()] || 'text-blue-400 bg-blue-500/20 border-blue-500/30';
   };
 
-  // TreeNode component for rendering the navigation tree
   const TreeNodeComponent: React.FC<{ node: TreeNode; depth: number }> = ({ node, depth }) => {
     const isExpanded = expandedFolders.has(node.flattenedPath || node.name);
     const hasChildren = Object.keys(node.children).length > 0;
@@ -1014,14 +941,12 @@ You can try accessing the project directly:
           >
             {Object.values(node.children)
               .sort((a: TreeNode, b: TreeNode) => {
-                // Folders first, then files
                 const aHasChildren = Object.keys(a.children).length > 0;
                 const bHasChildren = Object.keys(b.children).length > 0;
                 
                 if (aHasChildren && !bHasChildren) return -1;
                 if (!aHasChildren && bHasChildren) return 1;
                 
-                // If both are folders or both are files, sort alphabetically
                 return a.name.localeCompare(b.name);
               })
               .map((child: TreeNode) => (
@@ -1246,14 +1171,12 @@ You can try accessing the project directly:
               <div className="p-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-white/30">
                 {Object.values(treeWithProjects)
                   .sort((a: TreeNode, b: TreeNode) => {
-                    // Folders first, then files
                     const aHasChildren = Object.keys(a.children).length > 0;
                     const bHasChildren = Object.keys(b.children).length > 0;
                     
                     if (aHasChildren && !bHasChildren) return -1;
                     if (!aHasChildren && bHasChildren) return 1;
                     
-                    // If both are folders or both are files, sort alphabetically
                     return a.name.localeCompare(b.name);
                   })
                   .map((node: TreeNode) => (
@@ -1371,7 +1294,6 @@ You can try accessing the project directly:
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     href={(() => {
-                      // Use the comprehensive path mapping function
                       const projectPath = getProjectPath(selectedProject.name);
                       return `https://github.com/01-edu/public/tree/master/subjects/${projectPath}`;
                     })()}

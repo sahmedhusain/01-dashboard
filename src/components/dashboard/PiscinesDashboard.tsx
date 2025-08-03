@@ -155,7 +155,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
     
     const extractPiscineType = (path: string): string => {
       if (path.includes('/bahrain/bh-piscine/')) return 'go';
-      const match = path.match(/\/bahrain\/bh-module\/piscine-([^/]+)\//);
+      const match = path.match(/\/bahrain\/bh-module\/piscine-([^/]+)\//)
       return match ? match[1] : 'unknown';
     };
 

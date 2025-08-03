@@ -45,13 +45,11 @@ export const exportToCSV = (data: any[], filename: string, headers: string[]) =>
     return
   }
 
-  // Create CSV content
   const csvContent = [
     headers.join(','),
     ...data.map(row => 
       headers.map(header => {
         const value = getNestedValue(row, header)
-        // Escape commas and quotes in CSV
         if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
           return `"${value.replace(/"/g, '""')}"`
         }
@@ -117,7 +115,6 @@ export const exportProgressDataToCSV = (progressData: any[], userLogin: string) 
 export const exportStatsReport = (data: ExportData) => {
   const { user, xpData, auditData, progressData } = data
   
-  // Calculate statistics
   const totalXP = xpData?.reduce((sum: number, t: any) => sum + (t.amount || 0), 0) || 0
   const completedProjects = progressData?.filter((p: any) => p.isDone && p.grade >= 1).length || 0
   const failedProjects = progressData?.filter((p: any) => p.isDone && p.grade < 1).length || 0

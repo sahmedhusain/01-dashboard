@@ -31,17 +31,17 @@ const ProjectSuccessChart: React.FC<ProjectSuccessChartProps> = ({
   const radius = size / 2 - 20
   const strokeWidth = 20
 
-  // Calculate percentages
+  
   const passedPercent = (passed / total) * 100
   const failedPercent = (failed / total) * 100
   const inProgressPercent = (inProgress / total) * 100
 
-  // Calculate angles (in degrees)
+  
   const passedAngle = (passed / total) * 360
   const failedAngle = (failed / total) * 360
   const inProgressAngle = (inProgress / total) * 360
 
-  // Calculate arc paths
+  
   const createArcPath = (startAngle: number, endAngle: number, radius: number) => {
     const start = polarToCartesian(center, center, radius, endAngle)
     const end = polarToCartesian(center, center, radius, startAngle)
@@ -61,14 +61,14 @@ const ProjectSuccessChart: React.FC<ProjectSuccessChartProps> = ({
     }
   }
 
-  // Create segments
+  
   let currentAngle = 0
   const segments = []
 
   if (passed > 0) {
     segments.push({
       path: createArcPath(currentAngle, currentAngle + passedAngle, radius),
-      color: '#10b981', // green-500
+      color: '#10b981', 
       label: 'Passed',
       value: passed,
       percent: passedPercent
@@ -79,7 +79,7 @@ const ProjectSuccessChart: React.FC<ProjectSuccessChartProps> = ({
   if (failed > 0) {
     segments.push({
       path: createArcPath(currentAngle, currentAngle + failedAngle, radius),
-      color: '#ef4444', // red-500
+      color: '#ef4444', 
       label: 'Failed',
       value: failed,
       percent: failedPercent
@@ -90,7 +90,7 @@ const ProjectSuccessChart: React.FC<ProjectSuccessChartProps> = ({
   if (inProgress > 0) {
     segments.push({
       path: createArcPath(currentAngle, currentAngle + inProgressAngle, radius),
-      color: '#f59e0b', // yellow-500
+      color: '#f59e0b', 
       label: 'In Progress',
       value: inProgress,
       percent: inProgressPercent

@@ -25,9 +25,6 @@ import {
   Star
 } from 'lucide-react'
 import { User } from '../../types'
-import XPSection from './XPSection'
-import AuditSection from './AuditSection'
-import StatsSection from './StatsSection'
 import ProjectProgressTracker from './ProjectProgressTracker'
 import LoadingSpinner from '../ui/LoadingSpinner'
 import QueryWrapper from '../ui/QueryWrapper'
@@ -203,7 +200,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
     fetchPolicy: 'cache-first'
   });
 
-  // Create statistics cards data
+  
   const getStatsCards = () => {
     if (!statsData) return [];
 
@@ -430,7 +427,10 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <XPSection user={user} />
+                <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                  <h3 className="text-lg font-semibold text-white mb-4">XP Analytics</h3>
+                  <p className="text-white/70">XP section component not available</p>
+                </div>
               </motion.div>
 
               {/* Audit Section */}
@@ -439,7 +439,10 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <AuditSection user={user} />
+                <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                  <h3 className="text-lg font-semibold text-white mb-4">Audit Analytics</h3>
+                  <p className="text-white/70">Audit section component not available</p>
+                </div>
               </motion.div>
             </div>
 
@@ -451,7 +454,10 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ user }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <StatsSection user={user} />
+                <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                  <h3 className="text-lg font-semibold text-white mb-4">Statistics</h3>
+                  <p className="text-white/70">Stats section component not available</p>
+                </div>
               </motion.div>
 
               {/* Project Progress Tracker */}

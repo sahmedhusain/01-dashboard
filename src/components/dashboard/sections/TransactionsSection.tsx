@@ -20,12 +20,12 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
   const [searchTerm, setSearchTerm] = useState('')
   const [showOnlyBHModule, setShowOnlyBHModule] = useState(false)
 
-  // Helper function to calculate skill progress for a transaction
+  
   const getSkillProgress = (currentTransaction: any, allTransactions: any[]) => {
     const skillType = currentTransaction.type
     const currentDate = new Date(currentTransaction.createdAt)
     
-    // Find the previous transaction of the same skill type
+    
     const previousTransaction = allTransactions
       .filter(t => t.type === skillType && new Date(t.createdAt) < currentDate)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
@@ -34,21 +34,21 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       return currentTransaction.amount - previousTransaction.amount
     }
     
-    // If no previous transaction, this is the first one, so show full amount as progress
+    
     return currentTransaction.amount
   }
 
-  // Process raw transaction data with skill progress calculation
+  
   const filteredTransactions = useMemo(() => {
     let transactions = analytics.rawData.transactions
 
-    // Filter by BH Module if selected
+    
     if (showOnlyBHModule) {
       const separated = separateModuleData(transactions)
       transactions = separated.mainModule
     }
 
-    // Filter by transaction type
+    
     if (transactionFilter !== 'all') {
       if (transactionFilter === 'skill') {
         transactions = transactions.filter((t: any) => t.type?.startsWith('skill_'))
@@ -57,7 +57,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       }
     }
 
-    // Filter by time period
+    
     if (timeFilter !== 'all') {
       const now = new Date()
       let filterDate = new Date()
@@ -80,7 +80,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       transactions = transactions.filter((t: any) => new Date(t.createdAt) >= filterDate)
     }
 
-    // Filter by search term
+    
     if (searchTerm) {
       transactions = transactions.filter((t: any) => 
         t.path?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -88,7 +88,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       )
     }
 
-    // Calculate skill progress for each transaction
+    
     const transactionsWithProgress = transactions.map((transaction: any) => {
       if (transaction.type?.startsWith('skill_')) {
         const skillProgress = getSkillProgress(transaction, analytics.rawData.transactions)
@@ -100,10 +100,10 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       return transaction
     })
 
-    return transactionsWithProgress.slice(0, 100) // Limit to 100 for performance
+    return transactionsWithProgress.slice(0, 100) 
   }, [analytics.rawData.transactions, transactionFilter, timeFilter, searchTerm, showOnlyBHModule])
 
-  // Process progress data
+  
   const filteredProgress = useMemo(() => {
     let progress = analytics.rawData.progress
 
@@ -190,7 +190,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
         return `Level ${amount}`
       default:
         if (type?.startsWith('skill_')) {
-          // For skills, show the progress difference
+          
           if (transaction && transaction.skillProgress !== undefined) {
             return transaction.skillProgress > 0 ? 
               `+${transaction.skillProgress}%` : 

@@ -39,37 +39,20 @@ export const TESTED_QUERY_STATS = {
 };
 
 
-/**
- * Get queries by category from the comprehensive collection
- * @param category - Query category (AUDIT, EVENT, GROUP, OBJECT, PROGRESS, RESULT, TRANSACTION, USER)
- * @returns Array of query names for the category
- */
 export function getQueriesByCategory(category: string): string[] {
   const { QUERY_CATEGORIES } = require('./allQueries');
   return QUERY_CATEGORIES[category] || [];
 }
 
-/**
- * Get all available query categories
- * @returns Array of available category names
- */
 export function getAvailableCategories(): string[] {
   const { QUERY_CATEGORIES } = require('./allQueries');
   return Object.keys(QUERY_CATEGORIES);
 }
 
-/**
- * Get total number of available queries
- * @returns Total count of queries
- */
 export function getTotalQueryCount(): number {
   return TESTED_QUERY_STATS.TOTAL_QUERIES;
 }
 
-/**
- * Get data discovery statistics
- * @returns Object with data counts from testing
- */
 export function getDataStats() {
   return TESTED_QUERY_STATS.DATA_DISCOVERIES;
 }

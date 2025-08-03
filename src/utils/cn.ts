@@ -1,8 +1,3 @@
-/**
- * Utility function to merge class names
- * @param {...string} classes - Class names to merge
- * @returns {string} Merged class names
- */
-export const cn = (...classes) => {
+export const cn = (...classes: (string | undefined | null | false)[]) => {
   return classes.filter(Boolean).join(' ');
 };

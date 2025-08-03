@@ -2,15 +2,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   build: {
-    // Optimize chunk splitting
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
           'react-vendor': ['react', 'react-dom'],
           'apollo-vendor': ['@apollo/client', 'graphql'],
           'animation-vendor': ['framer-motion'],
@@ -18,11 +15,8 @@ export default defineConfig({
         },
       },
     },
-    // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Enable source maps for production debugging
     sourcemap: false,
-    // Optimize assets
     assetsInlineLimit: 4096,
   },
   server: {
@@ -35,7 +29,6 @@ export default defineConfig({
     host: true,
     open: false,
   },
-  // Optimize dependencies
   optimizeDeps: {
     include: [
       'react',

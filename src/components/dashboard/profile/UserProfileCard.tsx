@@ -5,8 +5,17 @@ import Avatar from '../../ui/Avatar'
 
 interface UserProfileCardProps {
   user: UserType
-  userData: any
-  analytics: any
+  userData: UserType
+  analytics: {
+    performance?: {
+      badge?: string;
+      notation?: string;
+    };
+    level?: {
+      current: number;
+      progress: number;
+    };
+  }
 }
 
 const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, userData, analytics }) => {
@@ -23,7 +32,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, userData, analy
             user={{
               ...userData,
               avatarUrl: userData?.attrs?.['pro-picUploadId']
-                ? `https://zone01.s3.us-east-1.amazonaws.com/avatar/${userData.attrs['pro-picUploadId']}`
+                ? `https://public.reboot01.com/api/graphql-engine/v1/graphql`
                 : null
             }}
             size="lg"

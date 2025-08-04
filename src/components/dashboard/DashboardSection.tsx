@@ -636,34 +636,39 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 h-full w-full relative">
-      {/* Full Screen Background */}
-      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 50px 50px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
-          backgroundSize: '100px 100px'
-        }}></div>
-      </div>
-      <div className="relative z-10 h-full w-full overflow-y-auto">
-        
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 h-full w-full relative">
+      <div className="relative z-10 h-full w-full overflow-y-auto custom-scrollbar">
         <div className="relative space-y-8 p-6">
-          {/* Enhanced Header */}
+          {/* Enhanced Header with Animation */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center space-y-4"
+            className="text-center space-y-6"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
-              <LayoutDashboard className="w-10 h-10 text-blue-400" />
-            </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent">
-              Dashboard Overview
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Your complete <span className="text-blue-400 font-semibold">Progress</span> and analytics hub
-            </p>
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-xl border border-emerald-400/30 mb-6 shadow-2xl shadow-emerald-500/20 relative overflow-hidden"
+            >
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
+              <LayoutDashboard className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+                Dashboard Overview
+              </h1>
+              <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                Your complete <span className="text-emerald-400 font-semibold">learning journey</span> and analytics hub
+              </p>
+            </motion.div>
           </motion.div>
 
           {/* Enhanced Tab Navigation */}
@@ -673,8 +678,8 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex justify-center"
           >
-            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl">
-              <nav className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-3 shadow-2xl">
+              <nav className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {tabs.map((tab, index) => {
                   const Icon = tab.icon
                   const isActive = activeTab === tab.id
@@ -688,19 +693,34 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + index * 0.05 }}
-                      className={`
-                        flex flex-col items-center space-y-3 px-8 py-4 rounded-2xl font-bold text-sm transition-all duration-300
-                        ${isActive
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30'
-                          : 'text-white/70 hover:text-white hover:bg-white/10'
-                        }
-                      `}
+                      className={`relative overflow-hidden flex flex-col items-center space-y-3 px-6 py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border border-white/20'
+                          : 'text-white/70 hover:text-white hover:bg-white/10 hover:border-emerald-400/30 border border-transparent'
+                      }`}
                     >
-                      <Icon className={`w-6 h-6 ${isActive ? 'text-white' : 'text-white/70'}`} />
-                      <div className="text-center">
+                      {/* Active tab glow effect */}
+                      {isActive && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-2xl"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                      
+                      <Icon className={`w-6 h-6 relative z-10 ${isActive ? 'text-white drop-shadow-lg' : 'text-white/70'}`} />
+                      <div className="text-center relative z-10">
                         <div className="font-semibold">{tab.label}</div>
-                        <div className="text-xs opacity-80 hidden lg:block">{tab.description}</div>
+                        <div className="text-xs opacity-80 hidden lg:block mt-1">{tab.description}</div>
                       </div>
+                      
+                      {/* Hover effect for inactive tabs */}
+                      {!isActive && (
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+                        />
+                      )}
                     </motion.button>
                   )
                 })}

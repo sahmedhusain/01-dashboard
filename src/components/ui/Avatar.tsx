@@ -128,14 +128,14 @@ const Avatar: React.FC<AvatarProps> = ({
   
   const getGradientColors = (login: string = 'default') => {
     const colors = [
-      'from-blue-500 to-purple-600',
-      'from-green-500 to-teal-600',
-      'from-pink-500 to-rose-600',
-      'from-yellow-500 to-orange-600',
-      'from-indigo-500 to-blue-600',
-      'from-purple-500 to-pink-600',
-      'from-teal-500 to-green-600',
-      'from-orange-500 to-red-600',
+      'from-emerald-500 to-teal-600',
+      'from-teal-500 to-cyan-600',
+      'from-green-500 to-emerald-600',
+      'from-cyan-500 to-blue-600',
+      'from-blue-500 to-indigo-600',
+      'from-indigo-500 to-purple-600',
+      'from-emerald-400 to-teal-500',
+      'from-teal-400 to-cyan-500',
     ]
     
     const hash = login.split('').reduce((a, b) => {
@@ -153,8 +153,9 @@ const Avatar: React.FC<AvatarProps> = ({
     rounded-full
     flex items-center justify-center
     overflow-hidden
-    ${showBorder ? 'ring-2 ring-primary-500 ring-offset-2 ring-offset-transparent' : ''}
-    ${onClick ? 'cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all' : ''}
+    relative
+    ${showBorder ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-slate-900 shadow-lg shadow-emerald-500/25' : ''}
+    ${onClick ? 'cursor-pointer hover:ring-2 hover:ring-emerald-400 hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300' : ''}
     ${className}
   `
 
@@ -191,7 +192,9 @@ const Avatar: React.FC<AvatarProps> = ({
   if (animate) {
     return (
       <motion.div
-        whileHover={{ scale: 1.05 }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.1, y: -2 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >

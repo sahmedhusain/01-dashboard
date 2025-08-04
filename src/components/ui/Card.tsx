@@ -32,35 +32,44 @@ const Card: React.FC<CardProps> = ({
 
   const baseClasses = `
     ${gradient 
-      ? 'bg-gradient-to-br from-white/10 to-white/5' 
-      : 'bg-white/10'
+      ? 'bg-gradient-to-br from-white/10 via-emerald-500/5 to-white/5' 
+      : 'bg-gradient-to-br from-white/8 to-white/4'
     }
-    backdrop-blur-lg 
+    backdrop-blur-xl 
     ${responsive ? 'rounded-xl sm:rounded-2xl' : 'rounded-2xl'}
     border 
     ${glowing 
-      ? 'border-primary-500/50 shadow-lg shadow-primary-500/25' 
+      ? 'border-emerald-400/50 shadow-lg shadow-emerald-500/25' 
       : 'border-white/20'
     }
-    ${hover ? 'hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300' : ''}
-    ${onClick ? 'cursor-pointer touch-target' : ''}
+    ${hover ? 'hover:bg-gradient-to-br hover:from-white/15 hover:via-emerald-500/10 hover:to-white/10 hover:border-emerald-400/30 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300' : ''}
+    ${onClick ? 'cursor-pointer' : ''}
+    relative overflow-hidden group
     ${sizeClasses[size]}
     ${className}
   `
 
   const CardComponent = (
     <div className={baseClasses} onClick={onClick}>
-      {children}
+      {/* Subtle shimmer effect on hover */}
+      {hover && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-400/5 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-500" />
+      )}
+      
+      <div className="relative z-10">
+        {children}
+      </div>
     </div>
   )
 
   if (animate) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        whileHover={hover ? { y: -2 } : undefined}
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, type: "spring", stiffness: 100 }}
+        whileHover={hover ? { y: -4, scale: 1.02 } : undefined}
+        whileTap={onClick ? { scale: 0.98 } : undefined}
       >
         {CardComponent}
       </motion.div>

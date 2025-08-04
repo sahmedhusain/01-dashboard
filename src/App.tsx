@@ -46,10 +46,52 @@ const AppContent: React.FC = () => {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-md mx-auto">
-          <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 40px 40px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+            backgroundSize: '80px 80px',
+            animation: 'float 20s ease-in-out infinite'
+          }}></div>
         </div>
+
+        {/* Loading Content */}
+        <div className="w-full max-w-md mx-auto relative z-10">
+          <div className="text-center space-y-8">
+            {/* Logo Animation */}
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-8 animate-pulse">
+              <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full"></div>
+            </div>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent">
+                Student Dashboard
+              </h1>
+              <p className="text-xl text-white/70">
+                Initializing your learning journey...
+              </p>
+            </div>
+
+            {/* Enhanced Loading Spinner */}
+            <div className="relative">
+              <LoadingSpinner size="lg" />
+              <div className="mt-4 text-white/50 text-sm animate-pulse">
+                Loading your data securely
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Add keyframe for background animation */}
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+          }
+        `}</style>
       </div>
     )
   }

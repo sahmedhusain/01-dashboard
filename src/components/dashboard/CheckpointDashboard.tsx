@@ -388,34 +388,48 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
   const { modules } = checkpointAnalysis;
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 min-h-full">
-      <div className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-40">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25px 25px, rgba(156, 146, 172, 0.1) 2px, transparent 0)`,
-            backgroundSize: '50px 50px'
-          }}></div>
-        </div>
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative">
+      {/* Enhanced Background Pattern */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+          backgroundSize: '70px 70px'
+        }}></div>
+      </div>
+      <div className="relative z-10 h-full w-full overflow-y-auto custom-scrollbar">
         
         <div className="relative space-y-8 p-6">
-          {/* Enhanced Header */}
+          {/* Enhanced Header with Animation */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center space-y-4"
+            className="text-center space-y-6"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
-              <BookOpen className="w-10 h-10 text-blue-400" />
-            </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-              Checkpoints Dashboard
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Master your coding skills across <span className="text-blue-400 font-semibold">{checkpointAnalysis.projectList.length}</span> checkpoint challenges
-            </p>
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-xl border border-emerald-400/30 mb-6 shadow-2xl shadow-emerald-500/20 relative overflow-hidden"
+            >
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
+              <Target className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+                Checkpoints Dashboard
+              </h1>
+              <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                Master your coding skills across <span className="text-emerald-400 font-semibold">{checkpointAnalysis.projectList.length}</span> checkpoint challenges
+              </p>
+            </motion.div>
           </motion.div>
 
     <motion.div 
@@ -428,24 +442,24 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
           icon={Zap} 
           title="Total XP Earned" 
           value={formatXPValue(currentStats.totalXP || 0)} 
-          color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30" 
-          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+          color="bg-gradient-to-r from-emerald-500/30 to-teal-500/30" 
+          bgGradient="bg-gradient-to-br from-emerald-900/20 to-teal-900/20"
           subValue={`From ${currentStats.totalProjects || 0} exams`}
         />
         <StatCard 
           icon={Target} 
           title="Checkpoint Exams" 
           value={currentStats.totalProjects || 0} 
-          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
-          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+          color="bg-gradient-to-r from-teal-500/30 to-cyan-500/30"
+          bgGradient="bg-gradient-to-br from-teal-900/20 to-cyan-900/20"
           subValue="Attempted so far"
         />
         <StatCard 
           icon={CheckCircle} 
           title="Passed Exams" 
           value={currentStats.passedProjects || 0} 
-          color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
-          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
           subValue="Successfully completed"
         />
         <StatCard 
@@ -469,8 +483,8 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
           icon={Activity} 
           title="Average Score" 
           value={currentStats.totalProjects > 0 ? `${((currentStats.passedProjects / currentStats.totalProjects) * 100).toFixed(0)}%` : '0%'} 
-          color="bg-gradient-to-r from-indigo-500/30 to-blue-500/30"
-          bgGradient="bg-gradient-to-br from-indigo-900/20 to-blue-900/20"
+          color="bg-gradient-to-r from-cyan-500/30 to-blue-500/30"
+          bgGradient="bg-gradient-to-br from-cyan-900/20 to-blue-900/20"
           subValue="Overall performance"
         />
       </motion.div>
@@ -489,7 +503,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                 onClick={() => {setSelectedModule('all'); setSelectedCheckpoint('all');}} 
                 className={`flex items-center px-8 py-4 text-sm font-bold rounded-2xl transition-all duration-300 whitespace-nowrap shadow-lg ${
                   selectedModule === 'all'
-                    ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-blue-500/30 border border-white/20'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-500/30 border border-white/20'
                     : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 hover:shadow-xl border border-white/10'
                 }`}
               >
@@ -510,7 +524,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                   onClick={() => {setSelectedModule(module); setSelectedCheckpoint('all');}} 
                   className={`flex items-center px-8 py-4 text-sm font-bold rounded-2xl transition-all duration-300 whitespace-nowrap shadow-lg ${
                     selectedModule === module
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-500/30 border border-white/20'
+                      ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-teal-500/30 border border-white/20'
                       : 'bg-white/10 text-white/80 hover:text-white hover:bg-white/20 hover:shadow-xl border border-white/10'
                   }`}
                 >
@@ -577,18 +591,28 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5, delay: 0.3 }} 
-        className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10"
+        className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
       >
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
+            <Search className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white">Search & Filter Checkpoints</h3>
+            <p className="text-sm text-white/60">Find and organize your checkpoint exams</p>
+          </div>
+        </div>
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-4 h-4" />
-            <input 
+            <motion.input 
+              whileFocus={{ scale: 1.02 }}
               type="text" 
               placeholder="Search by exam, section, or module name..." 
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
-              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500" 
+              className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300" 
             />
           </div>
 
@@ -596,54 +620,79 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
             {/* Status Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="w-4 h-4 text-white/70" />
-              <select 
+              <motion.select 
+                whileFocus={{ scale: 1.02 }}
                 value={statusFilter} 
                 onChange={(e) => setStatusFilter(e.target.value as any)} 
-                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="bg-white/10 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               >
                 <option value="all">All Status</option>
                 <option value="passed">Passed</option>
                 <option value="failed">Failed</option>
                 <option value="in-progress">In Progress</option>
-              </select>
+              </motion.select>
             </div>
 
             {/* Sort Options */}
             <div className="flex items-center space-x-2">
               <ArrowUpDown className="w-4 h-4 text-white/70" />
-              <select 
+              <motion.select 
+                whileFocus={{ scale: 1.02 }}
                 value={sortBy} 
                 onChange={(e) => setSortBy(e.target.value as any)} 
-                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="bg-white/10 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               >
                 <option value="date">Sort by Date</option>
                 <option value="amount">Sort by XP</option>
                 <option value="path">Sort by Name</option>
-              </select>
-              <button 
+              </motion.select>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')} 
-                className="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                className="p-3 bg-white/10 rounded-xl hover:bg-emerald-500/20 hover:border-emerald-400/30 border border-transparent transition-all duration-300"
               >
                 <ChevronDown className={`w-4 h-4 text-white transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`} />
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
       </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 overflow-hidden">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.5, delay: 0.4 }} 
+        className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 hover:border-emerald-400/20 transition-all duration-300 shadow-xl overflow-hidden"
+      >
         <div className="p-6 border-b border-white/10">
-          <h3 className="text-xl font-bold text-white flex items-center">
-            <Activity className="w-6 h-6 mr-3 text-primary-400" />
-            Checkpoint Exams ({filteredAndSortedProjects.length})
-          </h3>
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
+              <Activity className="w-4 h-4 text-emerald-400" />
+            </div>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">
+              Checkpoint Exams ({filteredAndSortedProjects.length})
+            </h3>
+          </div>
         </div>
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
           {paginatedProjects.map((project, _index) => (
-            <div key={project.path} className="border-b border-white/5 last:border-b-0 p-6 hover:bg-white/5 transition-colors">
+            <motion.div 
+              key={project.path} 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: _index * 0.05 }}
+              className="border-b border-white/5 last:border-b-0 p-6 hover:bg-gradient-to-r hover:from-emerald-500/5 hover:to-teal-500/5 hover:border-emerald-400/20 transition-all duration-300"
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${project.status === 'passed' ? 'bg-green-500/20' : project.status === 'failed' ? 'bg-red-500/20' : 'bg-yellow-500/20'}`}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-sm border ${
+                    project.status === 'passed' 
+                      ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/30' 
+                      : project.status === 'failed' 
+                        ? 'bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-400/30' 
+                        : 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-400/30'
+                  }`}>
                     {project.status === 'passed' ? <CheckCircle className="w-6 h-6 text-green-400" /> : project.status === 'failed' ? <XCircle className="w-6 h-6 text-red-400" /> : <Clock className="w-6 h-6 text-yellow-400" />}
                   </div>
                   <div>
@@ -652,22 +701,42 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-2xl font-bold ${project.totalXP > 0 ? 'text-green-400' : 'text-white/60'}`}>{project.totalXP > 0 ? `+${formatXPValue(project.totalXP)}` : 'No XP'}</div>
+                  <div className={`text-2xl font-bold drop-shadow-sm ${project.totalXP > 0 ? 'text-emerald-400' : 'text-white/60'}`}>{project.totalXP > 0 ? `+${formatXPValue(project.totalXP)}` : 'No XP'}</div>
                   <p className="text-white/60 text-sm">{formatDateTimeDetailed(project.lastDate)}</p>
                   {project.attempts.length > 1 && project.status === 'passed' ? (
-                    <button onClick={() => setExpandedProject(expandedProject === project.path ? null : project.path)} className="mt-2 flex items-center space-x-1 text-xs text-primary-400 hover:text-primary-300">
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setExpandedProject(expandedProject === project.path ? null : project.path)} 
+                      className="mt-2 flex items-center space-x-1 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/20 rounded-lg px-2 py-1 transition-all duration-300"
+                    >
                       <List className="w-3 h-3" />
                       <span>{expandedProject === project.path ? 'Hide attempts' : `Show ${project.failedAttempts} failed attempt${project.failedAttempts !== 1 ? 's' : ''}`}</span>
                       {expandedProject === project.path ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                    </button>
+                    </motion.button>
                   ) : null}
                 </div>
               </div>
               {expandedProject === project.path && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 bg-white/5 border border-white/10 rounded-lg p-4">
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }} 
+                  animate={{ opacity: 1, height: 'auto' }} 
+                  exit={{ opacity: 0, height: 0 }} 
+                  className="mt-4 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border border-emerald-400/20 rounded-xl p-4 backdrop-blur-sm"
+                >
+                  <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
                     {project.attempts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((attempt: any, attemptIndex: number) => (
-                      <div key={attempt.id} className={`flex items-center justify-between p-3 rounded-lg ${attempt.grade >= 1 ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                      <motion.div 
+                        key={attempt.id} 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: attemptIndex * 0.05 }}
+                        className={`flex items-center justify-between p-3 rounded-xl border backdrop-blur-sm ${
+                          attempt.grade >= 1 
+                            ? 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-400/20' 
+                            : 'bg-gradient-to-r from-red-500/10 to-rose-500/10 border-red-400/20'
+                        }`}
+                      >
                         <div className="flex items-center space-x-3">
                           {attempt.grade >= 1 ? <CheckCircle className="w-4 h-4 text-green-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
                           <div>
@@ -679,12 +748,12 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                           <div className="text-white/60 text-sm">Grade: <span className={`font-semibold ${attempt.grade >= 1 ? 'text-green-400' : 'text-red-400'}`}>{(attempt.grade * 100).toFixed(1)}%</span></div>
                           <div className="text-white/40 text-xs">{formatDateTimeDetailed(attempt.createdAt)}</div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </motion.div>
               )}
-            </div>
+            </motion.div>
           ))}
 
           {/* Empty State */}
@@ -714,7 +783,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
                 setItemsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
             >
               <option value={10}>10</option>
               <option value={20}>20</option>
@@ -728,27 +797,31 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
             </span>
             
             <div className="flex items-center space-x-2">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
+                className="p-2 bg-white/10 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500/20 hover:border-emerald-400/30 border border-transparent transition-all duration-300"
               >
                 <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
+                className="p-2 bg-white/10 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500/20 hover:border-emerald-400/30 border border-transparent transition-all duration-300"
               >
                 <ChevronRight className="w-4 h-4" />
-              </button>
+              </motion.button>
             </div>
           </div>
         </motion.div>
       )}
         </div>
       </div>
-    </div>
+      </div>
   );
 };
 

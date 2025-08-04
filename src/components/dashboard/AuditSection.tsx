@@ -5,7 +5,7 @@ import { User, Audit, Group } from '../../types';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent, Activity } from 'lucide-react';
+import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent, Activity, Eye, Star, TrendingUp } from 'lucide-react';
 import { GET_USER_BY_PK } from '../../graphql/allQueries';
 import { formatXPValue, formatDate } from '../../utils/dataFormatting';
 
@@ -223,92 +223,98 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   });
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-indigo-900/20 to-slate-900 h-full w-full relative">
-      {/* Full Screen Background */}
-      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 30px 30px, rgba(99, 102, 241, 0.1) 2px, transparent 0)`,
-          backgroundSize: '60px 60px'
-        }}></div>
-      </div>
-      <div className="relative z-10 h-full w-full overflow-y-auto">
-        
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 h-full w-full relative">
+      <div className="relative z-10 h-full w-full overflow-y-auto custom-scrollbar">
         <div className="relative space-y-8 p-6">
-          {/* Enhanced Header */}
+          {/* Enhanced Header with Animation */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center space-y-4"
+            className="text-center space-y-6"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
-              <UserCheck className="w-10 h-10 text-indigo-400" />
-            </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent">
-              Audits Dashboard
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Track your peer review journey with <span className="text-indigo-400 font-semibold">{totalAudits}</span> completed audit evaluations
-            </p>
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-xl border border-emerald-400/30 mb-6 shadow-2xl shadow-emerald-500/20 relative overflow-hidden"
+            >
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
+              <UserCheck className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+                Audits Dashboard
+              </h1>
+              <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                Track your peer review journey with <span className="text-emerald-400 font-semibold">{totalAudits}</span> audit evaluations
+              </p>
+            </motion.div>
           </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
-      >
-        <StatCard 
-          icon={ArrowUp} 
-          title="Total Up Points" 
-          value={formatXPValue(userData?.user_by_pk?.totalUp)} 
-          color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
-          bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
-          subValue="Positive feedback earned"
-        />
-        <StatCard 
-          icon={ArrowDown} 
-          title="Total Down Points" 
-          value={formatXPValue(userData?.user_by_pk?.totalDown)} 
-          color="bg-gradient-to-r from-red-500/30 to-rose-500/30"
-          bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
-          subValue="Areas for improvement"
-        />
-        <StatCard 
-          icon={Percent} 
-          title="Audit Ratio" 
-          value={`${userData?.user_by_pk?.auditRatio.toFixed(1)}` || '0.0'} 
-          color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
-          bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
-          trend={userData?.user_by_pk?.auditRatio > 1 ? { value: Math.round((userData?.user_by_pk?.auditRatio - 1) * 100), isPositive: true } : undefined}
-          subValue={userData?.user_by_pk?.auditRatio > 1 ? "Above average!" : "Keep contributing"}
-        />
-        <StatCard 
-          icon={UserCheck} 
-          title="Audits Given" 
-          value={`${auditData?.auditsGiven_aggregate.aggregate.count || 0}`} 
-          color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
-          bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
-          subValue="Reviews provided"
-        />
-        <StatCard 
-          icon={Users} 
-          title="Audits Received" 
-          value={`${auditData?.auditsReceived_aggregate.aggregate.count || 0}`} 
-          color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
-          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
-          subValue="Reviews received"
-        />
-        <StatCard 
-          icon={Activity} 
-          title="Total Audits" 
-          value={`${(auditData?.auditsGiven_aggregate.aggregate.count || 0) + (auditData?.auditsReceived_aggregate.aggregate.count || 0)}`} 
-          color="bg-gradient-to-r from-indigo-500/30 to-purple-500/30"
-          bgGradient="bg-gradient-to-br from-indigo-900/20 to-purple-900/20"
-          subValue="Overall audit activity"
-        />
-      </motion.div>
+          {/* Enhanced Statistics Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+          >
+            <StatCard 
+              icon={TrendingUp} 
+              title="Total Up Points" 
+              value={formatXPValue(userData?.user_by_pk?.totalUp)} 
+              color="bg-gradient-to-r from-emerald-500/30 to-green-500/30"
+              bgGradient="bg-gradient-to-br from-emerald-900/20 to-green-900/20"
+              subValue="Positive feedback earned"
+            />
+            <StatCard 
+              icon={ArrowDown} 
+              title="Total Down Points" 
+              value={formatXPValue(userData?.user_by_pk?.totalDown)} 
+              color="bg-gradient-to-r from-orange-500/30 to-red-500/30"
+              bgGradient="bg-gradient-to-br from-orange-900/20 to-red-900/20"
+              subValue="Areas for improvement"
+            />
+            <StatCard 
+              icon={Star} 
+              title="Audit Ratio" 
+              value={`${userData?.user_by_pk?.auditRatio.toFixed(1)}` || '0.0'} 
+              color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+              bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+              trend={userData?.user_by_pk?.auditRatio > 1 ? { value: Math.round((userData?.user_by_pk?.auditRatio - 1) * 100), isPositive: true } : undefined}
+              subValue={userData?.user_by_pk?.auditRatio > 1 ? "Above average!" : "Keep contributing"}
+            />
+            <StatCard 
+              icon={Eye} 
+              title="Audits Given" 
+              value={`${auditData?.auditsGiven_aggregate.aggregate.count || 0}`} 
+              color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+              bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+              subValue="Reviews provided"
+            />
+            <StatCard 
+              icon={Users} 
+              title="Audits Received" 
+              value={`${auditData?.auditsReceived_aggregate.aggregate.count || 0}`} 
+              color="bg-gradient-to-r from-teal-500/30 to-cyan-500/30"
+              bgGradient="bg-gradient-to-br from-teal-900/20 to-cyan-900/20"
+              subValue="Reviews received"
+            />
+            <StatCard 
+              icon={Activity} 
+              title="Total Audits" 
+              value={`${(auditData?.auditsGiven_aggregate.aggregate.count || 0) + (auditData?.auditsReceived_aggregate.aggregate.count || 0)}`} 
+              color="bg-gradient-to-r from-emerald-500/30 to-teal-500/30"
+              bgGradient="bg-gradient-to-br from-emerald-900/20 to-teal-900/20"
+              subValue="Overall audit activity"
+            />
+          </motion.div>
 
           {/* Enhanced View Selector */}
           <motion.div
@@ -317,52 +323,101 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex justify-center"
           >
-            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl">
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setView('all')} 
-                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
-                  view === 'all' 
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/30' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5" />
-                  <span>All Audits</span>
-                </div>
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setView('given')} 
-                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
-                  view === 'given' 
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <ArrowUp className="w-5 h-5" />
-                  <span>Audits Given</span>
-                </div>
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setView('received')} 
-                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
-                  view === 'received' 
-                    ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/30' 
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <ArrowDown className="w-5 h-5" />
-                  <span>Audits Received</span>
-                </div>
-              </motion.button>
+            <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-3 shadow-2xl">
+              <div className="flex space-x-2">
+                <motion.button 
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setView('all')} 
+                  className={`relative overflow-hidden px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                    view === 'all' 
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border border-white/20' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:border-emerald-400/30 border border-transparent'
+                  }`}
+                >
+                  {/* Active glow effect */}
+                  {view === 'all' && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-2xl"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                  <div className="flex items-center space-x-2 relative z-10">
+                    <Activity className={`w-5 h-5 ${view === 'all' ? 'drop-shadow-lg' : ''}`} />
+                    <span>All Audits</span>
+                  </div>
+                  {/* Hover effect for inactive */}
+                  {view !== 'all' && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+                    />
+                  )}
+                </motion.button>
+                
+                <motion.button 
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setView('given')} 
+                  className={`relative overflow-hidden px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                    view === 'given' 
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border border-white/20' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:border-emerald-400/30 border border-transparent'
+                  }`}
+                >
+                  {/* Active glow effect */}
+                  {view === 'given' && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-2xl"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                  <div className="flex items-center space-x-2 relative z-10">
+                    <TrendingUp className={`w-5 h-5 ${view === 'given' ? 'drop-shadow-lg' : ''}`} />
+                    <span>Audits Given</span>
+                  </div>
+                  {/* Hover effect for inactive */}
+                  {view !== 'given' && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+                    />
+                  )}
+                </motion.button>
+                
+                <motion.button 
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setView('received')} 
+                  className={`relative overflow-hidden px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                    view === 'received' 
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border border-white/20' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:border-emerald-400/30 border border-transparent'
+                  }`}
+                >
+                  {/* Active glow effect */}
+                  {view === 'received' && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-2xl"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                  <div className="flex items-center space-x-2 relative z-10">
+                    <Users className={`w-5 h-5 ${view === 'received' ? 'drop-shadow-lg' : ''}`} />
+                    <span>Audits Received</span>
+                  </div>
+                  {/* Hover effect for inactive */}
+                  {view !== 'received' && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+                    />
+                  )}
+                </motion.button>
+              </div>
             </div>
           </motion.div>
 

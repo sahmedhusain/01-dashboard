@@ -653,10 +653,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
   const getRankColors = (position: number) => {
     switch (position) {
-      case 1: return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30'
-      case 2: return 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-gray-400/30'
-      case 3: return 'bg-gradient-to-r from-amber-600/20 to-amber-700/20 border-amber-600/30'
-      default: return 'bg-white/5 border-white/10'
+      case 1: return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30 shadow-lg shadow-yellow-500/10'
+      case 2: return 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-gray-400/30 shadow-lg shadow-gray-500/10'
+      case 3: return 'bg-gradient-to-r from-amber-600/20 to-amber-700/20 border-amber-600/30 shadow-lg shadow-amber-600/10'
+      default: return 'bg-gradient-to-r from-white/5 to-white/2 border-white/10 hover:bg-white/10 hover:border-emerald-400/20'
     }
   }
 
@@ -697,17 +697,18 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 h-full w-full relative">
-      {/* Background Effects */}
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 h-full w-full relative">
+      {/* Enhanced Background Pattern */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 40px 40px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
-          backgroundSize: '80px 80px'
+          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+          backgroundSize: '70px 70px'
         }}></div>
       </div>
 
-      <div className="relative z-10 h-full w-full overflow-y-auto space-y-8 p-6">
+      <div className="relative z-10 h-full w-full overflow-y-auto custom-scrollbar">
+        <div className="relative space-y-8 p-6">
         {/* Label Access Status - Show if we have limited label data */}
         {(labelData?.label_user?.length || 0) <= 1 && !labelLoading && (
           <motion.div
@@ -728,23 +729,37 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           </motion.div>
         )}
         
-        {/* Enhanced Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center space-y-4"
-        >
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4">
-            <Trophy className="w-10 h-10 text-blue-400" />
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-            Leaderboard Dashboard
-          </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Rankings for <span className="text-blue-400 font-semibold">{totalUsers}</span> Students
-          </p>
-        </motion.div>
+          {/* Enhanced Header with Animation */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-6"
+          >
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-xl border border-emerald-400/30 mb-6 shadow-2xl shadow-emerald-500/20 relative overflow-hidden"
+            >
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
+              <Trophy className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+                Leaderboard Dashboard
+              </h1>
+              <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                Rankings for <span className="text-emerald-400 font-semibold">{totalUsers}</span> students
+              </p>
+            </motion.div>
+          </motion.div>
 
         {/* BH Module Statistics */}
         <motion.div
@@ -757,21 +772,21 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             icon={Users} 
             title="Total Students" 
             value={totalUsers.toLocaleString()} 
-            color="from-blue-500/30 to-cyan-500/30"
+            color="from-emerald-500/30 to-teal-500/30"
             subValue="Participants"
           />
           <StatCard 
             icon={BarChart3} 
             title="Average Level" 
             value={avgLevel.toFixed(1)} 
-            color="from-green-500/30 to-emerald-500/30"
+            color="from-teal-500/30 to-cyan-500/30"
             subValue={`Max: ${maxLevel}`}
           />
           <StatCard 
             icon={Target} 
             title="Avg Audit Ratio" 
             value={avgAuditRatio.toFixed(2)} 
-            color="from-orange-500/30 to-red-500/30"
+            color="from-cyan-500/30 to-emerald-500/30"
             subValue="Community contribution"
           />
         </motion.div>
@@ -781,11 +796,11 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+          className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
         >
           <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-cyan-500/20 rounded-lg">
-              <Users className="w-5 h-5 text-cyan-400" />
+            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
+              <Users className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-white">Available Cohort Labels</h3>
@@ -801,7 +816,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  className="px-3 py-1.5 bg-cyan-500/20 text-cyan-300 rounded-lg text-sm font-medium border border-cyan-500/30 hover:bg-cyan-500/30 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 rounded-xl text-sm font-medium border border-emerald-400/30 hover:bg-emerald-500/30 hover:border-emerald-400/50 transition-all duration-300 cursor-pointer backdrop-blur-sm"
                   title={label.description}
                   onClick={() => setCohortSearchTerm(label.name)}
                 >
@@ -809,8 +824,8 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 </motion.span>
               ))
             ) : (
-              <div className="flex items-center space-x-2 text-amber-400">
-                <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+              <div className="flex items-center space-x-2 text-yellow-400">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                 <span className="text-sm">No cohort labels detected or limited database access</span>
               </div>
             )}
@@ -838,10 +853,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             <button
               key={key}
               onClick={() => setActiveLeaderboard(key as LeaderboardType)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative overflow-hidden ${
                 activeLeaderboard === key
-                  ? 'bg-primary-500 text-white shadow-lg'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border border-white/20'
+                  : 'bg-white/10 text-white/70 hover:bg-emerald-500/20 hover:text-white hover:border-emerald-400/30 border border-transparent'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -867,7 +882,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 placeholder="Search by username, full name"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               />
             </div>
 
@@ -877,7 +892,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
               <select
                 value={cohortFilter}
                 onChange={(e) => setCohortFilter(e.target.value)}
-                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="bg-white/10 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               >
                 {availableCohorts.map(cohort => (
                   <option key={cohort} value={cohort}>
@@ -890,7 +905,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
               <select
                 value={minLevel}
                 onChange={(e) => setMinLevel(Number(e.target.value))}
-                className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="bg-white/10 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               >
                 <option value={1}>All Levels</option>
                 <option value={5}>Level 5+</option>
@@ -904,7 +919,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
               {/* Sort Order */}
               <button
                 onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                className="flex items-center space-x-2 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all"
+                className="flex items-center space-x-2 px-3 py-3 bg-white/10 hover:bg-emerald-500/20 border border-white/20 hover:border-emerald-400/30 rounded-xl text-white transition-all duration-300 backdrop-blur-sm"
               >
                 {sortOrder === 'desc' ? <SortDesc className="w-4 h-4" /> : <SortAsc className="w-4 h-4" />}
                 <span className="text-sm">{sortOrder === 'desc' ? 'High to Low' : 'Low to High'}</span>
@@ -920,7 +935,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Card className="p-4 bg-gradient-to-r from-primary-500/10 to-primary-600/10 border border-primary-500/20">
+            <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 backdrop-blur-xl rounded-2xl shadow-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   {getRankIcon(currentUserRank)}
@@ -930,11 +945,11 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-primary-400">#{currentUserRank}</p>
+                  <p className="text-2xl font-bold text-emerald-400">#{currentUserRank}</p>
                   <p className="text-white/60 text-sm">of {totalUsers}</p>
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         )}
 
@@ -943,13 +958,15 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
         >
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-white flex items-center">
-              <Trophy className="w-5 h-5 mr-2 text-primary-400" />
+              <div className="w-6 h-6 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-lg flex items-center justify-center mr-3 backdrop-blur-sm border border-emerald-400/20">
+                <Trophy className="w-3.5 h-3.5 text-emerald-400" />
+              </div>
               {getLeaderboardTitle()}
-              <span className="ml-2 text-primary-400">({filteredAndSortedUsers.length})</span>
+              <span className="ml-2 text-emerald-400">({filteredAndSortedUsers.length})</span>
             </h3>
             
             <div className="flex items-center space-x-2">
@@ -957,7 +974,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
               <select
                 value={limit}
                 onChange={(e) => setLimit(Number(e.target.value))}
-                className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               >
                 <option value={50}>50</option>
                 <option value={100}>100</option>
@@ -967,7 +984,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             </div>
           </div>
 
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2 max-h-96 overflow-y-auto custom-scrollbar">
             {filteredAndSortedUsers.slice(0, limit).map((userData: EnhancedUser, index: number) => {
               
               const position = getActualUserPosition(userData.id) || (index + 1)
@@ -980,9 +997,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.02 }}
-                  className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                  className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-300 backdrop-blur-sm ${
                     isCurrentUser
-                      ? 'bg-primary-500/20 border-primary-500/30 ring-1 ring-primary-500/20'
+                      ? 'bg-emerald-500/20 border-emerald-500/30 ring-1 ring-emerald-500/20 shadow-lg shadow-emerald-500/10'
                       : getRankColors(position)
                   }`}
                 >
@@ -1008,7 +1025,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                           )}
                         </div>
                         {isCurrentUser && (
-                          <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded text-xs font-medium">
+                          <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium border border-emerald-400/30">
                             You
                           </span>
                         )}
@@ -1023,7 +1040,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                             {userData.userLabels.map((userLabel, labelIndex) => (
                               <span 
                                 key={userLabel.id || labelIndex}
-                                className="px-1.5 py-0.5 bg-cyan-400/20 text-cyan-400 rounded text-xs font-medium border border-cyan-400/30"
+                                className="px-1.5 py-0.5 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 text-emerald-400 rounded-lg text-xs font-medium border border-emerald-400/30 backdrop-blur-sm"
                                 title={`Cohort Label: ${userLabel.label.name}`}
                               >
                                 🏷️ {userLabel.label.name}
@@ -1032,7 +1049,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                           </div>
                         )}
                         {(!userData.userLabels || userData.userLabels.length === 0) && (
-                          <span className="text-amber-400 text-xs">No cohort labels</span>
+                          <span className="text-yellow-400 text-xs">No cohort labels</span>
                         )}
                         <span className="ml-auto">Joined {formatDate(userData.createdAt)}</span>
                       </div>
@@ -1062,9 +1079,9 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+          <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
               <span className="ml-3 text-white/70">Loading leaderboard data...</span>
             </div>
           </div>
@@ -1084,6 +1101,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             </p>
           </motion.div>
         )}
+        </div>
       </div>
     </div>
   )
@@ -1107,7 +1125,7 @@ const StatCard = ({
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
-    className={`bg-gradient-to-br ${color} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+    className={`bg-gradient-to-br ${color} backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-emerald-400/30 transition-all duration-300 hover:transform hover:scale-105 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10`}
   >
     <div className="flex items-center justify-between mb-4">
       <div className={`p-3 rounded-xl bg-white/20 backdrop-blur-sm`}>

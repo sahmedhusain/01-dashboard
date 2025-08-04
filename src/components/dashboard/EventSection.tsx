@@ -482,8 +482,8 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
               {/* Event Details */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-purple-400" />
+                  <div className="w-8 h-8 bg-gradient-to-r from-teal-500/30 to-cyan-500/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-teal-400/20">
+                    <Clock className="w-4 h-4 text-teal-400" />
                   </div>
                   <div>
                     <div className="text-white font-medium">{formatDate(event.createdAt)}</div>
@@ -493,8 +493,8 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
 
                 {event.endAt && (
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-red-400" />
+                    <div className="w-8 h-8 bg-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-cyan-400/20">
+                      <Clock className="w-4 h-4 text-cyan-400" />
                     </div>
                     <div>
                       <div className="text-white font-medium">{formatDateTime(event.endAt)}</div>
@@ -506,12 +506,12 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
 
               {/* Participants Dropdown */}
               <div
-                className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700/50 cursor-pointer hover:bg-slate-700/30 rounded-lg p-3 transition-colors"
+                className="flex items-center justify-between mt-6 pt-4 border-t border-white/10 cursor-pointer hover:bg-emerald-500/10 rounded-xl p-3 transition-all duration-300 hover:border-emerald-400/30"
                 onClick={() => setSelectedEvent(selectedEvent === event.id ? null : event.id)}
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
-                    <Users className="w-4 h-4 text-primary-400" />
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
+                    <Users className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
                     <div className="text-white font-medium">Participants</div>
@@ -533,17 +533,17 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 bg-slate-900/50 rounded-lg p-4 border border-slate-700/30"
+                  className="mt-4 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-xl p-4 border border-emerald-400/20 backdrop-blur-sm"
                 >
                   {(participantsLoading || participantUsersLoading) ? (
                     <div className="flex items-center justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
                       <span className="ml-3 text-slate-400">Loading participants...</span>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2 mb-4 pb-2 border-b border-slate-700/50">
-                        <UserCheck className="w-5 h-5 text-primary-400" />
+                        <UserCheck className="w-5 h-5 text-emerald-400" />
                         <span className="text-white font-semibold">
                           Event Participants ({participantsData?.event_user?.length || 0})
                         </span>
@@ -554,10 +554,10 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
                           const userData = participantUsersData?.user_public_view?.find((u: any) => u.id === participant.userId);
                           
                           return (
-                            <div key={participant.id} className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 hover:bg-slate-800/70 transition-colors">
+                            <div key={participant.id} className="flex items-center justify-between bg-white/5 rounded-xl p-3 hover:bg-emerald-500/10 transition-all duration-300 border border-white/5 hover:border-emerald-400/20">
                               <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 bg-gradient-to-br from-primary-500/30 to-primary-600/30 rounded-full flex items-center justify-center border border-primary-500/20">
-                                  <span className="text-primary-300 text-sm font-semibold">
+                                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 rounded-full flex items-center justify-center border border-emerald-500/20 backdrop-blur-sm">
+                                  <span className="text-emerald-300 text-sm font-semibold">
                                     {userData?.firstName?.[0] || userData?.login?.[0] || 'U'}
                                   </span>
                                 </div>
@@ -614,7 +614,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
               setItemsPerPage(Number(e.target.value));
               setCurrentPage(1);
             }}
-            className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
           >
             <option value={20}>20</option>
             <option value={50}>50</option>
@@ -629,14 +629,14 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
+              className="p-2 bg-white/10 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500/20 hover:border-emerald-400/30 border border-transparent transition-all duration-300"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-2 bg-white/10 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/20 transition-colors"
+              className="p-2 bg-white/10 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500/20 hover:border-emerald-400/30 border border-transparent transition-all duration-300"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -649,7 +649,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-red-500/20 border border-red-500/30 rounded-lg p-4"
+          className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 backdrop-blur-sm"
         >
           <p className="text-red-200 text-sm">
             Some event data may be unavailable. Using cached data where possible.

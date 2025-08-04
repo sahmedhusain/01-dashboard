@@ -860,17 +860,17 @@ You can try accessing the project directly:
 
   const getLanguageColor = (language: string) => {
     const colors: Record<string, string> = {
-      'go': 'text-cyan-400 bg-cyan-500/20 border-cyan-500/30',
-      'js': 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
-      'javascript': 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
-      'python': 'text-blue-400 bg-blue-500/20 border-blue-500/30',
+      'go': 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30',
+      'js': 'text-teal-400 bg-teal-500/20 border-teal-500/30',
+      'javascript': 'text-teal-400 bg-teal-500/20 border-teal-500/30',
+      'python': 'text-cyan-400 bg-cyan-500/20 border-cyan-500/30',
       'rust': 'text-orange-400 bg-orange-500/20 border-orange-500/30',
       'java': 'text-red-400 bg-red-500/20 border-red-500/30',
       'c': 'text-gray-400 bg-gray-500/20 border-gray-500/30',
       'dom': 'text-purple-400 bg-purple-500/20 border-purple-500/30',
       'blockchain': 'text-indigo-400 bg-indigo-500/20 border-indigo-500/30',
     };
-    return colors[language.toLowerCase()] || 'text-blue-400 bg-blue-500/20 border-blue-500/30';
+    return colors[language.toLowerCase()] || 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30';
   };
 
   const TreeNodeComponent: React.FC<{ node: TreeNode; depth: number }> = ({ node, depth }) => {
@@ -886,10 +886,10 @@ You can try accessing the project directly:
       >
         <motion.div
           whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-          className={`flex items-center py-2 px-3 rounded-lg cursor-pointer transition-all duration-200 ${
+          className={`flex items-center py-2 px-3 rounded-xl cursor-pointer transition-all duration-300 ${
             isSelected 
-              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-              : 'hover:bg-white/5 text-white/80'
+              ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-400/30 shadow-lg shadow-emerald-500/10' 
+              : 'hover:bg-white/5 text-white/80 hover:border-emerald-400/20 border border-transparent'
           }`}
           style={{ paddingLeft: `${depth * 16 + 12}px` }}
           onClick={() => {
@@ -914,11 +914,11 @@ You can try accessing the project directly:
           <div className="w-4 h-4 flex items-center justify-center mr-3">
             {hasChildren ? (
               <motion.div whileHover={{ scale: 1.1 }}>
-                <Folder className="w-4 h-4 text-yellow-400" />
+                <Folder className="w-4 h-4 text-emerald-400" />
               </motion.div>
             ) : (
               <motion.div whileHover={{ scale: 1.1 }}>
-                <FileText className="w-4 h-4 text-blue-400" />
+                <FileText className="w-4 h-4 text-teal-400" />
               </motion.div>
             )}
           </div>
@@ -960,13 +960,13 @@ You can try accessing the project directly:
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full relative flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white/70">Loading projects...</p>
         </motion.div>
       </div>
@@ -975,7 +975,7 @@ You can try accessing the project directly:
 
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full relative flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -989,36 +989,47 @@ You can try accessing the project directly:
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 min-h-full relative">
-      {/* Background Effects */}
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative">
+      {/* Enhanced Background Pattern */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 40px 40px, rgba(59, 130, 246, 0.1) 2px, transparent 0)`,
-          backgroundSize: '80px 80px'
+          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+          backgroundSize: '70px 70px'
         }}></div>
       </div>
 
       <div className="relative z-10 space-y-8 p-6">
-        {/* Enhanced Header */}
+        {/* Enhanced Header with Animation */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-4"
+          className="text-center space-y-6"
         >
           <motion.div 
-            whileHover={{ scale: 1.05, rotate: 5 }}
-            className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/10 mb-4"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-xl border border-emerald-400/30 mb-6 shadow-2xl shadow-emerald-500/20 relative overflow-hidden"
           >
-            <Book className="w-10 h-10 text-blue-400" />
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
+            <Book className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
           </motion.div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-            Subjects Dashboard
-          </h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Explore <span className="text-blue-400 font-semibold">{projects.length}</span> Projects & Exercises
-          </p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+              Subjects Dashboard
+            </h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              Explore <span className="text-emerald-400 font-semibold">{projects.length}</span> projects & exercises
+            </p>
+          </motion.div>
         </motion.div>
 
         {/* Search and Filters */}
@@ -1026,11 +1037,11 @@ You can try accessing the project directly:
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+          className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
         >
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-purple-500/20 rounded-lg">
-              <Search className="w-5 h-5 text-purple-400" />
+            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
+              <Search className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-white">Search & Filter Projects</h3>
@@ -1047,7 +1058,7 @@ You can try accessing the project directly:
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent backdrop-blur-sm transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
               />
             </div>
 
@@ -1055,7 +1066,7 @@ You can try accessing the project directly:
               whileFocus={{ scale: 1.02 }}
               value={languageFilter}
               onChange={(e) => setLanguageFilter(e.target.value)}
-              className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-400 backdrop-blur-sm transition-all"
+              className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
             >
               <option value="" className="bg-gray-800">All Languages</option>
               {availableLanguages.map((language) => (
@@ -1069,7 +1080,7 @@ You can try accessing the project directly:
               whileFocus={{ scale: 1.02 }}
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-400 backdrop-blur-sm transition-all"
+              className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
             >
               <option value="" className="bg-gray-800">All Types</option>
               {availableTypes.map((type) => (
@@ -1083,7 +1094,7 @@ You can try accessing the project directly:
               whileFocus={{ scale: 1.02 }}
               value={difficultyFilter}
               onChange={(e) => setDifficultyFilter(e.target.value)}
-              className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-400 backdrop-blur-sm transition-all"
+              className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 backdrop-blur-sm transition-all duration-300"
             >
               <option value="" className="bg-gray-800">All Difficulties</option>
               {availableDifficulties.map((difficulty) => (
@@ -1105,7 +1116,7 @@ You can try accessing the project directly:
                   <motion.span 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm border border-blue-500/20"
+                    className="px-3 py-1 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 rounded-full text-sm border border-emerald-400/30 backdrop-blur-sm"
                   >
                     Search: "{searchTerm}"
                   </motion.span>
@@ -1114,7 +1125,7 @@ You can try accessing the project directly:
                   <motion.span 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm border border-green-500/20"
+                    className="px-3 py-1 bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-400 rounded-full text-sm border border-teal-400/30 backdrop-blur-sm"
                   >
                     Language: {languageFilter}
                   </motion.span>
@@ -1123,7 +1134,7 @@ You can try accessing the project directly:
                   <motion.span 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm border border-purple-500/20"
+                    className="px-3 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 rounded-full text-sm border border-cyan-400/30 backdrop-blur-sm"
                   >
                     Type: {typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)}
                   </motion.span>
@@ -1132,7 +1143,7 @@ You can try accessing the project directly:
                   <motion.span 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm border border-yellow-500/20"
+                    className="px-3 py-1 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 rounded-full text-sm border border-yellow-400/30 backdrop-blur-sm"
                   >
                     Difficulty: {difficultyFilter}
                   </motion.span>
@@ -1142,7 +1153,7 @@ You can try accessing the project directly:
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={clearFilters}
-                className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 border border-red-500/20 rounded-xl text-red-400 transition-all duration-300 backdrop-blur-sm text-sm"
+                className="px-4 py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 border border-red-500/30 rounded-xl text-red-400 transition-all duration-300 backdrop-blur-sm text-sm hover:scale-105"
               >
                 Clear All
               </motion.button>
@@ -1159,16 +1170,16 @@ You can try accessing the project directly:
         >
           {/* Tree Navigation Sidebar */}
           <div className="w-80 flex-shrink-0">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 h-[calc(100vh-300px)] flex flex-col sticky top-6">
+            <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 hover:border-emerald-400/20 transition-all duration-300 shadow-xl h-[calc(100vh-300px)] flex flex-col sticky top-6">
               <div className="p-4 border-b border-white/10 flex-shrink-0">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg border border-yellow-500/20">
-                    <Folder className="w-5 h-5 text-yellow-400" />
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
+                    <Folder className="w-4 h-4 text-emerald-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-white">Project Tree</h3>
                 </div>
               </div>
-              <div className="p-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-white/30">
+              <div className="p-3 flex-1 overflow-y-auto custom-scrollbar">
                 {Object.values(treeWithProjects)
                   .sort((a: TreeNode, b: TreeNode) => {
                     const aHasChildren = Object.keys(a.children).length > 0;
@@ -1195,13 +1206,13 @@ You can try accessing the project directly:
                 className="space-y-6"
               >
                 {/* Project Stats and Metadata */}
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+                <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10">
                   <div className="flex items-center space-x-4 mb-6">
                     <motion.div 
                       whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="p-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl border border-green-500/20"
+                      className="p-3 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-xl border border-emerald-400/30 backdrop-blur-sm"
                     >
-                      <Target className="w-6 h-6 text-green-400" />
+                      <Target className="w-6 h-6 text-emerald-400" />
                     </motion.div>
                     <div>
                       <h3 className="text-2xl font-bold text-white">
@@ -1353,7 +1364,7 @@ You can try accessing the project directly:
                         className="flex items-center justify-center py-12"
                       >
                         <div className="flex items-center space-x-3">
-                          <div className="w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-white/60">Loading {activeTab === 'readme' ? 'description' : 'questions'}...</span>
                         </div>
                       </motion.div>
@@ -1361,7 +1372,7 @@ You can try accessing the project directly:
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-track-white/10 scrollbar-thumb-white/30"
+                        className="max-h-96 overflow-y-auto custom-scrollbar"
                       >
                         <div 
                           className="prose prose-invert prose-sm max-w-none text-white/90 text-sm leading-relaxed markdown-content"

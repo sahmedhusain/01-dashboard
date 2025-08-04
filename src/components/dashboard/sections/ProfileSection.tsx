@@ -144,77 +144,111 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
   return (
     <div className="space-y-6 relative">
-      {/* Full Screen Background for Profile Section */}
-      <div className="fixed inset-0 opacity-20 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/3 to-purple-500/3"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 60px 60px, rgba(147, 51, 234, 0.08) 2px, transparent 0)`,
-          backgroundSize: '120px 120px'
-        }}></div>
-      </div>
-      <div className="relative z-10">
+      <div className="relative z-10 space-y-8">
       {/* Main Profile Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-8 border border-white/20"
+        className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl relative overflow-hidden"
       >
+        {/* Enhanced background pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 30px 30px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+            backgroundSize: '60px 60px'
+          }}></div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* User Info Container - Left Side */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Basic Profile Information */}
-            <div className="flex items-center space-x-6">
+            {/* Enhanced Basic Profile Information */}
+            <div className="flex items-center space-x-6 relative z-10">
               <div className="relative">
-                <Avatar
-                  user={{
-                    ...userData,
-                    attrs: {
-                      ...userData.attrs,
-                      avatarUrl: getAvatarUrl()
-                    }
-                  }}
-                  size="2xl"
-                  className="ring-4 ring-white/20 shadow-2xl"
-                />
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className="relative"
+                >
+                  <Avatar
+                    user={{
+                      ...userData,
+                      attrs: {
+                        ...userData.attrs,
+                        avatarUrl: getAvatarUrl()
+                      }
+                    }}
+                    size="2xl"
+                    className="ring-4 ring-emerald-500/30 shadow-2xl shadow-emerald-500/20"
+                  />
+                  {/* Animated glow effect */}
+                  <div className="absolute inset-0 ring-4 ring-emerald-400/20 rounded-full animate-pulse"></div>
+                </motion.div>
                 {analytics.performance && (
-                  <div className="absolute -bottom-2 -right-2 bg-primary-500 rounded-full p-2 border-2 border-white/20">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="absolute -bottom-2 -right-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full p-2 border-2 border-white/20 shadow-lg"
+                  >
                     <span className="text-lg">{analytics.performance.badge}</span>
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
               <div className="flex-1">
-                <h2 className="text-3xl font-bold text-white mb-2">
+                <motion.h2 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-2"
+                >
                   {userData.attrs?.displayName ||
                     `${userData.firstName || ''} ${userData.lastName || ''}`.trim() ||
                     user.login}
-                </h2>
-                <p className="text-white/70 text-lg mb-3">@{user.login}</p>
+                </motion.h2>
+                <motion.p 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-emerald-400 text-lg mb-3 font-medium"
+                >
+                  @{user.login}
+                </motion.p>
 
                 {analytics.performance && (
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="bg-primary-500/20 px-3 py-1 rounded-lg border border-primary-500/30">
-                      <span className="text-primary-400 font-semibold text-sm">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex items-center space-x-3 mb-4"
+                  >
+                    <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 px-4 py-2 rounded-xl border border-emerald-500/30 backdrop-blur-sm">
+                      <span className="text-emerald-400 font-semibold text-sm">
                         {analytics.performance.notation}
                       </span>
                     </div>
                     {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        {analytics.rawData.userLabels.map((userLabel) => (
-                          <div
+                        {analytics.rawData.userLabels.map((userLabel, index) => (
+                          <motion.div
                             key={userLabel.id}
-                            className="bg-cyan-400/20 px-3 py-1 rounded-lg border border-cyan-400/30"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.5 + index * 0.1 }}
+                            className="bg-gradient-to-r from-cyan-400/20 to-blue-400/20 px-3 py-1 rounded-xl border border-cyan-400/30 backdrop-blur-sm hover:from-cyan-400/30 hover:to-blue-400/30 transition-all duration-300"
                             title={userLabel.label.description}
                           >
                             <span className="text-cyan-400 font-semibold text-sm">
                               {userLabel.label.name}
                             </span>
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </div>
@@ -472,17 +506,51 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
           {/* Enhanced Level Container - Right Side */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-primary-500/20 to-primary-600/30 backdrop-blur-lg rounded-2xl p-6 border border-primary-500/30 shadow-2xl">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="bg-gradient-to-br from-emerald-500/20 to-teal-600/30 backdrop-blur-xl rounded-3xl p-6 border border-emerald-500/30 shadow-2xl relative overflow-hidden"
+            >
+              {/* Animated background */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 animate-pulse"></div>
+              </div>
+              
               {/* Level Header */}
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-500/20 rounded-full mb-4">
-                  <Trophy className="w-8 h-8 text-primary-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Current Level</h3>
-                <div className="text-6xl font-bold text-white mb-2 bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text text-transparent">
+              <div className="text-center mb-6 relative z-10">
+                <motion.div 
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                  className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full mb-4 border border-emerald-400/30 shadow-lg"
+                >
+                  <Trophy className="w-10 h-10 text-emerald-400 drop-shadow-lg" />
+                </motion.div>
+                <motion.h3 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="text-lg font-semibold text-white mb-2"
+                >
+                  Current Level
+                </motion.h3>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.7, type: "spring" }}
+                  className="text-6xl font-bold mb-2 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent drop-shadow-lg"
+                >
                   {analytics.level.current}
-                </div>
-                <div className="text-sm text-white/70">{analytics.performance?.notation || 'Student'}</div>
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-sm text-emerald-200 font-medium"
+                >
+                  {analytics.performance?.notation || 'Student'}
+                </motion.div>
               </div>
 
               {/* Progress Circle */}
@@ -576,20 +644,24 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </motion.div>
 
-      {/* Key Achievements Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Enhanced Key Achievements Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Academic Achievements */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-2xl relative overflow-hidden"
         >
+          {/* Background pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10"></div>
+          </div>
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Trophy className="w-5 h-5 mr-2 text-yellow-400" />
             Academic Achievements
@@ -648,8 +720,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-2xl relative overflow-hidden"
         >
+          {/* Background pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10"></div>
+          </div>
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Users className="w-5 h-5 mr-2 text-green-400" />
             Community Involvement

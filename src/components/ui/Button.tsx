@@ -18,13 +18,13 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent touch-target'
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent backdrop-blur-sm relative overflow-hidden group'
   
   const variantClasses = {
-    primary: 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-500 shadow-lg hover:shadow-xl',
-    secondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/20 focus:ring-white/50 backdrop-blur-sm',
-    outline: 'border border-primary-500 text-primary-400 hover:bg-primary-500 hover:text-white focus:ring-primary-500',
-    ghost: 'text-white hover:bg-white/10 focus:ring-white/50'
+    primary: 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white focus:ring-emerald-400/50 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 border border-emerald-400/30',
+    secondary: 'bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 text-white border border-white/20 hover:border-emerald-400/30 focus:ring-emerald-400/50 shadow-lg hover:shadow-xl',
+    outline: 'border border-emerald-500/50 text-emerald-400 hover:bg-gradient-to-r hover:from-emerald-500/10 hover:to-teal-500/10 hover:border-emerald-400 focus:ring-emerald-400/50 backdrop-blur-sm',
+    ghost: 'text-white hover:bg-gradient-to-r hover:from-emerald-500/10 hover:to-teal-500/10 focus:ring-emerald-400/50'
   }
   
   const sizeClasses = {
@@ -37,8 +37,10 @@ const Button: React.FC<ButtonProps> = ({
   
   return (
     <motion.button
-      whileHover={!isDisabled ? { scale: 1.02 } : {}}
-      whileTap={!isDisabled ? { scale: 0.98 } : {}}
+      whileHover={!isDisabled ? { scale: 1.02, y: -2 } : {}}
+      whileTap={!isDisabled ? { scale: 0.98, y: 0 } : {}}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       className={`
         ${baseClasses}
         ${variantClasses[variant]}
@@ -49,14 +51,21 @@ const Button: React.FC<ButtonProps> = ({
       disabled={isDisabled}
       {...props}
     >
-      {isLoading ? (
-        <div className="flex items-center">
-          <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-          <span className="text-xs sm:text-sm">Loading...</span>
-        </div>
-      ) : (
-        children
+      {/* Shimmer effect for primary buttons */}
+      {variant === 'primary' && !isDisabled && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
       )}
+      
+      <div className="relative z-10 flex items-center">
+        {isLoading ? (
+          <>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+            <span className="text-xs sm:text-sm">Loading...</span>
+          </>
+        ) : (
+          children
+        )}
+      </div>
     </motion.button>
   )
 }

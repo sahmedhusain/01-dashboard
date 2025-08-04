@@ -229,9 +229,18 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 flex flex-col relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 40px 40px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+          backgroundSize: '80px 80px'
+        }}></div>
+      </div>
+
       {/* Enhanced Header - Fixed */}
-      <header className="flex-shrink-0 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl">
+      <header className="flex-shrink-0 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl relative z-10">
         <div className="container-responsive">
           <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
             {/* Enhanced Logo/Title */}
@@ -240,16 +249,18 @@ const Dashboard: React.FC = () => {
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-2 sm:mr-3 lg:mr-4 flex-shrink-0 shadow-lg shadow-blue-500/25 border border-white/20"
+                className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-2 sm:mr-3 lg:mr-4 flex-shrink-0 shadow-lg shadow-emerald-500/25 border border-white/20 relative overflow-hidden"
               >
-                <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg" />
+                {/* Animated background pattern */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 animate-pulse"></div>
+                <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg relative z-10" />
               </motion.div>
               <div className="min-w-0 flex-1">
                 <motion.h1 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent truncate"
+                  className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent truncate"
                 >
                   <span className="hidden sm:inline">Student Dashboard</span>
                   <span className="sm:hidden">Dashboard</span>
@@ -261,7 +272,7 @@ const Dashboard: React.FC = () => {
                   className="text-xs sm:text-sm lg:text-base text-white/70 truncate"
                 >
                   <span className="hidden xs:inline">Welcome, </span>
-                  <span className="text-blue-400 font-semibold">{user.login}</span>
+                  <span className="text-emerald-400 font-semibold">{user.login}</span>
                 </motion.p>
               </div>
             </div>
@@ -301,7 +312,7 @@ const Dashboard: React.FC = () => {
       </header>
 
       {/* Enhanced Navigation Tabs - Fixed */}
-      <nav className="flex-shrink-0 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl" role="navigation" aria-label="Dashboard navigation">
+      <nav className="flex-shrink-0 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl relative z-10" role="navigation" aria-label="Dashboard navigation">
         <div className="container-responsive">
           <div className="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-hide py-2 sm:py-3" role="tablist">
             {tabs.map((tab, index) => {
@@ -317,9 +328,9 @@ const Dashboard: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.05 }}
-                  className={`flex items-center justify-center lg:justify-start px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 lg:py-4 text-xs sm:text-sm font-bold rounded-xl sm:rounded-2xl transition-all duration-300 whitespace-nowrap min-w-0 shadow-lg touch-target ${
+                  className={`flex items-center justify-center lg:justify-start px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 lg:py-4 text-xs sm:text-sm font-bold rounded-xl sm:rounded-2xl transition-all duration-300 whitespace-nowrap min-w-0 shadow-lg touch-target relative overflow-hidden ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/30 border border-white/20'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-500/30 border border-white/20'
                       : 'bg-white/10 text-white/70 hover:text-white hover:bg-white/20 border border-white/10 hover:border-white/20'
                   }`}
                   aria-label={`Switch to ${tab.label} tab`}
@@ -328,12 +339,29 @@ const Dashboard: React.FC = () => {
                   tabIndex={0}
                   title={tab.label} 
                 >
-                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 flex-shrink-0 ${
-                    
-                    'lg:mr-2'
+                  {/* Active tab glow effect */}
+                  {isActive && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-xl"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                  
+                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 flex-shrink-0 lg:mr-2 relative z-10 ${
+                    isActive ? 'drop-shadow-lg' : ''
                   }`} />
+                  
                   {/* Show text only on desktop (lg and up) */}
-                  <span className="hidden lg:inline">{tab.label}</span>
+                  <span className="hidden lg:inline relative z-10">{tab.label}</span>
+                  
+                  {/* Hover effect */}
+                  {!isActive && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+                    />
+                  )}
                 </motion.button>
               )
             })}

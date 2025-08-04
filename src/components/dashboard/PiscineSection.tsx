@@ -117,163 +117,269 @@ const PiscineSection: React.FC<PiscineSectionProps> = ({ user, piscineType }) =>
   })
 
   return (
-    <div className="h-full w-full p-6 space-y-6 overflow-y-auto">
-      {/* Piscine Overview Cards */}
-      <PiscineStats
-        piscineType={piscineType}
-        totalXP={totalXP}
-        projectStats={projectStats}
-      />
-
-      {/* Enhanced Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Recent Piscine XP Gains */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2 text-primary-400" />
-            Recent XP Gains
-          </h3>
-          <div className="space-y-3">
-            {filteredTransactions.slice(0, 5).map((transaction: any, index: number) => (
-              <motion.div
-                key={transaction.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-400" />
-                  <div>
-                    <p className="text-white font-medium text-sm">
-                      {transaction.object?.name || transaction.path.split('/').pop() || 'Project'}
-                    </p>
-                    <p className="text-white/60 text-xs">
-                      {getRelativeTime(transaction.createdAt)}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-primary-400 font-bold text-sm">+{formatXPValue(transaction.amount)}</p>
-                </div>
-              </motion.div>
-            ))}
-            {filteredTransactions.length === 0 && (
-              <div className="text-center text-white/60 py-4">
-                <p className="text-sm">No XP gains found for this piscine</p>
-              </div>
-            )}
-          </div>
-        </Card>
-
-        {/* Recent Progress Updates */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Target className="w-5 h-5 mr-2 text-green-400" />
-            Recent Progress
-          </h3>
-          <div className="space-y-3">
-            {filteredProgresses.slice(0, 5).map((progress: any, index: number) => (
-              <motion.div
-                key={progress.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${progress.isDone ? 'bg-green-400' : 'bg-yellow-400'}`} />
-                  <div>
-                    <p className="text-white font-medium text-sm">
-                      {progress.path.split('/').pop() || 'Project'}
-                    </p>
-                    <p className="text-white/60 text-xs">
-                      {getRelativeTime(progress.updatedAt)}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    progress.isDone ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {progress.isDone ? 'Completed' : 'In Progress'}
-                  </span>
-                  {progress.grade && (
-                    <p className="text-white/60 text-xs mt-1">Grade: {formatGradeDetailed(progress.grade)}</p>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-            {filteredProgresses.length === 0 && (
-              <div className="text-center text-white/60 py-4">
-                <p className="text-sm">No progress found for this piscine</p>
-              </div>
-            )}
-          </div>
-        </Card>
+    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 h-full w-full relative">
+      {/* Enhanced Background Pattern */}
+      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+          backgroundSize: '70px 70px'
+        }}></div>
       </div>
-
-      {/* Enhanced Project Progress Overview */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <Award className="w-5 h-5 mr-2 text-primary-400" />
-          Piscine {piscineType.toUpperCase()} Progress Overview
-        </h3>
-        
-        {/* Enhanced Statistics Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white/5 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-white">{filteredProgresses.length}</p>
-            <p className="text-white/60 text-sm">Total Projects</p>
-          </div>
-          <div className="bg-white/5 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-green-400">{filteredProgresses.filter(p => p.isDone).length}</p>
-            <p className="text-white/60 text-sm">Completed</p>
-          </div>
-          <div className="bg-white/5 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-blue-400">{formatXPValue(filteredTransactions.reduce((sum, t) => sum + t.amount, 0))}</p>
-            <p className="text-white/60 text-sm">Total XP</p>
-          </div>
-          <div className="bg-white/5 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-yellow-400">
-              {filteredProgresses.filter(p => p.grade).length > 0 ? 
-                formatGradeDetailed(filteredProgresses.filter(p => p.grade).reduce((sum, p) => sum + p.grade, 0) / filteredProgresses.filter(p => p.grade).length) : 
-                '0%'
-              }
-            </p>
-            <p className="text-white/60 text-sm">Avg Grade</p>
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="mb-4">
-          <div className="flex justify-between text-sm text-white/60 mb-2">
-            <span>Completion Progress</span>
-            <span>
-              {filteredProgresses.length > 0 ? 
-                ((filteredProgresses.filter(p => p.isDone).length / filteredProgresses.length) * 100).toFixed(1) : 0
-              }%
-            </span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-3">
+      <div className="relative z-10 h-full w-full overflow-y-auto custom-scrollbar">
+        <div className="relative space-y-8 p-6">
+          {/* Enhanced Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center space-y-6"
+          >
+            <motion.div 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full backdrop-blur-xl border border-emerald-400/30 mb-6 shadow-2xl shadow-emerald-500/20 relative overflow-hidden"
+            >
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
+              <BookOpen className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
+            </motion.div>
+            
             <motion.div
-              className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ 
-                width: `${filteredProgresses.length > 0 ? 
-                  (filteredProgresses.filter(p => p.isDone).length / filteredProgresses.length) * 100 : 0
-                }%` 
-              }}
-              transition={{ duration: 1, ease: "easeOut" }}
-            />
-          </div>
-        </div>
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+                Piscine {piscineType.toUpperCase()}
+              </h1>
+              <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                Your intensive <span className="text-emerald-400 font-semibold">coding bootcamp</span> journey and progress
+              </p>
+            </motion.div>
+          </motion.div>
 
-        {/* Activity Summary */}
-        <div className="text-center text-white/60 text-sm">
-          {filteredTransactions.length} XP transactions • {filteredProgresses.length} projects tracked
+          {/* Piscine Overview Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <PiscineStats
+              piscineType={piscineType}
+              totalXP={totalXP}
+              projectStats={projectStats}
+            />
+          </motion.div>
+
+          {/* Enhanced Statistics Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            {/* Recent Piscine XP Gains */}
+            <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center mr-3 backdrop-blur-sm border border-emerald-400/20">
+                  <TrendingUp className="w-4 h-4 text-emerald-400" />
+                </div>
+                <span className="bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">Recent XP Gains</span>
+              </h3>
+              <div className="space-y-3">
+                {filteredTransactions.slice(0, 5).map((transaction: any, index: number) => (
+                  <motion.div
+                    key={transaction.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-xl border border-emerald-400/10 hover:border-emerald-400/30 transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 shadow-lg shadow-emerald-400/30" />
+                      <div>
+                        <p className="text-white font-medium text-sm">
+                          {transaction.object?.name || transaction.path.split('/').pop() || 'Project'}
+                        </p>
+                        <p className="text-white/60 text-xs">
+                          {getRelativeTime(transaction.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-emerald-400 font-bold text-sm drop-shadow-sm">+{formatXPValue(transaction.amount)}</p>
+                    </div>
+                  </motion.div>
+                ))}
+                {filteredTransactions.length === 0 && (
+                  <div className="text-center text-white/60 py-4">
+                    <p className="text-sm">No XP gains found for this piscine</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Recent Progress Updates */}
+            <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-teal-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-teal-500/10">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-teal-500/30 to-cyan-500/30 rounded-xl flex items-center justify-center mr-3 backdrop-blur-sm border border-teal-400/20">
+                  <Target className="w-4 h-4 text-teal-400" />
+                </div>
+                <span className="bg-gradient-to-r from-white to-teal-100 bg-clip-text text-transparent">Recent Progress</span>
+              </h3>
+              <div className="space-y-3">
+                {filteredProgresses.slice(0, 5).map((progress: any, index: number) => (
+                  <motion.div
+                    key={progress.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between p-3 bg-gradient-to-r from-teal-500/5 to-cyan-500/5 rounded-xl border border-teal-400/10 hover:border-teal-400/30 transition-all duration-300 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full shadow-lg ${
+                        progress.isDone 
+                          ? 'bg-gradient-to-r from-emerald-400 to-green-400 shadow-emerald-400/30' 
+                          : 'bg-gradient-to-r from-yellow-400 to-orange-400 shadow-yellow-400/30'
+                      }`} />
+                      <div>
+                        <p className="text-white font-medium text-sm">
+                          {progress.path.split('/').pop() || 'Project'}
+                        </p>
+                        <p className="text-white/60 text-xs">
+                          {getRelativeTime(progress.updatedAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className={`px-3 py-1.5 text-xs rounded-full font-semibold backdrop-blur-sm border ${
+                        progress.isDone 
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30' 
+                          : 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30'
+                      }`}>
+                        {progress.isDone ? 'Completed' : 'In Progress'}
+                      </span>
+                      {progress.grade && (
+                        <p className="text-white/60 text-xs mt-1">Grade: {formatGradeDetailed(progress.grade)}</p>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+                {filteredProgresses.length === 0 && (
+                  <div className="text-center text-white/60 py-4">
+                    <p className="text-sm">No progress found for this piscine</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Enhanced Project Progress Overview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
+          >
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center mr-3 backdrop-blur-sm border border-emerald-400/20">
+                <Award className="w-4 h-4 text-emerald-400" />
+              </div>
+              <span className="bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">
+                Piscine {piscineType.toUpperCase()} Progress Overview
+              </span>
+            </h3>
+            
+            {/* Enhanced Statistics Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-xl p-4 text-center border border-emerald-400/20 backdrop-blur-sm hover:bg-emerald-500/15 hover:border-emerald-400/40 transition-all duration-300"
+              >
+                <p className="text-3xl font-bold bg-gradient-to-r from-white to-emerald-100 bg-clip-text text-transparent">{filteredProgresses.length}</p>
+                <p className="text-white/70 text-sm font-medium mt-1">Total Projects</p>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 rounded-xl p-4 text-center border border-teal-400/20 backdrop-blur-sm hover:bg-teal-500/15 hover:border-teal-400/40 transition-all duration-300"
+              >
+                <p className="text-3xl font-bold text-teal-400 drop-shadow-sm">{filteredProgresses.filter(p => p.isDone).length}</p>
+                <p className="text-white/70 text-sm font-medium mt-1">Completed</p>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-xl p-4 text-center border border-cyan-400/20 backdrop-blur-sm hover:bg-cyan-500/15 hover:border-cyan-400/40 transition-all duration-300"
+              >
+                <p className="text-3xl font-bold text-cyan-400 drop-shadow-sm">{formatXPValue(filteredTransactions.reduce((sum, t) => sum + t.amount, 0))}</p>
+                <p className="text-white/70 text-sm font-medium mt-1">Total XP</p>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+                className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-4 text-center border border-green-400/20 backdrop-blur-sm hover:bg-green-500/15 hover:border-green-400/40 transition-all duration-300"
+              >
+                <p className="text-3xl font-bold text-green-400 drop-shadow-sm">
+                  {filteredProgresses.filter(p => p.grade).length > 0 ? 
+                    formatGradeDetailed(filteredProgresses.filter(p => p.grade).reduce((sum, p) => sum + p.grade, 0) / filteredProgresses.filter(p => p.grade).length) : 
+                    '0%'
+                  }
+                </p>
+                <p className="text-white/70 text-sm font-medium mt-1">Avg Grade</p>
+              </motion.div>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between text-sm text-white/70 mb-3">
+                <span className="font-medium">Completion Progress</span>
+                <span className="font-bold text-emerald-400">
+                  {filteredProgresses.length > 0 ? 
+                    ((filteredProgresses.filter(p => p.isDone).length / filteredProgresses.length) * 100).toFixed(1) : 0
+                  }%
+                </span>
+              </div>
+              <div className="w-full bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-full h-4 border border-white/10 shadow-inner">
+                <motion.div
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 h-4 rounded-full shadow-lg shadow-emerald-500/30 relative overflow-hidden"
+                  initial={{ width: 0 }}
+                  animate={{ 
+                    width: `${filteredProgresses.length > 0 ? 
+                      (filteredProgresses.filter(p => p.isDone).length / filteredProgresses.length) * 100 : 0
+                    }%` 
+                  }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-pulse"></div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Activity Summary */}
+            <div className="text-center">
+              <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl px-6 py-3 border border-emerald-400/20 backdrop-blur-sm">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                  <span className="text-white/70 text-sm font-medium">{filteredTransactions.length} XP transactions</span>
+                </div>
+                <div className="w-px h-4 bg-white/20"></div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+                  <span className="text-white/70 text-sm font-medium">{filteredProgresses.length} projects tracked</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }

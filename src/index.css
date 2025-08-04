@@ -1,24 +1,48 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import './styles/responsive.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Dark theme (default) */
   body {
-    @apply bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 text-white font-sans;
-    @apply min-h-screen antialiased;
+    @apply bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white font-sans;
+    @apply min-h-screen antialiased transition-colors duration-300;
+  }
+
+  /* Light theme */
+  .light body {
+    @apply bg-gradient-to-br from-slate-50 via-white to-emerald-50 text-slate-900;
   }
 
   html {
     @apply scroll-smooth;
   }
+
+  /* Theme-aware scrollbar */
+  :root {
+    --scrollbar-track: rgba(30, 41, 59, 0.3);
+    --scrollbar-thumb: rgba(52, 211, 153, 0.4);
+    --scrollbar-thumb-hover: rgba(52, 211, 153, 0.6);
+  }
+
+  .light {
+    --scrollbar-track: rgba(241, 245, 249, 0.8);
+    --scrollbar-thumb: rgba(52, 211, 153, 0.6);
+    --scrollbar-thumb-hover: rgba(52, 211, 153, 0.8);
+  }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-material-lg;
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg;
     @apply p-4 sm:p-6 lg:p-8; /* Responsive padding */
+  }
+
+  .light .glass-card {
+    @apply bg-slate-800/10 border-slate-800/20;
   }
 
   .glass-button {
@@ -54,6 +78,11 @@
     @apply transition-all duration-300 outline-none backdrop-blur-sm;
     @apply text-sm sm:text-base hover:border-slate-500; /* Responsive text size */
     @apply focus:bg-slate-800/70 focus:shadow-lg focus:shadow-emerald-500/10;
+  }
+
+  .light .material-input {
+    @apply bg-white/80 border border-slate-300 text-slate-900 placeholder-slate-500;
+    @apply hover:border-slate-400 focus:bg-white focus:shadow-emerald-500/20;
   }
 
   /* Enhanced card variants */
@@ -227,10 +256,10 @@
     @apply transition-all duration-300 hover:scale-105 hover:shadow-material-xl;
   }
 
-  /* Enhanced custom scrollbar with emerald theme */
+  /* Enhanced custom scrollbar with theme support */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(52, 211, 153, 0.4) rgba(30, 41, 59, 0.3);
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -238,19 +267,19 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(30, 41, 59, 0.3);
+    background: var(--scrollbar-track);
     border-radius: 4px;
     margin: 2px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(52, 211, 153, 0.4), rgba(20, 184, 166, 0.4));
+    background: linear-gradient(180deg, var(--scrollbar-thumb), rgba(20, 184, 166, 0.4));
     border-radius: 4px;
     border: 1px solid rgba(52, 211, 153, 0.2);
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(52, 211, 153, 0.6), rgba(20, 184, 166, 0.6));
+    background: linear-gradient(180deg, var(--scrollbar-thumb-hover), rgba(20, 184, 166, 0.6));
     box-shadow: 0 0 8px rgba(52, 211, 153, 0.3);
   }
 

@@ -5,12 +5,18 @@ interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg'
   className?: string
   text?: string
+  variant?: 'default' | 'minimal' | 'pulse' | 'dots'
+  color?: 'emerald' | 'blue' | 'purple' | 'orange'
+  fullScreen?: boolean
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
   size = 'md', 
   className = '',
-  text = 'Loading...'
+  text = 'Loading...',
+  variant = 'default',
+  color = 'emerald',
+  fullScreen = false
 }) => {
   const sizeClasses = {
     sm: 'w-6 h-6 sm:w-8 sm:h-8',
@@ -30,8 +36,120 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     lg: 'w-5 h-5 sm:w-6 sm:h-6'
   }
 
+  const colorVariants = {
+    emerald: {
+      primary: 'emerald-400',
+      secondary: 'teal-400',
+      light: 'emerald-500/20',
+      shadow: 'emerald-500/25'
+    },
+    blue: {
+      primary: 'blue-400',
+      secondary: 'cyan-400',
+      light: 'blue-500/20',
+      shadow: 'blue-500/25'
+    },
+    purple: {
+      primary: 'purple-400',
+      secondary: 'violet-400',
+      light: 'purple-500/20',
+      shadow: 'purple-500/25'
+    },
+    orange: {
+      primary: 'orange-400',
+      secondary: 'amber-400',
+      light: 'orange-500/20',
+      shadow: 'orange-500/25'
+    }
+  }
+
+  const colors = colorVariants[color]
+  const containerClass = fullScreen 
+    ? 'fixed inset-0 bg-slate-900/80 dark:bg-slate-900/80 light:bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center' 
+    : `flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 ${className}`
+
+  // Render different variants
+  if (variant === 'minimal') {
+    return (
+      <div className={containerClass}>
+        <motion.div
+          className={`${sizeClasses[size]} border-2 border-transparent border-t-${colors.primary} rounded-full`}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+        {text && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`mt-3 text-white/80 dark:text-white/80 light:text-slate-600 ${textSizes[size]}`}
+          >
+            {text}
+          </motion.p>
+        )}
+      </div>
+    )
+  }
+
+  if (variant === 'pulse') {
+    return (
+      <div className={containerClass}>
+        <motion.div
+          className={`${sizeClasses[size]} bg-gradient-to-r from-${colors.primary} to-${colors.secondary} rounded-full`}
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.6, 1, 0.6]
+          }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {text && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`mt-3 text-white/80 dark:text-white/80 light:text-slate-600 ${textSizes[size]}`}
+          >
+            {text}
+          </motion.p>
+        )}
+      </div>
+    )
+  }
+
+  if (variant === 'dots') {
+    return (
+      <div className={containerClass}>
+        <div className="flex space-x-2">
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className={`w-3 h-3 bg-gradient-to-r from-${colors.primary} to-${colors.secondary} rounded-full`}
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [0.4, 1, 0.4]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.3,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+        </div>
+        {text && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`mt-3 text-white/80 dark:text-white/80 light:text-slate-600 ${textSizes[size]}`}
+          >
+            {text}
+          </motion.p>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div className={`flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 ${className}`}>
+    <div className={containerClass}>
       <div className="relative">
         {/* Outer glowing ring */}
         <motion.div

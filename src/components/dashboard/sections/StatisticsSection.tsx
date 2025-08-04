@@ -399,7 +399,7 @@ const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
-    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl`}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 dark:from-slate-800/50 dark:to-slate-900/50 light:from-white/80 light:to-slate-50/80'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 dark:border-white/10 light:border-slate-300/30 hover:border-white/20 dark:hover:border-white/20 light:hover:border-slate-400/50 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl group`}
   >
     <div className="flex items-center justify-between mb-4">
       <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
@@ -413,9 +413,9 @@ const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient
         </div>
       )}
     </div>
-    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
-    <p className="text-white/70 text-sm font-medium">{title}</p>
-    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+    <h3 className="text-3xl font-bold text-white dark:text-white light:text-slate-900 mb-2 tracking-tight group-hover:scale-110 transition-transform duration-300">{value}</h3>
+    <p className="text-white/70 dark:text-white/70 light:text-slate-700 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 dark:text-white/50 light:text-slate-600 text-xs mt-2 bg-white/5 dark:bg-white/5 light:bg-slate-800/10 rounded-lg px-2 py-1">{subValue}</p>}
   </motion.div>
 );
 

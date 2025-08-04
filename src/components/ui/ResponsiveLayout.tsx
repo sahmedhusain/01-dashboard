@@ -8,6 +8,9 @@ interface ResponsiveLayoutProps {
   className?: string
   animate?: boolean
   safeArea?: boolean
+  background?: 'transparent' | 'glass' | 'solid'
+  centerContent?: boolean
+  minHeight?: boolean
 }
 
 const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
@@ -16,7 +19,10 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
   padding = true,
   className = '',
   animate = true,
-  safeArea = true
+  safeArea = true,
+  background = 'transparent',
+  centerContent = false,
+  minHeight = false
 }) => {
   const maxWidthClasses = {
     sm: 'max-w-sm',
@@ -28,12 +34,22 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
     full: 'max-w-full'
   }
 
+  const backgroundClasses = {
+    transparent: '',
+    glass: 'bg-white/10 dark:bg-white/10 light:bg-slate-800/10 backdrop-blur-lg border border-white/20 dark:border-white/20 light:border-slate-300/30 rounded-2xl shadow-lg',
+    solid: 'bg-slate-800 dark:bg-slate-800 light:bg-white rounded-2xl shadow-xl border border-white/10 dark:border-white/10 light:border-slate-200'
+  }
+
   const baseClasses = `
     ${maxWidthClasses[maxWidth]}
     mx-auto
     w-full
     ${padding ? 'px-4 sm:px-6 lg:px-8' : ''}
     ${safeArea ? 'safe-top safe-bottom' : ''}
+    ${centerContent ? 'flex flex-col items-center justify-center' : ''}
+    ${minHeight ? 'min-h-screen' : ''}
+    ${backgroundClasses[background]}
+    transition-all duration-300
     ${className}
   `
 

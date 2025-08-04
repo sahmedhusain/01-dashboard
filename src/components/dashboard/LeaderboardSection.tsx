@@ -8,10 +8,18 @@ import {
   Users,
   Crown,
   Target,
-  BarChart3,
   UserSearch,
   SortAsc,
-  SortDesc
+  SortDesc,
+  Star,
+  Flame,
+  Sparkles,
+  Shield,
+  Brain,
+  Heart,
+  Gem,
+  Hexagon,
+  Diamond
 } from 'lucide-react'
 import { useQuery } from '@apollo/client'
 
@@ -160,8 +168,8 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     })
     
     
-    const uniqueCohortLabels = cohortLabels.filter((label, index, array) => 
-      array.findIndex(l => l.name === label.name) === index
+    const uniqueCohortLabels = cohortLabels.filter((label: { name: string }, index: number, array: { name: string }[]) => 
+      array.findIndex((l: { name: string }) => l.name === label.name) === index
     )
     
     
@@ -176,7 +184,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
     
     if (allLabelsData?.label) {
       
-      allLabelsData.label.forEach(label => {
+      allLabelsData.label.forEach((label: { name: string; description?: string }) => {
         const labelName = label.name.toLowerCase()
         const description = label.description || ""
         
@@ -425,7 +433,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
       
       if (index < 10) {
-        
+        // Top 10 users - currently no special handling needed
       }
 
       return {
@@ -644,19 +652,62 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
   const getRankIcon = (position: number) => {
     switch (position) {
-      case 1: return <Crown className="w-5 h-5 text-yellow-400" />
-      case 2: return <Medal className="w-5 h-5 text-gray-300" />
-      case 3: return <Award className="w-5 h-5 text-amber-600" />
-      default: return <span className="text-white/60 font-bold">#{position}</span>
+      case 1: return (
+        <div className="relative flex items-center justify-center">
+          <Crown className="w-6 h-6 text-yellow-400 drop-shadow-lg" />
+          <Sparkles className="w-3 h-3 text-yellow-300 absolute -top-1 -right-1 animate-pulse" />
+        </div>
+      )
+      case 2: return (
+        <div className="relative flex items-center justify-center">
+          <Medal className="w-6 h-6 text-slate-300 drop-shadow-lg" />
+          <Star className="w-3 h-3 text-slate-200 absolute -top-1 -right-1" />
+        </div>
+      )
+      case 3: return (
+        <div className="relative flex items-center justify-center">
+          <Award className="w-6 h-6 text-amber-500 drop-shadow-lg" />
+          <Gem className="w-3 h-3 text-amber-400 absolute -top-1 -right-1" />
+        </div>
+      )
+      case 4: case 5: return <Trophy className="w-5 h-5 text-orange-400" />
+      case 6: case 7: case 8: case 9: case 10: return <Shield className="w-5 h-5 text-purple-400" />
+      default: {
+        if (position <= 20) return <Hexagon className="w-4 h-4 text-blue-400" />
+        if (position <= 50) return <Diamond className="w-4 h-4 text-emerald-400" />
+        return <span className="text-white/60 font-bold text-sm">#{position}</span>
+      }
+    }
+  }
+
+  const getRankNotation = (position: number) => {
+    switch (position) {
+      case 1: return { title: '👑 Legend', subtitle: 'Ultimate Champion', color: 'text-yellow-400' }
+      case 2: return { title: '🥈 Master', subtitle: 'Elite Performer', color: 'text-slate-300' }
+      case 3: return { title: '🥉 Expert', subtitle: 'Distinguished', color: 'text-amber-500' }
+      case 4: case 5: return { title: '🏆 Champion', subtitle: 'Top Tier', color: 'text-orange-400' }
+      case 6: case 7: case 8: case 9: case 10: return { title: '🛡️ Elite', subtitle: 'Top 10', color: 'text-purple-400' }
+      default: {
+        if (position <= 20) return { title: '⭐ Rising Star', subtitle: 'Top 20', color: 'text-blue-400' }
+        if (position <= 50) return { title: '💎 Achiever', subtitle: 'Top 50', color: 'text-emerald-400' }
+        if (position <= 100) return { title: '🚀 Climber', subtitle: 'Top 100', color: 'text-cyan-400' }
+        return { title: '🌟 Participant', subtitle: 'Keep Going!', color: 'text-white/60' }
+      }
     }
   }
 
   const getRankColors = (position: number) => {
     switch (position) {
-      case 1: return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30 shadow-lg shadow-yellow-500/10'
-      case 2: return 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-gray-400/30 shadow-lg shadow-gray-500/10'
-      case 3: return 'bg-gradient-to-r from-amber-600/20 to-amber-700/20 border-amber-600/30 shadow-lg shadow-amber-600/10'
-      default: return 'bg-gradient-to-r from-white/5 to-white/2 border-white/10 hover:bg-white/10 hover:border-emerald-400/20'
+      case 1: return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30 shadow-lg shadow-yellow-500/20 ring-1 ring-yellow-400/20'
+      case 2: return 'bg-gradient-to-r from-slate-400/20 to-slate-500/20 border-slate-400/30 shadow-lg shadow-slate-500/20 ring-1 ring-slate-300/20'
+      case 3: return 'bg-gradient-to-r from-amber-500/20 to-amber-600/20 border-amber-500/30 shadow-lg shadow-amber-500/20 ring-1 ring-amber-400/20'
+      case 4: case 5: return 'bg-gradient-to-r from-orange-500/15 to-orange-600/15 border-orange-500/25 shadow-md shadow-orange-500/15'
+      case 6: case 7: case 8: case 9: case 10: return 'bg-gradient-to-r from-purple-500/15 to-purple-600/15 border-purple-500/25 shadow-md shadow-purple-500/15'
+      default: {
+        if (position <= 20) return 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 border-blue-500/20 hover:bg-blue-500/15'
+        if (position <= 50) return 'bg-gradient-to-r from-emerald-500/10 to-emerald-600/10 border-emerald-500/20 hover:bg-emerald-500/15'
+        return 'bg-gradient-to-r from-white/5 to-white/2 border-white/10 hover:bg-white/10 hover:border-emerald-400/20'
+      }
     }
   }
 
@@ -752,42 +803,67 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-200 via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
                 Leaderboard Dashboard
               </h1>
-              <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                Rankings for <span className="text-emerald-400 font-semibold">{totalUsers}</span> students
+              <p className="text-xl text-white/70 max-w-3xl mx-auto">
+                Competitive rankings for <span className="text-yellow-400 font-bold">{totalUsers}</span> exceptional students 🚀
+                <br />
+                <span className="text-base text-white/60 mt-2 block">
+                  ✨ Celebrating excellence, dedication, and continuous growth ✨
+                </span>
               </p>
             </motion.div>
           </motion.div>
 
-        {/* BH Module Statistics */}
+        {/* Enhanced Statistics Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6"
         >
           <StatCard 
             icon={Users} 
             title="Total Students" 
             value={totalUsers.toLocaleString()} 
-            color="from-emerald-500/30 to-teal-500/30"
-            subValue="Participants"
+            color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+            bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+            subValue={`🚀 ${totalUsers > 100 ? 'Thriving' : 'Growing'} community`}
           />
           <StatCard 
-            icon={BarChart3} 
+            icon={TrendingUp} 
             title="Average Level" 
-            value={avgLevel.toFixed(1)} 
-            color="from-teal-500/30 to-cyan-500/30"
-            subValue={`Max: ${maxLevel}`}
+            value={`⚡ ${avgLevel.toFixed(1)}`} 
+            color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+            bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+            subValue={`🎯 Peak: ${maxLevel} | 🔥 ${avgLevel > 10 ? 'Exceptional' : avgLevel > 5 ? 'Strong' : 'Rising'}`}
+            trend={avgLevel > 5 ? { value: 12, isPositive: true } : undefined}
           />
           <StatCard 
-            icon={Target} 
-            title="Avg Audit Ratio" 
-            value={avgAuditRatio.toFixed(2)} 
-            color="from-cyan-500/30 to-emerald-500/30"
-            subValue="Community contribution"
+            icon={Heart} 
+            title="Community Score" 
+            value={`💯 ${avgAuditRatio.toFixed(2)}`} 
+            color="bg-gradient-to-r from-pink-500/30 to-rose-500/30"
+            bgGradient="bg-gradient-to-br from-pink-900/20 to-rose-900/20"
+            subValue={`🤝 ${avgAuditRatio > 1.5 ? 'Outstanding' : avgAuditRatio > 1 ? 'Excellent' : 'Building'} collaboration`}
+            trend={avgAuditRatio > 1 ? { value: 8, isPositive: true } : undefined}
+          />
+          <StatCard 
+            icon={Brain} 
+            title="Elite Members" 
+            value={`🏆 ${processedUsers.filter(u => u.level && u.level >= 10).length}`} 
+            color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+            bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+            subValue={`🎆 Level 10+ achievers`}
+          />
+          <StatCard 
+            icon={Flame} 
+            title="Rising Stars" 
+            value={`⭐ ${processedUsers.filter(u => u.level && u.level >= 5 && u.level < 10).length}`} 
+            color="bg-gradient-to-r from-orange-500/30 to-amber-500/30"
+            bgGradient="bg-gradient-to-br from-orange-900/20 to-amber-900/20"
+            subValue={`🚀 Level 5-9 climbers`}
           />
         </motion.div>
 
@@ -810,7 +886,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
           
           <div className="flex flex-wrap gap-2">
             {cohortLabels.length > 0 ? (
-              cohortLabels.map((label, index) => (
+              cohortLabels.map((label: { id: string; name: string; type: string; description?: string }, index: number) => (
                 <motion.span
                   key={label.id}
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -935,18 +1011,35 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 backdrop-blur-xl rounded-2xl shadow-xl">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  {getRankIcon(currentUserRank)}
+            <div className="p-6 bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border border-emerald-500/30 backdrop-blur-xl rounded-3xl shadow-2xl relative overflow-hidden">
+              {/* Animated background elements */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/5 to-teal-400/5 animate-pulse"></div>
+              <div className="absolute top-2 right-2 w-20 h-20 bg-gradient-to-br from-emerald-300/10 to-teal-300/10 rounded-full blur-xl"></div>
+              
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    {getRankIcon(currentUserRank)}
+                    {currentUserRank <= 3 && (
+                      <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-emerald-400/20 rounded-full animate-pulse"></div>
+                    )}
+                  </div>
                   <div>
-                    <p className="text-white font-medium">Your Current Position</p>
-                    <p className="text-white/60 text-sm">{getLeaderboardTitle()}</p>
+                    <p className="text-white font-bold text-lg">🎆 Your Elite Position</p>
+                    <p className="text-white/70 text-sm">{getLeaderboardTitle()}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className={`text-xs px-2 py-1 rounded-full ${getRankNotation(currentUserRank).color} bg-white/10 border border-current/30`}>
+                        {getRankNotation(currentUserRank).title}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-emerald-400">#{currentUserRank}</p>
-                  <p className="text-white/60 text-sm">of {totalUsers}</p>
+                  <p className="text-3xl font-bold text-emerald-400 mb-1">#{currentUserRank}</p>
+                  <p className="text-white/60 text-sm">of {totalUsers} students</p>
+                  <div className="text-xs text-emerald-300 mt-1">
+                    {getRankNotation(currentUserRank).subtitle}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1015,14 +1108,28 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <div className="flex flex-col">
-                          <h4 className="text-white font-medium">
-                            {userData.firstName && userData.lastName 
-                              ? `${userData.firstName} ${userData.lastName}` 
-                              : userData.login}
-                          </h4>
-                          {userData.firstName && userData.lastName && (
-                            <span className="text-xs text-white/60">@{userData.login}</span>
-                          )}
+                          <div className="flex items-center space-x-2">
+                            <h4 className="text-white font-medium">
+                              {userData.firstName && userData.lastName 
+                                ? `${userData.firstName} ${userData.lastName}` 
+                                : userData.login}
+                            </h4>
+                            {position <= 10 && (
+                              <span className={`text-xs px-2 py-0.5 rounded-full border ${getRankNotation(position).color} bg-white/5`}>
+                                {getRankNotation(position).title}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {userData.firstName && userData.lastName && (
+                              <span className="text-xs text-white/60">@{userData.login}</span>
+                            )}
+                            {position <= 50 && position > 10 && (
+                              <span className={`text-xs ${getRankNotation(position).color}`}>
+                                {getRankNotation(position).subtitle}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         {isCurrentUser && (
                           <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium border border-emerald-400/30">
@@ -1113,28 +1220,39 @@ const StatCard = ({
   title, 
   value, 
   color, 
-  subValue 
+  subValue,
+  trend,
+  bgGradient
 }: { 
   icon: React.ElementType
   title: string
   value: string | number
   color: string
   subValue?: string
+  trend?: { value: number, isPositive: boolean }
+  bgGradient?: string
 }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
-    className={`bg-gradient-to-br ${color} backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-emerald-400/30 transition-all duration-300 hover:transform hover:scale-105 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10`}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 dark:from-slate-800/50 dark:to-slate-900/50 light:from-white/80 light:to-slate-50/80'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 dark:border-white/10 light:border-slate-300/30 hover:border-white/20 dark:hover:border-white/20 light:hover:border-slate-400/50 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl group`}
   >
     <div className="flex items-center justify-between mb-4">
-      <div className={`p-3 rounded-xl bg-white/20 backdrop-blur-sm`}>
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
         <Icon className="w-8 h-8 text-white drop-shadow-lg" />
       </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
     </div>
-    <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{value}</h3>
-    <p className="text-white/70 text-sm font-medium">{title}</p>
-    {subValue && <p className="text-white/50 text-xs mt-2 bg-white/5 rounded-lg px-2 py-1">{subValue}</p>}
+    <h3 className="text-3xl font-bold text-white dark:text-white light:text-slate-900 mb-2 tracking-tight group-hover:scale-110 transition-transform duration-300">{value}</h3>
+    <p className="text-white/70 dark:text-white/70 light:text-slate-700 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 dark:text-white/50 light:text-slate-600 text-xs mt-2 bg-white/5 dark:bg-white/5 light:bg-slate-800/10 rounded-lg px-2 py-1">{subValue}</p>}
   </motion.div>
 )
 

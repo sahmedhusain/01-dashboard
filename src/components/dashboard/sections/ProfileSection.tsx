@@ -150,7 +150,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl relative overflow-hidden"
+        className="bg-gradient-to-br from-white/10 to-white/5 dark:from-white/10 dark:to-white/5 light:from-slate-800/10 light:to-slate-900/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-white/20 light:border-slate-800/20 shadow-2xl relative overflow-hidden hover:shadow-3xl transition-all duration-500"
       >
         {/* Enhanced background pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -203,7 +203,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-2"
+                  className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 dark:from-white dark:via-emerald-100 dark:to-teal-100 light:from-slate-900 light:via-emerald-800 light:to-teal-800 bg-clip-text text-transparent mb-2"
                 >
                   {userData.attrs?.displayName ||
                     `${userData.firstName || ''} ${userData.lastName || ''}`.trim() ||
@@ -510,7 +510,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="bg-gradient-to-br from-emerald-500/20 to-teal-600/30 backdrop-blur-xl rounded-3xl p-6 border border-emerald-500/30 shadow-2xl relative overflow-hidden"
+              className="bg-gradient-to-br from-emerald-500/20 to-teal-600/30 dark:from-emerald-500/20 dark:to-teal-600/30 light:from-emerald-500/30 light:to-teal-600/40 backdrop-blur-xl rounded-3xl p-6 border border-emerald-500/30 dark:border-emerald-500/30 light:border-emerald-500/50 shadow-2xl hover:shadow-3xl transition-all duration-500 relative overflow-hidden"
             >
               {/* Animated background */}
               <div className="absolute inset-0 opacity-10">

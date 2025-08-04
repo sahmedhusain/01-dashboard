@@ -4,6 +4,7 @@ import { ApolloProvider } from '@apollo/client'
 import client from './graphql/client'
 import { UserProvider } from './contexts/UserContext';
 import { RefreshProvider } from './contexts/RefreshContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { LoginPage, DashboardPage, ProfilePage, NotFoundPage } from './pages'
 import { useIsAuthenticated, useLogin, useSetLoading } from './store'
 import { getStoredAuthData, fetchUserData } from './utils/auth'
@@ -134,15 +135,17 @@ const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <ApolloProvider client={client}>
-        <RefreshProvider
-          defaultAutoRefreshInterval={60000}
-          enableNetworkDetection={true}
-          showRefreshNotifications={true}
-        >
-          <UserProvider>
-            <AppContent />
-          </UserProvider>
-        </RefreshProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="app-theme">
+          <RefreshProvider
+            defaultAutoRefreshInterval={60000}
+            enableNetworkDetection={true}
+            showRefreshNotifications={true}
+          >
+            <UserProvider>
+              <AppContent />
+            </UserProvider>
+          </RefreshProvider>
+        </ThemeProvider>
       </ApolloProvider>
     </ErrorBoundary>
   )

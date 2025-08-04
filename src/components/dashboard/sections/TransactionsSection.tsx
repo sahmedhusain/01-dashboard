@@ -295,10 +295,10 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
         transition={{ duration: 0.5, delay: 0.2 }}
         className="grid grid-cols-1 md:grid-cols-4 gap-4"
       >
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+        <div className="bg-white/10 dark:bg-white/10 light:bg-slate-800/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-white/20 light:border-slate-300/30 text-center hover:scale-105 transition-all duration-300">
           <Activity className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-white">{filteredTransactions.length}</div>
-          <div className="text-white/70 text-sm">Transactions</div>
+          <div className="text-2xl font-bold text-white dark:text-white light:text-slate-900">{filteredTransactions.length}</div>
+          <div className="text-white/70 dark:text-white/70 light:text-slate-600 text-sm">Transactions</div>
         </div>
 
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">

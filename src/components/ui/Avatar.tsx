@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { User as UserIcon } from 'lucide-react'
 import { User } from '../../types'
@@ -10,6 +10,61 @@ interface AvatarProps {
   showBorder?: boolean
   animate?: boolean
   onClick?: () => void
+}
+
+// Custom hook to handle authenticated avatar fetching
+const useAuthenticatedAvatar = (url: string | null, token: string | null) => {
+  const [authenticatedUrl, setAuthenticatedUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!url || !token || !url.includes('learn.reboot01.com')) {
+      setAuthenticatedUrl(url)
+      return
+    }
+
+    const fetchAvatar = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (response.ok) {
+          const blob = await response.blob()
+          const objectUrl = URL.createObjectURL(blob)
+          setAuthenticatedUrl(objectUrl)
+        } else {
+          setAuthenticatedUrl(null)
+        }
+      } catch (error) {
+        console.error('Failed to fetch authenticated avatar:', error)
+        setAuthenticatedUrl(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAvatar()
+
+    // Cleanup object URL on unmount
+    return () => {
+      // Cleanup function should be separate from the dependency array issue
+    }
+  }, [url, token])
+
+  // Cleanup effect for object URL
+  useEffect(() => {
+    return () => {
+      if (authenticatedUrl && authenticatedUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(authenticatedUrl)
+      }
+    }
+  }, [authenticatedUrl])
+
+  return { authenticatedUrl, loading }
 }
 
 const Avatar: React.FC<AvatarProps> = ({ 
@@ -85,9 +140,16 @@ const Avatar: React.FC<AvatarProps> = ({
       }
     }
 
-    
+    // If we have a login, try to get avatar from reboot01.com Git service
+    // Note: This requires authentication, will fallback to initials if fails
     if (user.login && typeof user.login === 'string') {
-      return `https://github.com/${user.login}.png`
+      // Check if we have a token available (you might want to get this from context/env)
+      const token = (typeof window !== 'undefined' && localStorage.getItem('reboot_token')) || null
+      if (token) {
+        return `https://learn.reboot01.com/git/${user.login}.png`
+      }
+      // Return URL anyway and let image error handling take care of authentication failures
+      return `https://learn.reboot01.com/git/${user.login}.png`
     }
 
     return null
@@ -123,7 +185,12 @@ const Avatar: React.FC<AvatarProps> = ({
 
   const avatarUrl = getAvatarUrl(user)
   const displayName = getDisplayName(user)
-  const shouldShowImage = avatarUrl && !imageError
+  
+  // Get token and use authenticated avatar hook
+  const token = (typeof window !== 'undefined' && localStorage.getItem('reboot_token')) || null
+  const { authenticatedUrl } = useAuthenticatedAvatar(avatarUrl, token)
+  
+  const shouldShowImage = authenticatedUrl && !imageError
 
   
   const getGradientColors = (login: string = 'default') => {
@@ -163,7 +230,7 @@ const Avatar: React.FC<AvatarProps> = ({
     <div className={baseClasses} onClick={onClick} {...props}>
       {shouldShowImage ? (
         <img
-          src={avatarUrl}
+          src={authenticatedUrl || avatarUrl}
           alt={`${user?.login || 'User'} avatar`}
           className="w-full h-full object-cover"
           onError={() => setImageError(true)}

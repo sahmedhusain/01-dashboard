@@ -46,13 +46,13 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(true)}
-          className="flex items-center justify-between w-full p-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl touch-target"
+          className="flex items-center justify-between w-full p-3 bg-white/10 dark:bg-white/10 light:bg-slate-800/10 backdrop-blur-sm border border-white/20 dark:border-white/20 light:border-slate-300/30 rounded-xl touch-target hover:bg-white/15 transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
             {activeItemData?.icon && (
               <activeItemData.icon className="w-5 h-5 text-white" />
             )}
-            <span className="text-white font-medium truncate">
+            <span className="text-white dark:text-white light:text-slate-900 font-medium truncate">
               {activeItemData?.label || 'Menu'}
             </span>
           </div>
@@ -79,7 +79,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-b from-slate-900 to-slate-800 border-l border-white/20 z-50 md:hidden"
+              className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-b from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-800 light:from-white light:to-slate-50 border-l border-white/20 dark:border-white/20 light:border-slate-300/50 z-50 md:hidden shadow-2xl"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-white/20">

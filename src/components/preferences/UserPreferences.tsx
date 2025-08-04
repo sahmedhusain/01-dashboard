@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Settings, Palette, Save, RotateCcw, RefreshCw, Database, GripVertical, ArrowUp, ArrowDown, Download, FileText, BarChart3, Users, Calendar, Activity, Target, CheckCircle, Award, TrendingUp, Lock } from 'lucide-react'
 import { useQuery, useLazyQuery, gql } from '@apollo/client'
 import { useUser } from '../../contexts/UserContext'
+import { useTheme, Theme } from '../../contexts/ThemeContext'
 import Card from '../ui/Card'
 import RefreshControl from '../ui/RefreshControl'
 
@@ -153,7 +154,6 @@ interface UserPreferencesProps {
 }
 
 interface Preferences {
-  theme: 'dark' | 'light' | 'auto'
   dashboard: {
     defaultTab: string
     tabOrder: string[]
@@ -161,7 +161,6 @@ interface Preferences {
 }
 
 const defaultPreferences: Preferences = {
-  theme: 'dark',
   dashboard: {
     defaultTab: 'dashboard',
     tabOrder: ['dashboard', 'piscines', 'leaderboard', 'groups', 'audits', 'checkpoints', 'events', 'subjects']
@@ -230,6 +229,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
 
   
   const { user: currentUser } = useUser()
+  const { theme, setTheme, toggleTheme } = useTheme()
 
   
   useEffect(() => {
@@ -533,17 +533,17 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                 <Card className="p-4">
                   <label className="block text-white font-medium mb-3">Theme</label>
                   <div className="space-y-2">
-                    {(['dark', 'light', 'auto'] as const).map((theme) => (
-                      <label key={theme} className="flex items-center">
+                    {(['dark', 'light', 'auto'] as const).map((themeOption) => (
+                      <label key={themeOption} className="flex items-center">
                         <input
                           type="radio"
                           name="theme"
-                          value={theme}
-                          checked={preferences.theme === theme}
-                          onChange={(e) => updatePreference('theme', 'theme', e.target.value)}
+                          value={themeOption}
+                          checked={theme === themeOption}
+                          onChange={(e) => setTheme(e.target.value as Theme)}
                           className="mr-3"
                         />
-                        <span className="text-white/80 capitalize">{theme}</span>
+                        <span className="text-white/80 capitalize">{themeOption}</span>
                       </label>
                     ))}
                   </div>

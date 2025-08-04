@@ -79,16 +79,27 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
                 stroke="white"
                 strokeWidth="2"
               />
-              {/* Tooltip on hover */}
+              {/* Enhanced tooltip on hover */}
               <circle
                 cx={point.x}
                 cy={point.y}
                 r="12"
                 fill="transparent"
-                className="hover:fill-white/10 cursor-pointer"
+                className="hover:fill-emerald-500/20 cursor-pointer transition-all duration-200"
               >
                 <title>{`${point.month}: ${formatXPValue(point.xp)} XP`}</title>
               </circle>
+              {/* Glow effect on hover */}
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r="6"
+                fill="#3B82F6"
+                className="opacity-0 hover:opacity-100 transition-opacity duration-200"
+                style={{
+                  filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))'
+                }}
+              />
             </g>
           ))}
 
@@ -403,7 +414,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+        className="bg-white/10 dark:bg-white/10 light:bg-slate-800/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 dark:border-white/20 light:border-slate-800/20 hover:shadow-lg transition-all duration-300"
       >
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
           <TrendingUp className="w-5 h-5 mr-2 text-blue-400" />

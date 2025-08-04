@@ -105,6 +105,11 @@ const ENHANCED_DASHBOARD_QUERY = gql`
       groupId
       eventId
       campus
+      object {
+        id
+        name
+        type
+      }
     }
     
     # User results with full details
@@ -385,6 +390,10 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
     
     const projectStats = calculateProjectStats(allProgress)
     const bhModuleProjectStats = projectStats.bhModule
+
+    const lastFinishedProject = allProgress
+      .filter((p: any) => p.isDone && p.object?.type === 'project')
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
     
     
     const totalProjects = projectStats.total
@@ -493,7 +502,11 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         skillData: skillData.skills 
       },
       projects: {
-        
+        lastFinished: lastFinishedProject ? {
+          name: lastFinishedProject.object?.name,
+          completedAt: lastFinishedProject.createdAt,
+          grade: lastFinishedProject.grade
+        } : null,
         completed: completedProjects,
         total: totalProjects,
         passed: passedProjects,

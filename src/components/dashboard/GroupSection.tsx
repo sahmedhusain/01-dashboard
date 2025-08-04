@@ -13,7 +13,8 @@ import {
   ChevronUp,
   UserPlus,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Star
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -26,7 +27,12 @@ interface GroupSectionProps {
 
 const ALL_GROUPS_QUERY = gql`
   query GetAllGroups($limit: Int = 50, $offset: Int = 0) {
-    group(limit: $limit, offset: $offset, order_by: {createdAt: desc}) {
+    group(
+      limit: $limit, 
+      offset: $offset, 
+      order_by: {createdAt: desc},
+      where: {path: {_like: "%bh-module%"}}
+    ) {
       id
       objectId
       eventId
@@ -44,7 +50,7 @@ const ALL_GROUPS_QUERY = gql`
       }
     }
 
-    group_aggregate {
+    group_aggregate(where: {path: {_like: "%bh-module%"}}) {
       aggregate {
         count
       }
@@ -54,45 +60,70 @@ const ALL_GROUPS_QUERY = gql`
 
 const GROUP_STATS_QUERY = gql`
   query GetGroupStats($userId: Int!) {
-    # All groups for general stats
-    all_groups: group {
+    # All groups for general stats (bh-module only)
+    all_groups: group(where: {path: {_like: "%bh-module%"}}) {
       id
       status
       captainId
     }
 
-    # Total groups count
-    group_aggregate {
+    # Total groups count (bh-module only)
+    group_aggregate(where: {path: {_like: "%bh-module%"}}) {
       aggregate {
         count
       }
     }
 
-    # User's captain groups count
-    captain_groups_aggregate: group_aggregate(where: {captainId: {_eq: $userId}}) {
+    # User's captain groups count (bh-module only)
+    captain_groups_aggregate: group_aggregate(
+      where: {
+        captainId: {_eq: $userId},
+        path: {_like: "%bh-module%"}
+      }
+    ) {
       aggregate {
         count
       }
     }
 
-    # User's member groups count  
-    member_groups_aggregate: group_user_aggregate(where: {userId: {_eq: $userId}}) {
+    # User's member groups count (bh-module only)
+    member_groups_aggregate: group_user_aggregate(
+      where: {
+        userId: {_eq: $userId},
+        group: {path: {_like: "%bh-module%"}}
+      }
+    ) {
       aggregate {
         count
       }
+    }
+
+    # Get user's groups for finding co-members (bh-module only)
+    user_groups: group_user(
+      where: {
+        userId: {_eq: $userId},
+        group: {path: {_like: "%bh-module%"}}
+      }
+    ) {
+      groupId
     }
   }
 `;
 
 const ALL_GROUPS_WITH_MEMBERS_QUERY = gql`
   query GetAllGroupsWithMembers($searchTerm: String!) {
-    # Search groups by member names
+    # Search groups by member names (bh-module only)
     group_user(
       where: {
-        _or: [
-          { user: { login: { _ilike: $searchTerm } } },
-          { user: { firstName: { _ilike: $searchTerm } } },
-          { user: { lastName: { _ilike: $searchTerm } } }
+        _and: [
+          { group: { path: { _like: "%bh-module%" } } },
+          {
+            _or: [
+              { user: { login: { _ilike: $searchTerm } } },
+              { user: { firstName: { _ilike: $searchTerm } } },
+              { user: { lastName: { _ilike: $searchTerm } } }
+            ]
+          }
         ]
       }
       distinct_on: groupId
@@ -153,10 +184,36 @@ const USER_GROUPS_QUERY = gql`
   }
 `;
 
+const CO_MEMBERS_QUERY = gql`
+  query GetCoMembers($groupIds: [Int!]!, $userId: Int!) {
+    group_user(
+      where: {
+        groupId: {_in: $groupIds},
+        userId: {_neq: $userId}
+      }
+    ) {
+      userId
+      groupId
+      user {
+        id
+        login
+        firstName
+        lastName
+      }
+    }
+  }
+`;
+
 const MY_GROUPS_QUERY = gql`
   query GetMyGroups($userId: Int!) {
-    # Groups where user is a captain
-    captainGroups: group(where: {captainId: {_eq: $userId}}, order_by: {createdAt: desc}) {
+    # Groups where user is a captain (bh-module only)
+    captainGroups: group(
+      where: {
+        captainId: {_eq: $userId},
+        path: {_like: "%bh-module%"}
+      }, 
+      order_by: {createdAt: desc}
+    ) {
       id
       objectId
       eventId
@@ -174,8 +231,13 @@ const MY_GROUPS_QUERY = gql`
       }
     }
 
-    # Get user's group memberships to find member groups
-    group_user(where: {userId: {_eq: $userId}}) {
+    # Get user's group memberships to find member groups (bh-module only)
+    group_user(
+      where: {
+        userId: {_eq: $userId},
+        group: {path: {_like: "%bh-module%"}}
+      }
+    ) {
       groupId
       group {
         id
@@ -254,6 +316,18 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   const { data: memberSearchData, loading: memberSearchLoading } = useQuery(ALL_GROUPS_WITH_MEMBERS_QUERY, {
     variables: { searchTerm: `%${searchTerm}%` },
     skip: !searchTerm || searchTerm.length < 2, 
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-first'
+  });
+
+  
+  const userGroupIds = statsData?.user_groups?.map((ug: any) => ug.groupId) || [];
+  const { data: coMembersData } = useQuery(CO_MEMBERS_QUERY, {
+    variables: { 
+      groupIds: userGroupIds,
+      userId: user.id 
+    },
+    skip: userGroupIds.length === 0,
     errorPolicy: 'all',
     fetchPolicy: 'cache-first'
   });
@@ -469,13 +543,32 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
     const totalUserGroups = Math.max(captainCount, memberCount, captainCount + memberCount - captainCount); 
     const userMemberOnlyCount = Math.max(0, totalUserGroups - userCaptainCount);
     
+    // Find best co-member (most frequent collaborator)
+    const coMemberFrequency: { [key: number]: { count: number, user: any } } = {};
+    
+    if (coMembersData?.group_user) {
+      coMembersData.group_user.forEach((member: any) => {
+        if (member.userId) {
+          if (!coMemberFrequency[member.userId]) {
+            coMemberFrequency[member.userId] = { count: 0, user: member.user };
+          }
+          coMemberFrequency[member.userId].count++;
+        }
+      });
+    }
+    
+    const bestCoMember = Object.values(coMemberFrequency).reduce((best: any, current: any) => {
+      return current.count > (best?.count || 0) ? current : best;
+    }, null);
+    
     return {
       total: totalCount,
       active: activeCount,
       completed: completedCount,
       userTotal: totalUserGroups,
       userAsCaptain: userCaptainCount,
-      userAsMember: userMemberOnlyCount
+      userAsMember: userMemberOnlyCount,
+      bestCoMember: bestCoMember
     };
   };
   
@@ -527,7 +620,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6"
       >
         <StatCard 
           icon={Users} 
@@ -536,15 +629,6 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
           bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
           subValue="All collaborative groups"
-        />
-
-        <StatCard 
-          icon={Crown} 
-          title="My Groups" 
-          value={completeStats.userTotal} 
-          color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
-          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
-          subValue="Your active participation"
         />
 
         <StatCard 
@@ -568,21 +652,25 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         />
 
         <StatCard 
-          icon={UserPlus} 
-          title="As Captain" 
-          value={completeStats.userAsCaptain} 
-          color="bg-gradient-to-r from-red-500/30 to-rose-500/30"
-          bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
-          subValue="Leadership roles"
+          icon={Crown} 
+          title="My Participation" 
+          value={`${completeStats.userAsCaptain}/${completeStats.userAsMember}`} 
+          color="bg-gradient-to-r from-yellow-500/30 to-amber-500/30"
+          bgGradient="bg-gradient-to-br from-yellow-900/20 to-amber-900/20"
+          subValue="Captain / Member roles"
         />
 
         <StatCard 
-          icon={Users} 
-          title="As Member" 
-          value={completeStats.userAsMember} 
-          color="bg-gradient-to-r from-indigo-500/30 to-blue-500/30"
-          bgGradient="bg-gradient-to-br from-indigo-900/20 to-blue-900/20"
-          subValue="Team collaborations"
+          icon={Star} 
+          title="Best Co-Member" 
+          value={completeStats.bestCoMember ? 
+            (completeStats.bestCoMember.user?.login || completeStats.bestCoMember.user?.firstName || 'Unknown') : 
+            'None'} 
+          color="bg-gradient-to-r from-pink-500/30 to-rose-500/30"
+          bgGradient="bg-gradient-to-br from-pink-900/20 to-rose-900/20"
+          subValue={completeStats.bestCoMember ? 
+            `${completeStats.bestCoMember.count} shared projects` : 
+            'No collaborations yet'}
         />
       </motion.div>
 
@@ -681,13 +769,13 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className={`backdrop-blur-lg rounded-xl p-6 transition-all duration-300 shadow-lg relative ${
-                userGroup 
+                userGroup && selectedView === 'all'
                   ? 'bg-emerald-900/30 border-2 border-emerald-500/50 hover:bg-emerald-900/40 hover:border-emerald-400/60 shadow-emerald-500/20' 
                   : 'bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50'
               }`}
             >
               {/* Your Group Indicator */}
-              {userGroup && (
+              {userGroup && selectedView === 'all' && (
                 <div className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white/20">
                   <div className="flex items-center space-x-1">
                     <Crown className="w-3 h-3" />
@@ -700,12 +788,12 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    userGroup ? 'bg-emerald-500/20' : 'bg-primary-500/20'
+                    userGroup && selectedView === 'all' ? 'bg-emerald-500/20' : 'bg-primary-500/20'
                   }`}>
-                    <Users className={`w-5 h-5 ${userGroup ? 'text-emerald-400' : 'text-primary-400'}`} />
+                    <Users className={`w-5 h-5 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-primary-400'}`} />
                   </div>
                   <div>
-                    <span className={`font-semibold text-lg ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                    <span className={`font-semibold text-lg ${userGroup && selectedView === 'all' ? 'text-emerald-100' : 'text-white'}`}>
                       #{extractProjectName(group.path)}
                     </span>
                   </div>
@@ -721,15 +809,15 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
               {group.captainId && (
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    userGroup ? 'bg-emerald-500/20' : 'bg-yellow-500/20'
+                    userGroup && selectedView === 'all' ? 'bg-emerald-500/20' : 'bg-yellow-500/20'
                   }`}>
-                    <Crown className={`w-4 h-4 ${userGroup ? 'text-emerald-400' : 'text-yellow-400'}`} />
+                    <Crown className={`w-4 h-4 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-yellow-400'}`} />
                   </div>
                   <div>
-                    <div className={`font-medium ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                    <div className={`font-medium ${userGroup && selectedView === 'all' ? 'text-emerald-100' : 'text-white'}`}>
                       {getCaptainUsername(group)}
                     </div>
-                    <div className={`text-sm ${userGroup ? 'text-emerald-300' : 'text-slate-400'}`}>
+                    <div className={`text-sm ${userGroup && selectedView === 'all' ? 'text-emerald-300' : 'text-slate-400'}`}>
                       Captain
                     </div>
                   </div>
@@ -738,15 +826,15 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
 
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  userGroup ? 'bg-emerald-500/20' : 'bg-purple-500/20'
+                  userGroup && selectedView === 'all' ? 'bg-emerald-500/20' : 'bg-purple-500/20'
                 }`}>
-                  <Calendar className={`w-4 h-4 ${userGroup ? 'text-emerald-400' : 'text-purple-400'}`} />
+                  <Calendar className={`w-4 h-4 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-purple-400'}`} />
                 </div>
                 <div>
-                  <div className={`font-medium ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                  <div className={`font-medium ${userGroup && selectedView === 'all' ? 'text-emerald-100' : 'text-white'}`}>
                     {formatDate(group.createdAt)}
                   </div>
-                  <div className={`text-sm ${userGroup ? 'text-emerald-300' : 'text-slate-400'}`}>
+                  <div className={`text-sm ${userGroup && selectedView === 'all' ? 'text-emerald-300' : 'text-slate-400'}`}>
                     Created
                   </div>
                 </div>
@@ -756,7 +844,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
             {/* Members Dropdown */}
             <div
               className={`flex items-center justify-between mt-6 pt-4 border-t transition-colors cursor-pointer rounded-lg p-3 ${
-                userGroup 
+                userGroup && selectedView === 'all'
                   ? 'border-emerald-700/50 hover:bg-emerald-700/30' 
                   : 'border-slate-700/50 hover:bg-slate-700/30'
               }`}
@@ -764,24 +852,24 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
             >
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  userGroup ? 'bg-emerald-500/20' : 'bg-primary-500/20'
+                  userGroup && selectedView === 'all' ? 'bg-emerald-500/20' : 'bg-primary-500/20'
                 }`}>
-                  <Users className={`w-4 h-4 ${userGroup ? 'text-emerald-400' : 'text-primary-400'}`} />
+                  <Users className={`w-4 h-4 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-primary-400'}`} />
                 </div>
                 <div>
-                  <div className={`font-medium ${userGroup ? 'text-emerald-100' : 'text-white'}`}>
+                  <div className={`font-medium ${userGroup && selectedView === 'all' ? 'text-emerald-100' : 'text-white'}`}>
                     Group Members
                   </div>
-                  <div className={`text-sm ${userGroup ? 'text-emerald-300' : 'text-slate-400'}`}>
+                  <div className={`text-sm ${userGroup && selectedView === 'all' ? 'text-emerald-300' : 'text-slate-400'}`}>
                     {selectedGroup === group.id ? 'Click to hide members' : 'Click to view members'}
                   </div>
                 </div>
               </div>
               <div className="transition-transform duration-200">
                 {selectedGroup === group.id ? (
-                  <ChevronUp className={`w-5 h-5 ${userGroup ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  <ChevronUp className={`w-5 h-5 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-slate-400'}`} />
                 ) : (
-                  <ChevronDown className={`w-5 h-5 ${userGroup ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  <ChevronDown className={`w-5 h-5 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-slate-400'}`} />
                 )}
               </div>
             </div>

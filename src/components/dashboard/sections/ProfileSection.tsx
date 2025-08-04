@@ -604,6 +604,19 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
             </div>
 
+            {analytics.projects.lastFinished && (
+              <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Code className="w-5 h-5 text-pink-400" />
+                  <span className="text-white text-sm">Last Finished Project</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-pink-400 font-bold block">{analytics.projects.lastFinished.name}</span>
+                  <span className="text-white/70 text-xs">{formatDate(analytics.projects.lastFinished.completedAt)}</span>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Target className="w-5 h-5 text-green-400" />

@@ -5,6 +5,16 @@ import {
   Clock, CheckCircle, AlertTriangle, Search, Filter, 
   ArrowUp, ArrowDown, TrendingUp, Star
 } from 'lucide-react'
+
+const calculateAverageGrade = (progressData: any[]) => {
+  const completedProjects = progressData.filter((p: any) => p.isDone && p.grade !== undefined && p.grade !== null);
+  if (completedProjects.length === 0) {
+    return null;
+  }
+  const totalGrade = completedProjects.reduce((sum: number, p: any) => sum + p.grade, 0);
+  return totalGrade / completedProjects.length;
+};
+
 import { formatXPValue, formatDate, separateModuleData } from '../../../utils/dataFormatting'
 
 interface TransactionsSectionProps {
@@ -44,8 +54,9 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
 
     
     if (showOnlyBHModule) {
-      const separated = separateModuleData(transactions)
-      transactions = separated.mainModule
+      transactions = transactions.filter((t: any) => 
+        t.path && t.path.includes('/bahrain/bh-module')
+      )
     }
 
     
@@ -100,16 +111,21 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       return transaction
     })
 
-    return transactionsWithProgress.slice(0, 100) 
+    return transactionsWithProgress 
   }, [analytics.rawData.transactions, transactionFilter, timeFilter, searchTerm, showOnlyBHModule])
 
   
+  const averageGrade = useMemo(() => {
+    return calculateAverageGrade(analytics.rawData.progress);
+  }, [analytics.rawData.progress]);
+
   const filteredProgress = useMemo(() => {
     let progress = analytics.rawData.progress
 
     if (showOnlyBHModule) {
-      const separated = separateModuleData(progress)
-      progress = separated.mainModule
+      progress = progress.filter((p: any) => 
+        p.path && p.path.includes('/bahrain/bh-module')
+      )
     }
 
     if (timeFilter !== 'all') {
@@ -140,7 +156,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       )
     }
 
-    return progress.slice(0, 50)
+    return progress
   }, [analytics.rawData.progress, timeFilter, searchTerm, showOnlyBHModule])
 
   const getTransactionIcon = (type: string) => {
@@ -282,7 +298,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
                   : 'bg-white/10 text-white/70 hover:bg-white/20'
               }`}
             >
-              {showOnlyBHModule ? 'BH Module Only' : 'All Modules'}
+{showOnlyBHModule ? 'Main Module' : 'All Modules'}
             </button>
           </div>
         </div>
@@ -293,25 +309,98 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
       >
-        <div className="bg-white/10 dark:bg-white/10 light:bg-slate-800/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-white/20 light:border-slate-300/30 text-center hover:scale-105 transition-all duration-300">
-          <Activity className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-white dark:text-white light:text-slate-900">{filteredTransactions.length}</div>
-          <div className="text-white/70 dark:text-white/70 light:text-slate-600 text-sm">Transactions</div>
-        </div>
+        {/* Total Transactions */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-gradient-to-br from-blue-900/20 to-cyan-900/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm">
+              <Activity className="w-8 h-8 text-blue-400" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-white mb-2">{filteredTransactions.length.toLocaleString()}</div>
+          <div className="text-white/70 text-sm">Total Transactions</div>
+          <div className="text-blue-300/60 text-xs mt-1">All activity records</div>
+        </motion.div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
-          <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-white">{filteredProgress.filter((p: any) => p.isDone).length}</div>
-          <div className="text-white/70 text-sm">Completed</div>
-        </div>
+        {/* Tasks Completed */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="bg-gradient-to-br from-emerald-900/20 to-green-900/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-500/30 to-green-500/30 backdrop-blur-sm">
+              <CheckCircle className="w-8 h-8 text-emerald-400" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-white mb-2">{filteredProgress.filter((p: any) => p.isDone && p.grade >= 1).length}</div>
+          <div className="text-white/70 text-sm">Tasks Completed</div>
+          <div className="text-emerald-300/60 text-xs mt-1">Successfully finished</div>
+        </motion.div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
-          <Clock className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-          <div className="text-2xl font-bold text-white">{filteredProgress.filter((p: any) => !p.isDone).length}</div>
-          <div className="text-white/70 text-sm">In Progress</div>
-        </div>
+        {/* Tasks Failed */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="bg-gradient-to-br from-red-900/20 to-rose-900/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-red-500/30 to-rose-500/30 backdrop-blur-sm">
+              <AlertTriangle className="w-8 h-8 text-red-400" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-white mb-2">{filteredProgress.filter((p: any) => p.isDone && p.grade < 1).length}</div>
+          <div className="text-white/70 text-sm">Tasks Failed</div>
+          <div className="text-red-300/60 text-xs mt-1">Need retry or review</div>
+        </motion.div>
+
+        {/* Tasks In Progress */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="bg-gradient-to-br from-yellow-900/20 to-amber-900/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500/30 to-amber-500/30 backdrop-blur-sm">
+              <Clock className="w-8 h-8 text-yellow-400" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-white mb-2">{filteredProgress.filter((p: any) => !p.isDone).length}</div>
+          <div className="text-white/70 text-sm">Tasks In Progress</div>
+          <div className="text-yellow-300/60 text-xs mt-1">Currently working on</div>
+        </motion.div>
+
+        {/* Average Grade */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="bg-gradient-to-br from-purple-900/20 to-violet-900/20 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-purple-500/30 to-violet-500/30 backdrop-blur-sm">
+              <Star className="w-8 h-8 text-purple-400" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-white mb-2">{averageGrade !== null ? `${(averageGrade*100).toFixed(1)}%` : 'N/A'}</div>
+          <div className="text-white/70 text-sm">Average Grade</div>
+          <div className="text-purple-300/60 text-xs mt-1">
+            {averageGrade !== null ? 
+              (averageGrade >= 0.8 ? 'Excellent performance' : 
+               averageGrade >= 0.6 ? 'Good performance' : 
+               'Room for improvement') : 
+              'No completed tasks'}
+          </div>
+        </motion.div>
       </motion.div>
 
       {/* Main Content Tabs */}
@@ -395,7 +484,10 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-white/10">
                     {progress.isDone ? 
-                      <CheckCircle className="h-4 w-4 text-green-400" /> : 
+                      (progress.grade === 0 ? 
+                        <AlertTriangle className="h-4 w-4 text-red-400" /> : 
+                        <CheckCircle className="h-4 w-4 text-green-400" />
+                      ) : 
                       <Clock className="h-4 w-4 text-yellow-400" />
                     }
                   </div>
@@ -404,7 +496,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
                       {progress.path?.split('/').pop() || 'Project'}
                     </div>
                     <div className="text-white/60 text-xs">
-                      {progress.isDone ? 'Completed' : 'In Progress'}
+                      {progress.isDone ? (progress.grade === 0 ? 'Failed' : 'Completed') : 'In Progress'}
                     </div>
                     <div className="text-white/40 text-xs">
                       {formatDate(progress.updatedAt)}
@@ -417,7 +509,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
                       (progress.grade >= 1 ? 'text-green-400' : 'text-red-400') : 
                       'text-yellow-400'
                   }`}>
-                    {progress.isDone ? `${progress.grade}%` : '...'}
+                    {progress.isDone ? `${(progress.grade*100).toFixed(1)}%` : 'Pending'}
                   </div>
                   <div className="text-white/60 text-xs">Grade</div>
                 </div>

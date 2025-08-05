@@ -143,28 +143,42 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
   const nextRankInfo = getRankFromLevel(rankBoundary);
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-8 relative pt-0">
+      {/* Enhanced Background Effects */}
+      <div className="fixed inset-0 opacity-20 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-cyan-500/5 to-teal-500/5"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 25px 25px, rgba(52, 211, 153, 0.08) 2px, transparent 0)`,
+          backgroundSize: '50px 50px'
+        }}></div>
+      </div>
+      
       <div className="relative z-10 space-y-8">
-      {/* Main Profile Card */}
+      {/* Main Profile Card - Enhanced */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-white/10 to-white/5 dark:from-white/10 dark:to-white/5 light:from-slate-800/10 light:to-slate-900/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-white/20 light:border-slate-800/20 shadow-2xl relative overflow-hidden hover:shadow-3xl transition-all duration-500"
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.7, type: "spring", stiffness: 100 }}
+        className="bg-gradient-to-br from-slate-900/60 via-emerald-900/10 to-slate-900/60 backdrop-blur-2xl rounded-3xl p-8 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10 relative overflow-hidden hover:shadow-3xl hover:shadow-emerald-500/20 transition-all duration-700 hover:border-emerald-400/30 group"
       >
-        {/* Enhanced background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 30px 30px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
-            backgroundSize: '60px 60px'
+        {/* Enhanced animated background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-cyan-500/10 to-teal-500/20 group-hover:from-emerald-400/30 group-hover:to-teal-400/30 transition-all duration-700"></div>
+          <div className="absolute inset-0 animate-pulse" style={{
+            backgroundImage: `radial-gradient(circle at 40px 40px, rgba(52, 211, 153, 0.15) 2px, transparent 0)`,
+            backgroundSize: '80px 80px'
           }}></div>
         </div>
+        
+        {/* Floating particles effect */}
+        <div className="absolute top-4 right-4 w-2 h-2 bg-emerald-400/30 rounded-full animate-pulse"></div>
+        <div className="absolute top-12 right-12 w-1 h-1 bg-cyan-400/40 rounded-full animate-ping"></div>
+        <div className="absolute bottom-8 left-6 w-1.5 h-1.5 bg-teal-400/35 rounded-full animate-pulse"></div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* User Info Container - Left Side */}
           <div className="lg:col-span-2 space-y-6">
             {/* Enhanced Basic Profile Information */}
-            <div className="flex items-center space-x-6 relative z-10">
+            <div className="flex items-center space-x-8 relative z-10">
               <div className="relative">
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
@@ -183,7 +197,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     size="2xl"
                     className="ring-4 ring-emerald-500/30 shadow-2xl shadow-emerald-500/20"
                   />
-                  {/* Animated glow effect */}
+                  {/* Simple animated glow effect */}
                   <div className="absolute inset-0 ring-4 ring-emerald-400/20 rounded-full animate-pulse"></div>
                 </motion.div>
                 {analytics.performance && (
@@ -198,54 +212,111 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 )}
               </div>
 
-              <div className="flex-1">
-                <motion.h2 
-                  initial={{ opacity: 0, x: -20 }}
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center gap-3">
+                  <motion.h2 
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
+                    className="text-4xl font-bold bg-gradient-to-r from-white via-emerald-200 to-cyan-200 bg-clip-text text-transparent mb-2 drop-shadow-lg"
+                  >
+                    {userData.attrs?.displayName ||
+                      `${userData.firstName || ''} ${userData.lastName || ''}`.trim() ||
+                      user.login}
+                  </motion.h2>
+                  
+                  {/* Admin Badge */}
+                  {analytics.rawData?.userRoles?.some((role: any) => role.role.name.toLowerCase().includes('admin')) && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+                      className="bg-gradient-to-r from-red-500/20 to-orange-500/20 px-3 py-1 rounded-lg border border-red-500/30 backdrop-blur-sm shadow-lg shadow-red-500/20"
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span className="text-lg">⚡</span>
+                        <span className="text-red-300 text-sm font-medium">Admin</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+                <motion.div 
+                  initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 dark:from-white dark:via-emerald-100 dark:to-teal-100 light:from-slate-900 light:via-emerald-800 light:to-teal-800 bg-clip-text text-transparent mb-2"
+                  transition={{ delay: 0.3, type: "spring", stiffness: 150 }}
+                  className="flex items-center gap-3 mb-6"
                 >
-                  {userData.attrs?.displayName ||
-                    `${userData.firstName || ''} ${userData.lastName || ''}`.trim() ||
-                    user.login}
-                </motion.h2>
-                <motion.p 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-emerald-400 text-lg mb-3 font-medium"
-                >
-                  @{user.login}
-                </motion.p>
+                  <span className="text-white/90 text-lg font-medium">@{user.login}</span>
+                  <div className="bg-gradient-to-r from-purple-500/20 to-violet-500/20 px-3 py-1 rounded-lg border border-purple-500/30 backdrop-blur-sm">
+                    <span className="text-purple-300 text-sm font-medium">ID: {userData.id}</span>
+                  </div>
+                </motion.div>
 
                 {analytics.performance && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="flex items-center space-x-3 mb-4"
+                    transition={{ delay: 0.4, type: "spring", stiffness: 120 }}
+                    className="space-y-3"
                   >
-                    <div className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 px-4 py-2 rounded-xl border border-emerald-500/30 backdrop-blur-sm">
-                      <span className="text-emerald-400 font-semibold text-sm">
-                        {analytics.performance.notation}
-                      </span>
+                    {/* Compact notation and XP display */}
+                    <div className="flex items-center gap-4">
+                      {/* Performance Notation - Small Card */}
+                      <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 px-4 py-2 rounded-xl border border-emerald-400/30 backdrop-blur-sm">
+                        <div className="flex items-center space-x-2">
+                          <Trophy className="w-4 h-4 text-emerald-300" />
+                          <span className="text-emerald-200 font-bold text-sm">
+                            {analytics.performance.notation}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Total XP - Small Card */}
+                      <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 px-4 py-2 rounded-xl border border-blue-400/30 backdrop-blur-sm">
+                        <div className="flex items-center space-x-2">
+                          <Star className="w-4 h-4 text-blue-300" />
+                          <span className="text-blue-200 font-bold text-sm">
+                           {formatXPValue(analytics.xp.total)} Total XP
+                          </span>
+                        </div>
+                      </div>
                     </div>
+                    
+                    
+                    {/* Enhanced user labels section */}
                     {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {analytics.rawData.userLabels.map((userLabel, index) => (
-                          <motion.div
-                            key={userLabel.id}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.5 + index * 0.1 }}
-                            className="bg-gradient-to-r from-cyan-400/20 to-blue-400/20 px-3 py-1 rounded-xl border border-cyan-400/30 backdrop-blur-sm hover:from-cyan-400/30 hover:to-blue-400/30 transition-all duration-300"
-                            title={userLabel.label.description}
-                          >
-                            <span className="text-cyan-400 font-semibold text-sm">
-                              {userLabel.label.name}
-                            </span>
-                          </motion.div>
-                        ))}
+                      <div className="mt-6">
+                        <motion.h4 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 }}
+                          className="text-lg font-semibold text-white mb-4 flex items-center"
+                        >
+                          <div className="p-2 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 rounded-lg mr-3">
+                            <Award className="w-5 h-5 text-cyan-300" />
+                          </div>
+                          Labels
+                        </motion.h4>
+                        <div className="flex flex-wrap gap-3">
+                          {analytics.rawData.userLabels.map((userLabel, index) => (
+                            <motion.div
+                              key={userLabel.id}
+                              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              transition={{ delay: 0.6 + index * 0.1, type: "spring", stiffness: 200 }}
+                              className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 px-6 py-3 rounded-2xl border border-cyan-400/30 backdrop-blur-lg hover:from-cyan-400/30 hover:to-blue-400/30 hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300 shadow-lg shadow-cyan-500/10 group relative overflow-hidden"
+                              title={userLabel.label.description}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <div className="relative z-10 flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                                <span className="text-cyan-200 font-semibold text-sm group-hover:text-white transition-colors">
+                                  {userLabel.label.name}
+                                </span>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </motion.div>
@@ -253,43 +324,72 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
             </div>
 
-            {/* Complete Contact & Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Contact Information */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                  <Phone className="w-5 h-5 mr-2 text-blue-400" />
+            {/* Enhanced Contact & Personal Information */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+            >
+              {/* Enhanced Contact Information */}
+              <div className="space-y-4">
+                <motion.h3 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="text-xl font-bold text-white mb-4 flex items-center"
+                >
+                  <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg mr-3">
+                    <Phone className="w-5 h-5 text-blue-300" />
+                  </div>
                   Contact Information
-                </h3>
+                </motion.h3>
 
                 {personalInfo.email && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <Mail className="h-4 w-4 text-blue-400" />
-                                        <div className="flex-1">
-                      <span className="text-xs text-white/60">Email Address</span>
-                      <div className="text-sm text-white">
-                    <span className="text-sm text-white">{personalInfo.email}</span>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-500/20 backdrop-blur-lg hover:from-blue-500/20 hover:to-cyan-500/20 hover:border-blue-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg group-hover:from-blue-400/40 group-hover:to-cyan-400/40 transition-all duration-300">
+                      <Mail className="h-5 w-5 text-blue-300" />
                     </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-blue-200/80 font-medium">Email Address</span>
+                      <div className="text-sm text-white font-semibold">{personalInfo.email}</div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
                 {personalInfo.phone && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <Phone className="h-4 w-4 text-green-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">Mobile Number</span>
-                      <div className="text-sm text-white">
-                        <span className="text-sm text-white">{formatPhoneNumber(personalInfo.phone)}</span>
-                      </div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20 backdrop-blur-lg hover:from-green-500/20 hover:to-emerald-500/20 hover:border-green-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg group-hover:from-green-400/40 group-hover:to-emerald-400/40 transition-all duration-300">
+                      <Phone className="h-5 w-5 text-green-300" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-green-200/80 font-medium">Mobile Number</span>
+                      <div className="text-sm text-white font-semibold">{formatPhoneNumber(personalInfo.phone)}</div>
+                    </div>
+                  </motion.div>
                 )}
                 {(personalInfo.address?.street || personalInfo.address?.city) && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <MapPin className="h-4 w-4 text-purple-400" />
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.0 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-violet-500/20 hover:border-purple-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-purple-500/30 to-violet-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-violet-400/40 transition-all duration-300">
+                      <MapPin className="h-5 w-5 text-purple-300" />
+                    </div>
                     <div className="flex-1">
-                      <span className="text-xs text-white/60">Home Address</span>
-                      <div className="text-sm text-white">
+                      <span className="text-xs text-purple-200/80 font-medium">Home Address</span>
+                      <div className="text-sm text-white font-semibold">
                         {personalInfo.address?.street && personalInfo.address?.complementStreet &&
                           `${personalInfo.address.street}, Building ${personalInfo.address.complementStreet}`}
                         {personalInfo.address?.street && !personalInfo.address?.complementStreet &&
@@ -301,206 +401,310 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                         {`, ${personalInfo.address?.country || 'Bahrain'}`}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-                {/* Date Information */}
-                <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                  <Calendar className="h-4 w-4 text-orange-400" />
-                  <div className="flex-1">
-                    <span className="text-xs text-white/60">Date Registered</span>
-                    <div className="text-sm text-white">{formatDate(userData.createdAt)}</div>
-                    <div className="text-xs text-white/40 mt-1">Account creation date</div>
+                {/* Enhanced Date Information */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.1 }}
+                  className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group"
+                >
+                  <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
+                    <Calendar className="h-5 w-5 text-orange-300" />
                   </div>
-                </div>
+                  <div className="flex-1">
+                    <span className="text-xs text-orange-200/80 font-medium">Date Registered</span>
+                    <div className="text-sm text-white font-semibold">{formatDate(userData.createdAt)}</div>
+                    <div className="text-xs text-orange-200/60 mt-1">Account creation date</div>
+                  </div>
+                </motion.div>
                 
                 {bhModuleJoinInfo && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <UserCheck className="h-4 w-4 text-green-400" />
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.2 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 rounded-xl border border-teal-500/20 backdrop-blur-lg hover:from-teal-500/20 hover:to-cyan-500/20 hover:border-teal-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-teal-500/30 to-cyan-500/30 rounded-lg group-hover:from-teal-400/40 group-hover:to-cyan-400/40 transition-all duration-300">
+                      <UserCheck className="h-5 w-5 text-teal-300" />
+                    </div>
                     <div className="flex-1">
-                      <span className="text-xs text-white/60">{bhModuleJoinInfo.label}</span>
-                      <div className="text-sm text-white">{formatDate(bhModuleJoinInfo.date)}</div>
-                      <div className="text-xs text-white/40 mt-1">{bhModuleJoinInfo.description}</div>
+                      <span className="text-xs text-teal-200/80 font-medium">{bhModuleJoinInfo.label}</span>
+                      <div className="text-sm text-white font-semibold">{formatDate(bhModuleJoinInfo.date)}</div>
+                      <div className="text-xs text-teal-200/60 mt-1">{bhModuleJoinInfo.description}</div>
                       {bhModuleJoinInfo.date === userData.createdAt && (
-                        <div className="text-xs text-yellow-400 mt-1">Same as registration date</div>
+                        <div className="text-xs text-yellow-400 mt-1 font-medium">Same as registration date</div>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
 
-              {/* Identity Information */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                  <CreditCard className="w-5 h-5 mr-2 text-green-400" />
+              {/* Enhanced Identity Information */}
+              <div className="space-y-4">
+                <motion.h3 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="text-xl font-bold text-white mb-4 flex items-center"
+                >
+                  <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg mr-3">
+                    <CreditCard className="w-5 h-5 text-green-300" />
+                  </div>
                   Identity Information
-                </h3>
+                </motion.h3>
 
                 {personalInfo.cprNumber && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <CreditCard className="h-4 w-4 text-blue-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">CPR Number</span>
-                      <div className="text-sm text-white font-mono">{personalInfo.cprNumber}</div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border border-blue-500/20 backdrop-blur-lg hover:from-blue-500/20 hover:to-indigo-500/20 hover:border-blue-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 rounded-lg group-hover:from-blue-400/40 group-hover:to-indigo-400/40 transition-all duration-300">
+                      <CreditCard className="h-5 w-5 text-blue-300" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-blue-200/80 font-medium">CPR Number</span>
+                      <div className="text-sm text-white font-mono font-semibold">{personalInfo.cprNumber}</div>
+                    </div>
+                  </motion.div>
                 )}
                 {personalInfo.dateOfBirth && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <Calendar className="h-4 w-4 text-purple-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">Date of Birth</span>
-                      <div className="text-sm text-white">{formatDate(personalInfo.dateOfBirth)}</div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-pink-500/20 hover:border-purple-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-pink-400/40 transition-all duration-300">
+                      <Calendar className="h-5 w-5 text-purple-300" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-purple-200/80 font-medium">Date of Birth</span>
+                      <div className="text-sm text-white font-semibold">{formatDate(personalInfo.dateOfBirth)}</div>
+                    </div>
+                  </motion.div>
                 )}
                 {personalInfo.nationality && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <Shield className="h-4 w-4 text-orange-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">Nationality</span>
-                      <div className="text-sm text-white">{personalInfo.nationality}</div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.0 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-red-500/20 hover:border-orange-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-red-400/40 transition-all duration-300">
+                      <Shield className="h-5 w-5 text-orange-300" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-orange-200/80 font-medium">Nationality</span>
+                      <div className="text-sm text-white font-semibold">{personalInfo.nationality}</div>
+                    </div>
+                  </motion.div>
                 )}
                 {personalInfo.placeOfBirth && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <MapPin className="h-4 w-4 text-pink-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">Place of Birth</span>
-                      <div className="text-sm text-white">{personalInfo.placeOfBirth}, {personalInfo.countryOfBirth || 'Bahrain'}</div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.1 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-pink-500/10 to-rose-500/10 rounded-xl border border-pink-500/20 backdrop-blur-lg hover:from-pink-500/20 hover:to-rose-500/20 hover:border-pink-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-pink-500/30 to-rose-500/30 rounded-lg group-hover:from-pink-400/40 group-hover:to-rose-400/40 transition-all duration-300">
+                      <MapPin className="h-5 w-5 text-pink-300" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-pink-200/80 font-medium">Place of Birth</span>
+                      <div className="text-sm text-white font-semibold">{personalInfo.placeOfBirth}, {personalInfo.countryOfBirth || 'Bahrain'}</div>
+                    </div>
+                  </motion.div>
                 )}
                 {personalInfo.gender && (
-                  <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                    <User className="h-4 w-4 text-indigo-400" />
-                    <div className="flex-1">
-                      <span className="text-xs text-white/60">Gender</span>
-                      <div className="text-sm text-white">{personalInfo.gender}</div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.2 }}
+                    className="flex items-center space-x-4 p-4 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 rounded-xl border border-indigo-500/20 backdrop-blur-lg hover:from-indigo-500/20 hover:to-violet-500/20 hover:border-indigo-400/30 transition-all duration-300 group"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-indigo-500/30 to-violet-500/30 rounded-lg group-hover:from-indigo-400/40 group-hover:to-violet-400/40 transition-all duration-300">
+                      <User className="h-5 w-5 text-indigo-300" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <span className="text-xs text-indigo-200/80 font-medium">Gender</span>
+                      <div className="text-sm text-white font-semibold">{personalInfo.gender}</div>
+                    </div>
+                  </motion.div>
                 )}
               </div>
-            </div>
+            </motion.div>
 
-            {/* Professional Information */}
+            {/* Enhanced Professional Information */}
             {(personalInfo.currentEmployer || personalInfo.jobTitle || personalInfo.workExperience || personalInfo.employment) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                    <Briefcase className="w-5 h-5 mr-2 text-blue-400" />
-                    Professional Information
-                  </h3>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-lg rounded-2xl p-6 border border-slate-600/30"
+              >
+                <motion.h3 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.4 }}
+                  className="text-xl font-bold text-white mb-6 flex items-center"
+                >
+                  <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg mr-3">
+                    <Briefcase className="w-5 h-5 text-blue-300" />
+                  </div>
+                  Professional Information
+                </motion.h3>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {personalInfo.jobTitle && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <UserCheck className="h-4 w-4 text-green-400" />
-                      <div className="flex-1">
-                        <span className="text-xs text-white/60">Job Title</span>
-                        <div className="text-sm text-white">{personalInfo.jobTitle}</div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.5 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20 backdrop-blur-lg hover:from-green-500/20 hover:to-emerald-500/20 hover:border-green-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg group-hover:from-green-400/40 group-hover:to-emerald-400/40 transition-all duration-300">
+                        <UserCheck className="h-5 w-5 text-green-300" />
                       </div>
-                    </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-green-200/80 font-medium">Job Title</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.jobTitle}</div>
+                      </div>
+                    </motion.div>
                   )}
 
                   {personalInfo.employment && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <Briefcase className="h-4 w-4 text-orange-400" />
-                      <div className="flex-1">
-                        <span className="text-xs text-white/60">Employment Status</span>
-                        <div className="text-sm text-white">{personalInfo.employment}</div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.6 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
+                        <Briefcase className="h-5 w-5 text-orange-300" />
                       </div>
-                    </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-orange-200/80 font-medium">Employment Status</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.employment}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {personalInfo.currentEmployer && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.7 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-violet-500/20 hover:border-purple-400/30 transition-all duration-300 group md:col-span-2"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-purple-500/30 to-violet-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-violet-400/40 transition-all duration-300">
+                        <UserCog className="h-5 w-5 text-purple-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-purple-200/80 font-medium">Current Employer</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.currentEmployer}</div>
+                      </div>
+                    </motion.div>
                   )}
                 </div>
-
-                {/* Educational Background */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                    <UserCheck className="w-5 h-5 mr-2 text-purple-400" />
-                    Educational Background
-                  </h3>
-
-                  {personalInfo.degree && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <Trophy className="h-4 w-4 text-yellow-400" />
-                      <div className="flex-1">
-                        <span className="text-xs text-white/60">Qualification</span>
-                        <div className="text-sm text-white">{personalInfo.degree}</div>
-                      </div>
-                    </div>
-                  )}
-                  {personalInfo.graduationDate && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <Calendar className="h-4 w-4 text-purple-400" />
-                      <div className="flex-1">
-                        <span className="text-xs text-white/60">Graduation Date</span>
-                        <div className="text-sm text-white">{personalInfo.graduationDate}</div>
-                      </div>
-                    </div>
-                  )}
-
-                  {personalInfo.qualification && (
-                    <div className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
-                      <Award className="h-4 w-4 text-green-400" />
-                      <div className="flex-1">
-                        <span className="text-xs text-white/60">Qualification Level</span>
-                        <div className="text-sm text-white">{personalInfo.qualification}</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              </motion.div>
             )}
-            {/* User Roles */}
+            {/* Enhanced User Roles */}
             {analytics.rawData?.userRoles && analytics.rawData.userRoles.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                  <UserCog className="w-5 h-5 mr-2 text-yellow-400" />
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.8 }}
+                className="bg-gradient-to-br from-yellow-500/15 to-amber-500/15 backdrop-blur-lg rounded-2xl p-6 border border-yellow-500/30 shadow-lg shadow-yellow-500/10"
+              >
+                <motion.h3 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.9 }}
+                  className="text-xl font-bold text-white mb-4 flex items-center"
+                >
+                  <div className="p-2 bg-gradient-to-r from-yellow-500/30 to-amber-500/30 rounded-lg mr-3">
+                    <UserCog className="w-5 h-5 text-yellow-300" />
+                  </div>
                   User Roles
-                </h3>
+                </motion.h3>
 
-                <div className="flex flex-wrap gap-2">
-                  {analytics.rawData.userRoles.map((userRole) => (
-                    <div
+                <div className="flex flex-wrap gap-3">
+                  {analytics.rawData.userRoles.map((userRole, index) => (
+                    <motion.div
                       key={userRole.id}
-                      className="bg-yellow-400/20 px-3 py-2 rounded-lg border border-yellow-400/30"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 2.0 + index * 0.1 }}
+                      className="bg-gradient-to-r from-yellow-500/25 to-amber-500/25 px-4 py-2 rounded-xl border border-yellow-400/40 backdrop-blur-sm hover:from-yellow-400/35 hover:to-amber-400/35 hover:scale-105 transition-all duration-300 shadow-lg shadow-yellow-500/10"
                       title={userRole.role.description}
                     >
-                      <span className="text-yellow-400 font-semibold text-sm">
+                      <span className="text-yellow-200 font-semibold text-sm">
                         {userRole.role.name}
                       </span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
 
-            {/* Emergency Contact */}
+            {/* Enhanced Emergency Contact */}
             {personalInfo.emergencyContact?.name && (
-              <div className="bg-white/5 rounded-lg p-4 border border-red-500/20">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                  <Heart className="w-5 h-5 mr-2 text-red-400" />
-                  Emergency Contact
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-white/60">Name</span>
-                    <div className="text-sm text-white font-medium">{personalInfo.emergencyContact.name}</div>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="bg-gradient-to-br from-red-500/15 to-rose-500/15 backdrop-blur-lg rounded-2xl p-6 border border-red-500/30 shadow-lg shadow-red-500/10 hover:shadow-red-500/20 hover:border-red-400/40 transition-all duration-300"
+              >
+                <motion.h3 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.4 }}
+                  className="text-xl font-bold text-white mb-4 flex items-center"
+                >
+                  <div className="p-2 bg-gradient-to-r from-red-500/30 to-rose-500/30 rounded-lg mr-3">
+                    <Heart className="w-5 h-5 text-red-300" />
                   </div>
+                  Emergency Contact
+                </motion.h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.5 }}
+                    className="bg-white/10 rounded-xl p-4 border border-red-400/20"
+                  >
+                    <span className="text-xs text-red-200/80 font-medium">Name</span>
+                    <div className="text-sm text-white font-semibold mt-1">{personalInfo.emergencyContact.name}</div>
+                  </motion.div>
                   {personalInfo.emergencyContact.phone && (
-                    <div>
-                      <span className="text-xs text-white/60">Phone</span>
-                      <div className="text-sm text-white font-mono">{formatPhoneNumber(personalInfo.emergencyContact.phone)}</div>
-                    </div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.6 }}
+                      className="bg-white/10 rounded-xl p-4 border border-red-400/20"
+                    >
+                      <span className="text-xs text-red-200/80 font-medium">Phone</span>
+                      <div className="text-sm text-white font-mono font-semibold mt-1">{formatPhoneNumber(personalInfo.emergencyContact.phone)}</div>
+                    </motion.div>
                   )}
                   {personalInfo.emergencyContact.relationship && (
-                    <div>
-                      <span className="text-xs text-white/60">Relationship</span>
-                      <div className="text-sm text-white">{personalInfo.emergencyContact.relationship}</div>
-                    </div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.7 }}
+                      className="bg-white/10 rounded-xl p-4 border border-red-400/20 md:col-span-2"
+                    >
+                      <span className="text-xs text-red-200/80 font-medium">Relationship</span>
+                      <div className="text-sm text-white font-semibold mt-1">{personalInfo.emergencyContact.relationship}</div>
+                    </motion.div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             )}
           </div>
 
@@ -624,7 +828,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-white/80 text-sm">Total XP Earned</span>
+                    <span className="text-white/80 text-sm">Main Module XP</span>
                     <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
                   </div>
                 </div>
@@ -671,9 +875,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
             <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Award className="w-5 h-5 text-blue-400" />
-                <span className="text-white text-sm">Total XP Earned</span>
+                <span className="text-white text-sm">Total XP</span>
               </div>
-              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
+              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
             </div>
 
             {analytics.projects.lastFinished && (

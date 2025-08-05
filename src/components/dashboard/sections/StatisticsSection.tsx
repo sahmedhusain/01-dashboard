@@ -22,7 +22,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
   const trendDirection = recentTrend > averageXPPerMonth ? 'improving' : 'declining'
   
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-6 relative pt-0">
       {/* Full Screen Background for Statistics Section */}
       <div className="fixed inset-0 opacity-15 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-green-500/3 to-cyan-500/3"></div>
@@ -37,7 +37,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center"
+        className="text-center pb-4"
       >
         <h2 className="text-2xl font-bold text-white mb-2">Performance Statistics</h2>
         <p className="text-white/70">Complete metrics and key performance indicators</p>
@@ -48,7 +48,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8"
       >
         <StatCard 
           icon={Zap} 
@@ -110,21 +110,21 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
       </motion.div>
 
       {/* Detailed Statistics Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Learning Progress Statistics */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 my-4"
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <BookOpen className="w-5 h-5 mr-2 text-blue-400" />
             Learning Progress Statistics
           </h3>
           
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5 text-green-400" />
                 <span className="text-white text-sm">Completed  Projects</span>
@@ -137,7 +137,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Clock className="w-5 h-5 text-yellow-400" />
                 <span className="text-white text-sm">In Progress</span>
@@ -148,7 +148,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <BarChart3 className="w-5 h-5 text-purple-400" />
                 <span className="text-white text-sm">Average Grade</span>
@@ -159,7 +159,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Zap className="w-5 h-5 text-blue-400" />
                 <span className="text-white text-sm">XP per Project</span>
@@ -177,15 +177,15 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 my-4"
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Activity className="w-5 h-5 mr-2 text-green-400" />
             Activity & Engagement
           </h3>
           
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+          <div className="space-y-5">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Target className="w-5 h-5 text-green-400" />
                 <span className="text-white text-sm">Audits Completed</span>
@@ -198,7 +198,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Users className="w-5 h-5 text-blue-400" />
                 <span className="text-white text-sm">Group Leadership</span>
@@ -209,7 +209,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Calendar className="w-5 h-5 text-purple-400" />
                 <span className="text-white text-sm">Recent Activity</span>
@@ -220,7 +220,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
               <div className="flex items-center space-x-3">
                 <Star className="w-5 h-5 text-yellow-400" />
                 <span className="text-white text-sm">Monthly Average XP</span>
@@ -241,7 +241,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 my-6"
       >
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
           <TrendingUp className="w-5 h-5 mr-2 text-orange-400" />
@@ -350,7 +350,7 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 mt-8"
       >
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
           <Star className="w-5 h-5 mr-2 text-yellow-400" />

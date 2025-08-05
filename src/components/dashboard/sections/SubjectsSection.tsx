@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Book, Search, Code, FileText, ExternalLink, Target, Users, Star, Folder, FolderOpen, ChevronRight, ChevronDown } from 'lucide-react';
+import { Book, Search, Code, FileText, ExternalLink, Target, Users, Star, Folder, FolderOpen, ChevronRight, ChevronDown, Zap, Layers, Award } from 'lucide-react';
 import { useQuery, gql } from '@apollo/client';
 import { marked } from 'marked';
+import LoadingSpinner from '../../ui/LoadingSpinner';
 
 const GET_ALL_BH_PROJECTS = gql`
   query GetAllBHProjects {
@@ -130,6 +131,158 @@ interface TreeNode {
 }
 
 const SubjectsSection: React.FC = () => {
+  // Add CSS to hide all scrollbars and handle scroll behavior
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Hide all scrollbars globally */
+      *::-webkit-scrollbar {
+        display: none;
+      }
+      * {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .invisible-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .invisible-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .enhanced-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .enhanced-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .custom-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  // Add scroll detection and control for Search & Filter Projects container
+  React.useEffect(() => {
+    let isScrollLocked = false;
+    let lockScrollPosition = 0;
+
+    const preventScroll = (e: Event) => {
+      if (isScrollLocked) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    const preventWheel = (e: WheelEvent) => {
+      if (isScrollLocked) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    const preventTouchMove = (e: TouchEvent) => {
+      if (isScrollLocked) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    const preventKeyScroll = (e: KeyboardEvent) => {
+      if (isScrollLocked) {
+        const scrollKeys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '];
+        if (scrollKeys.includes(e.key)) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }
+    };
+
+    const handleScroll = (e: Event) => {
+      const searchFilterElement = document.getElementById('search-filter-container');
+      if (!searchFilterElement) return;
+
+      const rect = searchFilterElement.getBoundingClientRect();
+      const currentScrollY = window.scrollY;
+      
+      // Check if the bottom of the search filter is at or above the top of viewport
+      if (rect.bottom <= 0 && !isScrollLocked) {
+        // Lock the scroll position
+        isScrollLocked = true;
+        lockScrollPosition = currentScrollY;
+        setShouldFixContent(true);
+        setIsSearchFilterHidden(true);
+        
+        // Prevent further scrolling with multiple methods
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${lockScrollPosition}px`;
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
+        
+        // Add multiple event listeners to prevent all scroll attempts
+        window.addEventListener('scroll', preventScroll, { passive: false, capture: true });
+        window.addEventListener('wheel', preventWheel, { passive: false, capture: true });
+        window.addEventListener('touchmove', preventTouchMove, { passive: false, capture: true });
+        document.addEventListener('keydown', preventKeyScroll, { passive: false, capture: true });
+        
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      } else if (rect.bottom > 0 && isScrollLocked) {
+        // Unlock scroll when scrolling back up
+        isScrollLocked = false;
+        setShouldFixContent(false);
+        setIsSearchFilterHidden(false);
+        
+        // Remove all scroll prevention listeners
+        window.removeEventListener('scroll', preventScroll, { capture: true });
+        window.removeEventListener('wheel', preventWheel, { capture: true });
+        window.removeEventListener('touchmove', preventTouchMove, { capture: true });
+        document.removeEventListener('keydown', preventKeyScroll, { capture: true });
+        
+        // Restore normal scrolling
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+        window.scrollTo(0, lockScrollPosition);
+      }
+    };
+
+    // Use passive: false to allow preventDefault
+    window.addEventListener('scroll', handleScroll, { passive: false });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      // Cleanup: remove all event listeners and restore normal scrolling
+      window.removeEventListener('scroll', preventScroll, { capture: true });
+      window.removeEventListener('wheel', preventWheel, { capture: true });
+      window.removeEventListener('touchmove', preventTouchMove, { capture: true });
+      document.removeEventListener('keydown', preventKeyScroll, { capture: true });
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+    };
+  }, []);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [languageFilter, setLanguageFilter] = useState<string>('');
   const [difficultyFilter, setDifficultyFilter] = useState<string>('');
@@ -139,6 +292,18 @@ const SubjectsSection: React.FC = () => {
   const [loadingMarkdown, setLoadingMarkdown] = useState<boolean>(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['piscine-go']));
   const [activeTab, setActiveTab] = useState<'readme' | 'audit'>('readme');
+  const [isSearchFilterHidden, setIsSearchFilterHidden] = useState<boolean>(false);
+  const [shouldFixContent, setShouldFixContent] = useState<boolean>(false);
+
+  // Smooth scroll utility function
+  const smoothScrollToTop = useCallback((element?: HTMLElement) => {
+    const target = element || window;
+    if (element) {
+      element.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      target.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
 
   const { data, loading, error } = useQuery(GET_ALL_BH_PROJECTS);
 
@@ -157,21 +322,12 @@ const SubjectsSection: React.FC = () => {
     
     const hierarchy: { [key: string]: string } = {};
     
-    const modules = data.object.filter((obj: ProjectObject) => obj.type === 'module');
-    console.log('🔍 Available modules:', modules.map((m: ProjectObject) => ({ id: m.id, name: m.name })));
-    
     const div01Module = data.object.find((obj: ProjectObject) => 
       obj.type === 'module' && 
       obj.name === 'Div 01'
     );
     
-    console.log('🔍 Div 01 module found:', !!div01Module);
-    if (div01Module) {
-      console.log('🔍 Div 01 structure:', div01Module.attrs?.graph?.innerCircle ? 'Has innerCircle' : 'No innerCircle');
-    }
-    
     if (div01Module?.attrs?.graph?.innerCircle) {
-      console.log('🔍 Found Div 01 module, extracting project hierarchy...');
       
       interface GraphSlice {
         innerArc?: {
@@ -186,14 +342,13 @@ const SubjectsSection: React.FC = () => {
         const processContents = (contents: unknown[]) => {
           contents.forEach((item: unknown) => {
             if (typeof item === 'string') {
-              console.log(`📁 Standalone project: ${item}`);
+              // Standalone project
             } else if (typeof item === 'object' && item !== null) {
               Object.keys(item).forEach(parentName => {
                 const children = (item as Record<string, unknown>)[parentName];
                 if (Array.isArray(children)) {
                   children.forEach((childName: string) => {
                     hierarchy[childName] = `${parentName}/${childName}`;
-                    console.log(`📁 Mapped: ${childName} → ${parentName}/${childName}`);
                   });
                 }
               });
@@ -215,10 +370,7 @@ const SubjectsSection: React.FC = () => {
       });
     }
     
-    console.log(`🎯 Extracted ${Object.keys(hierarchy).length} project mappings from Div 01 module`);
-    
     if (Object.keys(hierarchy).length === 0) {
-      console.log('⚠️ No module hierarchy found, using fallback essential mappings');
       const fallbackMappings = {
         'color': 'ascii-art/color',
         'output': 'ascii-art/output',
@@ -246,7 +398,6 @@ const SubjectsSection: React.FC = () => {
         'scripting': '0-shell/scripting'
       };
       Object.assign(hierarchy, fallbackMappings);
-      console.log(`🔄 Added ${Object.keys(fallbackMappings).length} fallback mappings`);
     }
     
     return hierarchy;
@@ -264,7 +415,7 @@ const SubjectsSection: React.FC = () => {
       'raids': 'java/raids',
       'financial-instruments': 'blockchain/financial-instruments'
     };
-    
+
     return staticMappings[projectName] || projectName;
   }, [projectHierarchy]);
 
@@ -401,23 +552,20 @@ const SubjectsSection: React.FC = () => {
       let markdownContent = '';
       let baseUrl = '';
       
-      console.log(`🔍 Fetching README for "${projectName}" using ${possiblePaths.length} path(s)`);
-      
       for (const fileUrl of possiblePaths) {
         try {
           const response = await fetch(fileUrl);
           if (response.ok) {
             markdownContent = await response.text();
             baseUrl = fileUrl.substring(0, fileUrl.lastIndexOf('/'));
-            console.log(`✅ Successfully loaded README for "${projectName}" (${markdownContent.length} chars)`);
             break;
           }
         } catch {
+          //
         }
       }
       
       if (!markdownContent) {
-        console.error(`🚫 No ${fileName} found for "${projectName}" in any of ${possiblePaths.length} locations`);
         throw new Error(`No ${fileName} found in any expected location for "${projectName}". Tried ${possiblePaths.length} URLs.`);
       }
 
@@ -469,9 +617,7 @@ const SubjectsSection: React.FC = () => {
       return htmlContent;
       
     } catch (error) {
-      console.error(`❌ Error fetching ${fileType} for "${projectName}":`, error);
-      
-      const fileDisplay = fileType === 'readme' ? 'README' : 'audit.md';
+      const fileDisplay = fileType === 'readme' ? 'README' : 'audit/README.md';
       
       const convertedPath = getProjectPath(projectName);
       const githubUrl = `https://github.com/01-edu/public/tree/master/subjects/${convertedPath}`;
@@ -512,38 +658,32 @@ You can try accessing the project directly:
     
     const findProjectPath = (obj: ProjectObject, paths: PathData[]): string => {
       const projectName = obj.name;
-      console.log(`🔍 Finding path for project "${projectName}"`);
       
       for (const pathItem of paths) {
         const path = pathItem.path;
         
         if (path.includes(`/${projectName}`)) {
-          console.log(`✅ Direct match found: ${path}`);
           return path;
         }
         
         const convertedPath = convertProjectNameToPath(projectName);
         if (convertedPath !== projectName && path.includes(`/${convertedPath}`)) {
-          console.log(`✅ Converted path match found: ${path} for ${convertedPath}`);
           return path;
         }
         
         if (path.endsWith(`/${projectName}`)) {
-          console.log(`✅ End match found: ${path}`);
           return path;
         }
         
         const pathSegments = path.split('/');
         const lastSegment = pathSegments[pathSegments.length - 1];
         if (lastSegment === projectName) {
-          console.log(`✅ Last segment match found: ${path}`);
           return path;
         }
         
         if (convertedPath.includes('/')) {
           const [parent, child] = convertedPath.split('/');
           if (path.includes(`/${parent}`) && path.includes(child)) {
-            console.log(`✅ Parent-child match found: ${path} for ${parent}/${child}`);
             return path;
           }
         }
@@ -557,42 +697,18 @@ You can try accessing the project directly:
         
         for (const pattern of parentPatterns) {
           if (path.includes(`/${pattern}/`) && path.includes(projectName)) {
-            console.log(`✅ Parent pattern match found: ${path} for pattern ${pattern}`);
             return path;
           }
         }
         
         const kebabCase = projectName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
         if (kebabCase !== projectName && path.includes(kebabCase)) {
-          console.log(`✅ Kebab-case match found: ${path} for ${kebabCase}`);
           return path;
         }
       }
       
-      console.log(`❌ No path found for project "${projectName}"`);
       return ''; // No matching path found
     };
-    
-    console.log(`📊 Total objects from GraphQL: ${data.object?.length || 0}`);
-    console.log(`📊 Total paths from GraphQL: ${data.path?.length || 0}`);
-    
-    const objectTypes = data.object.reduce((acc: Record<string, number>, obj: ProjectObject) => {
-      acc[obj.type] = (acc[obj.type] || 0) + 1;
-      return acc;
-    }, {});
-    console.log('📊 Object types breakdown:', objectTypes);
-    
-    ['exercise', 'project', 'module'].forEach(type => {
-      const examples = data.object.filter((obj: ProjectObject) => obj.type === type).slice(0, 3);
-      if (examples.length > 0) {
-        console.log(`📋 Sample ${type}s:`, examples.map((obj: ProjectObject) => ({
-          name: obj.name,
-          hasAttrs: !!obj.attrs,
-          hasEvents: obj.events?.length > 0,
-          campus: obj.campus
-        })));
-      }
-    });
     
     const existingProjectNames = new Set(data.object.map((obj: ProjectObject) => obj.name));
     
@@ -600,7 +716,6 @@ You can try accessing the project directly:
     
     Object.keys(projectHierarchy).forEach(projectName => {
       if (!existingProjectNames.has(projectName)) {
-        console.log(`🔧 Creating virtual project for "${projectName}" from module data`);
         virtualProjects.push({
           id: `virtual-${projectName}`,
           name: projectName,
@@ -621,24 +736,19 @@ You can try accessing the project directly:
       }
     });
     
-    console.log(`🔧 Created ${virtualProjects.length} virtual projects`);
-    
     const allObjects = [...data.object, ...virtualProjects];
     
     return allObjects
       .filter((obj: ProjectObject) => {
         if (obj.campus !== 'bahrain') {
-          console.log(`❌ Filtered out "${obj.name}" - wrong campus: ${obj.campus}`);
           return false;
         }
         
         if (obj.type === 'module') {
-          console.log(`📁 Skipping module "${obj.name}" from display`);
           return false;
         }
         
         if (!obj.name || obj.name.trim() === '') {
-          console.log(`❌ Filtered out object with ID "${obj.id}" - no valid name`);
           return false;
         }
         
@@ -647,7 +757,6 @@ You can try accessing the project directly:
           const hasEvents = obj.events && obj.events.length > 0;
           
           if (!hasAttrs && !hasEvents) {
-            console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no meaningful content`);
             return false;
           }
         }
@@ -658,10 +767,8 @@ You can try accessing the project directly:
           if (convertedPath !== obj.name) {
             const parentProject = convertedPath.split('/')[0];
             matchingPath = `/bahrain/bh-module/${parentProject}/${obj.name}`;
-            console.log(`🔧 Created synthetic path for virtual project "${obj.name}": ${matchingPath}`);
           } else {
             matchingPath = `/bahrain/bh-module/${obj.name}`;
-            console.log(`🔧 Created synthetic path for standalone virtual project "${obj.name}": ${matchingPath}`);
           }
         } else {
           matchingPath = findProjectPath(obj, data.path || []);
@@ -676,12 +783,6 @@ You can try accessing the project directly:
                           (obj.attrs.language || obj.attrs.subject || obj.attrs.expectedFiles?.length > 0);
         
         const shouldInclude = hasValidPath || hasContent;
-        
-        if (!shouldInclude) {
-          console.log(`❌ Filtered out "${obj.name}" (${obj.type}) - no valid path or content`);
-        } else {
-          console.log(`✅ Including "${obj.name}" (${obj.type}) with path: ${matchingPath || 'content-based'}`);
-        }
         
         return shouldInclude;
       })
@@ -727,11 +828,30 @@ You can try accessing the project directly:
     return types;
   }, [projects]);
 
+  // Calculate statistics for the stats cards
+  const stats = useMemo(() => {
+    const totalSubjects = projects.length;
+    const languageCount = availableLanguages.length;
+    const difficultyCounts = {
+      Beginner: projects.filter(p => p.difficulty === 'Beginner').length,
+      Intermediate: projects.filter(p => p.difficulty === 'Intermediate').length,
+      Advanced: projects.filter(p => p.difficulty === 'Advanced').length,
+    };
+    const typeCounts = {
+      projects: projects.filter(p => p.projectObject.type === 'project').length,
+      exercises: projects.filter(p => p.projectObject.type === 'exercise').length,
+    };
+
+    return {
+      totalSubjects,
+      languageCount,
+      difficultyCounts,
+      typeCounts,
+    };
+  }, [projects, availableLanguages]);
+
   const loadTabContent = async (project: Project, tabType: 'readme' | 'audit') => {
-    console.log(`Loading ${tabType} for project:`, project.name, 'Type:', project.projectObject.type);
-    
     if (tabType === 'audit' && project.projectObject.type === 'exercise') {
-      console.log(`⚠️ Skipping audit load for exercise "${project.name}"`);
       setMarkdownContent(`# ${project.name}\n\n**This is an exercise**\n\nExercises do not have audit questions. Only projects have audit requirements.`);
       return;
     }
@@ -739,10 +859,8 @@ You can try accessing the project directly:
     setLoadingMarkdown(true);
     try {
       const content = await fetchProjectContent(project.name, tabType, project.projectObject);
-      console.log(`Successfully loaded ${tabType} content, length:`, content.length);
       setMarkdownContent(content);
-    } catch (error) {
-      console.error(`Error loading ${tabType}:`, error);
+    } catch {
       setMarkdownContent(`# ${project.name}\n\n**Error loading ${tabType}**\n\nCould not load ${tabType} content. Please try again later.`);
     } finally {
       setLoadingMarkdown(false);
@@ -750,10 +868,10 @@ You can try accessing the project directly:
   };
 
   const handleProjectSelect = async (project: Project) => {
-    console.log('Selecting project:', project.name, 'Type:', project.projectObject.type);
     setSelectedProject(project);
     setActiveTab('readme'); // Reset to README tab
     await loadTabContent(project, 'readme');
+    smoothScrollToTop();
   };
 
   const handleTabChange = async (newTab: 'readme' | 'audit') => {
@@ -873,6 +991,39 @@ You can try accessing the project directly:
     return colors[language.toLowerCase()] || 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30';
   };
 
+  const getLanguageSymbol = (language: string) => {
+    const symbols: Record<string, string> = {
+      'go': '🐹',
+      'js': '⚡',
+      'javascript': '⚡',
+      'python': '🐍',
+      'rust': '🦀',
+      'java': '☕',
+      'c': '⚙️',
+      'dom': '🌐',
+      'blockchain': '⛓️',
+      'unknown': '📄',
+    };
+    return symbols[language.toLowerCase()] || '📄';
+  };
+
+  const getDifficultySymbol = (difficulty: string) => {
+    const symbols: Record<string, string> = {
+      'Beginner': '🌱',
+      'Intermediate': '⚡',
+      'Advanced': '🔥',
+    };
+    return symbols[difficulty] || '📊';
+  };
+
+  const getTypeSymbol = (type: string) => {
+    const symbols: Record<string, string> = {
+      'project': '🚀',
+      'exercise': '📝',
+    };
+    return symbols[type] || '📁';
+  };
+
   const TreeNodeComponent: React.FC<{ node: TreeNode; depth: number }> = ({ node, depth }) => {
     const isExpanded = expandedFolders.has(node.flattenedPath || node.name);
     const hasChildren = Object.keys(node.children).length > 0;
@@ -961,14 +1112,7 @@ You can try accessing the project directly:
   if (loading) {
     return (
       <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/70">Loading projects...</p>
-        </motion.div>
+        <LoadingSpinner size="lg" text="Loading Subjects..." />
       </div>
     );
   }
@@ -988,24 +1132,29 @@ You can try accessing the project directly:
     );
   }
 
+
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 min-h-full relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 relative overflow-hidden">
       {/* Enhanced Background Pattern */}
-      <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
+      <div className="fixed inset-0 opacity-20 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 35px 35px, rgba(52, 211, 153, 0.08) 2px, transparent 0)`,
           backgroundSize: '70px 70px'
         }}></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full filter blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
-
-      <div className="relative z-10 space-y-8 p-6">
-        {/* Enhanced Header with Animation */}
+      
+      <div className="relative z-10 h-full overflow-y-auto custom-scrollbar">
+        <div className="space-y-8 pt-8 px-4 sm:px-6 lg:px-8 pb-20">
+      
+        {/* Enhanced Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-6"
+          className="text-center space-y-6 mb-10"
         >
           <motion.div 
             initial={{ scale: 0, rotate: -180 }}
@@ -1023,33 +1172,103 @@ You can try accessing the project directly:
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
-              Subjects Dashboard
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-200 via-emerald-100 to-teal-100 bg-clip-text text-transparent mb-4">
+              Subjects Library
             </h1>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              Explore <span className="text-emerald-400 font-semibold">{projects.length}</span> projects & exercises
+            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+              Collection of <span className="text-emerald-400 font-bold">{stats.totalSubjects}</span> learning materials 📚
+              <br />
+              <span className="text-base text-white/60 mt-2 block">
+                ✨ Projects, exercises, and detailed documentation for your learning journey ✨
+              </span>
             </p>
           </motion.div>
         </motion.div>
 
-        {/* Search and Filters */}
+        {/* Enhanced Statistics Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6 mb-12"
         >
-          <div className="flex items-center space-x-3 mb-6">
+          <StatCard 
+            icon={Book} 
+            title="Total Subjects" 
+            value={stats.totalSubjects.toString()} 
+            color="bg-gradient-to-r from-emerald-500/30 to-teal-500/30"
+            bgGradient="bg-gradient-to-br from-emerald-900/20 to-teal-900/20"
+            subValue="Projects & exercises available"
+          />
+          
+          <StatCard 
+            icon={Code} 
+            title="Programming Languages" 
+            value={stats.languageCount.toString()} 
+            color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
+            bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
+            subValue="Different technologies"
+          />
+          
+          <StatCard 
+            icon={Target} 
+            title="Projects" 
+            value={stats.typeCounts.projects.toString()} 
+            color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
+            bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
+            subValue="Full-scale projects"
+          />
+          
+          <StatCard 
+            icon={FileText} 
+            title="Exercises" 
+            value={stats.typeCounts.exercises.toString()} 
+            color="bg-gradient-to-r from-orange-500/30 to-amber-500/30"
+            bgGradient="bg-gradient-to-br from-orange-900/20 to-amber-900/20"
+            subValue="Practice exercises"
+          />
+          
+          <StatCard 
+            icon={Star} 
+            title="Beginner Level" 
+            value={stats.difficultyCounts.Beginner.toString()} 
+            color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
+            bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
+            subValue="🌱 Entry-level subjects"
+          />
+          
+          <StatCard 
+            icon={Zap} 
+            title="Advanced Level" 
+            value={stats.difficultyCounts.Advanced.toString()} 
+            color="bg-gradient-to-r from-red-500/30 to-rose-500/30"
+            bgGradient="bg-gradient-to-br from-red-900/20 to-rose-900/20"
+            subValue="🔥 Expert-level subjects"
+          />
+        </motion.div>
+
+        {/* Enhanced Search and Filters */}
+        <motion.div
+          id="search-filter-container"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl rounded-3xl px-6 sm:px-8 py-8 sm:py-10 border border-white/20 hover:bg-white/12 hover:border-emerald-400/40 transition-all duration-500 shadow-2xl hover:shadow-3xl hover:shadow-emerald-500/20 mb-8 relative overflow-hidden"
+        >
+          {/* Animated background elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-300/10 to-teal-300/10 rounded-full blur-xl opacity-60"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-teal-300/10 to-cyan-300/10 rounded-full blur-xl opacity-60"></div>
+          <div className="flex items-center space-x-3 mb-10">
             <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
               <Search className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-white">Search & Filter Projects</h3>
-              <p className="text-sm text-white/60">Find projects by name, language, type or difficulty</p>
+              <p className="text-sm text-white/60">Find subjects by name, language, type or difficulty</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
               <motion.input
@@ -1161,79 +1380,131 @@ You can try accessing the project directly:
           )}
         </motion.div>
 
-        {/* Main Content with Sidebar */}
+        {/* Enhanced Main Content with Sidebar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex gap-6"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className={`flex flex-col xl:flex-row gap-6 lg:gap-8 ${
+            shouldFixContent 
+              ? 'fixed top-0 left-0 right-0 bottom-0 bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 z-50 overflow-hidden p-4 sm:p-6 lg:p-8' 
+              : ''
+          }`}
+          style={{
+            height: shouldFixContent ? '100vh' : 'auto'
+          }}
         >
-          {/* Tree Navigation Sidebar */}
-          <div className="w-80 flex-shrink-0">
-            <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl border border-white/10 hover:border-emerald-400/20 transition-all duration-300 shadow-xl h-[calc(100vh-300px)] flex flex-col sticky top-6">
-              <div className="p-4 border-b border-white/10 flex-shrink-0">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
-                    <Folder className="w-4 h-4 text-emerald-400" />
+          {/* Enhanced Tree Navigation Sidebar */}
+          <div className="w-full xl:w-96 xl:flex-shrink-0 order-2 xl:order-1">
+            <div className={`bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl rounded-3xl border border-white/20 hover:border-emerald-400/30 transition-all duration-500 shadow-2xl hover:shadow-3xl hover:shadow-emerald-500/20 ${
+              shouldFixContent ? 'h-full' : 'sticky top-6'
+            }`}>
+              {/* Enhanced Header */}
+              <div className="p-6 border-b border-white/20 flex-shrink-0 relative">
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-xl"></div>
+                <div className="flex items-center space-x-4 relative z-10">
+                  <motion.div 
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className="w-10 h-10 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/30 shadow-lg"
+                  >
+                    <Folder className="w-5 h-5 text-emerald-400" />
+                  </motion.div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Subjects Navigator</h3>
+                    <p className="text-sm text-white/60">Browse subjects by category</p>
                   </div>
-                  <h3 className="text-lg font-semibold text-white">Project Tree</h3>
                 </div>
               </div>
-              <div className="p-3 flex-1 overflow-y-auto custom-scrollbar">
-                {Object.values(treeWithProjects)
-                  .sort((a: TreeNode, b: TreeNode) => {
-                    const aHasChildren = Object.keys(a.children).length > 0;
-                    const bHasChildren = Object.keys(b.children).length > 0;
-                    
-                    if (aHasChildren && !bHasChildren) return -1;
-                    if (!aHasChildren && bHasChildren) return 1;
-                    
-                    return a.name.localeCompare(b.name);
-                  })
-                  .map((node: TreeNode) => (
-                    <TreeNodeComponent key={node.path} node={node} depth={0} />
-                  ))}
+              
+              {/* Scrollable Tree Content */}
+              <div className={`overflow-y-auto p-4 invisible-scrollbar ${
+                shouldFixContent 
+                  ? 'h-[calc(100vh-120px)]' 
+                  : 'h-[calc(100vh-240px)]'
+              }`}>
+                <div className="space-y-2">
+                  {Object.values(treeWithProjects)
+                    .sort((a: TreeNode, b: TreeNode) => {
+                      const aHasChildren = Object.keys(a.children).length > 0;
+                      const bHasChildren = Object.keys(b.children).length > 0;
+                      
+                      if (aHasChildren && !bHasChildren) return -1;
+                      if (!aHasChildren && bHasChildren) return 1;
+                      
+                      return a.name.localeCompare(b.name);
+                    })
+                    .map((node: TreeNode) => (
+                      <TreeNodeComponent key={node.path} node={node} depth={0} />
+                    ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Project Details */}
-          <div className="flex-1">
+          {/* Enhanced Project Details */}
+          <div className="flex-1 order-1 xl:order-2">
             {selectedProject ? (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
                 className="space-y-6"
               >
-                {/* Project Stats and Metadata */}
-                <div className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <motion.div 
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="p-3 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-xl border border-emerald-400/30 backdrop-blur-sm"
-                    >
-                      <Target className="w-6 h-6 text-emerald-400" />
-                    </motion.div>
-                    <div>
-                      <h3 className="text-2xl font-bold text-white">
-                        {typeof selectedProject.name === 'string' ? selectedProject.name : 'Project'}
-                      </h3>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <span className={`text-xs px-3 py-1 rounded-full border ${getLanguageColor(selectedProject.language)}`}>
-                          {selectedProject.language}
-                        </span>
-                        <span className={`text-xs px-3 py-1 rounded-full border ${getDifficultyColor(selectedProject.difficulty)}`}>
-                          {selectedProject.difficulty}
-                        </span>
-                        <span className={`text-xs px-3 py-1 rounded-full border ${
-                          selectedProject.projectObject.type === 'project' 
-                            ? 'text-blue-400 bg-blue-500/20 border-blue-500/30'
-                            : 'text-gray-400 bg-gray-500/20 border-gray-500/30'
-                        }`}>
-                          {selectedProject.projectObject.type}
-                        </span>
+                {/* Enhanced Project Stats and Metadata */}
+                <div className={`bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/20 hover:bg-white/12 hover:border-emerald-400/40 transition-all duration-500 shadow-2xl hover:shadow-3xl hover:shadow-emerald-500/20 z-10 relative overflow-hidden ${
+                  shouldFixContent ? 'flex-shrink-0' : 'sticky top-6'
+                }`}>
+                  {/* Animated background elements */}
+                  <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-br from-emerald-300/10 to-teal-300/10 rounded-full blur-xl opacity-60"></div>
+                  <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-teal-300/10 to-cyan-300/10 rounded-full blur-xl opacity-60"></div>
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center space-x-4">
+                      <motion.div 
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        className="p-3 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-xl border border-emerald-400/30 backdrop-blur-sm"
+                      >
+                        <Target className="w-6 h-6 text-emerald-400" />
+                      </motion.div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">
+                          {typeof selectedProject.name === 'string' ? selectedProject.name : 'Project'}
+                        </h3>
+                        <div className="flex items-center space-x-2 mt-2">
+                          <span className={`text-xs px-3 py-1 rounded-full border flex items-center space-x-1 ${getLanguageColor(selectedProject.language)}`}>
+                            <span>{getLanguageSymbol(selectedProject.language)}</span>
+                            <span>{selectedProject.language}</span>
+                          </span>
+                          <span className={`text-xs px-3 py-1 rounded-full border flex items-center space-x-1 ${getDifficultyColor(selectedProject.difficulty)}`}>
+                            <span>{getDifficultySymbol(selectedProject.difficulty)}</span>
+                            <span>{selectedProject.difficulty}</span>
+                          </span>
+                          <span className={`text-xs px-3 py-1 rounded-full border flex items-center space-x-1 ${
+                            selectedProject.projectObject.type === 'project' 
+                              ? 'text-blue-400 bg-blue-500/20 border-blue-500/30'
+                              : 'text-gray-400 bg-gray-500/20 border-gray-500/30'
+                          }`}>
+                            <span>{getTypeSymbol(selectedProject.projectObject.type)}</span>
+                            <span>{selectedProject.projectObject.type}</span>
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    
+                    {/* External Link - Moved to top right */}
+                    <motion.a
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      href={(() => {
+                        const projectPath = getProjectPath(selectedProject.name);
+                        return `https://github.com/01-edu/public/tree/master/subjects/${projectPath}`;
+                      })()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center space-x-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg px-4 py-2 text-blue-400 transition-all duration-300 text-sm"
+                    >
+                      <span>View in Public Repository</span>
+                      <ExternalLink className="w-4 h-4" />
+                    </motion.a>
                   </div>
 
                   {/* Project Requirements Grid */}
@@ -1275,52 +1546,17 @@ You can try accessing the project directly:
                       </motion.div>
                     )}
 
-                    {selectedProject.expectedFiles.length > 0 && (
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        className="bg-white/5 rounded-lg p-4 border border-white/10"
-                      >
-                        <div className="flex items-center space-x-2 mb-2">
-                          <FileText className="w-4 h-4 text-yellow-400" />
-                          <span className="text-sm font-medium text-white">Expected Files</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {selectedProject.expectedFiles.slice(0, 2).map((file, index) => (
-                            <span key={index} className="text-xs bg-white/10 text-white/70 px-2 py-1 rounded font-mono">
-                              {file}
-                            </span>
-                          ))}
-                          {selectedProject.expectedFiles.length > 2 && (
-                            <span className="text-xs bg-white/10 text-white/50 px-2 py-1 rounded">
-                              +{selectedProject.expectedFiles.length - 2} more
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
                   </div>
-
-                  {/* External Link */}
-                  <motion.a
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    href={(() => {
-                      const projectPath = getProjectPath(selectedProject.name);
-                      return `https://github.com/01-edu/public/tree/master/subjects/${projectPath}`;
-                    })()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg px-4 py-2 text-blue-400 transition-all duration-300 text-sm"
-                  >
-                    <span>View in Repository</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </motion.a>
                 </div>
 
-                {/* Content Tabs */}
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                  {/* Tab Headers */}
-                  <div className="flex border-b border-white/10">
+                {/* Enhanced Content Tabs */}
+                <div className="bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl hover:shadow-3xl hover:shadow-emerald-500/20 transition-all duration-500 relative overflow-hidden">
+                  {/* Animated background */}
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400/50 to-teal-400/50"></div>
+                  
+                  {/* Enhanced Tab Headers */}
+                  <div className="flex border-b border-white/20 relative">
+                    <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent"></div>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -1333,7 +1569,7 @@ You can try accessing the project directly:
                     >
                       <div className="flex items-center justify-center space-x-2">
                         <FileText className="w-4 h-4" />
-                        <span>Project Description</span>
+                        <span>Subject Description</span>
                       </div>
                     </motion.button>
                     {selectedProject.projectObject.type === 'project' && (
@@ -1355,47 +1591,64 @@ You can try accessing the project directly:
                     )}
                   </div>
 
-                  {/* Tab Content */}
-                  <div className="p-6">
+                  {/* Enhanced Tab Content */}
+                  <div className="p-6 sm:p-8 pt-8 pb-8 relative">
                     {loadingMarkdown ? (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="flex items-center justify-center py-12"
+                        className="flex items-center justify-center py-16"
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-                          <span className="text-white/60">Loading {activeTab === 'readme' ? 'description' : 'questions'}...</span>
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="relative">
+                            <div className="w-8 h-8 border-3 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-emerald-400/20 rounded-full animate-pulse"></div>
+                          </div>
+                          <div className="text-center">
+                            <span className="text-white/70 font-medium">Loading {activeTab === 'readme' ? 'description' : 'questions'}...</span>
+                            <p className="text-white/50 text-sm mt-1">Fetching content from repository</p>
+                          </div>
                         </div>
                       </motion.div>
                     ) : (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="max-h-96 overflow-y-auto custom-scrollbar"
+                        transition={{ duration: 0.3 }}
+                        className="relative"
                       >
-                        <div 
-                          className="prose prose-invert prose-sm max-w-none text-white/90 text-sm leading-relaxed markdown-content"
-                          style={{
-                            '--tw-prose-body': 'rgb(255 255 255 / 0.9)',
-                            '--tw-prose-headings': 'rgb(255 255 255)',
-                            '--tw-prose-lead': 'rgb(255 255 255 / 0.8)',
-                            '--tw-prose-links': 'rgb(59 130 246)',
-                            '--tw-prose-bold': 'rgb(255 255 255)',
-                            '--tw-prose-counters': 'rgb(255 255 255 / 0.6)',
-                            '--tw-prose-bullets': 'rgb(255 255 255 / 0.6)',
-                            '--tw-prose-hr': 'rgb(255 255 255 / 0.2)',
-                            '--tw-prose-quotes': 'rgb(255 255 255 / 0.8)',
-                            '--tw-prose-quote-borders': 'rgb(59 130 246 / 0.3)',
-                            '--tw-prose-captions': 'rgb(255 255 255 / 0.6)',
-                            '--tw-prose-code': 'rgb(255 255 255)',
-                            '--tw-prose-pre-code': 'rgb(255 255 255)',
-                            '--tw-prose-pre-bg': 'rgb(0 0 0 / 0.3)',
-                            '--tw-prose-th-borders': 'rgb(255 255 255 / 0.3)',
-                            '--tw-prose-td-borders': 'rgb(255 255 255 / 0.2)'
-                          } as React.CSSProperties}
-                          dangerouslySetInnerHTML={{ __html: markdownContent }}
-                        />
+                        {/* Enhanced Scrollable Content */}
+                        <div className={`overflow-y-auto invisible-scrollbar pr-2 ${
+                          shouldFixContent 
+                            ? 'max-h-[calc(100vh-400px)]' 
+                            : 'max-h-[70vh]'
+                        }`}>
+                          {/* Gradient fade at top and bottom */}
+                          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white/10 to-transparent pointer-events-none z-10"></div>
+                          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white/10 to-transparent pointer-events-none z-10"></div>
+                          <div 
+                            className="prose prose-invert prose-sm max-w-none text-white/90 text-sm leading-relaxed markdown-content"
+                            style={{
+                              '--tw-prose-body': 'rgb(255 255 255 / 0.9)',
+                              '--tw-prose-headings': 'rgb(255 255 255)',
+                              '--tw-prose-lead': 'rgb(255 255 255 / 0.8)',
+                              '--tw-prose-links': 'rgb(59 130 246)',
+                              '--tw-prose-bold': 'rgb(255 255 255)',
+                              '--tw-prose-counters': 'rgb(255 255 255 / 0.6)',
+                              '--tw-prose-bullets': 'rgb(255 255 255 / 0.6)',
+                              '--tw-prose-hr': 'rgb(255 255 255 / 0.2)',
+                              '--tw-prose-quotes': 'rgb(255 255 255 / 0.8)',
+                              '--tw-prose-quote-borders': 'rgb(59 130 246 / 0.3)',
+                              '--tw-prose-captions': 'rgb(255 255 255 / 0.6)',
+                              '--tw-prose-code': 'rgb(255 255 255)',
+                              '--tw-prose-pre-code': 'rgb(255 255 255)',
+                              '--tw-prose-pre-bg': 'rgb(0 0 0 / 0.3)',
+                              '--tw-prose-th-borders': 'rgb(255 255 255 / 0.3)',
+                              '--tw-prose-td-borders': 'rgb(255 255 255 / 0.2)'
+                            } as React.CSSProperties}
+                            dangerouslySetInnerHTML={{ __html: markdownContent }}
+                          />
+                        </div>
                       </motion.div>
                     )}
                   </div>
@@ -1403,26 +1656,89 @@ You can try accessing the project directly:
               </motion.div>
             ) : (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-12 border border-white/10 text-center"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="bg-gradient-to-br from-white/8 to-white/3 backdrop-blur-xl rounded-3xl p-12 lg:p-16 border border-white/20 text-center relative overflow-hidden shadow-2xl"
               >
+                {/* Animated background elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-300/10 to-teal-300/10 rounded-full blur-2xl opacity-60"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-teal-300/10 to-cyan-300/10 rounded-full blur-2xl opacity-60"></div>
+                
                 <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4"
+                  animate={{ 
+                    y: [0, -15, 0],
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 4,
+                    ease: "easeInOut"
+                  }}
+                  className="w-24 h-24 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-400/30 shadow-2xl relative z-10"
                 >
-                  <FileText className="w-8 h-8 text-white/40" />
+                  <FileText className="w-12 h-12 text-emerald-400" />
                 </motion.div>
-                <h3 className="text-lg font-semibold text-white mb-2">Select a Project</h3>
-                <p className="text-white/60">Choose a project from the tree to view its details and documentation.</p>
+                
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-bold text-white mb-4">Explore Learning Materials</h3>
+                  <p className="text-white/70 text-lg mb-6 max-w-md mx-auto">
+                    Select a subject from the navigator to dive into detailed documentation, requirements, and learning resources.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3 text-sm">
+                    <span className="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-400/30">
+                      📚 Comprehensive docs
+                    </span>
+                    <span className="px-4 py-2 bg-teal-500/20 text-teal-400 rounded-full border border-teal-400/30">
+                      🎯 Clear requirements
+                    </span>
+                    <span className="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-full border border-cyan-400/30">
+                      ⚡ Interactive content
+                    </span>
+                  </div>
+                </div>
               </motion.div>
             )}
           </div>
         </motion.div>
+        </div>
       </div>
     </div>
   );
 };
+
+const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient }: { 
+  icon: React.ElementType, 
+  title: string, 
+  value: string | number, 
+  color: string,
+  subValue?: string,
+  trend?: { value: number, isPositive: boolean },
+  bgGradient?: string
+}) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={`${bgGradient || 'bg-gradient-to-br from-slate-800/50 to-slate-900/50 dark:from-slate-800/50 dark:to-slate-900/50 light:from-white/80 light:to-slate-50/80'} backdrop-blur-lg rounded-2xl p-6 border border-white/10 dark:border-white/10 light:border-slate-300/30 hover:border-white/20 dark:hover:border-white/20 light:hover:border-slate-400/50 transition-all duration-300 hover:transform hover:scale-105 shadow-lg hover:shadow-xl group`}
+  >
+    <div className="flex items-center justify-between mb-4">
+      <div className={`p-3 rounded-xl ${color} backdrop-blur-sm`}>
+        <Icon className="w-8 h-8 text-white drop-shadow-lg" />
+      </div>
+      {trend && (
+        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+        }`}>
+          {trend.isPositive ? '↗' : '↘'} {Math.abs(trend.value)}%
+        </div>
+      )}
+    </div>
+    <h3 className="text-3xl font-bold text-white dark:text-white light:text-slate-900 mb-2 tracking-tight group-hover:scale-110 transition-transform duration-300">{value}</h3>
+    <p className="text-white/70 dark:text-white/70 light:text-slate-700 text-sm font-medium">{title}</p>
+    {subValue && <p className="text-white/50 dark:text-white/50 light:text-slate-600 text-xs mt-2 bg-white/5 dark:bg-white/5 light:bg-slate-800/10 rounded-lg px-2 py-1">{subValue}</p>}
+  </motion.div>
+);
 
 export default SubjectsSection;

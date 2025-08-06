@@ -755,7 +755,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2 md:px-8 xl:px-24">
       {/* Analytics Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -763,8 +763,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         transition={{ duration: 0.5 }}
         className="text-center"
       >
-        <h2 className="text-2xl font-bold text-white mb-2">Visual Data Analytics</h2>
-        <p className="text-white/70">Interactive charts and graphs showing your learning progression</p>
+        <h2 className="text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-lg">Visual Data Analytics</h2>
+        <p className="text-white/80 text-lg mb-2">Interactive charts and graphs showing your learning progression</p>
       </motion.div>
 
       {/* XP Charts Grid */}
@@ -774,7 +774,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:col-span-2 bg-white/10 dark:bg-white/10 light:bg-slate-800/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 dark:border-white/20 light:border-slate-800/20 hover:shadow-lg transition-all duration-300"
+          className="lg:col-span-2 bg-gradient-to-br from-blue-900/40 via-blue-700/30 to-indigo-900/40 shadow-xl rounded-2xl p-5 border border-blue-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <TrendingUp className="w-5 h-5 mr-2 text-blue-400" />
@@ -789,7 +789,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-purple-900/40 via-purple-700/30 to-indigo-900/40 shadow-xl rounded-2xl p-5 border border-purple-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <PieChart className="w-5 h-5 mr-2 text-purple-400" />
@@ -800,20 +800,25 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         </motion.div>
       </div>
 
-      {/* Skills Radar Chart - SVG Graph 2 */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-      >
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <Activity className="w-5 h-5 mr-2 text-orange-400" />
-          Skills Proficiency Radar
-        </h3>
-        <p className="text-white/60 text-sm mb-6">Visual representation of your skills and competencies</p>
-        <SkillsRadarChart skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))} />
-      </motion.div>
+      {/* Skills Radar Chart and User Distribution Side by Side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Skills Radar Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-gradient-to-br from-orange-900/40 via-orange-700/30 to-yellow-900/40 shadow-xl rounded-2xl p-5 border border-orange-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+        >
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <Activity className="w-5 h-5 mr-2 text-orange-400" />
+            Skills Proficiency Radar
+          </h3>
+          <p className="text-white/60 text-sm mb-6">Visual representation of your skills and competencies</p>
+          <SkillsRadarChart skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))} />
+        </motion.div>
+        {/* User Distribution Chart */}
+        <LeaderboardChart handleElementClick={handleElementClick} user={user} />
+      </div>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -822,7 +827,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-green-900/40 via-green-700/30 to-emerald-900/40 shadow-xl rounded-2xl p-5 border border-green-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <PieChart className="w-5 h-5 mr-2 text-green-400" />
@@ -853,7 +858,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+          className="bg-gradient-to-br from-emerald-900/40 via-emerald-700/30 to-teal-900/40 shadow-xl rounded-2xl p-5 border border-emerald-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Target className="w-5 h-5 mr-2 text-green-400" />
@@ -876,15 +881,12 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         </motion.div>
       </div>
 
-      {/* Leaderboard Chart */}
-      <LeaderboardChart handleElementClick={handleElementClick} user={user} />
-
       {/* Analytics Summary */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+        className="bg-gradient-to-br from-purple-900/40 via-purple-700/30 to-indigo-900/40 shadow-xl rounded-2xl p-5 border border-purple-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
       >
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
           <BarChart3 className="w-5 h-5 mr-2 text-purple-400" />

@@ -625,7 +625,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       case 'profile':
         return <ProfileSection user={user} analytics={analytics} />
       case 'analytics':
-        return <AnalyticsSection analytics={analytics} />
+        return <AnalyticsSection analytics={analytics} user={user} />
       case 'statistics':
         return <StatisticsSection analytics={analytics} />
       case 'transactions':

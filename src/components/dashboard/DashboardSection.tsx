@@ -449,13 +449,13 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       const monthAuditsGiven = allAuditsGiven
         .filter(a => {
           const date = new Date(a.createdAt)
-          return date >= monthStart && date < monthEnd
+          return date >= monthStart && date < monthEnd && a.grade !== null
         }).length
         
       const monthAuditsReceived = allAuditsReceived
         .filter(a => {
           const date = new Date(a.createdAt)
-          return date >= monthStart && date < monthEnd
+          return date >= monthStart && date < monthEnd && a.grade !== null
         }).length
 
       monthlyData.push({
@@ -561,8 +561,8 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
         monthlyData: monthlyData.map(m => ({ 
           month: m.month, 
           audits: m.audits,
-          auditsGiven: m.auditsGiven,
-          auditsReceived: m.auditsReceived
+          given: m.auditsGiven,
+          received: m.auditsReceived
         }))
       },
       groups: {

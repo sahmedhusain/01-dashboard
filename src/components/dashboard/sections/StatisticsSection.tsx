@@ -11,8 +11,8 @@ interface StatisticsSectionProps {
 }
 
 const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
-  
-  
+  const [showAllSkills, setShowAllSkills] = React.useState(false);
+
   const averageXPPerMonth = analytics.xp.monthlyData.reduce((sum: number, month: any) => sum + month.xp, 0) / 12
   const mostActiveMonth = analytics.xp.monthlyData.reduce((prev: any, current: any) => 
     current.xp > prev.xp ? current : prev, { month: 'N/A', xp: 0 }
@@ -321,28 +321,40 @@ const StatisticsSection: React.FC<StatisticsSectionProps> = ({ analytics }) => {
           Skills Development Statistics
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {analytics.skills.skillData.map((skill: any, index: number) => (
-            <div key={skill.name} className="bg-white/5 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-white/80 text-sm font-medium capitalize">
-                  {skill.name.replace(/-/g, ' ')}
-                </span>
-                <span className="text-purple-400 font-bold text-sm">#{index + 1}</span>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(showAllSkills ? analytics.skills.skillData : analytics.skills.skillData.slice(0, 3)).map((skill: any, index: number) => (
+              <div key={skill.name} className="bg-white/5 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-white/80 text-sm font-medium capitalize">
+                    {skill.name.replace(/-/g, ' ')}
+                  </span>
+                  <span className="text-purple-400 font-bold text-sm">#{index + 1}</span>
+                </div>
+                <div className="text-2xl font-bold text-white mb-1">{skill.percentage}%</div>
+                <div className="text-white/60 text-xs">Skill percentage</div>
+                <div className="w-full bg-white/10 rounded-full h-2 mt-3">
+                  <div 
+                    className="bg-purple-400 h-2 rounded-full transition-all duration-1000"
+                    style={{ 
+                      width: `${Math.min(100, skill.percentage)}%` 
+                    }}
+                  />
+                </div>
               </div>
-              <div className="text-2xl font-bold text-white mb-1">{skill.percentage}%</div>
-              <div className="text-white/60 text-xs">Skill percentage</div>
-              <div className="w-full bg-white/10 rounded-full h-2 mt-3">
-                <div 
-                  className="bg-purple-400 h-2 rounded-full transition-all duration-1000"
-                  style={{ 
-                    width: `${Math.min(100, skill.percentage)}%` 
-                  }}
-                />
-              </div>
+            ))}
+          </div>
+          {analytics.skills.skillData.length > 3 && (
+            <div className="flex justify-center mt-4">
+              <button
+                className="px-4 py-1 rounded-full bg-purple-500/20 text-purple-300 font-semibold text-sm hover:bg-purple-500/40 transition"
+                onClick={() => setShowAllSkills(v => !v)}
+              >
+                {showAllSkills ? "Show Less" : `Show ${analytics.skills.skillData.length - 3} More`}
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       </motion.div>
 
       {/* Performance Insights */}

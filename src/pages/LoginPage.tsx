@@ -24,49 +24,6 @@ const LoginPage: React.FC = () => {
 
   const isEmail = identifier.includes('@')
 
-  const handleTestLogin = async () => {
-    if ((import.meta.env as { VITE_USE_TEST_AUTH?: string }).VITE_USE_TEST_AUTH !== 'true') return
-
-    clearError()
-    setLoading(true)
-
-    try {
-      const mockUserData = {
-        id: 1599,
-        login: 'sayedahmed',
-        firstName: 'Sayed',
-        lastName: 'Ahmed',
-        campus: 'bahrain',
-        auditRatio: 1.2,
-        totalUp: 2800000,
-        totalDown: 1500000,
-        profile: JSON.stringify({
-          bio: 'Test user for development',
-          location: 'Bahrain'
-        }),
-        attrs: {
-          country: 'Bahrain',
-          degree: 'Computer Science',
-          personal: {
-            email: 'sayedahmed97.sad@gmail.com',
-            phone: '+973-12345678'
-          }
-        },
-        createdAt: '2023-01-01T00:00:00Z',
-        updatedAt: new Date().toISOString()
-      }
-
-      const mockToken = 'mock-dev-token-' + Date.now()
-
-      login(mockUserData, mockToken)
-
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Test authentication failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     

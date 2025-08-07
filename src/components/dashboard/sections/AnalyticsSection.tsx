@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { BarChart3, TrendingUp, PieChart, Activity, Target, Users, Crown } from 'lucide-react'
 import { useQuery } from '@apollo/client'
 import { formatXPValue } from '../../../utils/dataFormatting'
-import { GET_COMPREHENSIVE_LEADERBOARD_DATA } from '../../../graphql/allQueries'
+import { GET_COMPREHENSIVE_LEADERBOARD_DATA, GET_ALL_LABEL_USERS, GET_ALL_LABELS } from '../../../graphql/allQueries'
 
 interface AnalyticsSectionProps {
   analytics: any
@@ -35,15 +35,6 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       }, 100)
     }
   }, [clickedElement, showTooltip])
-
-  // Handle click to show tooltip
-  const handleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
-    // Clear any existing hide timeout
-    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-    
-    setClickedElement(elementData)
-    setShowTooltip(true)
-  }
 
   // Add global mouse move listener
   useEffect(() => {
@@ -83,6 +74,13 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     })
   }
   const fullXPProgression = getFullXPProgression()
+
+  // Central handleElementClick for all charts
+  const handleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+    setClickedElement(elementData)
+    setShowTooltip(true)
+  }
 
   // Filter XP data based on selected range
   // Fill missing periods for continuous line
@@ -301,12 +299,14 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     onTogglePoints,
     size = 400,
     radius = 120,
+    handleElementClick,
   }: {
     skills: Array<{ name: string; points: number }>
     showRadarPoints: boolean
     onTogglePoints: () => void
     size?: number
     radius?: number
+    handleElementClick?: (elementData: { type: string, data: any, x: number, y: number }) => void
   }) => {
     const center = size / 2
     const maxPoints = Math.max(...skills.map(s => s.points), 100)
@@ -321,18 +321,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
     return (
       <div>
-        <div className="flex justify-end mb-1">
-          <button
-            className={`px-2 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all ${
-              showRadarPoints ? "bg-gradient-to-r from-orange-500 via-yellow-400 to-pink-500 text-white border-orange-400 scale-105"
-                : "bg-white/10 text-white/70 border-white/10 hover:bg-orange-500/20"
-            }`}
-            style={{ minWidth: 80 }}
-            onClick={onTogglePoints}
-          >
-            {showRadarPoints ? "Hide Points" : "Show Points"}
-          </button>
-        </div>
+{/* Show Points button moved to description row */}
         <div className="w-full h-full min-h-[220px] md:min-h-[320px] lg:min-h-[400px] flex justify-center items-center overflow-visible">
           <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-[220px] md:h-[320px] lg:h-[400px] drop-shadow-lg overflow-visible">
             {/* Background concentric circles */}
@@ -401,7 +390,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                       r="16"
                       fill="transparent"
                       className="hover:fill-yellow-500/20 cursor-pointer transition-all duration-200"
-                      onClick={(e: React.MouseEvent) => {
+                      onClick={handleElementClick ? (e: React.MouseEvent) => {
                         e.stopPropagation();
                         handleElementClick({
                           type: 'skill',
@@ -414,7 +403,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                           x: e.clientX,
                           y: e.clientY
                         });
-                      }}
+                      } : undefined}
                     />
                   </g>
                 )
@@ -869,7 +858,28 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     );
   };
 
-  const AuditTimelineChart = ({ data }: { data: any[] }) => {
+  const AuditTimelineChart = ({
+    data,
+    handleElementClick
+  }: {
+    data: any[]
+    handleElementClick: (elementData: { type: string, data: any, x: number, y: number }) => void
+  }) => {
+    const [showGiven, setShowGiven] = useState(true);
+    const [showReceived, setShowReceived] = useState(true);
+    const [showAverage, setShowAverage] = useState(false);
+
+    // Only call handleElementClick if the bar type is visible
+    const safeHandleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
+      if (
+        (elementData.type === 'audit-given' && !showGiven) ||
+        (elementData.type === 'audit-received' && !showReceived)
+      ) {
+        return;
+      }
+      handleElementClick(elementData)
+    }
+
     const maxAuditsGiven = Math.max(...data.map(d => d.audits || d.given || 0), 5)
     const maxAuditsReceived = Math.max(...data.map(d => d.received || Math.floor((d.audits || 0) * 0.8)), 3)
     const maxAudits = Math.max(maxAuditsGiven, maxAuditsReceived)
@@ -877,8 +887,40 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     const height = 200
     const padding = 40
 
+    // Calculate average for visible bars
+    const visibleGiven = showGiven ? data.map(d => d.audits || d.given || 0) : [];
+    const visibleReceived = showReceived ? data.map(d => d.received || Math.floor((d.audits || 0) * 0.8)) : [];
+    const avgGiven = visibleGiven.length > 0 ? visibleGiven.reduce((a, b) => a + b, 0) / visibleGiven.length : 0;
+    const avgReceived = visibleReceived.length > 0 ? visibleReceived.reduce((a, b) => a + b, 0) / visibleReceived.length : 0;
+
     return (
       <div className="w-full">
+        <div className="flex gap-2 mb-2">
+          <button
+            className={`px-2 py-1 rounded-full text-xs font-semibold border transition-all ${
+              showGiven ? "bg-green-500 text-white border-green-400 scale-105" : "bg-white/10 text-white/70 border-white/10 hover:bg-green-500/20"
+            }`}
+            onClick={() => setShowGiven(v => !v)}
+          >
+            {showGiven ? "Hide Given" : "Show Given"}
+          </button>
+          <button
+            className={`px-2 py-1 rounded-full text-xs font-semibold border transition-all ${
+              showReceived ? "bg-red-500 text-white border-red-400 scale-105" : "bg-white/10 text-white/70 border-white/10 hover:bg-red-500/20"
+            }`}
+            onClick={() => setShowReceived(v => !v)}
+          >
+            {showReceived ? "Hide Received" : "Show Received"}
+          </button>
+          <button
+            className={`px-2 py-1 rounded-full text-xs font-semibold border transition-all ${
+              showAverage ? "bg-blue-500 text-white border-blue-400 scale-105" : "bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20"
+            }`}
+            onClick={() => setShowAverage(v => !v)}
+          >
+            {showAverage ? "Hide Average" : "Show Average"}
+          </button>
+        </div>
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[180px] md:h-48">
           {/* Grid lines */}
           {[0, 1, 2, 3, 4].map(i => (
@@ -900,7 +942,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             const xReceived = xGiven + barWidth + 2
             
             const auditsGiven = item.audits || item.given || 0
-            const auditsReceived = item.received || Math.floor(auditsGiven * 0.7) + Math.floor(Math.random() * 3)
+            const auditsReceived = item.received || Math.floor(auditsGiven * 0.7)
             
             const barHeightGiven = (auditsGiven / maxAudits) * (height - 2 * padding)
             const barHeightReceived = (auditsReceived / maxAudits) * (height - 2 * padding)
@@ -911,55 +953,53 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             return (
               <g key={index}>
                 {/* Audits Given (Green) */}
-                <rect
-                  x={xGiven}
-                  y={yGiven}
-                  width={barWidth}
-                  height={barHeightGiven}
-                  fill="url(#auditGivenGradient)"
-                  rx="3"
-                  className="hover:opacity-80 cursor-pointer transition-all duration-200"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleElementClick({
-                      type: 'audit-given',
-                      data: { 
-                        month: item.month, 
-                        auditsGiven: auditsGiven,
-                        auditsReceived: auditsReceived,
-                        ratio: (auditsGiven / Math.max(auditsReceived, 1)).toFixed(2)
-                      },
-                      x: e.clientX,
-                      y: e.clientY
-                    });
-                  }}
-                />
-                
+                {showGiven && (
+                  <rect
+                    x={xGiven}
+                    y={yGiven}
+                    width={barWidth}
+                    height={barHeightGiven}
+                    fill="url(#auditGivenGradient)"
+                    rx="3"
+                    className="hover:opacity-80 cursor-pointer transition-all duration-200"
+                    onClick={showGiven ? (e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      safeHandleElementClick({
+                        type: 'audit-given',
+                        data: { 
+                          month: item.month, 
+                          auditsGiven: auditsGiven
+                        },
+                        x: e.clientX,
+                        y: e.clientY
+                      });
+                    } : undefined}
+                  />
+                )}
                 {/* Audits Received (Red) */}
-                <rect
-                  x={xReceived}
-                  y={yReceived}
-                  width={barWidth}
-                  height={barHeightReceived}
-                  fill="url(#auditReceivedGradient)"
-                  rx="3"
-                  className="hover:opacity-80 cursor-pointer transition-all duration-200"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleElementClick({
-                      type: 'audit-received',
-                      data: { 
-                        month: item.month, 
-                        auditsGiven: auditsGiven,
-                        auditsReceived: auditsReceived,
-                        ratio: (auditsGiven / Math.max(auditsReceived, 1)).toFixed(2)
-                      },
-                      x: e.clientX,
-                      y: e.clientY
-                    });
-                  }}
-                />
-                
+                {showReceived && (
+                  <rect
+                    x={xReceived}
+                    y={yReceived}
+                    width={barWidth}
+                    height={barHeightReceived}
+                    fill="url(#auditReceivedGradient)"
+                    rx="3"
+                    className="hover:opacity-80 cursor-pointer transition-all duration-200"
+                    onClick={showReceived ? (e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      safeHandleElementClick({
+                        type: 'audit-received',
+                        data: { 
+                          month: item.month, 
+                          auditsReceived: auditsReceived
+                        },
+                        x: e.clientX,
+                        y: e.clientY
+                      });
+                    } : undefined}
+                  />
+                )}
                 <text
                   x={xGiven + barWidth}
                   y={height - padding + 15}
@@ -971,6 +1011,59 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               </g>
             )
           })}
+          {/* Average lines */}
+          {showAverage && showGiven && (
+            <>
+              <polyline
+                fill="none"
+                stroke="#22C55E"
+                strokeWidth="2"
+                strokeDasharray="8 4"
+                points={
+                  data.map((item, index) => {
+                    const x = padding + (index + 0.1) * ((width - 2 * padding) / data.length) + ((width - 2 * padding) / data.length) * 0.175;
+                    const y = height - padding - (avgGiven / maxAudits) * (height - 2 * padding);
+                    return `${x},${y}`;
+                  }).join(' ')
+                }
+              />
+              <text
+                x={width - padding - 10}
+                y={height - padding - (avgGiven / maxAudits) * (height - 2 * padding) - 8}
+                textAnchor="end"
+                className="fill-green-400 text-xs font-semibold"
+                style={{ pointerEvents: "none" }}
+              >
+                Avg: {avgGiven.toFixed(2)}
+              </text>
+            </>
+          )}
+          {showAverage && showReceived && (
+            <>
+              <polyline
+                fill="none"
+                stroke="#EF4444"
+                strokeWidth="2"
+                strokeDasharray="8 4"
+                points={
+                  data.map((item, index) => {
+                    const x = padding + (index + 0.1) * ((width - 2 * padding) / data.length) + ((width - 2 * padding) / data.length) * 0.525;
+                    const y = height - padding - (avgReceived / maxAudits) * (height - 2 * padding);
+                    return `${x},${y}`;
+                  }).join(' ')
+                }
+              />
+              <text
+                x={width - padding - 10}
+                y={height - padding - (avgReceived / maxAudits) * (height - 2 * padding) - 8}
+                textAnchor="end"
+                className="fill-red-400 text-xs font-semibold"
+                style={{ pointerEvents: "none" }}
+              >
+                Avg: {avgReceived.toFixed(2)}
+              </text>
+            </>
+          )}
 
           {/* Y-axis labels */}
           {[0, 1, 2, 3, 4].map(i => (
@@ -1013,10 +1106,10 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="w-full h-full bg-gradient-to-br from-emerald-500/10 via-blue-500/10 to-purple-500/10 blur-2xl animate-pulse opacity-80"></div>
         </div>
-        <h2 className="relative z-10 text-5xl font-black text-white mb-6 tracking-tight drop-shadow-2xl">
+        <h2 className="text-2xl font-bold text-white mb-2">
           Visual Data Analytics
         </h2>
-        <p className="relative z-10 text-white/90 text-2xl mb-2 font-semibold drop-shadow">
+        <p className="text-white/70">
           Interactive charts and graphs showing your learning progression
         </p>
       </motion.div>
@@ -1090,30 +1183,45 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       {/* Skills Radar Chart and User Distribution Side by Side */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Skills Radar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-orange-500/30 hover:scale-[1.01] hover:shadow-orange-400/30 transition-all duration-300 flex flex-col justify-between"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-2 h-8 rounded bg-orange-400 shadow-lg"></div>
-            <h3 className="text-2xl font-extrabold text-orange-300 tracking-tight flex items-center gap-2">
-              <Activity className="w-7 h-7 text-orange-400" />
-              Skills Proficiency Radar
-            </h3>
-          </div>
-          <p className="text-white/60 text-sm mt-0 mb-2">Visual representation of your skills and competencies</p>
-          <div className="w-full flex justify-center items-center">
-            <SkillsRadarChart
-              skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))}
-              showRadarPoints={showRadarPoints}
-              onTogglePoints={() => setShowRadarPoints(v => !v)}
-              size={Math.min(window.innerWidth - 64, 1600)}
-              radius={Math.min((window.innerWidth - 64) / 2 - 40, 700)}
-            />
-          </div>
-        </motion.div>
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.2 }}
+  className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-orange-500/30 hover:scale-[1.01] hover:shadow-orange-400/30 transition-all duration-300 flex flex-col min-h-[520px]"
+>
+  <div className="flex items-center gap-3 mb-2">
+    <div className="w-2 h-8 rounded bg-orange-400 shadow-lg"></div>
+    <h3 className="text-2xl font-extrabold text-orange-300 tracking-tight flex items-center gap-2">
+      <Activity className="w-7 h-7 text-orange-400" />
+      Skills Proficiency Radar
+    </h3>
+  </div>
+  <div className="flex items-center justify-between mb-2">
+    <p className="text-white/60 text-sm mt-0 mb-0">Visual representation of your skills and competencies</p>
+    <button
+      className={`px-2 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all ${
+        showRadarPoints ? "bg-gradient-to-r from-orange-500 via-yellow-400 to-pink-500 text-white border-orange-400 scale-105"
+          : "bg-white/10 text-white/70 border-white/10 hover:bg-orange-500/20"
+      }`}
+      style={{ minWidth: 80 }}
+      onClick={() => setShowRadarPoints(v => !v)}
+    >
+      {showRadarPoints ? "Hide Points" : "Show Points"}
+    </button>
+  </div>
+  <div className="flex-1 flex items-center justify-center">
+    <div className="w-full flex justify-center items-center">
+<SkillsRadarChart
+  skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))}
+  showRadarPoints={showRadarPoints}
+  onTogglePoints={() => setShowRadarPoints(v => !v)}
+  size={Math.min((window.innerWidth - 64) * 1.15, 1800)}
+  radius={Math.min(((window.innerWidth - 64) / 2 - 40) * 1.15, 900)}
+  handleElementClick={handleElementClick}
+/>
+    </div>
+  </div>
+</motion.div>
         {/* User Distribution Chart */}
         <LeaderboardChart handleElementClick={handleElementClick} user={user} />
       </div>
@@ -1169,7 +1277,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             </h3>
           </div>
           <p className="text-white/60 text-sm mb-6">Monthly audit activity comparison - given vs received</p>
-          <AuditTimelineChart data={analytics.audits.monthlyData} />
+          <AuditTimelineChart data={analytics.audits.monthlyData} handleElementClick={handleElementClick} />
           
           {/* Legend */}
           <div className="mt-4 flex justify-center space-x-6">
@@ -1199,7 +1307,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(Math.round(analytics.xp.total))}</div>
+            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(analytics.xp.total, 2)}</div>
             <div className="text-white/70 text-sm">Total XP Earned</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.xp.bhModule > analytics.xp.piscines ? 'Module-focused' : 'Piscine-heavy'} learning path
@@ -1223,8 +1331,12 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           </div>
 
           <div className="text-center">
-            <div className="text-3xl font-bold text-purple-400 mb-2">{formatXPValue(analytics.audits.totalUp)}</div>
-            <div className="text-white/70 text-sm">Total Up Points</div>
+            <div className="text-3xl font-bold text-purple-400 mb-2">
+  <span className="text-green-400">↑ {formatXPValue(analytics.audits.totalUp, 2)}</span>
+  {" - "}
+  <span className="text-red-400">↓ {formatXPValue(analytics.audits.totalDown, 2)}</span>
+</div>
+            <div className="text-white/70 text-sm">Up - Down Points</div>
             <div className="text-white/50 text-xs mt-1">
               From peer reviews
             </div>
@@ -1295,26 +1407,42 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             </div>
           )}
           
-          {(clickedElement.type === 'audit-given' || clickedElement.type === 'audit-received') && (
-            <div className="text-white space-y-2">
-              <div className="flex items-center gap-2 mb-1">
-                <Target className="w-6 h-6 text-emerald-300" />
-                <span className="text-xl font-bold">
-                  <span className={clickedElement.type === 'audit-given' ? 'text-green-300' : 'text-red-300'}>
-                    {clickedElement.data.month} Audit
-                  </span>
-                </span>
-              </div>
-              <div className="space-y-1 text-base">
-                <div>Given: <span className="text-green-400 font-bold">{clickedElement.data.auditsGiven}</span></div>
-                <div>Received: <span className="text-red-400 font-bold">{clickedElement.data.auditsReceived}</span></div>
-                <div>Ratio: <span className="text-blue-400 font-bold">{clickedElement.data.ratio}</span></div>
-                <div className="text-xs text-gray-400 mt-2">
-                  {clickedElement.type === 'audit-given' ? 'Audits you completed' : 'Audits you received from peers'}
-                </div>
-              </div>
-            </div>
-          )}
+          {clickedElement.type === 'audit-given' && (
+  <div className="text-white space-y-2">
+    <div className="flex items-center gap-2 mb-1">
+      <Target className="w-6 h-6 text-emerald-300" />
+      <span className="text-xl font-bold">
+        <span className="text-green-300">
+          {clickedElement.data.month} Audit
+        </span>
+      </span>
+    </div>
+    <div className="space-y-1 text-base">
+      <div>Given: <span className="text-green-400 font-bold">{clickedElement.data.auditsGiven}</span></div>
+      <div className="text-xs text-gray-400 mt-2">
+        Audits you completed
+      </div>
+    </div>
+  </div>
+)}
+{clickedElement.type === 'audit-received' && (
+  <div className="text-white space-y-2">
+    <div className="flex items-center gap-2 mb-1">
+      <Target className="w-6 h-6 text-emerald-300" />
+      <span className="text-xl font-bold">
+        <span className="text-red-300">
+          {clickedElement.data.month} Audit
+        </span>
+      </span>
+    </div>
+    <div className="space-y-1 text-base">
+      <div>Received: <span className="text-red-400 font-bold">{clickedElement.data.auditsReceived}</span></div>
+      <div className="text-xs text-gray-400 mt-2">
+        Audits you received from peers
+      </div>
+    </div>
+  </div>
+)}
           
           {clickedElement.type === 'project-xp' && (
             <div className="text-white space-y-2">
@@ -1389,59 +1517,60 @@ const LeaderboardChart: React.FC<{
   const [distributionType, setDistributionType] = useState<'level' | 'audit'>('level')
   const [cohortFilter, setCohortFilter] = useState<string>('all')
   
-  // Fetch leaderboard data
+  // Fetch leaderboard data and all cohort label users/labels
   const { data: leaderboardData, loading } = useQuery(GET_COMPREHENSIVE_LEADERBOARD_DATA, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network'
-  })
+  });
+  const { data: labelUserData } = useQuery(GET_ALL_LABEL_USERS, {
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-and-network'
+  });
+  const { data: allLabelsData } = useQuery(GET_ALL_LABELS, {
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-and-network'
+  });
 
-  // Create comprehensive event to cohort mapping (exact copy from LeaderboardSection)
+  // Create comprehensive event to cohort mapping (copied from LeaderboardSection)
   const eventToCohortMapping = React.useMemo(() => {
-    const mapping = new Map<number, string>()
-    
-    if (leaderboardData?.label) {
-      leaderboardData.label.forEach((label: { name: string; description?: string }) => {
-        const labelName = label.name.toLowerCase()
-        const description = label.description || ""
-        
-        if (!labelName.includes('cohort')) return
-        
+    const mapping = new Map<number, string>();
+    if (allLabelsData?.label) {
+      allLabelsData.label.forEach((label: { name: string; description?: string }) => {
+        const labelName = label.name.toLowerCase();
+        const description = label.description || "";
+        if (!labelName.includes('cohort')) return;
         const eventIdPatterns = [
           /module #(\d+)/i,
           /event #(\d+)/i,
           /event (\d+)/i,
           /#(\d+)/i,
           /id:?\s*(\d+)/i
-        ]
-        
-        let eventId: number | null = null
+        ];
+        let eventId: number | null = null;
         for (const pattern of eventIdPatterns) {
-          const match = description.match(pattern)
+          const match = description.match(pattern);
           if (match) {
-            eventId = parseInt(match[1], 10)
-            break
+            eventId = parseInt(match[1], 10);
+            break;
           }
         }
-        
         if (eventId) {
-          let cohortName = label.name
+          let cohortName = label.name;
           if (labelName.includes('cohort4') || labelName.includes('cohort-4')) {
-            cohortName = "Cohort 4" 
+            cohortName = "Cohort 4";
           } else if (labelName.includes('cohort1')) {
-            cohortName = "Cohort 1"
+            cohortName = "Cohort 1";
           } else if (labelName.includes('cohort2')) {
-            cohortName = "Cohort 2"
+            cohortName = "Cohort 2";
           } else if (labelName.includes('cohort3')) {
-            cohortName = "Cohort 3"
+            cohortName = "Cohort 3";
           }
-          
-          mapping.set(eventId, cohortName)
+          mapping.set(eventId, cohortName);
         }
-      })
+      });
     }
-    
-    return mapping
-  }, [leaderboardData?.label])
+    return mapping;
+  }, [allLabelsData?.label]);
 
   // Create user labels map for cohort detection (exact copy from LeaderboardSection)
   const userLabelsMap = React.useMemo(() => {

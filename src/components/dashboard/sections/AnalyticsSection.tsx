@@ -19,6 +19,7 @@ interface AnalyticsSectionProps {
 const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) => {
   const [clickedElement, setClickedElement] = useState<{ type: string, data: any, x: number, y: number } | null>(null)
   const [showTooltip, setShowTooltip] = useState(false)
+  const [xpRange, setXpRange] = useState("all")
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Handle mouse movement to hide tooltip after delay
@@ -64,6 +65,74 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     }
   }, [])
   
+  // Generate full XP progression data from all transactions
+  const getFullXPProgression = () => {
+    if (!analytics.rawData?.transactions) return []
+    // Filter for XP transactions and sort by date
+    const xpTx = analytics.rawData.transactions
+      .filter((t: any) => t.type === "xp")
+      .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    let cumulativeXP = 0
+    return xpTx.map((t: any) => {
+      cumulativeXP += t.amount
+      return {
+        month: t.createdAt.slice(0, 7),
+        xp: t.amount,
+        cumulativeXP,
+      }
+    })
+  }
+  const fullXPProgression = getFullXPProgression()
+
+  // Filter XP data based on selected range
+  // Fill missing periods for continuous line
+  const fillXPRange = (data: any[], range: string) => {
+    if (!Array.isArray(data) || data.length === 0) return []
+    let filled = [...data]
+    if (range === "week" || range === "month") {
+      // Always show at least two points: start and end
+      if (filled.length === 1) {
+        // If the only point is nonzero, show from zero to value
+        filled = [
+          { ...filled[0], xp: 0, cumulativeXP: 0, month: "start" },
+          { ...filled[0] }
+        ]
+      }
+      if (filled.length === 0) {
+        // No data at all, create two zero points
+        filled = [
+          { month: "start", xp: 0, cumulativeXP: 0 },
+          { month: "end", xp: 0, cumulativeXP: 0 }
+        ]
+      }
+    }
+    return filled
+  }
+
+  const filterXPData = (data: any[]) => {
+    if (!Array.isArray(data) || data.length === 0) return []
+    switch (xpRange) {
+      case "week":
+        return fillXPRange(data.slice(-1), "week")
+      case "month":
+        return fillXPRange(data.slice(-1), "month")
+      case "3months":
+        return data.slice(-3)
+      case "6months":
+        return data.slice(-6)
+      case "12months":
+        return data.slice(-12)
+      case "all":
+      default:
+        return data
+    }
+  }
+  const filteredXPData = filterXPData(xpRange === "all" ? fullXPProgression : analytics.xp.monthlyData)
+
+  const [showPoints, setShowPoints] = useState(false);
+  const [showAverage, setShowAverage] = useState(false);
+  const [showRadarPoints, setShowRadarPoints] = useState(true);
+
   const XPProgressionChart = ({ data }: { data: any[] }) => {
     const maxXP = Math.max(...data.map(d => d.xp), 1000)
     const width = 800
@@ -76,8 +145,38 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       return { x, y, ...item }
     })
 
+    // Calculate average XP for the filtered data
+    const avgXP = data.length > 0 ? data.reduce((sum, d) => sum + d.xp, 0) / data.length : 0
+    const avgPoints = data.map((_, idx) => {
+      const x = padding + (idx / (data.length - 1)) * (width - 2 * padding)
+      const y = height - padding - (avgXP / maxXP) * (height - 2 * padding)
+      return { x, y }
+    })
+
     return (
       <div className="w-full">
+        <div className="flex justify-end mb-2 space-x-2">
+          <button
+            className={`px-2 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all ${
+              showPoints ? "bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-500 text-white border-blue-400 scale-105"
+                : "bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20"
+            }`}
+            style={{ minWidth: 80 }}
+            onClick={() => setShowPoints(v => !v)}
+          >
+            {showPoints ? "Hide Points" : "Show Points"}
+          </button>
+          <button
+            className={`px-2 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all ${
+              showAverage ? "bg-gradient-to-r from-green-500 via-emerald-400 to-teal-500 text-white border-green-400 scale-105"
+                : "bg-white/10 text-white/70 border-white/10 hover:bg-green-500/20"
+            }`}
+            style={{ minWidth: 80 }}
+            onClick={() => setShowAverage(v => !v)}
+          >
+            {showAverage ? "Hide Average" : "Show Average"}
+          </button>
+        </div>
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-80">
           {/* Grid lines */}
           {[0, 1, 2, 3, 4].map(i => (
@@ -91,7 +190,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               strokeWidth="1"
             />
           ))}
-          
+
           {/* Y-axis labels */}
           {[0, 1, 2, 3, 4].map(i => (
             <text
@@ -105,100 +204,111 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             </text>
           ))}
 
-          {/* Area under the curve */}
-          <path
-            d={`M ${padding} ${height - padding} ${points.map(p => `L ${p.x} ${p.y}`).join(' ')} L ${points[points.length - 1]?.x || padding} ${height - padding} Z`}
-            fill="url(#xpGradient)"
-            opacity="0.3"
-          />
-
-          {/* Main line */}
-          <path
-            d={`M ${points.map(p => `${p.x} ${p.y}`).join(' L ')}`}
+          {/* Main line (no area fill, smooth) */}
+          <polyline
             fill="none"
             stroke="#3B82F6"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
+            points={points.map(p => `${p.x},${p.y}`).join(' ')}
           />
 
-          {/* Data points */}
-          {points.map((point, index) => (
-            <g key={index}>
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="4"
-                fill="#3B82F6"
-                stroke="white"
+          {/* Data points: round, blue, white border */}
+          {showPoints &&
+            points.map((point, index) => (
+              <g key={index}>
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="6"
+                  fill="#3B82F6"
+                  stroke="white"
+                  strokeWidth="2"
+                />
+                {/* Interactive click area */}
+                <circle
+                  cx={point.x}
+                  cy={point.y}
+                  r="10"
+                  fill="transparent"
+                  className="hover:fill-emerald-500/20 cursor-pointer transition-all duration-200"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    handleElementClick({
+                      type: 'xp',
+                      data: { 
+                        month: point.month, 
+                        xp: point.xp,
+                        growth: index > 0 ? point.xp - points[index - 1].xp : 0,
+                        projects: point.projects || 0
+                      },
+                      x: e.clientX,
+                      y: e.clientY
+                    });
+                  }}
+                />
+              </g>
+            ))
+          }
+
+          {/* Average line */}
+          {showAverage && avgPoints.length > 1 && (
+            <>
+              <polyline
+                fill="none"
+                stroke="#22C55E"
                 strokeWidth="2"
+                strokeDasharray="8 4"
+                points={avgPoints.map(p => `${p.x},${p.y}`).join(' ')}
               />
-              {/* Interactive click area - only on this circle */}
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="8"
-                fill="transparent"
-                className="hover:fill-emerald-500/20 cursor-pointer transition-all duration-200"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  handleElementClick({
-                    type: 'xp',
-                    data: { 
-                      month: point.month, 
-                      xp: point.xp,
-                      growth: index > 0 ? point.xp - points[index - 1].xp : 0,
-                      projects: point.projects || 0
-                    },
-                    x: e.clientX,
-                    y: e.clientY
-                  });
-                }}
-              />
-              {/* Glow effect on hover */}
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="6"
-                fill="#3B82F6"
-                className="opacity-0 hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-                style={{
-                  filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))'
-                }}
-              />
-            </g>
-          ))}
+              {/* Average label */}
+              <text
+                x={avgPoints[Math.floor(avgPoints.length / 2)]?.x || 0}
+                y={avgPoints[Math.floor(avgPoints.length / 2)]?.y - 12 || 0}
+                textAnchor="middle"
+                className="fill-green-400 text-xs font-semibold"
+                style={{ pointerEvents: "none" }}
+              >
+                Avg: {formatXPValue(avgXP)}
+              </text>
+            </>
+          )}
 
-          {/* X-axis labels */}
-          {points.map((point, index) => (
-            <text
-              key={index}
-              x={point.x}
-              y={height - padding + 20}
-              textAnchor="middle"
-              className="fill-white/60 text-xs"
-            >
-              {point.month}
-            </text>
-          ))}
-
-          {/* Gradient definition */}
-          <defs>
-            <linearGradient id="xpGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.05" />
-            </linearGradient>
-          </defs>
+          {/* X-axis labels only if not "Since Start" */}
+          {xpRange !== "all" &&
+            points.map((point, index) => (
+              <text
+                key={index}
+                x={point.x}
+                y={height - padding + 20}
+                textAnchor="middle"
+                className="fill-white/60 text-xs"
+              >
+                {point.month}
+              </text>
+            ))
+          }
         </svg>
       </div>
     )
   }
 
   
-  const SkillsRadarChart = ({ skills }: { skills: Array<{ name: string, points: number }> }) => {
-    const size = 400
+  const SkillsRadarChart = ({
+    skills,
+    showRadarPoints,
+    onTogglePoints,
+    size = 400,
+    radius = 120,
+  }: {
+    skills: Array<{ name: string; points: number }>
+    showRadarPoints: boolean
+    onTogglePoints: () => void
+    size?: number
+    radius?: number
+  }) => {
     const center = size / 2
-    const radius = 120
     const maxPoints = Math.max(...skills.map(s => s.points), 100)
 
     const getPointOnCircle = (angle: number, distance: number) => {
@@ -210,115 +320,130 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     const skillsToShow = skills
 
     return (
-      <div className="flex justify-center overflow-visible" style={{ minWidth: size, minHeight: size }}>
-        <svg width={size} height={size} className="drop-shadow-lg overflow-visible">
-          {/* Background concentric circles */}
-          {[0.2, 0.4, 0.6, 0.8, 1].map((ratio, i) => (
-            <circle
-              key={i}
-              cx={center}
-              cy={center}
-              r={radius * ratio}
-              fill="none"
-              stroke="rgba(255,255,255,0.12)"
-              strokeWidth="2"
-            />
-          ))}
-
-          {/* Radar lines */}
-          {skillsToShow.map((_, i) => {
-            const angle = (2 * Math.PI * i) / skillsToShow.length
-            const point = getPointOnCircle(angle, radius)
-            return (
-              <line
+      <div>
+        <div className="flex justify-end mb-1">
+          <button
+            className={`px-2 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all ${
+              showRadarPoints ? "bg-gradient-to-r from-orange-500 via-yellow-400 to-pink-500 text-white border-orange-400 scale-105"
+                : "bg-white/10 text-white/70 border-white/10 hover:bg-orange-500/20"
+            }`}
+            style={{ minWidth: 80 }}
+            onClick={onTogglePoints}
+          >
+            {showRadarPoints ? "Hide Points" : "Show Points"}
+          </button>
+        </div>
+        <div className="w-full h-full min-h-[400px] flex justify-center items-center overflow-visible">
+          <svg width={size} height={size} className="drop-shadow-lg overflow-visible">
+            {/* Background concentric circles */}
+            {[0.2, 0.4, 0.6, 0.8, 1].map((ratio, i) => (
+              <circle
                 key={i}
-                x1={center}
-                y1={center}
-                x2={point.x}
-                y2={point.y}
-                stroke="rgba(59,130,246,0.18)"
+                cx={center}
+                cy={center}
+                r={radius * ratio}
+                fill="none"
+                stroke="rgba(255,255,255,0.12)"
                 strokeWidth="2"
               />
-            )
-          })}
+            ))}
 
-          {/* Data polygon */}
-          <path
-            d={skillsToShow.map((skill, i) => {
+            {/* Radar lines */}
+            {skillsToShow.map((_, i) => {
               const angle = (2 * Math.PI * i) / skillsToShow.length
-              const distance = (skill.points / maxPoints) * radius
-              const point = getPointOnCircle(angle, distance)
-              return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
-            }).join(' ') + ' Z'}
-            fill="rgba(59, 130, 246, 0.25)"
-            stroke="#3B82F6"
-            strokeWidth="4"
-          />
-
-          {/* Data points */}
-          {skillsToShow.map((skill, i) => {
-            const angle = (2 * Math.PI * i) / skillsToShow.length
-            const distance = (skill.points / maxPoints) * radius
-            const point = getPointOnCircle(angle, distance)
-            return (
-              <g key={i}>
-                <circle
-                  cx={point.x}
-                  cy={point.y}
-                  r="8"
-                  fill="#3B82F6"
-                  stroke="white"
-                  strokeWidth="3"
+              const point = getPointOnCircle(angle, radius)
+              return (
+                <line
+                  key={i}
+                  x1={center}
+                  y1={center}
+                  x2={point.x}
+                  y2={point.y}
+                  stroke="rgba(251,191,36,0.18)"
+                  strokeWidth="2"
                 />
-                {/* Interactive click area - only on this point */}
-                <circle
-                  cx={point.x}
-                  cy={point.y}
-                  r="16"
-                  fill="transparent"
-                  className="hover:fill-blue-500/20 cursor-pointer transition-all duration-200"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleElementClick({
-                      type: 'skill',
-                      data: { 
-                        name: skill.name, 
-                        points: skill.points,
-                        level: Math.floor(skill.points / 100) + 1,
-                        progress: (skill.points % 100)
-                      },
-                      x: e.clientX,
-                      y: e.clientY
-                    });
+              )
+            })}
+
+            {/* Data polygon */}
+            <path
+              d={skillsToShow.map((skill, i) => {
+                const angle = (2 * Math.PI * i) / skillsToShow.length
+                const distance = (skill.points / maxPoints) * radius
+                const point = getPointOnCircle(angle, distance)
+                return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+              }).join(' ') + ' Z'}
+              fill="rgba(251,191,36,0.18)"
+              stroke="#f59e42"
+              strokeWidth="4"
+            />
+
+            {/* Data points */}
+            {showRadarPoints &&
+              skillsToShow.map((skill, i) => {
+                const angle = (2 * Math.PI * i) / skillsToShow.length
+                const distance = (skill.points / maxPoints) * radius
+                const point = getPointOnCircle(angle, distance)
+                return (
+                  <g key={i}>
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r="8"
+                      fill="#fbbf24"
+                      stroke="#f59e42"
+                      strokeWidth="3"
+                    />
+                    {/* Interactive click area - only on this point */}
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r="16"
+                      fill="transparent"
+                      className="hover:fill-yellow-500/20 cursor-pointer transition-all duration-200"
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleElementClick({
+                          type: 'skill',
+                          data: { 
+                            name: skill.name, 
+                            points: skill.points,
+                            level: Math.floor(skill.points / 100) + 1,
+                            progress: (skill.points % 100)
+                          },
+                          x: e.clientX,
+                          y: e.clientY
+                        });
+                      }}
+                    />
+                  </g>
+                )
+              })}
+
+            {/* Labels */}
+            {skillsToShow.map((skill, i) => {
+              const angle = (2 * Math.PI * i) / skillsToShow.length
+              const labelDistance = radius + 18
+              const point = getPointOnCircle(angle, labelDistance)
+              return (
+                <text
+                  key={i}
+                  x={point.x}
+                  y={point.y}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="fill-white/90 text-xs font-semibold"
+                  style={{
+                    pointerEvents: 'none',
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
                   }}
-                />
-              </g>
-            )
-          })}
-
-          {/* Labels */}
-          {skillsToShow.map((skill, i) => {
-            const angle = (2 * Math.PI * i) / skillsToShow.length
-            const labelDistance = radius + 32
-            const point = getPointOnCircle(angle, labelDistance)
-            return (
-              <text
-                key={i}
-                x={point.x}
-                y={point.y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="fill-white/90 text-sm font-semibold"
-                style={{
-                  pointerEvents: 'none',
-                  filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
-                }}
-              >
-                {skill.name}
-              </text>
-            )
-          })}
-        </svg>
+                >
+                  {skill.name}
+                </text>
+              )
+            })}
+          </svg>
+        </div>
       </div>
     )
   }
@@ -340,82 +465,110 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     const radius = 80
     const center = 100
 
+    // Pie chart gradients
+    const gradients = [
+      { id: "pie-green", from: "#10B981", to: "#34D399" },
+      { id: "pie-red", from: "#EF4444", to: "#F87171" },
+      { id: "pie-yellow", from: "#F59E0B", to: "#FBBF24" }
+    ]
+
     return (
       <div className="flex justify-center">
-        <svg width={200} height={200}>
-          {data.map((segment, index) => {
-            const startAngle = (cumulativePercentage / 100) * 2 * Math.PI
-            const endAngle = ((cumulativePercentage + segment.percentage) / 100) * 2 * Math.PI
+        <div className="relative">
+          <svg width={200} height={200}>
+            <defs>
+              <radialGradient id="pie-bg-glow" cx="50%" cy="50%" r="60%">
+                <stop offset="0%" stopColor="#fff" stopOpacity="0.08" />
+                <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+              </radialGradient>
+              {gradients.map(g => (
+                <linearGradient key={g.id} id={g.id} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={g.from} />
+                  <stop offset="100%" stopColor={g.to} />
+                </linearGradient>
+              ))}
+            </defs>
+            {/* Soft background glow */}
+            <circle cx={center} cy={center} r={90} fill="url(#pie-bg-glow)" />
+            {data.map((segment, index) => {
+              const startAngle = (cumulativePercentage / 100) * 2 * Math.PI
+              const endAngle = ((cumulativePercentage + segment.percentage) / 100) * 2 * Math.PI
+              
+              const x1 = center + radius * Math.cos(startAngle)
+              const y1 = center + radius * Math.sin(startAngle)
+              const x2 = center + radius * Math.cos(endAngle)
+              const y2 = center + radius * Math.sin(endAngle)
+              
+              const largeArc = segment.percentage > 50 ? 1 : 0
+              
+              const pathData = [
+                `M ${center} ${center}`,
+                `L ${x1} ${y1}`,
+                `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
+                'Z'
+              ].join(' ')
+              
+              cumulativePercentage += segment.percentage
+
+              // Pick gradient for each segment
+              let fillId = gradients[index % gradients.length].id
+              
+              return (
+                <path
+                  key={index}
+                  d={pathData}
+                  fill={`url(#${fillId})`}
+                  stroke="#fff"
+                  strokeWidth="3"
+                  filter="drop-shadow(0 2px 8px rgba(0,0,0,0.18))"
+                  className="hover:opacity-90 cursor-pointer transition-all duration-200"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    handleElementClick({
+                      type: 'project',
+                      data: { 
+                        label: segment.label, 
+                        value: segment.value,
+                        percentage: segment.percentage,
+                        total: total
+                      },
+                      x: e.clientX,
+                      y: e.clientY
+                    });
+                  }}
+                />
+              )
+            })}
             
-            const x1 = center + radius * Math.cos(startAngle)
-            const y1 = center + radius * Math.sin(startAngle)
-            const x2 = center + radius * Math.cos(endAngle)
-            const y2 = center + radius * Math.sin(endAngle)
+            {/* Center circle for donut effect */}
+            <circle
+              cx={center}
+              cy={center}
+              r={54}
+              fill="rgba(0,0,0,0.82)"
+              stroke="rgba(255,255,255,0.18)"
+              strokeWidth="2"
+              filter="drop-shadow(0 2px 8px rgba(0,0,0,0.18))"
+            />
             
-            const largeArc = segment.percentage > 50 ? 1 : 0
-            
-            const pathData = [
-              `M ${center} ${center}`,
-              `L ${x1} ${y1}`,
-              `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
-              'Z'
-            ].join(' ')
-            
-            cumulativePercentage += segment.percentage
-            
-            return (
-              <path
-                key={index}
-                d={pathData}
-                fill={segment.color}
-                stroke="white"
-                strokeWidth="2"
-                className="hover:opacity-80 cursor-pointer transition-all duration-200"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  handleElementClick({
-                    type: 'project',
-                    data: { 
-                      label: segment.label, 
-                      value: segment.value,
-                      percentage: segment.percentage,
-                      total: total
-                    },
-                    x: e.clientX,
-                    y: e.clientY
-                  });
-                }}
-              />
-            )
-          })}
-          
-          {/* Center circle for donut effect */}
-          <circle
-            cx={center}
-            cy={center}
-            r={40}
-            fill="rgba(0,0,0,0.8)"
-            stroke="rgba(255,255,255,0.2)"
-            strokeWidth="1"
-          />
-          
-          <text
-            x={center}
-            y={center - 5}
-            textAnchor="middle"
-            className="fill-white text-lg font-bold"
-          >
-            {total}
-          </text>
-          <text
-            x={center}
-            y={center + 15}
-            textAnchor="middle"
-            className="fill-white/60 text-xs"
-          >
-            Projects
-          </text>
-        </svg>
+            <text
+              x={center}
+              y={center - 4}
+              textAnchor="middle"
+              className="fill-white text-2xl font-extrabold drop-shadow"
+            >
+              {total}
+            </text>
+            <text
+              x={center}
+              y={center + 22}
+              textAnchor="middle"
+              className="fill-white/70 text-base font-semibold"
+            >
+              Projects
+            </text>
+          </svg>
+        </div>
       </div>
     )
   }
@@ -502,99 +655,117 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     const radius = 90;
     const center = 110;
 
-    // Generate colors for all projects
-    const baseColors = [
-      '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
-      '#8B5CF6', '#06B6D4', '#F97316', '#EC4899',
-      '#6366F1', '#84CC16', '#F87171', '#60A5FA',
-      '#A78BFA', '#34D399', '#FBBF24', '#FB7185'
+    // Pie chart gradients for projects
+    const gradients = [
+      { id: "pie-blue", from: "#3B82F6", to: "#60A5FA" },
+      { id: "pie-green", from: "#10B981", to: "#34D399" },
+      { id: "pie-yellow", from: "#F59E0B", to: "#FBBF24" },
+      { id: "pie-red", from: "#EF4444", to: "#F87171" },
+      { id: "pie-purple", from: "#8B5CF6", to: "#A78BFA" },
+      { id: "pie-teal", from: "#06B6D4", to: "#5eead4" },
+      { id: "pie-orange", from: "#F97316", to: "#FDBA74" },
+      { id: "pie-pink", from: "#EC4899", to: "#F472B6" }
     ];
-    
-    // Generate enough colors for all projects
-    const colors = projectsArray.map((_, index) => 
-      baseColors[index % baseColors.length]
-    );
+    const colors = projectsArray.map((_, index) => gradients[index % gradients.length].id);
 
     return (
       <div>
         <div className="flex justify-center">
-          <svg width={220} height={220}>
-            {projectsArray.map((project: any, index: number) => {
-              const percentage = totalXP > 0 ? (project.xp / totalXP) * 100 : 0;
-              const startAngle = (cumulativePercentage / 100) * 2 * Math.PI;
-              const endAngle = ((cumulativePercentage + percentage) / 100) * 2 * Math.PI;
+          <div className="relative">
+            <svg width={220} height={220}>
+              <defs>
+                <radialGradient id="pie-bg-glow-projects" cx="50%" cy="50%" r="60%">
+                  <stop offset="0%" stopColor="#fff" stopOpacity="0.08" />
+                  <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                </radialGradient>
+                {gradients.map(g => (
+                  <linearGradient key={g.id} id={g.id} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={g.from} />
+                    <stop offset="100%" stopColor={g.to} />
+                  </linearGradient>
+                ))}
+              </defs>
+              {/* Soft background glow */}
+              <circle cx={center} cy={center} r={100} fill="url(#pie-bg-glow-projects)" />
+              {projectsArray.map((project: any, index: number) => {
+                const percentage = totalXP > 0 ? (project.xp / totalXP) * 100 : 0;
+                const startAngle = cumulativePercentage / 100 * 2 * Math.PI;
+                const endAngle = (cumulativePercentage + percentage) / 100 * 2 * Math.PI;
+                
+                const x1 = center + radius * Math.cos(startAngle);
+                const y1 = center + radius * Math.sin(startAngle);
+                const x2 = center + radius * Math.cos(endAngle);
+                const y2 = center + radius * Math.sin(endAngle);
+                
+                const largeArc = percentage > 50 ? 1 : 0;
+                
+                const pathData = [
+                  `M ${center} ${center}`,
+                  `L ${x1} ${y1}`,
+                  `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
+                  'Z'
+                ].join(' ');
+                
+                cumulativePercentage += percentage;
+                
+                return (
+                  <path
+                    key={index}
+                    d={pathData}
+                    fill={`url(#${colors[index]})`}
+                    stroke="#fff"
+                    strokeWidth="3"
+                    filter="drop-shadow(0 2px 8px rgba(0,0,0,0.18))"
+                    className="hover:opacity-90 cursor-pointer transition-all duration-200"
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      handleElementClick({
+                        type: 'project-xp',
+                        data: { 
+                          name: project.name, 
+                          xp: project.xp,
+                          percentage: percentage,
+                          totalXP: totalXP,
+                          count: project.count,
+                          avgXP: Math.round(project.xp / project.count)
+                        },
+                        x: e.clientX,
+                        y: e.clientY
+                      });
+                    }}
+                  />
+                );
+              })}
               
-              const x1 = center + radius * Math.cos(startAngle);
-              const y1 = center + radius * Math.sin(startAngle);
-              const x2 = center + radius * Math.cos(endAngle);
-              const y2 = center + radius * Math.sin(endAngle);
+              {/* Center circle for donut effect */}
+              <circle
+                cx={center}
+                cy={center}
+                r={60}
+                fill="rgba(0,0,0,0.82)"
+                stroke="rgba(255,255,255,0.18)"
+                strokeWidth="2"
+                filter="drop-shadow(0 2px 8px rgba(0,0,0,0.18))"
+              />
               
-              const largeArc = percentage > 50 ? 1 : 0;
-              
-              const pathData = [
-                `M ${center} ${center}`,
-                `L ${x1} ${y1}`,
-                `A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`,
-                'Z'
-              ].join(' ');
-              
-              cumulativePercentage += percentage;
-              
-              return (
-                <path
-                  key={index}
-                  d={pathData}
-                  fill={colors[index % colors.length]}
-                  stroke="white"
-                  strokeWidth="2"
-                  className="hover:opacity-80 cursor-pointer transition-all duration-200"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleElementClick({
-                      type: 'project-xp',
-                      data: { 
-                        name: project.name, 
-                        xp: project.xp,
-                        percentage: percentage,
-                        totalXP: totalXP,
-                        count: project.count,
-                        avgXP: Math.round(project.xp / project.count)
-                      },
-                      x: e.clientX,
-                      y: e.clientY
-                    });
-                  }}
-                />
-              );
-            })}
-            
-            {/* Center circle for donut effect */}
-            <circle
-              cx={center}
-              cy={center}
-              r={45}
-              fill="rgba(0,0,0,0.8)"
-              stroke="rgba(255,255,255,0.2)"
-              strokeWidth="1"
-            />
-            
-            <text
-              x={center}
-              y={center - 8}
-              textAnchor="middle"
-              className="fill-white text-lg font-bold"
-            >
-              {projectsArray.length}
-            </text>
-            <text
-              x={center}
-              y={center + 12}
-              textAnchor="middle"
-              className="fill-white/60 text-xs"
-            >
-              Projects
-            </text>
-          </svg>
+              <text
+                x={center}
+                y={center - 6}
+                textAnchor="middle"
+                className="fill-white text-2xl font-extrabold drop-shadow"
+              >
+                {formatXPValue(totalXP)}
+              </text>
+              <text
+                x={center}
+                y={center + 22}
+                textAnchor="middle"
+                className="fill-white/70 text-base font-semibold"
+              >
+                Total XP
+              </text>
+            </svg>
+          </div>
         </div>
         
         {/* Legend - Show all projects */}
@@ -603,8 +774,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             {projectsArray.map((project: any, index: number) => (
               <div key={index} className="flex items-center space-x-2 text-xs">
                 <div 
-                  className="w-3 h-3 rounded flex-shrink-0" 
-                  style={{ backgroundColor: colors[index] }}
+                  className="w-3 h-3 rounded flex-shrink-0 border border-white" 
+                  style={{ background: `linear-gradient(90deg, ${gradients[index % gradients.length].from}, ${gradients[index % gradients.length].to})` }}
                 ></div>
                 <span className="text-white/80 flex-1" title={project.name}>
                   {project.name}
@@ -761,10 +932,18 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center"
+        className="relative text-center py-10 mb-8"
       >
-        <h2 className="text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-lg">Visual Data Analytics</h2>
-        <p className="text-white/80 text-lg mb-2">Interactive charts and graphs showing your learning progression</p>
+        {/* Animated background glow */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-br from-emerald-500/10 via-blue-500/10 to-purple-500/10 blur-2xl animate-pulse opacity-80"></div>
+        </div>
+        <h2 className="relative z-10 text-5xl font-black text-white mb-6 tracking-tight drop-shadow-2xl">
+          Visual Data Analytics
+        </h2>
+        <p className="relative z-10 text-white/90 text-2xl mb-2 font-semibold drop-shadow">
+          Interactive charts and graphs showing your learning progression
+        </p>
       </motion.div>
 
       {/* XP Charts Grid */}
@@ -774,14 +953,44 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:col-span-2 bg-gradient-to-br from-blue-900/40 via-blue-700/30 to-indigo-900/40 shadow-xl rounded-2xl p-5 border border-blue-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
+          className="lg:col-span-2 relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-blue-500/30 hover:scale-[1.01] hover:shadow-blue-400/30 transition-all duration-300 flex flex-col justify-between"
         >
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2 text-blue-400" />
-            XP Progression Over Time
-          </h3>
-          <p className="text-white/60 text-sm mb-6">Track your experience points growth over the last 12 months</p>
-          <XPProgressionChart data={analytics.xp.monthlyData} />
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2 h-8 rounded bg-blue-400 shadow-lg"></div>
+            <h3 className="text-2xl font-extrabold text-blue-300 tracking-tight flex items-center gap-2">
+              <TrendingUp className="w-7 h-7 text-blue-400" />
+              XP Progression Over Time
+            </h3>
+          </div>
+          <div className="flex items-center mb-2">
+            <div className="flex space-x-2">
+              {[
+                { label: "Since Start", value: "all" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+                { label: "Last 3 Months", value: "3months" },
+                { label: "Last 6 Months", value: "6months" },
+                { label: "Last 12 Months", value: "12months" }
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  className={`px-2 py-1 rounded-full text-xs font-semibold transition-all shadow-sm border ${
+                    xpRange === opt.value
+                      ? "bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-500 text-white border-blue-400 scale-105"
+                      : "bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20"
+                  }`}
+                  style={{ minWidth: 80 }}
+                  onClick={() => setXpRange(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className="text-white/60 text-sm mb-6">
+            Track your experience points growth {xpRange === "all" ? "since the start" : "over the selected period"}
+          </p>
+          <XPProgressionChart data={filteredXPData} />
         </motion.div>
 
         {/* Projects XP Distribution - New Pie Chart */}
@@ -789,12 +998,15 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-gradient-to-br from-purple-900/40 via-purple-700/30 to-indigo-900/40 shadow-xl rounded-2xl p-5 border border-purple-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
+          className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-purple-500/30 hover:scale-[1.01] hover:shadow-purple-400/30 transition-all duration-300 flex flex-col justify-between"
         >
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <PieChart className="w-5 h-5 mr-2 text-purple-400" />
-            Projects XP Distribution
-          </h3>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2 h-8 rounded bg-purple-400 shadow-lg"></div>
+            <h3 className="text-2xl font-extrabold text-purple-300 tracking-tight flex items-center gap-2">
+              <PieChart className="w-7 h-7 text-purple-400" />
+              Projects XP
+            </h3>
+          </div>
           <p className="text-white/60 text-sm mb-6">XP earned from your top projects</p>
           <ProjectsXPPieChart />
         </motion.div>
@@ -807,14 +1019,23 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-gradient-to-br from-orange-900/40 via-orange-700/30 to-yellow-900/40 shadow-xl rounded-2xl p-5 border border-orange-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+          className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-orange-500/30 hover:scale-[1.01] hover:shadow-orange-400/30 transition-all duration-300 flex flex-col justify-between"
         >
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Activity className="w-5 h-5 mr-2 text-orange-400" />
-            Skills Proficiency Radar
-          </h3>
-          <p className="text-white/60 text-sm mb-6">Visual representation of your skills and competencies</p>
-          <SkillsRadarChart skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))} />
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2 h-8 rounded bg-orange-400 shadow-lg"></div>
+            <h3 className="text-2xl font-extrabold text-orange-300 tracking-tight flex items-center gap-2">
+              <Activity className="w-7 h-7 text-orange-400" />
+              Skills Proficiency Radar
+            </h3>
+          </div>
+          <p className="text-white/60 text-sm mt-0 mb-2">Visual representation of your skills and competencies</p>
+          <SkillsRadarChart
+            skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))}
+            showRadarPoints={showRadarPoints}
+            onTogglePoints={() => setShowRadarPoints(v => !v)}
+            size={520}
+            radius={180}
+          />
         </motion.div>
         {/* User Distribution Chart */}
         <LeaderboardChart handleElementClick={handleElementClick} user={user} />
@@ -827,12 +1048,15 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-gradient-to-br from-green-900/40 via-green-700/30 to-emerald-900/40 shadow-xl rounded-2xl p-5 border border-green-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+          className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-purple-500/30 hover:scale-[1.01] hover:shadow-purple-400/30 transition-all duration-300 flex flex-col justify-between"
         >
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <PieChart className="w-5 h-5 mr-2 text-green-400" />
-            Project Success Rate
-          </h3>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2 h-8 rounded bg-purple-400 shadow-lg"></div>
+            <h3 className="text-2xl font-extrabold text-purple-300 tracking-tight flex items-center gap-2">
+              <PieChart className="w-7 h-7 text-purple-400" />
+              Project Success Rate
+            </h3>
+          </div>
           <p className="text-white/60 text-sm mb-6">Distribution of Project outcomes</p>
           <ProjectSuccessPieChart />
           
@@ -858,12 +1082,15 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-gradient-to-br from-emerald-900/40 via-emerald-700/30 to-teal-900/40 shadow-xl rounded-2xl p-5 border border-emerald-500/20 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
+          className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-teal-500/30 hover:scale-[1.01] hover:shadow-teal-400/30 transition-all duration-300 flex flex-col justify-between"
         >
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Target className="w-5 h-5 mr-2 text-green-400" />
-            Audit Activity Timeline
-          </h3>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2 h-8 rounded bg-teal-400 shadow-lg"></div>
+            <h3 className="text-2xl font-extrabold text-teal-300 tracking-tight flex items-center gap-2">
+              <Target className="w-7 h-7 text-teal-400" />
+              Audit Activity Timeline
+            </h3>
+          </div>
           <p className="text-white/60 text-sm mb-6">Monthly audit activity comparison - given vs received</p>
           <AuditTimelineChart data={analytics.audits.monthlyData} />
           
@@ -890,7 +1117,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       >
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
           <BarChart3 className="w-5 h-5 mr-2 text-purple-400" />
-          Key Performance Insights
+          Key Performance Insights (KPI)
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -931,61 +1158,80 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       {/* Click Tooltip Overlay */}
       {clickedElement && showTooltip && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed z-50 bg-black/90 backdrop-blur-lg rounded-lg p-4 border border-white/20 shadow-xl max-w-xs pointer-events-none"
+          exit={{ opacity: 0, scale: 0.85 }}
+          className={`fixed z-50 max-w-xs pointer-events-none shadow-2xl rounded-2xl border-2 p-5
+            ${clickedElement.type === 'xp' ? 'border-blue-400 bg-gradient-to-br from-blue-900/90 via-blue-800/80 to-indigo-900/90' : ''}
+            ${clickedElement.type === 'skill' ? 'border-orange-400 bg-gradient-to-br from-orange-900/90 via-yellow-800/80 to-yellow-900/90' : ''}
+            ${clickedElement.type === 'project' ? 'border-green-400 bg-gradient-to-br from-green-900/90 via-green-800/80 to-emerald-900/90' : ''}
+            ${clickedElement.type === 'project-xp' ? 'border-purple-400 bg-gradient-to-br from-purple-900/90 via-purple-800/80 to-indigo-900/90' : ''}
+            ${(clickedElement.type === 'audit-given' || clickedElement.type === 'audit-received') ? 'border-emerald-400 bg-gradient-to-br from-emerald-900/90 via-emerald-800/80 to-teal-900/90' : ''}
+            ${clickedElement.type === 'distribution' ? 'border-cyan-400 bg-gradient-to-br from-cyan-900/90 via-blue-800/80 to-indigo-900/90' : ''}
+          `}
           style={{
-            left: `${Math.min(clickedElement.x + 10, window.innerWidth - 320)}px`,
-            top: `${Math.max(clickedElement.y - 100, 10)}px`,
+            left: `${Math.min(clickedElement.x + 10, window.innerWidth - 340)}px`,
+            top: `${Math.max(clickedElement.y - 120, 10)}px`,
           }}
         >
           {clickedElement.type === 'xp' && (
-            <div className="text-white">
-              <h4 className="font-semibold text-blue-400 mb-2">{clickedElement.data.month} XP Details</h4>
-              <div className="space-y-1 text-sm">
-                <div>Total XP: <span className="text-blue-300">{formatXPValue(clickedElement.data.xp)}</span></div>
+            <div className="text-white space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="w-6 h-6 text-blue-300" />
+                <span className="text-xl font-bold text-blue-200">{clickedElement.data.month} XP</span>
+              </div>
+              <div className="space-y-1 text-base">
+                <div>Total XP: <span className="text-blue-300 font-bold">{formatXPValue(clickedElement.data.xp)}</span></div>
                 {clickedElement.data.growth !== 0 && (
                   <div>Growth: <span className={clickedElement.data.growth > 0 ? 'text-green-400' : 'text-red-400'}>
                     {clickedElement.data.growth > 0 ? '+' : ''}{formatXPValue(clickedElement.data.growth)}
                   </span></div>
                 )}
-                <div>Level: <span className="text-yellow-400">{Math.floor(clickedElement.data.xp / 1000) + 1}</span></div>
+                <div>Level: <span className="text-yellow-400 font-bold">{Math.floor(clickedElement.data.xp / 1000) + 1}</span></div>
               </div>
             </div>
           )}
           
           {clickedElement.type === 'skill' && (
-            <div className="text-white">
-              <h4 className="font-semibold text-orange-400 mb-2">{clickedElement.data.name}</h4>
-              <div className="space-y-1 text-sm">
-                <div>Points: <span className="text-orange-300">{clickedElement.data.points}%</span></div>
+            <div className="text-white space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <Activity className="w-6 h-6 text-orange-300" />
+                <span className="text-xl font-bold text-orange-200">{clickedElement.data.name}</span>
+              </div>
+              <div className="space-y-1 text-base">
+                <div>Points: <span className="text-orange-300 font-bold">{clickedElement.data.points}%</span></div>
               </div>
             </div>
           )}
           
           {clickedElement.type === 'project' && (
-            <div className="text-white">
-              <h4 className="font-semibold text-green-400 mb-2">Project {clickedElement.data.label}</h4>
-              <div className="space-y-1 text-sm">
-                <div>Count: <span className="text-white">{clickedElement.data.value}</span></div>
-                <div>Percentage: <span className="text-blue-400">{clickedElement.data.percentage.toFixed(1)}%</span></div>
-                <div>Total Projects: <span className="text-gray-400">{clickedElement.data.total}</span></div>
+            <div className="text-white space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <PieChart className="w-6 h-6 text-green-300" />
+                <span className="text-xl font-bold text-green-200">Project {clickedElement.data.label}</span>
+              </div>
+              <div className="space-y-1 text-base">
+                <div>Count: <span className="text-white font-bold">{clickedElement.data.value}</span></div>
+                <div>Percentage: <span className="text-blue-400 font-bold">{clickedElement.data.percentage.toFixed(1)}%</span></div>
+                <div>Total Projects: <span className="text-gray-400 font-bold">{clickedElement.data.total}</span></div>
               </div>
             </div>
           )}
           
           {(clickedElement.type === 'audit-given' || clickedElement.type === 'audit-received') && (
-            <div className="text-white">
-              <h4 className="font-semibold mb-2">
-                <span className={clickedElement.type === 'audit-given' ? 'text-green-400' : 'text-red-400'}>
-                  {clickedElement.data.month} Audit Details
+            <div className="text-white space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <Target className="w-6 h-6 text-emerald-300" />
+                <span className="text-xl font-bold">
+                  <span className={clickedElement.type === 'audit-given' ? 'text-green-300' : 'text-red-300'}>
+                    {clickedElement.data.month} Audit
+                  </span>
                 </span>
-              </h4>
-              <div className="space-y-1 text-sm">
-                <div>Given: <span className="text-green-400">{clickedElement.data.auditsGiven}</span></div>
-                <div>Received: <span className="text-red-400">{clickedElement.data.auditsReceived}</span></div>
-                <div>Ratio: <span className="text-blue-400">{clickedElement.data.ratio}</span></div>
+              </div>
+              <div className="space-y-1 text-base">
+                <div>Given: <span className="text-green-400 font-bold">{clickedElement.data.auditsGiven}</span></div>
+                <div>Received: <span className="text-red-400 font-bold">{clickedElement.data.auditsReceived}</span></div>
+                <div>Ratio: <span className="text-blue-400 font-bold">{clickedElement.data.ratio}</span></div>
                 <div className="text-xs text-gray-400 mt-2">
                   {clickedElement.type === 'audit-given' ? 'Audits you completed' : 'Audits you received from peers'}
                 </div>
@@ -994,13 +1240,16 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           )}
           
           {clickedElement.type === 'project-xp' && (
-            <div className="text-white">
-              <h4 className="font-semibold text-purple-400 mb-2">{clickedElement.data.name}</h4>
-              <div className="space-y-1 text-sm">
-                <div>Total XP: <span className="text-purple-300">{formatXPValue(clickedElement.data.xp)}</span></div>
-                <div>Percentage: <span className="text-blue-400">{clickedElement.data.percentage.toFixed(1)}%</span></div>
-                <div>Instances: <span className="text-green-400">{clickedElement.data.count}</span></div>
-                <div>Avg XP: <span className="text-yellow-400">{formatXPValue(clickedElement.data.avgXP)}</span></div>
+            <div className="text-white space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <PieChart className="w-6 h-6 text-purple-300" />
+                <span className="text-xl font-bold text-purple-200">{clickedElement.data.name}</span>
+              </div>
+              <div className="space-y-1 text-base">
+                <div>Total XP: <span className="text-purple-300 font-bold">{formatXPValue(clickedElement.data.xp)}</span></div>
+                <div>Percentage: <span className="text-blue-400 font-bold">{clickedElement.data.percentage.toFixed(1)}%</span></div>
+                <div>Instances: <span className="text-green-400 font-bold">{clickedElement.data.count}</span></div>
+                <div>Avg XP: <span className="text-yellow-400 font-bold">{formatXPValue(clickedElement.data.avgXP)}</span></div>
                 <div className="text-xs text-gray-400 mt-2">
                   XP earned from this project
                 </div>
@@ -1009,29 +1258,31 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           )}
 
           {clickedElement.type === 'distribution' && (
-            <div className="text-white">
-              <h4 className="font-semibold text-blue-400 mb-2 flex items-center">
-                <BarChart3 className="w-4 h-4 mr-1" />
-                {clickedElement.data.distributionType === 'level' ? 'Level' : 'Audit Ratio'} Range: {clickedElement.data.range}
+            <div className="text-white space-y-2">
+              <div className="flex items-center gap-2 mb-1">
+                <BarChart3 className="w-6 h-6 text-cyan-300" />
+                <span className="text-xl font-bold text-cyan-200">
+                  {clickedElement.data.distributionType === 'level' ? 'Level' : 'Audit Ratio'} Range: {clickedElement.data.range}
+                </span>
                 {clickedElement.data.isCurrentUserRange && (
                   <span className="ml-2 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-xs font-bold">
                     YOUR RANGE
                   </span>
                 )}
-              </h4>
-              <div className="space-y-1 text-sm">
+              </div>
+              <div className="space-y-1 text-base">
                 <div className="flex items-center space-x-2">
-                  <Users className="w-3 h-3 text-blue-400" />
+                  <Users className="w-4 h-4 text-blue-400" />
                   <span>User Count: </span>
                   <span className="text-blue-300 font-bold">{clickedElement.data.count}</span>
                 </div>
-                <div>Percentage: <span className="text-green-400">{clickedElement.data.percentage}%</span> of total users</div>
-                <div>Range: <span className="text-purple-300">{clickedElement.data.rangeMin} - {clickedElement.data.rangeMax}</span></div>
-                <div>Population: <span className="text-orange-400">{clickedElement.data.cohortFilter === 'all' ? 'All Students' : clickedElement.data.cohortFilter}</span></div>
-                <div>Total Users: <span className="text-cyan-400">{clickedElement.data.totalUsers}</span></div>
+                <div>Percentage: <span className="text-green-400 font-bold">{clickedElement.data.percentage}%</span> of total users</div>
+                <div>Range: <span className="text-purple-300 font-bold">{clickedElement.data.rangeMin} - {clickedElement.data.rangeMax}</span></div>
+                <div>Population: <span className="text-orange-400 font-bold">{clickedElement.data.cohortFilter === 'all' ? 'All Students' : clickedElement.data.cohortFilter}</span></div>
+                <div>Total Users: <span className="text-cyan-400 font-bold">{clickedElement.data.totalUsers}</span></div>
                 {clickedElement.data.isCurrentUserRange && (
                   <div className="border-t border-emerald-600 pt-2 mt-2">
-                    <Crown className="w-3 h-3 inline text-emerald-400 mr-1" />
+                    <Crown className="w-4 h-4 inline text-emerald-400 mr-1" />
                     <span className="text-emerald-400 font-semibold">You are in this range!</span>
                   </div>
                 )}
@@ -1047,7 +1298,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   )
 }
 
-// User Distribution Chart Component
+// Completely Redesigned User Distribution Chart Component - From Scratch
 const LeaderboardChart: React.FC<{ 
   handleElementClick: (data: any) => void
   user?: {
@@ -1427,23 +1678,16 @@ const LeaderboardChart: React.FC<{
     }
   }, [currentUserData, distributionType])
 
-  // Chart dimensions
-  const chartWidth = 800
-  const chartHeight = 400
-  const margin = { top: 20, right: 30, bottom: 60, left: 60 }
-  const innerWidth = chartWidth - margin.left - margin.right
-  const innerHeight = chartHeight - margin.top - margin.bottom
-
   if (loading) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-emerald-500/30 hover:scale-[1.01] hover:shadow-emerald-400/30 transition-all duration-300 flex flex-col justify-between"
       >
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
           <span className="ml-3 text-white/70">Loading user distribution...</span>
         </div>
       </motion.div>
@@ -1454,162 +1698,102 @@ const LeaderboardChart: React.FC<{
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
-      className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-emerald-500/30 hover:scale-[1.01] hover:shadow-emerald-400/30 transition-all duration-300 flex flex-col justify-between"
     >
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-lg flex items-center justify-center">
-            <BarChart3 className="w-4 h-4 text-blue-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">
-              Distribution of Users by {distributionType === 'level' ? 'Level' : 'Audit Ratio'}
-            </h3>
-            <p className="text-white/60 text-sm">User count distribution across {distributionType === 'level' ? 'level' : 'audit ratio'} ranges</p>
-          </div>
-        </div>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-2 h-8 rounded bg-emerald-400 shadow-lg"></div>
+        <h3 className="text-2xl font-extrabold text-emerald-300 tracking-tight flex items-center gap-2">
+          <BarChart3 className="w-7 h-7 text-emerald-400" />
+          User Distribution
+        </h3>
+      </div>
+      
+      <p className="text-white/60 text-sm mb-6">
+        {distributionType === 'level' ? 'Level' : 'Audit ratio'} distribution among {filteredUsers.length} students
+      </p>
 
-        {/* Filter Controls */}
-        <div className="flex items-center space-x-3">
-          {/* Distribution Type Toggle */}
-          <div className="flex bg-white/10 rounded-lg p-1 border border-white/20">
-            <button
-              onClick={() => setDistributionType('level')}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                distributionType === 'level' 
-                  ? 'bg-blue-500 text-white shadow-lg' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <TrendingUp className="w-3 h-3 inline mr-1" />
-              Level
-            </button>
-            <button
-              onClick={() => setDistributionType('audit')}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                distributionType === 'audit' 
-                  ? 'bg-green-500 text-white shadow-lg' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Target className="w-3 h-3 inline mr-1" />
-              Audit Ratio
-            </button>
-          </div>
-
-          {/* Population Filter */}
-          <div className="flex bg-white/10 rounded-lg p-1 border border-white/20">
-            <button
-              onClick={() => setCohortFilter('all')}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                cohortFilter === 'all' 
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Users className="w-3 h-3 inline mr-1" />
-              All Students
-            </button>
-            <button
-              onClick={() => setCohortFilter(currentUserCohort !== 'No Cohort' ? currentUserCohort : 'all')}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
-                cohortFilter === currentUserCohort && currentUserCohort !== 'No Cohort'
-                  ? 'bg-purple-500 text-white shadow-lg' 
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-              title={`Filter by ${currentUserCohort}`}
-              disabled={currentUserCohort === 'No Cohort'}
-            >
-              <Crown className="w-3 h-3 inline mr-1" />
-              {currentUserCohort}
-            </button>
-          </div>
-        </div>
+      {/* Control Buttons */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          onClick={() => setDistributionType('level')}
+          className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all flex items-center gap-1 ${
+            distributionType === 'level' 
+              ? 'bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-500 text-white border-blue-400 scale-105' 
+              : 'bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20'
+          }`}
+          style={{ minWidth: 80 }}
+        >
+          <TrendingUp className="w-3 h-3" />
+          Level
+        </button>
+        <button
+          onClick={() => setDistributionType('audit')}
+          className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all flex items-center gap-1 ${
+            distributionType === 'audit' 
+              ? 'bg-gradient-to-r from-green-500 via-emerald-400 to-teal-500 text-white border-green-400 scale-105' 
+              : 'bg-white/10 text-white/70 border-white/10 hover:bg-green-500/20'
+          }`}
+          style={{ minWidth: 80 }}
+        >
+          <Target className="w-3 h-3" />
+          Audit Ratio
+        </button>
+        <button
+          onClick={() => setCohortFilter('all')}
+          className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all flex items-center gap-1 ${
+            cohortFilter === 'all' 
+              ? 'bg-gradient-to-r from-purple-500 via-pink-400 to-indigo-500 text-white border-purple-400 scale-105' 
+              : 'bg-white/10 text-white/70 border-white/10 hover:bg-purple-500/20'
+          }`}
+          style={{ minWidth: 80 }}
+        >
+          <Users className="w-3 h-3" />
+          All Students
+        </button>
+        {currentUserCohort !== 'No Cohort' && (
+          <button
+            onClick={() => setCohortFilter(currentUserCohort)}
+            className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all flex items-center gap-1 ${
+              cohortFilter === currentUserCohort
+                ? 'bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500 text-white border-cyan-300 scale-105' 
+                : 'bg-white/10 text-white/70 border-white/10 hover:bg-cyan-500/20'
+            }`}
+            style={{ minWidth: 80 }}
+          >
+            <Crown className="w-3 h-3" />
+            {currentUserCohort}
+          </button>
+        )}
       </div>
 
-      {/* Current User Position */}
-      <div className="mb-6 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-lg p-4 border border-emerald-500/30">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Crown className="w-5 h-5 text-emerald-400" />
-            <div>
-              <h4 className="text-white font-semibold">Your Position</h4>
-              <p className="text-white/70 text-sm">Current {distributionType === 'level' ? 'level' : 'audit ratio'} and range</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-emerald-400">
-              {currentUserData ? (
-                distributionType === 'level' ? `Level ${currentUserData.level}` : currentUserData.auditRatio.toFixed(2)
-              ) : (
-                'No Data'
-              )}
-            </div>
-            <div className="text-emerald-300 text-sm">
-              Range: {currentUserRange?.label || 'Unknown'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Statistics */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-blue-400">{filteredUsers.length}</div>
-          <div className="text-white/70 text-sm">Total Users</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-green-400">{distributionData.length}</div>
-          <div className="text-white/70 text-sm">Active Ranges</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-purple-400">
-            {distributionData.length > 0 ? Math.max(...distributionData.map(d => d.count)) : 0}
-          </div>
-          <div className="text-white/70 text-sm">Max in Range</div>
-        </div>
-      </div>
-
-      {/* Chart Container */}
-      <div className="flex justify-center">
-        <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full max-w-4xl h-80">
-          {/* Background Grid */}
-          <defs>
-            <linearGradient id="distributionGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={distributionType === 'level' ? '#3B82F6' : '#10B981'} stopOpacity="0.8" />
-              <stop offset="100%" stopColor={distributionType === 'level' ? '#1D4ED8' : '#059669'} stopOpacity="0.3" />
-            </linearGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge> 
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* Y-axis Grid Lines */}
+      {/* Chart - Force Centered */}
+      <div className="w-full h-full min-h-[400px] flex items-center overflow-visible relative">
+        <div className="w-full flex justify-center">
+          <svg width={700} height={520} className="drop-shadow-lg overflow-visible" style={{ display: "block", margin: "0 auto" }}>
+          {/* Grid Lines */}
           {distributionData.length > 0 && [0, 1, 2, 3, 4].map(i => {
-            const maxCount = Math.max(...distributionData.map(d => d.count))
-            const y = margin.top + (innerHeight * i) / 4
+            const maxCount = Math.max(...distributionData.map(d => d.count), 1)
+            const y = 80 + (320 * i) / 4
             const labelValue = Math.round((maxCount * (4 - i)) / 4)
             return (
               <g key={i}>
                 <line
-                  x1={margin.left}
+                  x1={80}
                   y1={y}
-                  x2={chartWidth - margin.right}
+                  x2={620}
                   y2={y}
-                  stroke="rgba(255,255,255,0.1)"
-                  strokeWidth="1"
+                  stroke="rgba(255,255,255,0.15)"
+                  strokeWidth="2"
                 />
                 <text
-                  x={margin.left - 10}
-                  y={y + 4}
+                  x={70}
+                  y={y + 8}
                   textAnchor="end"
-                  fontSize="10"
-                  fill="white/60"
+                  fontSize="18"
+                  fill="#94a3b8"
+                  fontWeight="600"
                 >
                   {labelValue}
                 </text>
@@ -1617,42 +1801,28 @@ const LeaderboardChart: React.FC<{
             )
           })}
 
-          {/* Data Bars */}
+          {/* Bars */}
           {distributionData.map((range, index) => {
             const maxCount = Math.max(...distributionData.map(d => d.count))
-            const barHeight = (range.count / maxCount) * innerHeight
-            const barWidth = Math.max(40, (innerWidth / distributionData.length) - 15)
-            const x = margin.left + (index * (innerWidth / distributionData.length)) + 10
-            const y = margin.top + innerHeight - barHeight
-            
-            // Check if this is the current user's range
+            const availableWidth = 540 // 620 - 80 = 540px
+            const barWidth = Math.max(40, availableWidth / distributionData.length * 0.7)
+            const barHeight = Math.max(20, (range.count / maxCount) * 320)
+            const spacing = availableWidth / distributionData.length
+            const x = 80 + (index * spacing) + (spacing - barWidth) / 2
+            const y = 400 - barHeight
             const isCurrentUserRange = currentUserRange?.label === range.label
-
+            
             return (
-              <g key={`${range.label}-${index}`}>
-                {/* Bar Shadow/Glow */}
+              <g key={`bar-${range.label}-${index}`}>
+                {/* Bar */}
                 <rect
                   x={x}
                   y={y}
                   width={barWidth}
                   height={barHeight}
-                  fill={range.color}
-                  opacity="0.3"
-                  rx="4"
-                  filter="url(#glow)"
-                />
-                
-                {/* Main Bar */}
-                <rect
-                  x={x}
-                  y={y}
-                  width={barWidth}
-                  height={barHeight}
-                  fill={range.color}
-                  rx="4"
+                  fill={isCurrentUserRange ? "#10b981" : "#3b82f6"}
+                  rx="6"
                   className="transition-all duration-300 hover:opacity-80 cursor-pointer"
-                  stroke={isCurrentUserRange ? "#10B981" : "none"}
-                  strokeWidth={isCurrentUserRange ? "3" : "0"}
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect()
                     handleElementClick({
@@ -1673,60 +1843,27 @@ const LeaderboardChart: React.FC<{
                     })
                   }}
                 />
-
-                {/* Current User Indicator */}
-                {isCurrentUserRange && (
-                  <g>
-                    <text
-                      x={x + barWidth / 2}
-                      y={y - 35}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill="#10B981"
-                      fontWeight="bold"
-                    >
-                      YOU ARE HERE
-                    </text>
-                    <circle
-                      cx={x + barWidth / 2}
-                      cy={y - 45}
-                      r="3"
-                      fill="#10B981"
-                    />
-                  </g>
-                )}
-
-                {/* Count Label */}
+                
+                {/* Value Above Bar */}
                 <text
                   x={x + barWidth / 2}
-                  y={y - 5}
+                  y={y - 15}
                   textAnchor="middle"
-                  fontSize="12"
-                  fill="white"
-                  fontWeight="bold"
+                  fontSize="22"
+                  fill={isCurrentUserRange ? "#10b981" : "#3b82f6"}
+                  fontWeight="700"
                 >
                   {range.count}
                 </text>
-
-                {/* Percentage Label */}
+                
+                {/* Range Label Below */}
                 <text
                   x={x + barWidth / 2}
-                  y={y - 20}
+                  y={450}
                   textAnchor="middle"
-                  fontSize="10"
-                  fill="white/80"
-                >
-                  {((range.count / filteredUsers.length) * 100).toFixed(1)}%
-                </text>
-
-                {/* Range Label */}
-                <text
-                  x={x + barWidth / 2}
-                  y={chartHeight - 35}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fill="white"
-                  fontWeight="medium"
+                  fontSize="18"
+                  fill={isCurrentUserRange ? "#10b981" : "#94a3b8"}
+                  fontWeight="600"
                 >
                   {range.label}
                 </text>
@@ -1734,31 +1871,31 @@ const LeaderboardChart: React.FC<{
             )
           })}
 
-          {/* Y-axis Label */}
+          {/* Axis Labels */}
           <text
-            x={15}
-            y={chartHeight / 2}
+            x={40}
+            y={260}
             textAnchor="middle"
-            fontSize="12"
-            fill="white/70"
-            transform={`rotate(-90 15 ${chartHeight / 2})`}
+            fontSize="18"
+            fill="#94a3b8"
+            fontWeight="600"
+            transform="rotate(-90 40 260)"
           >
-            Number of Users
+            Users
           </text>
-
-          {/* X-axis Label */}
           <text
-            x={chartWidth / 2}
-            y={chartHeight - 5}
+            x={350}
+            y={490}
             textAnchor="middle"
-            fontSize="12"
-            fill="white/70"
+            fontSize="18"
+            fill="#94a3b8"
+            fontWeight="600"
           >
-            {distributionType === 'level' ? 'Level Ranges' : 'Audit Ratio Ranges'}
+            {distributionType === 'level' ? 'Level' : 'Audit Ratio'}
           </text>
-        </svg>
+          </svg>
+        </div>
       </div>
-
     </motion.div>
   )
 }

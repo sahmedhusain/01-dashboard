@@ -177,7 +177,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             {showAverage ? "Hide Average" : "Show Average"}
           </button>
         </div>
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-80">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[220px] md:h-[320px] lg:h-80">
           {/* Grid lines */}
           {[0, 1, 2, 3, 4].map(i => (
             <line
@@ -333,8 +333,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             {showRadarPoints ? "Hide Points" : "Show Points"}
           </button>
         </div>
-        <div className="w-full h-full min-h-[400px] flex justify-center items-center overflow-visible">
-          <svg width={size} height={size} className="drop-shadow-lg overflow-visible">
+        <div className="w-full h-full min-h-[220px] md:min-h-[320px] lg:min-h-[400px] flex justify-center items-center overflow-visible">
+          <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-[220px] md:h-[320px] lg:h-[400px] drop-shadow-lg overflow-visible">
             {/* Background concentric circles */}
             {[0.2, 0.4, 0.6, 0.8, 1].map((ratio, i) => (
               <circle
@@ -423,7 +423,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             {/* Labels */}
             {skillsToShow.map((skill, i) => {
               const angle = (2 * Math.PI * i) / skillsToShow.length
-              const labelDistance = radius + 18
+              const labelDistance = radius + 36
               const point = getPointOnCircle(angle, labelDistance)
               return (
                 <text
@@ -432,7 +432,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                   y={point.y}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="fill-white/90 text-xs font-semibold"
+                  className="fill-white/90 font-bold"
+                  fontSize={Math.max(18, Math.round(size / 32))}
                   style={{
                     pointerEvents: 'none',
                     filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
@@ -475,7 +476,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     return (
       <div className="flex justify-center">
         <div className="relative">
-          <svg width={200} height={200}>
+            <svg viewBox="0 0 200 200" className="w-full h-[180px] md:h-[200px]">
             <defs>
               <radialGradient id="pie-bg-glow" cx="50%" cy="50%" r="60%">
                 <stop offset="0%" stopColor="#fff" stopOpacity="0.08" />
@@ -587,20 +588,63 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
     let projectXPData = {};
     
-    // Get BH-module XP transactions only
-    if (analytics.rawData?.transactions) {
-      const bhModuleTransactions = filterBHModuleTransactions(analytics.rawData.transactions);
-      projectXPData = bhModuleTransactions
-        .filter((t: any) => t.type === 'xp' && t.object?.name && t.amount > 0)
-        .reduce((acc: any, t: any) => {
-          const projectName = t.object.name;
-          if (!acc[projectName]) {
-            acc[projectName] = { name: projectName, xp: 0, count: 0 };
-          }
-          acc[projectName].xp += t.amount;
-          acc[projectName].count += 1;
-          return acc;
-        }, {});
+    // Get main module XP transactions only (exclude piscines and checkpoints)
+    if (analytics.rawData?.transactions && analytics.rawData?.progress) {
+      // Include both bh-module and piscine projects that are completed (isDone && grade >= 1)
+      const completedProgress = analytics.rawData.progress.filter((p: any) => {
+        if (!p.path) return false;
+        if (p.path.includes('checkpoint')) return false;
+        return p.isDone && p.grade >= 1 && p.object?.name;
+      });
+
+      // Map: path -> projectName for completed projects
+      const completedPaths: Record<string, string> = {};
+      completedProgress.forEach((p: any) => {
+        completedPaths[p.path] = p.object.name;
+      });
+
+      // For each completed path, find the latest XP transaction for that path
+      const xpTransactions = analytics.rawData.transactions.filter((t: any) => t.type === 'xp' && t.path && completedPaths[t.path]);
+      const latestXPByPath: Record<string, any> = {};
+      xpTransactions.forEach((t: any) => {
+        if (!latestXPByPath[t.path] || new Date(t.createdAt) > new Date(latestXPByPath[t.path].createdAt)) {
+          latestXPByPath[t.path] = t;
+        }
+      });
+
+      // Aggregate XP per project name or piscine root, but for each piscine root only count the highest XP per user
+      projectXPData = {};
+      const piscineUserMaxXP: Record<string, Record<string, number>> = {};
+      Object.entries(latestXPByPath).forEach(([path, t]: [string, any]) => {
+        let key: string;
+        let displayName: string;
+        if (path.includes('piscine-') || path.includes('/bh-piscine/')) {
+          // Piscine root: extract "piscine-xxx" or "bh-piscine"
+          const match = path.match(/(piscine-\w+|bh-piscine)/);
+          key = match ? match[1] : 'Piscine';
+          if (key === 'bh-piscine') return; // Exclude bh-piscine
+          displayName = key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          // Only count the highest XP per user for each piscine root
+          const userId = t.userId || t.user_id || t.user || '';
+          if (!piscineUserMaxXP[key]) piscineUserMaxXP[key] = {};
+          piscineUserMaxXP[key][userId] = Math.max(piscineUserMaxXP[key][userId] || 0, t.amount);
+        } else {
+          key = completedPaths[path];
+          displayName = key;
+          if (!projectXPData[key]) projectXPData[key] = { name: displayName, xp: 0, count: 0 };
+          projectXPData[key].xp += t.amount;
+          projectXPData[key].count += 1;
+        }
+      });
+      // Sum piscine XP per root
+      Object.entries(piscineUserMaxXP).forEach(([key, userMap]) => {
+        const displayName = key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        projectXPData[key] = {
+          name: displayName,
+          xp: Object.values(userMap).reduce((sum, xp) => sum + xp, 0),
+          count: Object.keys(userMap).length
+        };
+      });
     }
     
     // Fallback: Try from progress data (BH-module only)
@@ -635,11 +679,37 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     }
 
     // Show ALL BH-module projects (not limited to top 8)
+    // Attach description from progress data if available
+    let projectDescriptions: Record<string, string> = {};
+    if (analytics.rawData?.progress) {
+      analytics.rawData.progress.forEach((p: any) => {
+        if (p.object?.name && p.object?.description) {
+          projectDescriptions[p.object.name] = p.object.description;
+        }
+      });
+    }
+    // Attach latest completion date for each project
+    let projectDates: Record<string, string> = {};
+    if (analytics.rawData?.progress) {
+      analytics.rawData.progress.forEach((p: any) => {
+        if (p.object?.name && p.isDone && p.grade >= 1 && p.createdAt) {
+          if (!projectDates[p.object.name] || new Date(p.createdAt) > new Date(projectDates[p.object.name])) {
+            projectDates[p.object.name] = p.createdAt;
+          }
+        }
+      });
+    }
     const projectsArray = Object.values(projectXPData)
-      .sort((a: any, b: any) => b.xp - a.xp); // Sort by XP but don't limit
+      .map((proj: any) => ({
+        ...proj,
+        description: projectDescriptions[proj.name] || '',
+        date: projectDates[proj.name] || ''
+      }))
+      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    const totalXP: number = projectsArray.reduce((sum: number, project: any) => sum + (project.xp || 0), 0 as number);
-    
+    // Sum raw XP values, then format the total only after summing
+    const totalXP: number = projectsArray.reduce((sum: number, project: any) => sum + (Number(project.xp) || 0), 0 as number);
+
     if (projectsArray.length === 0) {
       return (
         <div className="flex justify-center items-center h-64">
@@ -672,7 +742,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       <div>
         <div className="flex justify-center">
           <div className="relative">
-            <svg width={220} height={220}>
+            <svg viewBox="0 0 220 220" className="w-full h-[180px] md:h-[220px]">
               <defs>
                 <radialGradient id="pie-bg-glow-projects" cx="50%" cy="50%" r="60%">
                   <stop offset="0%" stopColor="#fff" stopOpacity="0.08" />
@@ -754,7 +824,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                 textAnchor="middle"
                 className="fill-white text-2xl font-extrabold drop-shadow"
               >
-                {formatXPValue(totalXP)}
+                {formatXPValue(parseInt(String(totalXP), 10))}
               </text>
               <text
                 x={center}
@@ -772,14 +842,19 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         <div className="mt-4 max-h-48 overflow-y-auto custom-scrollbar">
           <div className="space-y-1">
             {projectsArray.map((project: any, index: number) => (
-              <div key={index} className="flex items-center space-x-2 text-xs">
+              <div key={index} className="flex items-start space-x-2 text-xs mb-1">
                 <div 
-                  className="w-3 h-3 rounded flex-shrink-0 border border-white" 
+                  className="w-3 h-3 rounded flex-shrink-0 border border-white mt-1" 
                   style={{ background: `linear-gradient(90deg, ${gradients[index % gradients.length].from}, ${gradients[index % gradients.length].to})` }}
                 ></div>
-                <span className="text-white/80 flex-1" title={project.name}>
-                  {project.name}
-                </span>
+                <div className="flex-1">
+                  <span className="text-white/80 font-semibold" title={project.name}>
+                    {project.name}
+                  </span>
+                  {project.description && (
+                    <div className="text-white/50 text-[11px] leading-tight mt-0.5">{project.description}</div>
+                  )}
+                </div>
                 <span className="text-white/60 flex-shrink-0">{formatXPValue(project.xp)}</span>
               </div>
             ))}
@@ -804,7 +879,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
     return (
       <div className="w-full">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-48">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[180px] md:h-48">
           {/* Grid lines */}
           {[0, 1, 2, 3, 4].map(i => (
             <line
@@ -1007,7 +1082,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               Projects XP
             </h3>
           </div>
-          <p className="text-white/60 text-sm mb-6">XP earned from your top projects</p>
+          <p className="text-white/60 text-sm mb-6">XP earned from your projects</p>
           <ProjectsXPPieChart />
         </motion.div>
       </div>
@@ -1029,13 +1104,15 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             </h3>
           </div>
           <p className="text-white/60 text-sm mt-0 mb-2">Visual representation of your skills and competencies</p>
-          <SkillsRadarChart
-            skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))}
-            showRadarPoints={showRadarPoints}
-            onTogglePoints={() => setShowRadarPoints(v => !v)}
-            size={520}
-            radius={180}
-          />
+          <div className="w-full flex justify-center items-center">
+            <SkillsRadarChart
+              skills={analytics.skills.skillData.map((s: any) => ({ name: s.name, points: s.currentAmount }))}
+              showRadarPoints={showRadarPoints}
+              onTogglePoints={() => setShowRadarPoints(v => !v)}
+              size={Math.min(window.innerWidth - 64, 1600)}
+              radius={Math.min((window.innerWidth - 64) / 2 - 40, 700)}
+            />
+          </div>
         </motion.div>
         {/* User Distribution Chart */}
         <LeaderboardChart handleElementClick={handleElementClick} user={user} />
@@ -1122,7 +1199,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(analytics.xp.total)}</div>
+            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(Math.round(analytics.xp.total))}</div>
             <div className="text-white/70 text-sm">Total XP Earned</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.xp.bhModule > analytics.xp.piscines ? 'Module-focused' : 'Piscine-heavy'} learning path
@@ -1130,15 +1207,15 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           </div>
           
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">{analytics.projects.bhModule.passRate.toFixed(1)}%</div>
-            <div className="text-white/70 text-sm">BH-Module Success Rate</div>
+            <div className="text-3xl font-bold text-green-400 mb-2">{analytics.projects.bhModule.passRate.toFixed(0)}%</div>
+            <div className="text-white/70 text-sm">Success Rate</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.projects.bhModule.passRate > 80 ? 'Excellent' : analytics.projects.bhModule.passRate > 60 ? 'Good' : 'Needs improvement'} performance
             </div>
           </div>
           
           <div className="text-center">
-            <div className="text-3xl font-bold text-orange-400 mb-2">{analytics.audits.ratio.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-orange-400 mb-2">{analytics.audits.ratio.toFixed(1)}</div>
             <div className="text-white/70 text-sm">Audit Ratio</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.audits.ratio > 1 ? 'Positive' : analytics.audits.ratio > 0.8 ? 'Balanced' : 'Focus needed'} contribution
@@ -1769,9 +1846,10 @@ const LeaderboardChart: React.FC<{
       </div>
 
       {/* Chart - Force Centered */}
-      <div className="w-full h-full min-h-[400px] flex items-center overflow-visible relative">
-        <div className="w-full flex justify-center">
-          <svg width={700} height={520} className="drop-shadow-lg overflow-visible" style={{ display: "block", margin: "0 auto" }}>
+      <div className="w-full h-full min-h-[320px] flex items-center justify-center overflow-visible relative">
+        <div className="w-full max-w-full flex justify-center items-center">
+          <div className="w-full md:w-[90vw] lg:w-[700px]">
+            <svg viewBox="0 0 700 520" className="w-full h-[320px] md:h-[420px] lg:h-[520px] drop-shadow-lg overflow-visible" style={{ display: "block", margin: "0 auto" }}>
           {/* Grid Lines */}
           {distributionData.length > 0 && [0, 1, 2, 3, 4].map(i => {
             const maxCount = Math.max(...distributionData.map(d => d.count), 1)
@@ -1894,6 +1972,7 @@ const LeaderboardChart: React.FC<{
             {distributionType === 'level' ? 'Level' : 'Audit Ratio'}
           </text>
           </svg>
+          </div>
         </div>
       </div>
     </motion.div>

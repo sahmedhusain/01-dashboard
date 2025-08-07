@@ -206,28 +206,6 @@ const LoginPage: React.FC = () => {
               )}
             </motion.button>
           </form>
-
-          {/* Test Login Button for development */}
-          {(import.meta.env as { VITE_USE_TEST_AUTH?: string }).VITE_USE_TEST_AUTH === 'true' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="mt-4 pt-4 border-t border-white/20"
-            >
-              <button
-                type="button"
-                onClick={handleTestLogin}
-                disabled={isLoading}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                🧪 Test Login (Development)
-              </button>
-              <p className="text-xs text-white/50 mt-2 text-center">
-                Uses test credentials for development
-              </p>
-            </motion.div>
-          )}
         </motion.div>
 
         {/* Footer */}

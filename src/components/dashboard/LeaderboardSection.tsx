@@ -760,25 +760,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
       <div className="relative z-10 h-full w-full overflow-y-auto custom-scrollbar">
         <div className="relative space-y-8 p-6">
-        {/* Label Access Status - Show if we have limited label data */}
-        {(labelData?.label_user?.length || 0) <= 1 && !labelLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-4"
-          >
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
-              <div className="flex-1">
-                <p className="text-amber-200 text-sm font-medium">Label Access Limited</p>
-                <p className="text-amber-100/70 text-xs mt-1">
-                  Only {(labelData?.label_user?.length || 0)} label assignment(s) accessible. 
-                  Users may show "No labels" due to database permissions.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
         
           {/* Enhanced Header with Animation */}
           <motion.div
@@ -866,54 +847,6 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             subValue={`🚀 Level 5-9 climbers`}
           />
         </motion.div>
-
-        {/* Available Cohort Labels - NEW */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="bg-gradient-to-br from-white/5 to-white/2 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
-        >
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-xl flex items-center justify-center backdrop-blur-sm border border-emerald-400/20">
-              <Users className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-white">Available Cohort Labels</h3>
-              <p className="text-sm text-white/60">Dynamic cohort detection from database</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {cohortLabels.length > 0 ? (
-              cohortLabels.map((label: { id: string; name: string; type: string; description?: string }, index: number) => (
-                <motion.span
-                  key={label.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="px-3 py-1.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 rounded-xl text-sm font-medium border border-emerald-400/30 hover:bg-emerald-500/30 hover:border-emerald-400/50 transition-all duration-300 cursor-pointer backdrop-blur-sm"
-                  title={label.description}
-                  onClick={() => setCohortSearchTerm(label.name)}
-                >
-                  {label.name}
-                </motion.span>
-              ))
-            ) : (
-              <div className="flex items-center space-x-2 text-yellow-400">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                <span className="text-sm">No cohort labels detected or limited database access</span>
-              </div>
-            )}
-          </div>
-          
-          {cohortLabels.length > 0 && (
-            <p className="text-xs text-white/50 mt-3">
-              💡 Click on a cohort label to search for users with that label
-            </p>
-          )}
-        </motion.div>
-
 
         {/* Leaderboard Type Selector */}
         <motion.div
@@ -1025,7 +958,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                     )}
                   </div>
                   <div>
-                    <p className="text-white font-bold text-lg">🎆 Your Elite Position</p>
+                    <p className="text-white font-bold text-lg">Your Position</p>
                     <p className="text-white/70 text-sm">{getLeaderboardTitle()}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <span className={`text-xs px-2 py-1 rounded-full ${getRankNotation(currentUserRank).color} bg-white/10 border border-current/30`}>

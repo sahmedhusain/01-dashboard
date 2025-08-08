@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { defaultTransition, springTransition, fadeInVariants } from '../../../config/motion'
 import { BarChart3, TrendingUp, PieChart, Activity, Target, Users, Crown } from 'lucide-react'
 import { useQuery } from '@apollo/client'
 import { formatXPValue } from '../../../utils/dataFormatting'
@@ -1211,7 +1212,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={defaultTransition}
         className="relative text-center py-10 mb-8"
       >
         {/* Animated background glow */}
@@ -1232,7 +1233,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ ...defaultTransition, delay: 0.1 }}
           className="lg:col-span-2 relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-blue-500/30 hover:scale-[1.01] hover:shadow-blue-400/30 transition-all duration-300 flex flex-col justify-between"
         >
           <div className="flex items-center gap-3 mb-2">

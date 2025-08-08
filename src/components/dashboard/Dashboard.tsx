@@ -6,6 +6,7 @@ import { useUser, useLogout } from '../../store';
 import { User } from '../../types';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import { useDashboardRouting } from '../../utils/routing';
+import { defaultTransition, springTransition, fadeInVariants } from '../../config/motion';
 
 const DashboardSection = lazy(() => import('./DashboardSection'))
 const PiscinesDashboard = lazy(() => import('./PiscinesDashboard'))
@@ -251,21 +252,21 @@ const Dashboard: React.FC = () => {
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                transition={springTransition}
                 className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-2 sm:mr-3 lg:mr-3 flex-shrink-0 shadow-lg shadow-emerald-500/25 border border-white/25 relative overflow-hidden group hover:shadow-xl hover:shadow-emerald-500/35 transition-all duration-300"
               >
                 {/* Enhanced animated background pattern */}
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-300/30 to-teal-400/30 animate-pulse"></div>
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/20 group-hover:via-white/20 group-hover:to-white/30 transition-all duration-300"></div>
-                {/* Subtle rotating background */}
-                <div className="absolute inset-0 bg-gradient-conic from-emerald-400/20 via-teal-500/20 to-emerald-400/20 animate-spin" style={{ animationDuration: '8s' }}></div>
+                {/* Subtle rotating background - optimized for 60fps */}
+                <div className="absolute inset-0 bg-gradient-conic from-emerald-400/20 via-teal-500/20 to-emerald-400/20 animate-spin motion-safe" style={{ animationDuration: '4s', animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}></div>
                 <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 text-white drop-shadow-lg relative z-10" />
               </motion.div>
               <div className="min-w-0 flex-1 py-0.5 sm:py-1">
                 <motion.h1 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ ...defaultTransition, delay: 0.2 }}
                   className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-200 bg-clip-text text-transparent truncate leading-tight mb-0.5 drop-shadow-sm"
                 >
                   <span className="hidden sm:inline">Student Dashboard</span>
@@ -274,7 +275,7 @@ const Dashboard: React.FC = () => {
                 <motion.p 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ ...defaultTransition, delay: 0.3 }}
                   className="text-xs sm:text-sm lg:text-sm text-white/70 truncate leading-tight"
                 >
                   <span className="hidden xs:inline">Welcome, </span>

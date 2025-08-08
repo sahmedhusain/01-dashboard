@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { defaultTransition, createAdaptiveTransition } from '../../../config/motion'
 import { 
-  Activity, Zap, Trophy, Code, Target, Users, Calendar, 
-  Clock, CheckCircle, AlertTriangle, Search, Filter, 
+  Activity, Zap, Trophy, Code,
+  Clock, CheckCircle, AlertTriangle, Search,
   ArrowUp, ArrowDown, TrendingUp, Star
 } from 'lucide-react'
 
@@ -15,7 +16,7 @@ const calculateAverageGrade = (progressData: any[]) => {
   return totalGrade / completedProjects.length;
 };
 
-import { formatXPValue, formatDate, separateModuleData } from '../../../utils/dataFormatting'
+import { formatXPValue, formatDate } from '../../../utils/dataFormatting'
 
 interface TransactionsSectionProps {
   analytics: any
@@ -156,7 +157,38 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
       )
     }
 
-    return progress
+    // Group by path and show only the best attempt for each project
+    const projectGroups: { [path: string]: any[] } = {};
+    
+    progress.forEach((p: any) => {
+      if (!projectGroups[p.path]) {
+        projectGroups[p.path] = [];
+      }
+      projectGroups[p.path].push(p);
+    });
+
+    // For each project, if there's a passed attempt (grade >= 1), show only that
+    // Otherwise show the latest attempt
+    const consolidatedProgress = Object.keys(projectGroups).map(path => {
+      const attempts = projectGroups[path];
+      
+      // Find passed attempts (grade >= 1 and isDone)
+      const passedAttempts = attempts.filter((p: any) => p.isDone && p.grade >= 1);
+      
+      if (passedAttempts.length > 0) {
+        // Show the latest passed attempt
+        return passedAttempts.sort((a: any, b: any) => 
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )[0];
+      } else {
+        // Show the latest attempt (failed or in progress)
+        return attempts.sort((a: any, b: any) => 
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )[0];
+      }
+    });
+
+    return consolidatedProgress
   }, [analytics.rawData.progress, timeFilter, searchTerm, showOnlyBHModule])
 
   const getTransactionIcon = (type: string) => {
@@ -414,7 +446,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Zap className="w-5 h-5 mr-2 text-blue-400" />
-            Recent Transactions ({filteredTransactions.length})
+            Transactions ({filteredTransactions.length})
           </h3>
           
           <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -470,7 +502,7 @@ const TransactionsSection: React.FC<TransactionsSectionProps> = ({ analytics }) 
         >
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
-            Project Progress ({filteredProgress.length})
+            Task Progress ({filteredProgress.length})
           </h3>
           
           <div className="space-y-3 max-h-96 overflow-y-auto">

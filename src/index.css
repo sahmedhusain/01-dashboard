@@ -6,10 +6,41 @@
 @tailwind utilities;
 
 @layer base {
+  /* Global Animation Performance Settings - 60fps default, 30-120fps range */
+  * {
+    /* Enable hardware acceleration for all animations */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    
+    /* Optimize rendering for animations */
+    will-change: auto;
+    
+    /* Default 60fps animation timing (16.67ms per frame) */
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Performance-optimized animation classes */
+  .animate-60fps {
+    animation-timing-function: steps(60, end);
+  }
+  
+  .animate-120fps {
+    animation-timing-function: steps(120, end);
+  }
+  
+  .animate-30fps {
+    animation-timing-function: steps(30, end);
+  }
+
   /* Dark theme (default) */
   body {
     @apply bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 text-white font-sans;
     @apply min-h-screen antialiased transition-colors duration-300;
+    
+    /* Optimize body for animations */
+    transform: translateZ(0);
   }
 
   /* Light theme */
@@ -36,9 +67,54 @@
 }
 
 @layer components {
+  /* Performance-optimized animation components - 60fps default */
+  .motion-safe {
+    /* Optimize for animations - promote to composite layer */
+    transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
+  }
+  
+  .motion-reduce {
+    /* Respect reduced motion preferences */
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Frame-rate specific transition classes */
+  .transition-60fps {
+    transition-duration: 16.67ms; /* 60fps = 16.67ms per frame */
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .transition-120fps {
+    transition-duration: 8.33ms; /* 120fps = 8.33ms per frame */
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .transition-30fps {
+    transition-duration: 33.33ms; /* 30fps = 33.33ms per frame */
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Optimized common animations */
+  .animate-fade-in-60fps {
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .animate-slide-up-60fps {
+    animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .animate-scale-up-60fps {
+    animation: scaleUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .glass-card {
     @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg;
     @apply p-4 sm:p-6 lg:p-8; /* Responsive padding */
+    
+    /* Optimize for animations */
+    transform: translate3d(0, 0, 0);
   }
 
   .light .glass-card {
@@ -400,6 +476,94 @@
   .markdown-content td {
     @apply text-white/80;
   }
+}
+
+/* Performance-optimized keyframes - 60fps timing */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateZ(0);
+  }
+  50% {
+    transform: translateY(-10px) translateZ(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02) translateZ(0);
+  }
+}
+
+@keyframes spin-optimized {
+  from {
+    transform: rotate(0deg) translateZ(0);
+  }
+  to {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
+
+/* 120fps high-performance variants */
+@keyframes fadeIn-120fps {
+  0% { opacity: 0; transform: translateZ(0); }
+  8.33% { opacity: 0.1; transform: translateZ(0); }
+  16.67% { opacity: 0.2; transform: translateZ(0); }
+  25% { opacity: 0.3; transform: translateZ(0); }
+  33.33% { opacity: 0.4; transform: translateZ(0); }
+  41.67% { opacity: 0.5; transform: translateZ(0); }
+  50% { opacity: 0.6; transform: translateZ(0); }
+  58.33% { opacity: 0.7; transform: translateZ(0); }
+  66.67% { opacity: 0.8; transform: translateZ(0); }
+  75% { opacity: 0.9; transform: translateZ(0); }
+  83.33% { opacity: 0.95; transform: translateZ(0); }
+  91.67% { opacity: 0.98; transform: translateZ(0); }
+  100% { opacity: 1; transform: translateZ(0); }
+}
+
+/* 30fps performance-conscious variants */
+@keyframes fadeIn-30fps {
+  0% { opacity: 0; transform: translateZ(0); }
+  33.33% { opacity: 0.33; transform: translateZ(0); }
+  66.67% { opacity: 0.67; transform: translateZ(0); }
+  100% { opacity: 1; transform: translateZ(0); }
 }
 
 /* Enhanced responsive media queries */

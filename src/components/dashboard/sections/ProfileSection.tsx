@@ -259,8 +259,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     transition={{ delay: 0.4, type: "spring", stiffness: 120 }}
                     className="space-y-3"
                   >
-                    {/* Compact notation and XP display */}
-                    <div className="flex items-center gap-4">
+                    {/* Compact notation, XP display and labels - all in one row */}
+                    <div className="flex items-center gap-4 flex-wrap">
                       {/* Performance Notation - Small Card */}
                       <div className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 px-4 py-2 rounded-xl border border-emerald-400/30 backdrop-blur-sm">
                         <div className="flex items-center space-x-2">
@@ -280,31 +280,17 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                           </span>
                         </div>
                       </div>
-                    </div>
-                    
-                    
-                    {/* Enhanced user labels section */}
-                    {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
-                      <div className="mt-6">
-                        <motion.h4 
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className="text-lg font-semibold text-white mb-4 flex items-center"
-                        >
-                          <div className="p-2 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 rounded-lg mr-3">
-                            <Award className="w-5 h-5 text-cyan-300" />
-                          </div>
-                          Labels
-                        </motion.h4>
-                        <div className="flex flex-wrap gap-3">
+
+                      {/* Enhanced user labels section - inline */}
+                      {analytics.rawData?.userLabels && analytics.rawData.userLabels.length > 0 && (
+                        <>
                           {analytics.rawData.userLabels.map((userLabel, index) => (
                             <motion.div
                               key={userLabel.id}
                               initial={{ opacity: 0, scale: 0.8, y: 10 }}
                               animate={{ opacity: 1, scale: 1, y: 0 }}
                               transition={{ delay: 0.6 + index * 0.1, type: "spring", stiffness: 200 }}
-                              className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 px-6 py-3 rounded-2xl border border-cyan-400/30 backdrop-blur-lg hover:from-cyan-400/30 hover:to-blue-400/30 hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300 shadow-lg shadow-cyan-500/10 group relative overflow-hidden"
+                              className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 px-3 py-2 rounded-xl border border-cyan-400/30 backdrop-blur-lg hover:from-cyan-400/30 hover:to-blue-400/30 hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300 shadow-lg shadow-cyan-500/10 group relative overflow-hidden"
                               title={userLabel.label.description}
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -316,9 +302,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                               </div>
                             </motion.div>
                           ))}
-                        </div>
-                      </div>
-                    )}
+                        </>
+                      )}
+                    </div>
                   </motion.div>
                 )}
               </div>
@@ -539,80 +525,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
             </motion.div>
 
-            {/* Enhanced Professional Information */}
-            {(personalInfo.currentEmployer || personalInfo.jobTitle || personalInfo.workExperience || personalInfo.employment) && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.3 }}
-                className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-lg rounded-2xl p-6 border border-slate-600/30"
-              >
-                <motion.h3 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.4 }}
-                  className="text-xl font-bold text-white mb-6 flex items-center"
-                >
-                  <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg mr-3">
-                    <Briefcase className="w-5 h-5 text-blue-300" />
-                  </div>
-                  Professional Information
-                </motion.h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {personalInfo.jobTitle && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.5 }}
-                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20 backdrop-blur-lg hover:from-green-500/20 hover:to-emerald-500/20 hover:border-green-400/30 transition-all duration-300 group"
-                    >
-                      <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg group-hover:from-green-400/40 group-hover:to-emerald-400/40 transition-all duration-300">
-                        <UserCheck className="h-5 w-5 text-green-300" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs text-green-200/80 font-medium">Job Title</span>
-                        <div className="text-sm text-white font-semibold">{personalInfo.jobTitle}</div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {personalInfo.employment && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.6 }}
-                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group"
-                    >
-                      <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
-                        <Briefcase className="h-5 w-5 text-orange-300" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs text-orange-200/80 font-medium">Employment Status</span>
-                        <div className="text-sm text-white font-semibold">{personalInfo.employment}</div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {personalInfo.currentEmployer && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.7 }}
-                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-violet-500/20 hover:border-purple-400/30 transition-all duration-300 group md:col-span-2"
-                    >
-                      <div className="p-2 bg-gradient-to-r from-purple-500/30 to-violet-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-violet-400/40 transition-all duration-300">
-                        <UserCog className="h-5 w-5 text-purple-300" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs text-purple-200/80 font-medium">Current Employer</span>
-                        <div className="text-sm text-white font-semibold">{personalInfo.currentEmployer}</div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            )}
             {/* Enhanced User Roles */}
             {analytics.rawData?.userRoles && analytics.rawData.userRoles.length > 0 && (
               <motion.div 
@@ -849,6 +761,81 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 </div>
               </div>
             </motion.div>
+
+            {/* Enhanced Professional Information - Below Level Container */}
+            {(personalInfo.currentEmployer || personalInfo.jobTitle || personalInfo.workExperience || personalInfo.employment) && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-lg rounded-2xl p-6 border border-slate-600/30 mt-6"
+              >
+                <motion.h3 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.4 }}
+                  className="text-xl font-bold text-white mb-6 flex items-center"
+                >
+                  <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg mr-3">
+                    <Briefcase className="w-5 h-5 text-blue-300" />
+                  </div>
+                  Professional Information
+                </motion.h3>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {personalInfo.jobTitle && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.5 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20 backdrop-blur-lg hover:from-green-500/20 hover:to-emerald-500/20 hover:border-green-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg group-hover:from-green-400/40 group-hover:to-emerald-400/40 transition-all duration-300">
+                        <UserCheck className="h-5 w-5 text-green-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-green-200/80 font-medium">Job Title</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.jobTitle}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {personalInfo.employment && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.6 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
+                        <Briefcase className="h-5 w-5 text-orange-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-orange-200/80 font-medium">Employment Status</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.employment}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {personalInfo.currentEmployer && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.7 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-violet-500/20 hover:border-purple-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-purple-500/30 to-violet-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-violet-400/40 transition-all duration-300">
+                        <UserCog className="h-5 w-5 text-purple-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-purple-200/80 font-medium">Current Employer</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.currentEmployer}</div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </motion.div>

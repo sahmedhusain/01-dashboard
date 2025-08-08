@@ -10,6 +10,7 @@ import { useIsAuthenticated, useLogin, useSetLoading } from './store'
 import { getStoredAuthData, fetchUserData } from './utils/auth'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ErrorBoundary from './components/ErrorBoundary'
+import { performanceMonitor } from './utils/performanceMonitor'
 
 const AppContent: React.FC = () => {
   const isAuthenticated = useIsAuthenticated()
@@ -132,6 +133,15 @@ const AppContent: React.FC = () => {
 }
 
 const App: React.FC = () => {
+  // Initialize performance monitoring
+  useEffect(() => {
+    performanceMonitor.start()
+    
+    return () => {
+      performanceMonitor.stop()
+    }
+  }, [])
+
   return (
     <ErrorBoundary>
       <ApolloProvider client={client}>

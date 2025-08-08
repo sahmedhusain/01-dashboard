@@ -44,9 +44,9 @@ export class AnimationPerformanceMonitor {
   private onFPSUpdate(fps: number) {
     // Log performance issues
     if (fps < 30) {
-      console.warn(`🚨 Low FPS detected: ${fps} (target: ${this.targetFPS})`)
+      //console.warn(`🚨 Low FPS detected: ${fps} (target: ${this.targetFPS})`)
     } else if (fps < this.targetFPS - 10) {
-      console.warn(`⚠️ Below target FPS: ${fps} (target: ${this.targetFPS})`)
+      //console.warn(`⚠️ Below target FPS: ${fps} (target: ${this.targetFPS})`)
     }
     
     // Dispatch custom event for performance monitoring

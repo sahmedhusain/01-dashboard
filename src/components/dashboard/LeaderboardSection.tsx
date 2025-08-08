@@ -682,16 +682,16 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
 
   const getRankNotation = (position: number) => {
     switch (position) {
-      case 1: return { title: '👑 Legend', subtitle: 'Ultimate Champion', color: 'text-yellow-400' }
-      case 2: return { title: '🥈 Master', subtitle: 'Elite Performer', color: 'text-slate-300' }
-      case 3: return { title: '🥉 Expert', subtitle: 'Distinguished', color: 'text-amber-500' }
-      case 4: case 5: return { title: '🏆 Champion', subtitle: 'Top Tier', color: 'text-orange-400' }
-      case 6: case 7: case 8: case 9: case 10: return { title: '🛡️ Elite', subtitle: 'Top 10', color: 'text-purple-400' }
+      case 1: return { title: 'Legend', subtitle: 'Ultimate Champion', color: 'text-yellow-400' }
+      case 2: return { title: 'Master', subtitle: 'Elite Performer', color: 'text-slate-300' }
+      case 3: return { title: 'Expert', subtitle: 'Distinguished', color: 'text-amber-500' }
+      case 4: case 5: return { title: 'Champion', subtitle: 'Top Tier', color: 'text-orange-400' }
+      case 6: case 7: case 8: case 9: case 10: return { title: 'Elite', subtitle: 'Top 10', color: 'text-purple-400' }
       default: {
-        if (position <= 20) return { title: '⭐ Rising Star', subtitle: 'Top 20', color: 'text-blue-400' }
-        if (position <= 50) return { title: '💎 Achiever', subtitle: 'Top 50', color: 'text-emerald-400' }
-        if (position <= 100) return { title: '🚀 Climber', subtitle: 'Top 100', color: 'text-cyan-400' }
-        return { title: '🌟 Participant', subtitle: 'Keep Going!', color: 'text-white/60' }
+        if (position <= 20) return { title: 'Rising Star', subtitle: 'Top 20', color: 'text-blue-400' }
+        if (position <= 50) return { title: 'Achiever', subtitle: 'Top 50', color: 'text-emerald-400' }
+        if (position <= 100) return { title: 'Climber', subtitle: 'Top 100', color: 'text-cyan-400' }
+        return { title: 'Participant', subtitle: 'Keep Going!', color: 'text-white/60' }
       }
     }
   }
@@ -788,10 +788,10 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                 Leaderboard Dashboard
               </h1>
               <p className="text-xl text-white/70 max-w-3xl mx-auto">
-                Competitive rankings for <span className="text-yellow-400 font-bold">{totalUsers}</span> exceptional students 🚀
+                Competitive rankings for <span className="text-yellow-400 font-bold">{totalUsers}</span> exceptional students
                 <br />
                 <span className="text-base text-white/60 mt-2 block">
-                  ✨ Celebrating excellence, dedication, and continuous growth ✨
+                  Celebrating excellence, dedication, and continuous growth
                 </span>
               </p>
             </motion.div>
@@ -810,68 +810,74 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
             value={totalUsers.toLocaleString()} 
             color="bg-gradient-to-r from-blue-500/30 to-cyan-500/30"
             bgGradient="bg-gradient-to-br from-blue-900/20 to-cyan-900/20"
-            subValue={`🚀 ${totalUsers > 100 ? 'Thriving' : 'Growing'} community`}
+            subValue={`${totalUsers > 100 ? 'Thriving' : 'Growing'} community`}
           />
           <StatCard 
             icon={TrendingUp} 
             title="Average Level" 
-            value={`⚡ ${avgLevel.toFixed(1)}`} 
+            value={`${avgLevel.toFixed(1)}`} 
             color="bg-gradient-to-r from-green-500/30 to-emerald-500/30"
             bgGradient="bg-gradient-to-br from-green-900/20 to-emerald-900/20"
-            subValue={`🎯 Peak: ${maxLevel} | 🔥 ${avgLevel > 10 ? 'Exceptional' : avgLevel > 5 ? 'Strong' : 'Rising'}`}
+            subValue={`Peak: ${maxLevel} | ${avgLevel > 10 ? 'Exceptional' : avgLevel > 5 ? 'Strong' : 'Rising'}`}
             trend={avgLevel > 5 ? { value: 12, isPositive: true } : undefined}
           />
           <StatCard 
             icon={Heart} 
             title="Community Score" 
-            value={`💯 ${avgAuditRatio.toFixed(2)}`} 
+            value={`${avgAuditRatio.toFixed(2)}`} 
             color="bg-gradient-to-r from-pink-500/30 to-rose-500/30"
             bgGradient="bg-gradient-to-br from-pink-900/20 to-rose-900/20"
-            subValue={`🤝 ${avgAuditRatio > 1.5 ? 'Outstanding' : avgAuditRatio > 1 ? 'Excellent' : 'Building'} collaboration`}
+            subValue={`${avgAuditRatio > 1.5 ? 'Outstanding' : avgAuditRatio > 1 ? 'Excellent' : 'Building'} collaboration`}
             trend={avgAuditRatio > 1 ? { value: 8, isPositive: true } : undefined}
           />
           <StatCard 
             icon={Brain} 
             title="Elite Members" 
-            value={`🏆 ${processedUsers.filter(u => u.level && u.level >= 10).length}`} 
+            value={`${processedUsers.filter(u => u.level && u.level >= 10).length}`} 
             color="bg-gradient-to-r from-purple-500/30 to-violet-500/30"
             bgGradient="bg-gradient-to-br from-purple-900/20 to-violet-900/20"
-            subValue={`🎆 Level 10+ achievers`}
+            subValue={`Level 10+ achievers`}
           />
           <StatCard 
             icon={Flame} 
             title="Rising Stars" 
-            value={`⭐ ${processedUsers.filter(u => u.level && u.level >= 5 && u.level < 10).length}`} 
+            value={`${processedUsers.filter(u => u.level && u.level >= 5 && u.level < 10).length}`} 
             color="bg-gradient-to-r from-orange-500/30 to-amber-500/30"
             bgGradient="bg-gradient-to-br from-orange-900/20 to-amber-900/20"
-            subValue={`🚀 Level 5-9 climbers`}
+            subValue={`Level 5-9 climbers`}
           />
         </motion.div>
 
-        {/* Leaderboard Type Selector */}
+        {/* Leaderboard Type Selector - Enhanced to match Groups Dashboard */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex flex-wrap gap-2 justify-center"
+          className="flex justify-center"
         >
-          {[
-            { key: 'level', label: '📊 Level Rankings', icon: TrendingUp },
-            { key: 'audit', label: '⚖️ Audit Rankings', icon: Target }
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setActiveLeaderboard(key as LeaderboardType)}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative overflow-hidden ${
-                activeLeaderboard === key
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 border border-white/20'
-                  : 'bg-white/10 text-white/70 hover:bg-emerald-500/20 hover:text-white hover:border-emerald-400/30 border border-transparent'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span className="text-sm font-medium">{label}</span>
-            </button>
-          ))}
+          <div className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 shadow-2xl flex">
+            {[
+              { key: 'level', label: 'Level Rankings', icon: TrendingUp, gradient: 'from-emerald-500 to-teal-500', shadow: 'shadow-emerald-500/30' },
+              { key: 'audit', label: 'Audit Rankings', icon: Target, gradient: 'from-blue-500 to-indigo-500', shadow: 'shadow-blue-500/30' }
+            ].map(({ key, label, icon: Icon, gradient, shadow }) => (
+              <motion.button
+                key={key}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setActiveLeaderboard(key as LeaderboardType)}
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  activeLeaderboard === key
+                    ? `bg-gradient-to-r ${gradient} text-white ${shadow} shadow-lg`
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Icon className="w-5 h-5" />
+                  <span>{label}</span>
+                </div>
+              </motion.button>
+            ))}
+          </div>
         </motion.div>
 
         {/* Advanced Filters */}
@@ -1083,7 +1089,7 @@ const LeaderboardSection: React.FC<LeaderboardSectionProps> = ({ user }) => {
                                 className="px-1.5 py-0.5 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 text-emerald-400 rounded-lg text-xs font-medium border border-emerald-400/30 backdrop-blur-sm"
                                 title={`Cohort Label: ${userLabel.label.name}`}
                               >
-                                🏷️ {userLabel.label.name}
+                                {userLabel.label.name}
                               </span>
                             ))}
                           </div>

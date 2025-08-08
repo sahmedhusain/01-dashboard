@@ -4,7 +4,7 @@ import { User as UserType } from '../../../types'
 import {
   User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, TrendingUp,
   Phone, CreditCard, Heart, Shield, UserCheck,
-  Briefcase, UserCog
+  Briefcase, UserCog, Zap
 } from 'lucide-react'
 import Avatar from '../../ui/Avatar'
 import {
@@ -866,6 +866,20 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
               <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
             </div>
+            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Trophy className="w-5 h-5 text-blue-400" />
+                <span className="text-white text-sm">Main Module XP</span>
+              </div>
+              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Zap className="w-5 h-5 text-green-400" />
+                <span className="text-white text-sm">Piscines Completed</span>
+              </div>
+              <span className="text-green-400 font-bold">{analytics.moduleData?.piscines || 0}</span>
+            </div>
 
             {analytics.projects.lastFinished && (
               <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -984,68 +998,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
 
 
-      {/* Module Progress Comparison */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
-      >
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <Trophy className="w-5 h-5 mr-2 text-blue-400" />
-          Learning Journey Overview
-        </h3>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* BH Module Progress */}
-          <div className="bg-white/5 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-white font-medium">BH Module (Main Curriculum)</h4>
-              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-white/70">
-                <span>Projects:</span>
-                <span>{analytics.projects.bhModule?.total || analytics.projects.bhModule || 0}</span>
-              </div>
-              <div className="flex justify-between text-white/70">
-                <span>Current Level:</span>
-                <span>{analytics.level.current}</span>
-              </div>
-              <div className="w-full bg-white/10 rounded-full h-2 mt-3">
-                <div
-                  className="bg-blue-400 h-2 rounded-full"
-                  style={{ width: `${(analytics.xp.bhModule / (analytics.xp.bhModule + analytics.xp.piscines)) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Piscines Progress */}
-          <div className="bg-white/5 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-white font-medium">Piscines (Intensive Training)</h4>
-              <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.piscines)}</span>
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-white/70">
-                <span>Projects:</span>
-                <span>{analytics.projects.piscines?.total || analytics.projects.piscines || 0}</span>
-              </div>
-              <div className="flex justify-between text-white/70">
-                <span>Modules:</span>
-                <span>{analytics.moduleData?.piscines || 0}</span>
-              </div>
-              <div className="w-full bg-white/10 rounded-full h-2 mt-3">
-                <div
-                  className="bg-green-400 h-2 rounded-full"
-                  style={{ width: `${(analytics.xp.piscines / (analytics.xp.bhModule + analytics.xp.piscines)) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      {/* Module Progress Comparison - REMOVED */}
       </div>
     </div>
   )

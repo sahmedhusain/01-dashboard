@@ -415,7 +415,7 @@ const CheckpointDashboard: React.FC<CheckpointDashboardProps> = ({ user }) => {
             >
               {/* Animated background */}
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-teal-400/10 animate-pulse"></div>
-              <Target className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
+              <CheckCircle className="w-12 h-12 text-emerald-400 drop-shadow-lg relative z-10" />
             </motion.div>
             
             <motion.div

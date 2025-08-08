@@ -423,7 +423,7 @@ const SubjectsSection: React.FC = () => {
     const convertProjectNameToPath = (name: string) => getProjectPath(name);
 
     try {
-      const fileName = fileType === 'readme' ? 'README.md' : 'audit.md';
+      const fileName = fileType === 'readme' ? 'README.md' : 'audit/README.md';
       const possiblePaths: string[] = [];
       
       const convertGraphQLPathToGitHub = (graphqlPath: string, targetFileName: string): string[] => {

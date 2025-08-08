@@ -64,7 +64,7 @@ const NotFoundPage: React.FC = () => {
           className="mt-8 sm:mt-12"
         >
           <p className="text-white/50 text-xs sm:text-sm">
-            Reboot01 Student Dashboard
+            01 Student Dashboard
           </p>
         </motion.div>
       </div>

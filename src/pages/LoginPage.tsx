@@ -68,7 +68,7 @@ const LoginPage: React.FC = () => {
           >
             <LogIn className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </motion.div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">Welcome Back</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">Welcome Back!</h1>
           <p className="text-white/70 text-sm sm:text-base">Sign in to your Reboot01 account</p>
         </div>
 
@@ -173,7 +173,7 @@ const LoginPage: React.FC = () => {
           className="text-center mt-6 sm:mt-8"
         >
           <p className="text-white/50 text-xs sm:text-sm">
-            Reboot01 Student Dashboard
+            01 Student Dashboard
           </p>
         </motion.div>
       </motion.div>

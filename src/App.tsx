@@ -69,7 +69,7 @@ const AppContent: React.FC = () => {
             {/* Title */}
             <div className="space-y-2">
               <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent">
-                Student Dashboard
+                01 Student Dashboard
               </h1>
               <p className="text-xl text-white/70">
                 Initializing your learning journey...

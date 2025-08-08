@@ -20,6 +20,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   const [clickedElement, setClickedElement] = useState<{ type: string, data: any, x: number, y: number } | null>(null)
   const [showTooltip, setShowTooltip] = useState(false)
   const [xpRange, setXpRange] = useState("all")
+  const [auditRange, setAuditRange] = useState("all")
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Handle mouse movement to hide tooltip after delay
@@ -74,6 +75,47 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     })
   }
   const fullXPProgression = getFullXPProgression()
+
+  // Generate full audit progression data from all transactions (similar to XP)
+  const getFullAuditProgression = () => {
+    if (!analytics.rawData?.transactions) return analytics.audits?.monthlyData || []
+    
+    // Filter for audit transactions and sort by date
+    const auditTx = analytics.rawData.transactions
+      .filter((t: any) => t.type === "up" || t.type === "down")
+      .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    
+    if (auditTx.length === 0) return analytics.audits?.monthlyData || []
+    
+    // Group by month
+    const monthlyAudits: Record<string, { given: number, received: number }> = {}
+    
+    auditTx.forEach((t: any) => {
+      const month = t.createdAt.slice(0, 7) // YYYY-MM format
+      if (!monthlyAudits[month]) {
+        monthlyAudits[month] = { given: 0, received: 0 }
+      }
+      
+      // Assume "up" transactions are audits given, "down" are received
+      // This is an approximation - might need adjustment based on actual data structure
+      if (t.type === "up") {
+        monthlyAudits[month].given += 1
+      } else if (t.type === "down") {
+        monthlyAudits[month].received += 1
+      }
+    })
+    
+    // Convert to array format similar to monthlyData
+    return Object.keys(monthlyAudits)
+      .sort()
+      .map(month => ({
+        month,
+        audits: monthlyAudits[month].given,
+        given: monthlyAudits[month].given,
+        received: monthlyAudits[month].received
+      }))
+  }
+  const fullAuditProgression = getFullAuditProgression()
 
   // Central handleElementClick for all charts
   const handleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
@@ -287,6 +329,28 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               </text>
             ))
           }
+          
+          {/* Axis Labels */}
+          {/* Y-axis label (XP) */}
+          <text
+            x={8}
+            y={height / 2 - 20}
+            textAnchor="middle"
+            className="fill-white/70 text-xs font-medium"
+            transform={`rotate(-90 8 ${height / 2})`}
+          >
+            XP Points
+          </text>
+          
+          {/* X-axis label (Time) */}
+          <text
+            x={width / 2}
+            y={height - 8}
+            textAnchor="middle"
+            className="fill-white/70 text-xs font-medium"
+          >
+            Time Period
+          </text>
         </svg>
       </div>
     )
@@ -452,8 +516,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     ]
 
     let cumulativePercentage = 0
-    const radius = 80
-    const center = 100
+    const radius = 90
+    const center = 110
 
     // Pie chart gradients
     const gradients = [
@@ -465,7 +529,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     return (
       <div className="flex justify-center">
         <div className="relative">
-            <svg viewBox="0 0 200 200" className="w-full h-[180px] md:h-[200px]">
+            <svg viewBox="0 0 220 220" className="w-full h-[200px] md:h-[220px]">
             <defs>
               <radialGradient id="pie-bg-glow" cx="50%" cy="50%" r="60%">
                 <stop offset="0%" stopColor="#fff" stopOpacity="0.08" />
@@ -813,7 +877,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                 textAnchor="middle"
                 className="fill-white text-2xl font-extrabold drop-shadow"
               >
-                {formatXPValue(parseInt(String(totalXP), 10))}
+                {formatXPValue(totalXP).replace(/\.\d+/, '')}
               </text>
               <text
                 x={center}
@@ -860,14 +924,37 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
   const AuditTimelineChart = ({
     data,
-    handleElementClick
+    handleElementClick,
+    auditRange = "all"
   }: {
     data: any[]
     handleElementClick: (elementData: { type: string, data: any, x: number, y: number }) => void
+    auditRange?: string
   }) => {
     const [showGiven, setShowGiven] = useState(true);
     const [showReceived, setShowReceived] = useState(true);
     const [showAverage, setShowAverage] = useState(false);
+
+    // Filter data based on selected range (similar to XP filtering)
+    const filteredData = React.useMemo(() => {
+      if (!Array.isArray(data) || data.length === 0) return []
+      
+      switch (auditRange) {
+        case "week":
+          return data.slice(-1) // Last entry for week view
+        case "month":
+          return data.slice(-1) // Last entry for month view
+        case "3months":
+          return data.slice(-3) // Last 3 months
+        case "6months":
+          return data.slice(-6) // Last 6 months
+        case "12months":
+          return data.slice(-12) // Last 12 months
+        case "all":
+        default:
+          return data // ALL audit data since start (not sliced)
+      }
+    }, [data, auditRange]);
 
     // Only call handleElementClick if the bar type is visible
     const safeHandleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
@@ -880,16 +967,16 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       handleElementClick(elementData)
     }
 
-    const maxAuditsGiven = Math.max(...data.map(d => d.audits || d.given || 0), 5)
-    const maxAuditsReceived = Math.max(...data.map(d => d.received || Math.floor((d.audits || 0) * 0.8)), 3)
+    const maxAuditsGiven = Math.max(...filteredData.map(d => d.audits || d.given || 0), 5)
+    const maxAuditsReceived = Math.max(...filteredData.map(d => d.received || Math.floor((d.audits || 0) * 0.8)), 3)
     const maxAudits = Math.max(maxAuditsGiven, maxAuditsReceived)
     const width = 600
     const height = 200
     const padding = 40
 
     // Calculate average for visible bars
-    const visibleGiven = showGiven ? data.map(d => d.audits || d.given || 0) : [];
-    const visibleReceived = showReceived ? data.map(d => d.received || Math.floor((d.audits || 0) * 0.8)) : [];
+    const visibleGiven = showGiven ? filteredData.map(d => d.audits || d.given || 0) : [];
+    const visibleReceived = showReceived ? filteredData.map(d => d.received || Math.floor((d.audits || 0) * 0.8)) : [];
     const avgGiven = visibleGiven.length > 0 ? visibleGiven.reduce((a, b) => a + b, 0) / visibleGiven.length : 0;
     const avgReceived = visibleReceived.length > 0 ? visibleReceived.reduce((a, b) => a + b, 0) / visibleReceived.length : 0;
 
@@ -921,7 +1008,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             {showAverage ? "Hide Average" : "Show Average"}
           </button>
         </div>
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[180px] md:h-48">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[240px] md:h-64 lg:h-72">
           {/* Grid lines */}
           {[0, 1, 2, 3, 4].map(i => (
             <line
@@ -936,9 +1023,9 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           ))}
 
           {/* Audit bars */}
-          {data.map((item, index) => {
-            const barWidth = (width - 2 * padding) / data.length * 0.35
-            const xGiven = padding + (index + 0.1) * ((width - 2 * padding) / data.length)
+          {filteredData.map((item, index) => {
+            const barWidth = (width - 2 * padding) / filteredData.length * 0.35
+            const xGiven = padding + (index + 0.1) * ((width - 2 * padding) / filteredData.length)
             const xReceived = xGiven + barWidth + 2
             
             const auditsGiven = item.audits || item.given || 0
@@ -1000,14 +1087,17 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                     } : undefined}
                   />
                 )}
-                <text
-                  x={xGiven + barWidth}
-                  y={height - padding + 15}
-                  textAnchor="middle"
-                  className="fill-white/60 text-xs"
-                >
-                  {item.month}
-                </text>
+                {/* Month labels only if not "Since Start" */}
+                {auditRange !== "all" && (
+                  <text
+                    x={xGiven + barWidth}
+                    y={height - padding + 15}
+                    textAnchor="middle"
+                    className="fill-white/60 text-xs"
+                  >
+                    {item.month}
+                  </text>
+                )}
               </g>
             )
           })}
@@ -1069,7 +1159,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           {[0, 1, 2, 3, 4].map(i => (
             <text
               key={i}
-              x={padding - 10}
+              x={padding - 5}
               y={height - padding - i * ((height - 2 * padding) / 4) + 3}
               textAnchor="end"
               className="fill-white/60 text-xs"
@@ -1077,6 +1167,28 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               {Math.round((maxAudits / 4) * i)}
             </text>
           ))}
+
+          {/* Axis Labels */}
+          {/* Y-axis label (Audits) */}
+          <text
+            x={15}
+            y={height / 2}
+            textAnchor="middle"
+            className="fill-white/50 text-[10px] font-normal"
+            transform={`rotate(-90 15 ${height / 2})`}
+          >
+            Audit Count
+          </text>
+          
+          {/* X-axis label (Time) */}
+          <text
+            x={width / 2}
+            y={height - 5}
+            textAnchor="middle"
+            className="fill-white/50 text-[10px] font-normal"
+          >
+            Time Period
+          </text>
 
           <defs>
             <linearGradient id="auditGivenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -1227,7 +1339,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Success Rate Pie Chart - SVG Graph 3 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1267,7 +1379,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-teal-500/30 hover:scale-[1.01] hover:shadow-teal-400/30 transition-all duration-300 flex flex-col justify-between"
+          className="lg:col-span-2 relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-teal-500/30 hover:scale-[1.01] hover:shadow-teal-400/30 transition-all duration-300 flex flex-col justify-between"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-2 h-8 rounded bg-teal-400 shadow-lg"></div>
@@ -1276,8 +1388,35 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               Audit Activity Timeline
             </h3>
           </div>
-          <p className="text-white/60 text-sm mb-6">Monthly audit activity comparison - given vs received</p>
-          <AuditTimelineChart data={analytics.audits.monthlyData} handleElementClick={handleElementClick} />
+          <p className="text-white/60 text-sm mb-4">Audit activity comparison - Given vs Received</p>
+          
+          {/* Audit Range Filter Buttons */}
+          <div className="flex items-center mb-6">
+            <div className="flex space-x-2">
+              {[
+                { label: "Since Start", value: "all" },
+                { label: "Last Week", value: "week" },
+                { label: "Last Month", value: "month" },
+                { label: "Last 3 Months", value: "3months" },
+                { label: "Last 6 Months", value: "6months" },
+                { label: "Last 12 Months", value: "12months" }
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  className={`px-2 py-1 rounded-full text-xs font-semibold transition-all shadow-sm border ${
+                    auditRange === opt.value
+                      ? 'bg-gradient-to-r from-teal-500 via-teal-400 to-cyan-500 text-white border-teal-400 scale-105'
+                      : 'bg-white/10 text-white/70 border-white/10 hover:bg-teal-500/20'
+                  }`}
+                  onClick={() => setAuditRange(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <AuditTimelineChart data={auditRange === "all" ? fullAuditProgression : analytics.audits.monthlyData} handleElementClick={handleElementClick} auditRange={auditRange} />
           
           {/* Legend */}
           <div className="mt-4 flex justify-center space-x-6">

@@ -2,12 +2,12 @@ export const formatXPValue = (num: number | null | undefined): string => {
   if (num === null || num === undefined || isNaN(num)) return '0 B';
 
   if (num < 1000) {
-    return `${Math.round(num)} B`;
+    return `${num.toFixed(1)} B`;
   }
   if (num < 1000000) {
-    return `${Math.round(num / 1000)} kB`;
+    return `${(num / 1000).toFixed(2)} kB`;
   }
-  return `${Math.round(num / 1000000)} MB`;
+  return `${(num / 1000000).toFixed(2)} MB`;
 };
 
 export const formatAuditMB = (auditValue: number | null | undefined): string => {

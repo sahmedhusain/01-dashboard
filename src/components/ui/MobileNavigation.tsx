@@ -144,7 +144,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
               {/* Footer */}
               <div className="p-4 border-t border-white/20">
                 <p className="text-xs text-white/50 text-center">
-                  Reboot01 Student Dashboard
+                  01 Student Dashboard
                 </p>
               </div>
             </motion.div>

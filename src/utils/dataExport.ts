@@ -155,7 +155,7 @@ Total Audits: ${auditData?.length || 0}
 ${getPerformanceInsights(user, totalXP, completedProjects, successRate)}
 
 ---
-This report was generated from the reboot01 Student Dashboard.
+This report was generated from the 01 Student Dashboard.
   `.trim()
 
   const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8;' })

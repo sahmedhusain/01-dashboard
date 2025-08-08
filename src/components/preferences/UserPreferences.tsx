@@ -221,7 +221,7 @@ const createProtectedContent = (content: string, password: string, format: strin
 const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defaultTabs = [] }) => {
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences)
   const [hasChanges, setHasChanges] = useState(false)
-  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data' | 'export'>('appearance')
+  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data' | 'export'>('dashboard')
   const [exportStatus, setExportStatus] = useState<{ [key: string]: 'idle' | 'loading' | 'success' | 'error' }>({})
   const [selectedDataType, setSelectedDataType] = useState<'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'>('users')
   const [selectedFormat, setSelectedFormat] = useState<'json' | 'csv' | 'txt'>('json')
@@ -445,7 +445,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
   }
 
   const sections = [
-    { id: 'appearance' as const, label: 'Appearance', icon: Palette },
+    //    { id: 'appearance' as const, label: 'Appearance', icon: Palette },
     { id: 'dashboard' as const, label: 'Dashboard', icon: Settings },
     { id: 'data' as const, label: 'Data Refresh', icon: Database },
     { id: 'export' as const, label: 'Data Export', icon: Download }

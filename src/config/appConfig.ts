@@ -173,7 +173,7 @@ export const SECURITY_CONFIG = {
 
 export const APP_CONFIG = {
   
-  name: getEnvVar('VITE_APP_NAME', 'Student Dashboard'),
+  name: getEnvVar('VITE_APP_NAME', '01 Student Dashboard'),
   shortName: getEnvVar('VITE_APP_SHORT_NAME', 'Dashboard'),
   description: getEnvVar('VITE_APP_DESCRIPTION', 'Professional student analytics dashboard'),
   version: getEnvVar('VITE_APP_VERSION', '1.0.0'),

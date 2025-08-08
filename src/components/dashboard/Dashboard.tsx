@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { LogOut, LayoutDashboard, Trophy, Download, BookOpen, Settings, CheckCircle, Users, Calendar, User as UserIcon, History, Book } from 'lucide-react';
+import { LogOut, LayoutDashboard, Trophy, Download, BookOpen, Settings, CheckCircle, Users, Calendar, User as UserIcon, History, Book, GraduationCap } from 'lucide-react';
 import { useQuery, gql } from '@apollo/client';
 import { useUser, useLogout } from '../../store';
 import { User } from '../../types';
@@ -240,27 +240,33 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Enhanced Header - Fixed */}
-      <header className="flex-shrink-0 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl relative z-10">
+      <header className="flex-shrink-0 bg-gradient-to-r from-white/10 via-emerald-500/5 to-white/5 backdrop-blur-xl border-b border-white/20 shadow-2xl relative z-10 overflow-hidden">
+        {/* Subtle header background effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/3 via-transparent to-teal-500/3"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
         <div className="container-responsive">
-          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
+          <div className="flex items-center justify-between min-h-[2.5rem] sm:min-h-[3rem] lg:min-h-[3.5rem] px-3 py-1 sm:py-1.5 lg:py-2">
             {/* Enhanced Logo/Title */}
             <div className="flex items-center min-w-0 flex-1">
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-2 sm:mr-3 lg:mr-4 flex-shrink-0 shadow-lg shadow-emerald-500/25 border border-white/20 relative overflow-hidden"
+                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-2 sm:mr-3 lg:mr-3 flex-shrink-0 shadow-lg shadow-emerald-500/25 border border-white/25 relative overflow-hidden group hover:shadow-xl hover:shadow-emerald-500/35 transition-all duration-300"
               >
-                {/* Animated background pattern */}
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 animate-pulse"></div>
-                <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white drop-shadow-lg relative z-10" />
+                {/* Enhanced animated background pattern */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-300/30 to-teal-400/30 animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/20 group-hover:via-white/20 group-hover:to-white/30 transition-all duration-300"></div>
+                {/* Subtle rotating background */}
+                <div className="absolute inset-0 bg-gradient-conic from-emerald-400/20 via-teal-500/20 to-emerald-400/20 animate-spin" style={{ animationDuration: '8s' }}></div>
+                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 text-white drop-shadow-lg relative z-10" />
               </motion.div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 py-0.5 sm:py-1">
                 <motion.h1 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-100 bg-clip-text text-transparent truncate"
+                  className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold bg-gradient-to-r from-white via-emerald-100 to-teal-200 bg-clip-text text-transparent truncate leading-tight mb-0.5 drop-shadow-sm"
                 >
                   <span className="hidden sm:inline">Student Dashboard</span>
                   <span className="sm:hidden">Dashboard</span>
@@ -269,7 +275,7 @@ const Dashboard: React.FC = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-xs sm:text-sm lg:text-base text-white/70 truncate"
+                  className="text-xs sm:text-sm lg:text-sm text-white/70 truncate leading-tight"
                 >
                   <span className="hidden xs:inline">Welcome, </span>
                   <span className="text-emerald-400 font-semibold">{user.login}</span>
@@ -286,11 +292,11 @@ const Dashboard: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                className="p-2 sm:p-2.5 lg:p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/20"
+                className="p-1 sm:p-1.5 lg:p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-white/20"
                 aria-label="Open preferences"
                 title="Preferences"
               >
-                <Settings className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                <Settings className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
               </motion.button>
               <motion.button
                 onClick={handleLogout}
@@ -299,11 +305,11 @@ const Dashboard: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="flex items-center px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 text-red-200 rounded-xl transition-all duration-300 backdrop-blur-sm border border-red-500/20 hover:border-red-500/30 shadow-lg hover:shadow-red-500/25"
+                className="flex items-center px-2 sm:px-2.5 lg:px-3 py-1 sm:py-1.5 lg:py-2 bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 text-red-200 rounded-lg transition-all duration-300 backdrop-blur-sm border border-red-500/20 hover:border-red-500/30 shadow-lg hover:shadow-red-500/25"
                 aria-label="Logout from dashboard"
                 title="Logout"
               >
-                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 lg:w-4 lg:h-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline font-semibold text-xs sm:text-sm">Logout</span>
               </motion.button>
             </div>
@@ -311,10 +317,10 @@ const Dashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* Enhanced Navigation Tabs - Fixed */}
-      <nav className="flex-shrink-0 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl relative z-10" role="navigation" aria-label="Dashboard navigation">
+      {/* Enhanced Navigation Tabs - Fixed (Hidden on mobile, shown on tablet+) */}
+      <nav className="hidden md:flex flex-shrink-0 bg-gradient-to-r from-white/5 to-white/2 backdrop-blur-lg border-b border-white/10 shadow-xl relative z-10" role="navigation" aria-label="Dashboard navigation">
         <div className="container-responsive">
-          <div className="flex space-x-1 sm:space-x-2 overflow-x-auto scrollbar-hide py-2 sm:py-3" role="tablist">
+          <div className="flex justify-center space-x-1 sm:space-x-2 overflow-x-auto scrollbar-hide py-1.5 sm:py-2" role="tablist">
             {tabs.map((tab, index) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -328,7 +334,7 @@ const Dashboard: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.05 }}
-                  className={`flex items-center justify-center lg:justify-start px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 lg:py-4 text-xs sm:text-sm font-bold rounded-xl sm:rounded-2xl transition-all duration-300 whitespace-nowrap min-w-0 shadow-lg touch-target relative overflow-hidden ${
+                  className={`flex items-center justify-center md:justify-start px-1.5 sm:px-2 md:px-2.5 lg:px-5 py-1 sm:py-1.5 md:py-1.5 lg:py-3 text-[10px] md:text-[10px] lg:text-sm font-bold rounded-lg sm:rounded-xl transition-all duration-300 whitespace-nowrap min-w-0 shadow-lg touch-target relative overflow-hidden ${
                     isActive
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-500/30 border border-white/20'
                       : 'bg-white/10 text-white/70 hover:text-white hover:bg-white/20 border border-white/10 hover:border-white/20'
@@ -342,24 +348,24 @@ const Dashboard: React.FC = () => {
                   {/* Active tab glow effect */}
                   {isActive && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-xl"
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 rounded-lg"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     />
                   )}
                   
-                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-5 lg:h-5 flex-shrink-0 lg:mr-2 relative z-10 ${
+                  <Icon className={`w-3 h-3 sm:w-4 sm:h-4 md:w-3.5 md:h-3.5 lg:w-5 lg:h-5 flex-shrink-0 md:mr-1.5 relative z-10 ${
                     isActive ? 'drop-shadow-lg' : ''
                   }`} />
                   
-                  {/* Show text only on desktop (lg and up) */}
-                  <span className="hidden lg:inline relative z-10">{tab.label}</span>
+                  {/* Show text on tablet (md) and up */}
+                  <span className="hidden md:inline relative z-10">{tab.label}</span>
                   
                   {/* Hover effect */}
                   {!isActive && (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-300"
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300"
                     />
                   )}
                 </motion.button>
@@ -370,7 +376,7 @@ const Dashboard: React.FC = () => {
       </nav>
 
       {/* Main Content - Full Width & Height */}
-      <main className="flex-1 overflow-y-auto custom-scrollbar" role="main" aria-label="Dashboard content">
+      <main className="flex-1 overflow-y-auto custom-scrollbar pb-16 md:pb-0" role="main" aria-label="Dashboard content">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, y: 20 }}
@@ -389,6 +395,54 @@ const Dashboard: React.FC = () => {
           </Suspense>
         </motion.div>
       </main>
+
+      {/* Bottom Navigation - Mobile Only (Hidden on tablet+) */}
+      <nav className="block md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-900/95 to-emerald-900/95 backdrop-blur-xl border-t border-white/20 shadow-2xl z-20" role="navigation" aria-label="Mobile navigation">
+        <div className="px-1 py-2">
+          <div className="flex justify-around items-center">
+            {tabs.map((tab, index) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              
+              return (
+                <motion.button
+                  key={tab.id}
+                  onClick={() => handleTabNavigation(tab.id)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.05 }}
+                  className={`flex items-center justify-center p-2 rounded-lg transition-all duration-300 min-w-0 relative overflow-hidden ${
+                    isActive
+                      ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400'
+                      : 'text-white/60 hover:text-white hover:bg-white/10'
+                  }`}
+                  aria-label={`Switch to ${tab.label} tab`}
+                  aria-current={isActive ? 'page' : undefined}
+                  role="tab"
+                  tabIndex={0}
+                  title={tab.label}
+                >
+                  {/* Active indicator */}
+                  {isActive && (
+                    <motion.div
+                      className="absolute top-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full"
+                      initial={{ opacity: 0, scaleX: 0 }}
+                      animate={{ opacity: 1, scaleX: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                  
+                  <Icon className={`w-5 h-5 ${
+                    isActive ? 'drop-shadow-lg' : ''
+                  }`} />
+                </motion.button>
+              )
+            })}
+          </div>
+        </div>
+      </nav>
 
       {/* User Preferences Modal */}
       {showPreferences && (

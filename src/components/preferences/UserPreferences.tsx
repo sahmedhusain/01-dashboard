@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Settings, Palette, Save, RotateCcw, RefreshCw, Database, GripVertical, ArrowUp, ArrowDown, Download, FileText, BarChart3, Users, Calendar, Activity, Target, CheckCircle, Award, TrendingUp, Lock } from 'lucide-react'
+import { Settings, Palette, Save, RotateCcw, RefreshCw, Database, GripVertical, ArrowUp, ArrowDown, Download, FileText, BarChart3, Users, Calendar, Activity, Target, CheckCircle, Award, Lock } from 'lucide-react'
 import { useQuery, useLazyQuery, gql } from '@apollo/client'
 import { useUser } from '../../contexts/UserContext'
 import { useTheme, Theme } from '../../contexts/ThemeContext'
@@ -168,8 +168,6 @@ const defaultPreferences: Preferences = {
 }
 
 type ExportDataType = 'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'
-type ExportFormat = 'json' | 'csv' | 'txt'
-type ExportStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const encryptData = (data: string, password: string): string => {
   
@@ -221,7 +219,7 @@ const createProtectedContent = (content: string, password: string, format: strin
 const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defaultTabs = [] }) => {
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences)
   const [hasChanges, setHasChanges] = useState(false)
-  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data' | 'export'>('dashboard')
+  const [activeSection, setActiveSection] = useState<'appearance' | 'dashboard' | 'data' | 'export'>('appearance')
   const [exportStatus, setExportStatus] = useState<{ [key: string]: 'idle' | 'loading' | 'success' | 'error' }>({})
   const [selectedDataType, setSelectedDataType] = useState<'users' | 'objects' | 'events' | 'groups' | 'transactions' | 'progress' | 'audits' | 'results' | 'all'>('users')
   const [selectedFormat, setSelectedFormat] = useState<'json' | 'csv' | 'txt'>('json')
@@ -229,7 +227,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
 
   
   const { user: currentUser } = useUser()
-  const { theme, setTheme, toggleTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   
   useEffect(() => {
@@ -262,7 +260,7 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
     setPreferences(prev => ({
       ...prev,
       [section]: {
-        ...(prev[section] as Record<string, unknown>),
+        ...(prev[section]),
         [key]: value
       }
     }))
@@ -445,117 +443,241 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
   }
 
   const sections = [
-    //    { id: 'appearance' as const, label: 'Appearance', icon: Palette },
+    { id: 'appearance' as const, label: 'Appearance', icon: Palette },
     { id: 'dashboard' as const, label: 'Dashboard', icon: Settings },
     { id: 'data' as const, label: 'Data Refresh', icon: Database },
     { id: 'export' as const, label: 'Data Export', icon: Download }
   ]
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+      className="fixed inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+        initial={{ opacity: 0, scale: 0.85, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.85, y: 20 }}
+        transition={{ 
+          duration: 0.3, 
+          ease: [0.16, 1, 0.3, 1],
+          staggerChildren: 0.05
+        }}
+        className="bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden"
+        style={{
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        }}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-white">User Preferences</h2>
-              <p className="text-white/60 mt-1">Customize your dashboard experience</p>
-            </div>
-            <div className="flex items-center space-x-3">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+          className="p-8 border-b border-gradient-to-r from-transparent via-white/10 to-transparent relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+          <div className="relative flex items-center justify-between">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15, duration: 0.4 }}
+            >
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent mb-2">
+                User Preferences
+              </h2>
+              <p className="text-white/60 text-sm font-medium tracking-wide">Customize your dashboard experience and data settings</p>
+            </motion.div>
+            <div className="flex items-center space-x-4">
               {hasChanges && (
                 <motion.button
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, x: 20 }}
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
                   onClick={savePreferences}
-                  className="flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+                  className="flex items-center px-6 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Save Changes
                 </motion.button>
               )}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ duration: 0.2 }}
                 onClick={onClose}
-                className="text-white/60 hover:text-white transition-colors"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-300 backdrop-blur-sm border border-white/10"
               >
-                ✕
-              </button>
+                <span className="text-lg font-light">✕</span>
+              </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="flex h-[600px]">
           {/* Sidebar */}
-          <div className="w-64 bg-gray-900/50 border-r border-gray-700 p-4">
-            <nav className="space-y-2">
-              {sections.map((section) => {
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="w-64 bg-gradient-to-b from-gray-900/60 to-gray-900/40 backdrop-blur-sm border-r border-white/10 p-6"
+          >
+            <nav className="space-y-3">
+              {sections.map((section, index) => {
                 const Icon = section.icon
                 const isActive = activeSection === section.id
                 
                 return (
-                  <button
+                  <motion.button
                     key={section.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.25 + (index * 0.05), duration: 0.3 }}
                     onClick={() => setActiveSection(section.id)}
-                    className={`w-full flex items-center px-3 py-2 rounded-lg text-left transition-colors ${
+                    whileHover={{ x: 4, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full flex items-center px-4 py-3.5 rounded-xl text-left transition-all duration-300 relative overflow-hidden group ${
                       isActive
-                        ? 'bg-primary-600 text-white'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                        ? 'bg-gradient-to-r from-primary-500/20 to-primary-600/10 text-white shadow-lg border border-primary-500/30'
+                        : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10'
                     }`}
                   >
-                    <Icon className="w-5 h-5 mr-3" />
-                    {section.label}
-                  </button>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-xl"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <div className="relative z-10 flex items-center">
+                      <Icon className={`w-5 h-5 mr-3 transition-all duration-300 ${
+                        isActive 
+                          ? 'text-primary-300 scale-110' 
+                          : 'text-white/60 group-hover:text-white group-hover:scale-105'
+                      }`} />
+                      <span className="font-medium text-sm">{section.label}</span>
+                    </div>
+                    {isActive && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary-400 rounded-full shadow-lg shadow-primary-400/50"
+                      />
+                    )}
+                  </motion.button>
                 )
               })}
             </nav>
 
-            <div className="mt-8 pt-4 border-t border-gray-700">
-              <button
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+              className="mt-8 pt-6 border-t border-white/10"
+            >
+              <motion.button
+                whileHover={{ x: 4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={resetPreferences}
-                className="w-full flex items-center px-3 py-2 text-white/60 hover:text-white transition-colors"
+                className="w-full flex items-center px-4 py-3 text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 border border-transparent hover:border-white/10 group"
               >
-                <RotateCcw className="w-4 h-4 mr-3" />
-                Reset to Defaults
-              </button>
-            </div>
-          </div>
+                <RotateCcw className="w-4 h-4 mr-3 text-white/40 group-hover:text-white/70 group-hover:rotate-12 transition-all duration-300" />
+                <span className="font-medium text-sm">Reset to Defaults</span>
+              </motion.button>
+            </motion.div>
+          </motion.div>
 
           {/* Content */}
-          <div className="flex-1 p-6 overflow-y-auto">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="flex-1 p-8 overflow-y-auto"
+          >
             {activeSection === 'appearance' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white">Appearance Settings</h3>
+              <motion.div 
+                key="appearance"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                >
+                  <h3 className="text-2xl font-bold text-white mb-2">Appearance Settings</h3>
+                  <p className="text-white/60 text-sm">Customize the visual theme of your dashboard</p>
+                </motion.div>
                 
-                <Card className="p-4">
-                  <label className="block text-white font-medium mb-3">Theme</label>
-                  <div className="space-y-2">
-                    {(['dark', 'light', 'auto'] as const).map((themeOption) => (
-                      <label key={themeOption} className="flex items-center">
-                        <input
-                          type="radio"
-                          name="theme"
-                          value={themeOption}
-                          checked={theme === themeOption}
-                          onChange={(e) => setTheme(e.target.value as Theme)}
-                          className="mr-3"
-                        />
-                        <span className="text-white/80 capitalize">{themeOption}</span>
-                      </label>
-                    ))}
-                  </div>
-                </Card>
-              </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.3 }}
+                >
+                  <Card className="p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
+                    <label className="block text-white font-semibold mb-4">Theme Selection</label>
+                    <div className="space-y-3">
+                      {(['dark', 'light', 'auto'] as const).map((themeOption, index) => (
+                        <motion.label 
+                          key={themeOption} 
+                          className="flex items-center p-3 rounded-lg hover:bg-white/5 transition-all duration-200 cursor-pointer group"
+                          whileHover={{ x: 4 }}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3 + (index * 0.1), duration: 0.3 }}
+                        >
+                          <input
+                            type="radio"
+                            name="theme"
+                            value={themeOption}
+                            checked={theme === themeOption}
+                            onChange={(e) => setTheme(e.target.value as Theme)}
+                            className="mr-4 w-4 h-4 text-primary-500 bg-gray-700 border-gray-600 focus:ring-primary-500 focus:ring-2"
+                          />
+                          <span className="text-white/80 capitalize font-medium group-hover:text-white transition-colors duration-200">
+                            {themeOption}
+                          </span>
+                          {theme === themeOption && (
+                            <motion.div
+                              layoutId="themeIndicator"
+                              className="ml-auto w-2 h-2 bg-primary-400 rounded-full shadow-lg shadow-primary-400/50"
+                            />
+                          )}
+                        </motion.label>
+                      ))}
+                    </div>
+                  </Card>
+                </motion.div>
+              </motion.div>
             )}
 
 
 
             {activeSection === 'dashboard' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white">Dashboard Settings</h3>
+              <motion.div 
+                key="dashboard"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                >
+                  <h3 className="text-2xl font-bold text-white mb-2">Dashboard Settings</h3>
+                  <p className="text-white/60 text-sm">Configure your dashboard layout and default views</p>
+                </motion.div>
                 
                 <Card className="p-4">
                   <div className="space-y-4">
@@ -633,12 +755,26 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                     })}
                   </div>
                 </Card>
-              </div>
+              </motion.div>
             )}
 
             {activeSection === 'data' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white">Data Refresh Settings</h3>
+              <motion.div 
+                key="data"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                >
+                  <h3 className="text-2xl font-bold text-white mb-2">Data Refresh Settings</h3>
+                  <p className="text-white/60 text-sm">Manage data synchronization and caching options</p>
+                </motion.div>
 
                 <div className="bg-white/5 rounded-lg p-4 border border-white/10">
                   <p className="text-white/70 text-sm mb-4">
@@ -646,13 +782,26 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                   </p>
                   <RefreshControl showStats={true} showAutoRefreshToggle={true} />
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {activeSection === 'export' && (
-              <div className="space-y-6">
-                <h3 className="text-xl font-semibold text-white">Data Export</h3>
-                <p className="text-white/60">Export comprehensive data from the platform in various formats</p>
+              <motion.div 
+                key="export"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                >
+                  <h3 className="text-2xl font-bold text-white mb-2">Data Export</h3>
+                  <p className="text-white/60 text-sm">Export comprehensive data from the platform in various formats</p>
+                </motion.div>
 
                 {/* Export Statistics */}
                 {statsData && (
@@ -743,33 +892,52 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                     <div className="text-sm text-white/60">
                       {selectedDataType === 'all' ? 'Export all data types' : `Export ${selectedDataType} data`} as {selectedFormat.toLowerCase()}
                     </div>
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02, y: -1 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => performExport(selectedDataType)}
                       disabled={exportStatus[`${selectedDataType}-${selectedFormat}`] === 'loading' || !currentUser?.login}
-                      className="flex items-center space-x-2 px-6 py-2 bg-primary-500 hover:bg-primary-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                      className="flex items-center space-x-3 px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
                       title={!currentUser?.login ? 'Export disabled: User login not available for password protection' : 'Export data with password protection'}
                     >
                       {exportStatus[`${selectedDataType}-${selectedFormat}`] === 'loading' ? (
                         <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          >
+                            <RefreshCw className="w-5 h-5" />
+                          </motion.div>
                           <span>Exporting...</span>
                         </>
                       ) : exportStatus[`${selectedDataType}-${selectedFormat}`] === 'success' ? (
                         <>
-                          <CheckCircle className="w-4 h-4" />
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", bounce: 0.5 }}
+                          >
+                            <CheckCircle className="w-5 h-5 text-green-300" />
+                          </motion.div>
                           <span>Downloaded!</span>
                         </>
                       ) : exportStatus[`${selectedDataType}-${selectedFormat}`] === 'error' ? (
                         <>
-                          <span className="text-red-300">Export Failed</span>
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", bounce: 0.5 }}
+                          >
+                            <span className="text-red-300">Export Failed</span>
+                          </motion.div>
                         </>
                       ) : (
                         <>
-                          <Lock className="w-4 h-4" />
+                          <Lock className="w-5 h-5" />
                           <span>Export Secured</span>
                         </>
                       )}
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
 
@@ -808,12 +976,12 @@ const UserPreferences: React.FC<UserPreferencesProps> = ({ userId, onClose, defa
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
 

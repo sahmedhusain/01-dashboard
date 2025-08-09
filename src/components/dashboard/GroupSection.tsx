@@ -336,13 +336,15 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   const extractProjectName = (path: string): string => {
     if (!path) return '';
     
-    
-    
-    
     const pathParts = path.split('/');
     const projectName = pathParts[pathParts.length - 1] || '';
     
-    return projectName.replace(/-/g, ' '); 
+    // Replace hyphens with spaces and capitalize each word
+    return projectName
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   
@@ -794,7 +796,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                   </div>
                   <div>
                     <span className={`font-semibold text-lg ${userGroup && selectedView === 'all' ? 'text-emerald-100' : 'text-white'}`}>
-                      #{extractProjectName(group.path)}
+                      {extractProjectName(group.path)}
                     </span>
                   </div>
                 </div>

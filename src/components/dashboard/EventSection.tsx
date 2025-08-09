@@ -127,7 +127,16 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const extractEventName = (path: string) => {
     if (!path) return 'Unknown Event';
     const parts = path.split('/').filter(part => part);
-    return parts[parts.length - 1] || 'Unknown Event';
+    const eventName = parts[parts.length - 1] || '';
+    
+    if (!eventName) return 'Unknown Event';
+    
+    // Replace hyphens with spaces and capitalize each word
+    return eventName
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   const extractModuleName = (path: string) => {
@@ -493,12 +502,20 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
 
                 {event.endAt && (
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-cyan-500/30 to-emerald-500/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-cyan-400/20">
-                      <Clock className="w-4 h-4 text-cyan-400" />
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center backdrop-blur-sm border ${
+                      isEventActive(event.endAt) 
+                        ? 'bg-gradient-to-r from-cyan-500/30 to-emerald-500/30 border-cyan-400/20'
+                        : 'bg-gradient-to-r from-red-500/30 to-red-600/30 border-red-400/20'
+                    }`}>
+                      <Clock className={`w-4 h-4 ${
+                        isEventActive(event.endAt) ? 'text-cyan-400' : 'text-red-400'
+                      }`} />
                     </div>
                     <div>
                       <div className="text-white font-medium">{formatDateTime(event.endAt)}</div>
-                      <div className="text-slate-400 text-sm">Ends</div>
+                      <div className="text-slate-400 text-sm">
+                        {isEventActive(event.endAt) ? 'Ends' : 'Ended'}
+                      </div>
                     </div>
                   </div>
                 )}

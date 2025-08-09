@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Book, Search, Code, FileText, ExternalLink, Target, Users, Star, Folder, ChevronRight, Zap } from 'lucide-react';
+import { Book, Search, Code, FileText, ExternalLink, Target, Users, Star, Folder, FolderOpen, ChevronRight, ChevronDown, Zap, Layers, Award } from 'lucide-react';
 import { useQuery, gql } from '@apollo/client';
 import { marked } from 'marked';
 import LoadingSpinner from '../../ui/LoadingSpinner';
@@ -854,7 +854,7 @@ You can try accessing the project directly:
         .split('/')
         .filter(Boolean)
         .slice(0, -1) // Remove the project name itself from path
-        .join(' › ')
+        .join(' / ')
     }));
   }, [filteredProjects, searchTerm, languageFilter, difficultyFilter, typeFilter]);
 
@@ -940,7 +940,11 @@ You can try accessing the project directly:
     const isSelected = selectedProject?.path === node.path;
 
     return (
-      <div className="select-none">
+      <motion.div 
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="select-none"
+      >
         <motion.div
           whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
           className={`flex items-center py-2 px-3 rounded-xl cursor-pointer transition-all duration-300 ${
@@ -1011,7 +1015,7 @@ You can try accessing the project directly:
               ))}
           </motion.div>
         )}
-      </div>
+      </motion.div>
     );
   };
 
@@ -1019,7 +1023,11 @@ You can try accessing the project directly:
     const isSelected = selectedProject?.path === project.path;
 
     return (
-      <div className="select-none">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="select-none"
+      >
         <motion.div
           whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
           className={`flex items-center py-3 px-3 rounded-xl cursor-pointer transition-all duration-300 ${
@@ -1060,7 +1068,7 @@ You can try accessing the project directly:
             )}
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -1387,7 +1395,11 @@ You can try accessing the project directly:
                         ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center py-12"
+                    >
                       <div className="w-16 h-16 bg-gradient-to-br from-gray-500/20 to-gray-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Search className="w-8 h-8 text-gray-400" />
                       </div>
@@ -1403,7 +1415,7 @@ You can try accessing the project directly:
                       >
                         Clear All Filters
                       </motion.button>
-                    </div>
+                    </motion.div>
                   )
                 ) : (
                   /* Show tree view when no filters are active */
@@ -1424,7 +1436,11 @@ You can try accessing the project directly:
                         ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center py-12"
+                    >
                       <div className="w-16 h-16 bg-gradient-to-br from-gray-500/20 to-gray-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Folder className="w-8 h-8 text-gray-400" />
                       </div>
@@ -1432,7 +1448,7 @@ You can try accessing the project directly:
                       <p className="text-white/50 text-sm">
                         Loading subjects or no subjects found in the repository.
                       </p>
-                    </div>
+                    </motion.div>
                   )
                 )}
               </div>

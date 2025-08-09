@@ -231,12 +231,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 flex flex-col relative overflow-hidden">
-      {/* Animated Background */}
+      {/* Animated Background - Optimized for mobile */}
       <div className="fixed inset-0 opacity-30 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5"></div>
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 40px 40px, rgba(52, 211, 153, 0.1) 2px, transparent 0)`,
-          backgroundSize: '80px 80px'
+          backgroundSize: window.innerWidth < 640 ? '60px 60px' : '80px 80px' // Smaller pattern on mobile
         }}></div>
       </div>
 
@@ -246,9 +246,9 @@ const Dashboard: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/3 via-transparent to-teal-500/3"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
         <div className="container-responsive">
-          <div className="flex items-center justify-between min-h-[2.5rem] sm:min-h-[3rem] lg:min-h-[3.5rem] px-3 py-1 sm:py-1.5 lg:py-2">
-            {/* Enhanced Logo/Title */}
-            <div className="flex items-center min-w-0 flex-1">
+          <div className="flex items-center justify-between min-h-[3rem] sm:min-h-[3.5rem] lg:min-h-[4rem] px-2 sm:px-4 py-2 sm:py-2.5 lg:py-3">
+            {/* Enhanced Logo/Title - Better mobile spacing */}
+            <div className="flex items-center min-w-0 flex-1 mr-3 sm:mr-4">
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -376,8 +376,8 @@ const Dashboard: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main Content - Full Width & Height */}
-      <main className="flex-1 overflow-y-auto custom-scrollbar pb-16 md:pb-0" role="main" aria-label="Dashboard content">
+      {/* Main Content - Full Width & Height with better mobile spacing */}
+      <main className="flex-1 overflow-y-auto custom-scrollbar pb-20 md:pb-4 lg:pb-0" role="main" aria-label="Dashboard content">
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, y: 20 }}
@@ -398,9 +398,9 @@ const Dashboard: React.FC = () => {
       </main>
 
       {/* Bottom Navigation - Mobile Only (Hidden on tablet+) */}
-      <nav className="block md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-900/95 to-emerald-900/95 backdrop-blur-xl border-t border-white/20 shadow-2xl z-20" role="navigation" aria-label="Mobile navigation">
-        <div className="px-1 py-2">
-          <div className="flex justify-around items-center">
+      <nav className="block md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-900/98 to-emerald-900/98 backdrop-blur-xl border-t border-white/20 shadow-2xl z-20 safe-bottom" role="navigation" aria-label="Mobile navigation">
+        <div className="px-2 py-3 pb-safe">
+          <div className="flex justify-around items-center max-w-md mx-auto">
             {tabs.map((tab, index) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -410,14 +410,14 @@ const Dashboard: React.FC = () => {
                   key={tab.id}
                   onClick={() => handleTabNavigation(tab.id)}
                   whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.95, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + index * 0.05 }}
-                  className={`flex items-center justify-center p-2 rounded-lg transition-all duration-300 min-w-0 relative overflow-hidden ${
+                  className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-300 min-w-[50px] min-h-[52px] relative overflow-hidden touch-target ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400'
-                      : 'text-white/60 hover:text-white hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/25 text-emerald-300 shadow-lg'
+                      : 'text-white/60 hover:text-white hover:bg-white/10 active:bg-white/15'
                   }`}
                   aria-label={`Switch to ${tab.label} tab`}
                   aria-current={isActive ? 'page' : undefined}
@@ -435,9 +435,14 @@ const Dashboard: React.FC = () => {
                     />
                   )}
                   
-                  <Icon className={`w-5 h-5 ${
+                  <Icon className={`w-5 h-5 mb-1 ${
                     isActive ? 'drop-shadow-lg' : ''
                   }`} />
+                  <span className={`text-xs font-medium leading-tight ${
+                    isActive ? 'text-emerald-300' : 'text-white/50'
+                  }`}>
+                    {tab.label.length > 8 ? tab.label.substring(0, 7) + '...' : tab.label}
+                  </span>
                 </motion.button>
               )
             })}

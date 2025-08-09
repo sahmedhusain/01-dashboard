@@ -334,11 +334,12 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           {/* Axis Labels */}
           {/* Y-axis label (XP) */}
           <text
-            x={8}
-            y={height / 2 - 20}
+            x={60}
+            y={height / 2- 60}
             textAnchor="middle"
             className="fill-white/70 text-xs font-medium"
             transform={`rotate(-90 8 ${height / 2})`}
+            style={{ transform: `rotate(-90deg)`, transformOrigin: `40px ${height / 2}px` }}
           >
             XP Points
           </text>
@@ -1177,6 +1178,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             textAnchor="middle"
             className="fill-white/50 text-[10px] font-normal"
             transform={`rotate(-90 15 ${height / 2})`}
+            style={{ transform: `rotate(-90deg)`, transformOrigin: `15px ${height / 2}px` }}
           >
             Audit Count
           </text>
@@ -1207,39 +1209,39 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   }
 
   return (
-    <div className="space-y-6 px-2 md:px-8 xl:px-24">
+    <div className="space-y-4 sm:space-y-6 px-3 sm:px-4 md:px-6 lg:px-8 xl:px-16 2xl:px-24 pb-4 sm:pb-6">
       {/* Analytics Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={defaultTransition}
-        className="relative text-center py-10 mb-8"
+        className="relative text-center py-6 sm:py-8 lg:py-10 mb-4 sm:mb-6 lg:mb-8"
       >
         {/* Animated background glow */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="w-full h-full bg-gradient-to-br from-emerald-500/10 via-blue-500/10 to-purple-500/10 blur-2xl animate-pulse opacity-80"></div>
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">
           Visual Data Analytics
         </h2>
-        <p className="text-white/70">
+        <p className="text-sm sm:text-base text-white/70 px-4 sm:px-6 lg:px-0">
           Interactive charts and graphs showing your learning progression
         </p>
       </motion.div>
 
       {/* XP Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* XP Progression Over Time - SVG Graph 1 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...defaultTransition, delay: 0.1 }}
-          className="lg:col-span-2 relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border-2 border-blue-500/30 hover:scale-[1.01] hover:shadow-blue-400/30 transition-all duration-300 flex flex-col justify-between"
+          className="lg:col-span-2 relative bg-white/10 backdrop-blur-xl shadow-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border-2 border-blue-500/30 hover:scale-[1.01] hover:shadow-blue-400/30 transition-all duration-300 flex flex-col justify-between"
         >
           <div className="flex items-center gap-3 mb-2">
             <div className="w-2 h-8 rounded bg-blue-400 shadow-lg"></div>
-            <h3 className="text-2xl font-extrabold text-blue-300 tracking-tight flex items-center gap-2">
-              <TrendingUp className="w-7 h-7 text-blue-400" />
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-extrabold text-blue-300 tracking-tight flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-blue-400" />
               XP Progression Over Time
             </h3>
           </div>
@@ -1255,12 +1257,12 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               ].map(opt => (
                 <button
                   key={opt.value}
-                  className={`px-2 py-1 rounded-full text-xs font-semibold transition-all shadow-sm border ${
+                  className={`px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-sm border touch-target ${
                     xpRange === opt.value
                       ? "bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-500 text-white border-blue-400 scale-105"
-                      : "bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20"
+                      : "bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20 active:bg-blue-500/30"
                   }`}
-                  style={{ minWidth: 80 }}
+                  style={{ minWidth: '80px' }}
                   onClick={() => setXpRange(opt.value)}
                 >
                   {opt.label}
@@ -1404,10 +1406,10 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               ].map(opt => (
                 <button
                   key={opt.value}
-                  className={`px-2 py-1 rounded-full text-xs font-semibold transition-all shadow-sm border ${
+                  className={`px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all shadow-sm border touch-target ${
                     auditRange === opt.value
                       ? 'bg-gradient-to-r from-teal-500 via-teal-400 to-cyan-500 text-white border-teal-400 scale-105'
-                      : 'bg-white/10 text-white/70 border-white/10 hover:bg-teal-500/20'
+                      : 'bg-white/10 text-white/70 border-white/10 hover:bg-teal-500/20 active:bg-teal-500/30'
                   }`}
                   onClick={() => setAuditRange(opt.value)}
                 >
@@ -2064,24 +2066,24 @@ const LeaderboardChart: React.FC<{
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setDistributionType('level')}
-          className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all flex items-center gap-1 ${
+          className={`px-4 py-2.5 rounded-full text-xs sm:text-sm font-semibold shadow-sm border transition-all flex items-center gap-2 touch-target ${
             distributionType === 'level' 
               ? 'bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-500 text-white border-blue-400 scale-105' 
-              : 'bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20'
+              : 'bg-white/10 text-white/70 border-white/10 hover:bg-blue-500/20 active:bg-blue-500/30'
           }`}
-          style={{ minWidth: 80 }}
+          style={{ minWidth: '90px' }}
         >
           <TrendingUp className="w-3 h-3" />
           Level
         </button>
         <button
           onClick={() => setDistributionType('audit')}
-          className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border transition-all flex items-center gap-1 ${
+          className={`px-4 py-2.5 rounded-full text-xs sm:text-sm font-semibold shadow-sm border transition-all flex items-center gap-2 touch-target ${
             distributionType === 'audit' 
               ? 'bg-gradient-to-r from-green-500 via-emerald-400 to-teal-500 text-white border-green-400 scale-105' 
-              : 'bg-white/10 text-white/70 border-white/10 hover:bg-green-500/20'
+              : 'bg-white/10 text-white/70 border-white/10 hover:bg-green-500/20 active:bg-green-500/30'
           }`}
-          style={{ minWidth: 80 }}
+          style={{ minWidth: '110px' }}
         >
           <Target className="w-3 h-3" />
           Audit Ratio
@@ -2115,10 +2117,10 @@ const LeaderboardChart: React.FC<{
       </div>
 
       {/* Chart - Force Centered */}
-      <div className="w-full h-full min-h-[320px] flex items-center justify-center overflow-visible relative">
-        <div className="w-full max-w-full flex justify-center items-center">
-          <div className="w-full md:w-[90vw] lg:w-[700px]">
-            <svg viewBox="0 0 700 520" className="w-full h-[320px] md:h-[420px] lg:h-[520px] drop-shadow-lg overflow-visible" style={{ display: "block", margin: "0 auto" }}>
+      <div className="w-full h-full min-h-[280px] sm:min-h-[320px] lg:min-h-[380px] flex items-center justify-center overflow-visible relative">
+        <div className="w-full max-w-full flex justify-center items-center px-2 sm:px-4">
+          <div className="w-full max-w-full sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[700px]">
+            <svg viewBox="0 0 700 520" className="w-full h-[280px] sm:h-[320px] md:h-[380px] lg:h-[420px] xl:h-[480px] drop-shadow-lg overflow-visible" style={{ display: "block", margin: "0 auto" }}>
           {/* Grid Lines */}
           {distributionData.length > 0 && [0, 1, 2, 3, 4].map(i => {
             const maxCount = Math.max(...distributionData.map(d => d.count), 1)
@@ -2227,6 +2229,7 @@ const LeaderboardChart: React.FC<{
             fill="#94a3b8"
             fontWeight="600"
             transform="rotate(-90 40 260)"
+            style={{ transform: `rotate(-90deg)`, transformOrigin: `40px 260px` }}
           >
             Users
           </text>

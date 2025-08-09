@@ -170,7 +170,14 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   const extractProjectName = (path: string): string => {
     if (!path) return '';
     const parts = path.split('/');
-    return parts[parts.length - 1] || '';
+    const projectName = parts[parts.length - 1] || '';
+    
+    // Replace hyphens with spaces and capitalize each word
+    return projectName
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   const getAuditorName = (audit: EnrichedAudit): string => {
@@ -592,7 +599,16 @@ const AuditCard = ({ audit, index }: { audit: EnrichedAudit, index: number }) =>
   const extractProjectName = (path: string) => {
     if (!path) return 'Unknown Project';
     const parts = path.split('/');
-    return parts[parts.length - 1] || 'Unknown Project';
+    const projectName = parts[parts.length - 1] || '';
+    
+    if (!projectName) return 'Unknown Project';
+    
+    // Replace hyphens with spaces and capitalize each word
+    return projectName
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   const getDetailsLabel = () => {

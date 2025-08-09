@@ -130,6 +130,24 @@ interface TreeNode {
   project: Project | null;
 }
 
+let subjectsPathsCache: string[] | null = null;
+async function fetchAllSubjectsPaths(): Promise<string[]> {
+  if (subjectsPathsCache) return subjectsPathsCache;
+  // Get the latest commit SHA for master
+  const branchRes = await fetch("https://api.github.com/repos/01-edu/public/branches/master");
+  if (!branchRes.ok) return [];
+  const branchData = await branchRes.json();
+  const sha = branchData.commit && branchData.commit.sha;
+  if (!sha) return [];
+  // Get the full tree recursively
+  const treeRes = await fetch(`https://api.github.com/repos/01-edu/public/git/trees/${sha}?recursive=1`);
+  if (!treeRes.ok) return [];
+  const treeData = await treeRes.json();
+  const allPaths = (treeData.tree || []).map((item: any) => item.path).filter((p: string) => p.startsWith("subjects/"));
+  subjectsPathsCache = allPaths;
+  return allPaths;
+}
+
 const SubjectsSection: React.FC = () => {
 
 
@@ -210,6 +228,7 @@ const SubjectsSection: React.FC = () => {
     }
     
     if (Object.keys(hierarchy).length === 0) {
+      // Static fallback mappings
       const fallbackMappings = {
         'color': 'ascii-art/color',
         'output': 'ascii-art/output',
@@ -236,7 +255,45 @@ const SubjectsSection: React.FC = () => {
         'job-control': '0-shell/job-control',
         'scripting': '0-shell/scripting'
       };
-      Object.assign(hierarchy, fallbackMappings);
+
+      // Dynamically add all subfolder paths under subjects/
+      // This is async, so we must use a cached value if available
+      if (typeof window !== "undefined") {
+        // @ts-ignore
+        if (!window.__subjectsSubfolderMappings) {
+          // Fetch and cache all subfolder mappings
+          fetchAllSubjectsPaths().then((allPaths) => {
+            const subfolders = new Set<string>();
+            allPaths.forEach((p: string) => {
+              const parts = p.split("/");
+              if (parts.length > 2) {
+                // Remove file name
+                const folderPath = parts.slice(1, -1).join("/");
+                if (folderPath) subfolders.add(folderPath);
+              }
+            });
+            // Map last segment to full path
+            const dynamicMappings: Record<string, string> = {};
+            subfolders.forEach((folderPath) => {
+              const segments = folderPath.split("/");
+              const last = segments[segments.length - 1];
+              if (last && !fallbackMappings[last]) {
+                dynamicMappings[last] = folderPath;
+              }
+            });
+            // @ts-ignore
+            window.__subjectsSubfolderMappings = dynamicMappings;
+            Object.assign(fallbackMappings, dynamicMappings);
+            Object.assign(hierarchy, fallbackMappings);
+          });
+        } else {
+          // @ts-ignore
+          Object.assign(fallbackMappings, window.__subjectsSubfolderMappings);
+          Object.assign(hierarchy, fallbackMappings);
+        }
+      } else {
+        Object.assign(hierarchy, fallbackMappings);
+      }
     }
     
     return hierarchy;
@@ -405,7 +462,40 @@ const SubjectsSection: React.FC = () => {
       }
       
       if (!markdownContent) {
-        throw new Error(`No ${fileName} found in any expected location for "${projectName}". Tried ${possiblePaths.length} URLs.`);
+        // Try searching the GitHub repo for the file in subjects/
+        const githubFilePath = await searchGithubSubjectsFile(fileName);
+        if (githubFilePath) {
+          const githubRawUrl = `https://raw.githubusercontent.com/01-edu/public/master/${githubFilePath}`;
+          try {
+            const response = await fetch(githubRawUrl);
+            if (response.ok) {
+              markdownContent = await response.text();
+              baseUrl = githubRawUrl.substring(0, githubRawUrl.lastIndexOf('/'));
+            }
+          } catch {
+            // ignore
+          }
+        }
+        // Fallback: fetch all subjects/ paths and search for the file
+        if (!markdownContent) {
+          const allSubjectsPaths = await fetchAllSubjectsPaths();
+          const match = allSubjectsPaths.find((p: string) => p.endsWith(`/${fileName}`));
+          if (match) {
+            const fallbackRawUrl = `https://raw.githubusercontent.com/01-edu/public/master/${match}`;
+            try {
+              const response = await fetch(fallbackRawUrl);
+              if (response.ok) {
+                markdownContent = await response.text();
+                baseUrl = fallbackRawUrl.substring(0, fallbackRawUrl.lastIndexOf('/'));
+              }
+            } catch {
+              // ignore
+            }
+          }
+        }
+        if (!markdownContent) {
+          throw new Error(`No ${fileName} found in any expected location for "${projectName}". Tried ${possiblePaths.length} URLs, GitHub search, and subjects/ directory fallback.`);
+        }
       }
 
       const processMarkdownAssets = (content: string, baseUrl: string): string => {
@@ -488,6 +578,28 @@ You can try accessing the project directly:
 
 **Error:** ${error instanceof Error ? error.message : String(error)}`;
     }
+
+    // Helper: Search GitHub API for file in subjects/ directory
+    async function searchGithubSubjectsFile(fileName: string): Promise<string | null> {
+      const repo = "01-edu/public";
+      const apiUrl = `https://api.github.com/search/code?q=repo:${repo}+path:subjects+filename:${fileName}`;
+      try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && data.items && data.items.length > 0) {
+          // Find the first file in subjects/ (including subfolders)
+          const item = data.items.find((it: any) => it.path && it.path.startsWith("subjects/"));
+          return item ? item.path : null;
+        }
+      } catch {
+        // ignore
+      }
+      return null;
+    }
+
+    // Helper: Fetch all file paths under subjects/ from the GitHub repo tree API (cached)
+    // (moved to top-level for global access)
   };
 
   const projects: Project[] = useMemo(() => {
@@ -579,6 +691,13 @@ You can try accessing the project directly:
     
     return allObjects
       .filter((obj: ProjectObject) => {
+        // Skip deprecated projects by displayedName or name
+        const displayName = typeof obj.attrs.displayedName === 'string' ? obj.attrs.displayedName : '';
+        const rawName = typeof obj.name === 'string' ? obj.name : '';
+        if (/^deprecated(-\d{4}-\d{2}-\d{2})?-?/i.test(displayName) || /^deprecated(-\d{4}-\d{2}-\d{2})?-?/i.test(rawName)) {
+          return false;
+        }
+
         if (obj.campus !== 'bahrain') {
           return false;
         }
@@ -783,11 +902,18 @@ You can try accessing the project directly:
       } else if (pathItem.path.includes('/bahrain/bh-piscine/')) {
         relevantParts = ['piscine-go', ...pathParts.slice(2)];
       }
-      
+
+      // Skip any project node if any part starts with deprecated-
+      if (
+        relevantParts.some(part => /^deprecated(-\d{4}-\d{2}-\d{2})?-?/i.test(part))
+      ) {
+        return;
+      }
+
       if (relevantParts.length === 0) return;
-      
+
       let current = tree;
-      
+
       for (let i = 0; i < relevantParts.length; i++) {
         const part = relevantParts[i];
         if (!current[part]) {
@@ -814,7 +940,16 @@ You can try accessing the project directly:
       const updatedNode = { ...node };
       
       if (updatedNode.isProject && updatedNode.path) {
-        updatedNode.project = projects.find(p => p.path === updatedNode.path) || null;
+        const nodeName = updatedNode.name;
+        const nodeNameNormalized = nodeName.replace(/[-_]/g, '').toLowerCase();
+        const lastSegment = updatedNode.path.split('/').pop() || nodeName;
+        updatedNode.project =
+          projects.find(p => p.path === updatedNode.path)
+          || projects.find(p => p.name === nodeName)
+          || projects.find(p => (p.name || '').replace(/[-_]/g, '').toLowerCase() === nodeNameNormalized)
+          || projects.find(p => p.name === lastSegment)
+          || projects.find(p => (p.name || '').replace(/[-_]/g, '').toLowerCase() === lastSegment.replace(/[-_]/g, '').toLowerCase())
+          || null;
       }
       
       const updatedChildren: Record<string, TreeNode> = {};
@@ -844,9 +979,18 @@ You can try accessing the project directly:
     
     // Get all projects that match the filters
     const matchingProjects = filteredProjects;
-    
+
+    // Deduplicate by unique path (or id if path missing)
+    const seen = new Set<string>();
+    const deduped = matchingProjects.filter(project => {
+      const key = project.path || project.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
     // Create a flattened list with path information
-    return matchingProjects.map(project => ({
+    return deduped.map(project => ({
       ...project,
       displayPath: project.path
         .replace('/bahrain/bh-module/', '')
@@ -953,7 +1097,16 @@ You can try accessing the project directly:
             if (hasChildren) {
               toggleFolder(node.flattenedPath || node.name);
             } else if (node.project) {
+              // Log the node and project for debugging
+              // eslint-disable-next-line no-console
+              console.log("TreeNode pressed:", {
+                node,
+                project: node.project
+              });
               handleProjectSelect(node.project);
+            } else {
+              // eslint-disable-next-line no-console
+              console.log("TreeNode pressed but no project found:", node);
             }
           }}
         >

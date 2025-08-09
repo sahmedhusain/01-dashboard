@@ -1767,12 +1767,12 @@ You can try accessing the project directly:
                         className="relative"
                       >
                         {/* Enhanced Scrollable Content */}
-                        <div className="overflow-y-auto custom-scrollbar pr-2 max-h-[70vh]">
+                        <div className="overflow-y-auto custom-scrollbar pr-2 max-h-[70vh] flex justify-center">
                           {/* Gradient fade at top and bottom */}
                           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white/10 to-transparent pointer-events-none z-10"></div>
                           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white/10 to-transparent pointer-events-none z-10"></div>
                           <div 
-                            className="prose prose-invert prose-sm max-w-none text-white/90 text-sm leading-relaxed markdown-content"
+                            className="prose prose-invert prose-sm max-w-screen-lg w-full text-white/90 text-sm leading-relaxed markdown-content"
                             style={{
                               '--tw-prose-body': 'rgb(255 255 255 / 0.9)',
                               '--tw-prose-headings': 'rgb(255 255 255)',

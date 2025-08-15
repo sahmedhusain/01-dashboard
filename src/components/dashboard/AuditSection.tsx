@@ -5,7 +5,7 @@ import { User, Audit, Group } from '../../types';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent, Activity, Eye, Star, TrendingUp } from 'lucide-react';
+import { Search, Filter, CheckCircle, XCircle, Clock, Users, Calendar, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Briefcase, UserCheck, ArrowUp, ArrowDown, Percent, Activity, Eye, Star, TrendingUp, Grid3X3, List, RotateCcw } from 'lucide-react';
 import { GET_USER_BY_PK } from '../../graphql/allQueries';
 import { formatXPValue, formatDate } from '../../utils/dataFormatting';
 
@@ -81,6 +81,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [view, setView] = useState('all');
+  const [viewMode, setViewMode] = useState<'boxes' | 'list'>('boxes');
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -165,6 +166,33 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
     : (auditData?.auditsReceived_aggregate.aggregate.count || 0);
 
   const totalPages = Math.ceil(totalAudits / itemsPerPage);
+
+  // Calculate pending and reassigned counts based on current view
+  const getAuditStatusCounts = () => {
+    const currentAudits = view === 'all' ? enrichedAudits : enrichedAudits.filter(a => a.type === view);
+    
+    const counts = currentAudits.reduce(
+      (acc, audit) => {
+        const isCompleted = audit.grade !== null;
+        if (!isCompleted) {
+          const twoWeeks = 14 * 24 * 60 * 60 * 1000;
+          const auditDate = new Date(audit.createdAt);
+          const now = new Date();
+          if (now.getTime() - auditDate.getTime() > twoWeeks) {
+            acc.reassigned += 1;
+          } else {
+            acc.pending += 1;
+          }
+        }
+        return acc;
+      },
+      { pending: 0, reassigned: 0 }
+    );
+
+    return counts;
+  };
+
+  const statusCounts = getAuditStatusCounts();
 
   
   const extractProjectName = (path: string): string => {
@@ -270,7 +298,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-8 gap-6"
           >
             <StatCard 
               icon={TrendingUp} 
@@ -320,6 +348,22 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
               color="bg-gradient-to-r from-emerald-500/30 to-teal-500/30"
               bgGradient="bg-gradient-to-br from-emerald-900/20 to-teal-900/20"
               subValue="Overall audit activity"
+            />
+            <StatCard 
+              icon={Clock} 
+              title="Pending Audits" 
+              value={`${statusCounts.pending}`} 
+              color="bg-gradient-to-r from-yellow-500/30 to-orange-500/30"
+              bgGradient="bg-gradient-to-br from-yellow-900/20 to-orange-900/20"
+              subValue={view === 'all' ? "Awaiting completion" : view === 'given' ? "You need to complete" : "Awaiting your review"}
+            />
+            <StatCard 
+              icon={RotateCcw} 
+              title="Re-assigned Audits" 
+              value={`${statusCounts.reassigned}`} 
+              color="bg-gradient-to-r from-indigo-500/30 to-blue-500/30"
+              bgGradient="bg-gradient-to-br from-indigo-900/20 to-blue-900/20"
+              subValue={view === 'all' ? "Overdue assignments" : view === 'given' ? "Your overdue reviews" : "Overdue reviews of you"}
             />
           </motion.div>
 
@@ -428,6 +472,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
             </div>
           </motion.div>
 
+
       {/* Enhanced Search and Filter Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -447,7 +492,7 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
           />
         </div>
 
-        {/* Filters */}
+        {/* Filters and View Toggle */}
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2">
             <Filter className="w-4 h-4 text-white/70" />
@@ -461,6 +506,30 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
               <option value="pending">Pending</option>
             </select>
           </div>
+          
+          {/* View Mode Toggle */}
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => setViewMode('boxes')}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                viewMode === 'boxes'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-transparent border-white/10 text-white/50 hover:text-white/70 hover:bg-white/5'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                viewMode === 'list'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-transparent border-white/10 text-white/50 hover:text-white/70 hover:bg-white/5'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </motion.div>
 
@@ -468,10 +537,13 @@ const AuditSection: React.FC<AuditSectionProps> = ({ user }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className={viewMode === 'boxes' 
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          : "space-y-4"
+        }
       >
         {filteredAudits.map((audit, index) => (
-          <AuditCard key={`${audit.id}-${audit.type}`} audit={audit} index={index} />
+          <AuditCard key={`${audit.id}-${audit.type}`} audit={audit} index={index} viewMode={viewMode} />
         ))}
       </motion.div>
 
@@ -572,7 +644,7 @@ const StatCard = ({ icon: Icon, title, value, color, subValue, trend, bgGradient
   </motion.div>
 );
 
-const AuditCard = ({ audit, index }: { audit: EnrichedAudit, index: number }) => {
+const AuditCard = ({ audit, index, viewMode = 'boxes' }: { audit: EnrichedAudit, index: number, viewMode?: 'boxes' | 'list' }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isCompleted = audit.grade !== null;
   const isSuccess = isCompleted && audit.grade >= 1;
@@ -620,9 +692,61 @@ const AuditCard = ({ audit, index }: { audit: EnrichedAudit, index: number }) =>
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="bg-slate-800/50 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 shadow-lg"
+      className={`bg-slate-800/50 backdrop-blur-lg rounded-xl border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 shadow-lg ${
+        viewMode === 'boxes' ? 'p-6' : 'p-4'
+      }`}
     >
-      <div className="flex items-center justify-between mb-4">
+      {viewMode === 'list' ? (
+        // List View Layout
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4 flex-1">
+            <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Briefcase className="w-5 h-5 text-primary-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center space-x-3 mb-1">
+                <span className="text-white font-semibold text-lg truncate">{extractProjectName(audit.group.path)}</span>
+                <div className={`px-2 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor()}`}>
+                  {status}
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 text-sm text-slate-400">
+                <div className="flex items-center space-x-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(audit.createdAt)}</span>
+                </div>
+                {isCompleted && status !== 'Re-Assigned' && status !== 'Pending' && (
+                  <div className="flex items-center space-x-1">
+                    {audit.type === 'given' ? <ArrowUp className="w-4 h-4 text-green-400" /> : <ArrowDown className="w-4 h-4 text-red-400" />}
+                    <span className={audit.type === 'given' ? 'text-green-400' : 'text-red-400'}>
+                      {audit.type === 'given' ? '+' : '-'}{audit.amount !== undefined ? formatXPValue(Math.abs(audit.amount)) : '0'}
+                    </span>
+                  </div>
+                )}
+                {status !== 'Re-Assigned' && (
+                  <div className="flex items-center space-x-1">
+                    {isCompleted ? (isSuccess ? <CheckCircle className="w-4 h-4 text-green-400" /> : <XCircle className="w-4 h-4 text-red-400" />) : <Clock className="w-4 h-4 text-yellow-400" />}
+                    <span className="text-white">{isCompleted ? (Number(audit.grade.toFixed(2)) * 100) + '%': 'Pending'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-2 bg-primary-500/20 rounded-lg hover:bg-primary-500/30 transition-colors"
+            >
+              {isExpanded ? <ChevronUp className="w-4 h-4 text-primary-400" /> : <ChevronDown className="w-4 h-4 text-primary-400" />}
+            </motion.button>
+          </div>
+        </div>
+      ) : (
+        // Box View Layout (Original)
+        <>
+          <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
             <Briefcase className="w-5 h-5 text-primary-400" />
@@ -672,24 +796,27 @@ const AuditCard = ({ audit, index }: { audit: EnrichedAudit, index: number }) =>
         )}
       </div>
 
-      <div
-        className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700/50 cursor-pointer hover:bg-slate-700/30 rounded-lg p-3 transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
-            <Users className="w-4 h-4 text-primary-400" />
-          </div>
-          <div>
-            <div className="text-white font-medium">{getDetailsLabel()}</div>
-            <div className="text-slate-400 text-sm">{isExpanded ? 'Click to hide' : 'Click to view'}</div>
-          </div>
-        </div>
-        <div className="transition-transform duration-200">
-          {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-        </div>
-      </div>
+            <div
+              className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700/50 cursor-pointer hover:bg-slate-700/30 rounded-lg p-3 transition-colors"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
+                  <Users className="w-4 h-4 text-primary-400" />
+                </div>
+                <div>
+                  <div className="text-white font-medium">{getDetailsLabel()}</div>
+                  <div className="text-slate-400 text-sm">{isExpanded ? 'Click to hide' : 'Click to view'}</div>
+                </div>
+              </div>
+              <div className="transition-transform duration-200">
+                {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+              </div>
+            </div>
+        </>
+      )}
 
+      {/* Expanded details section for both view modes */}
       {isExpanded && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}

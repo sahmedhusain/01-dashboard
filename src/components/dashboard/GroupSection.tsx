@@ -14,7 +14,9 @@ import {
   UserPlus,
   ChevronLeft,
   ChevronRight,
-  Star
+  Star,
+  Grid3X3,
+  List
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -265,6 +267,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'boxes' | 'list'>('boxes');
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -717,6 +720,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
             </div>
           </motion.div>
 
+
       {/* Filters */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -736,20 +740,46 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
           />
         </div>
 
-        {/* Status Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-white/70" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="all">All Status</option>
-            <option value="audit">Audit</option>
-            <option value="setup">Setup</option>
-            <option value="working">Working</option>
-            <option value="finished">Finished</option>
-          </select>
+        {/* Status Filter and View Toggle */}
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
+            <Filter className="w-4 h-4 text-white/70" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="all">All Status</option>
+              <option value="audit">Audit</option>
+              <option value="setup">Setup</option>
+              <option value="working">Working</option>
+              <option value="finished">Finished</option>
+            </select>
+          </div>
+          
+          {/* View Mode Toggle */}
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => setViewMode('boxes')}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                viewMode === 'boxes'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-transparent border-white/10 text-white/50 hover:text-white/70 hover:bg-white/5'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                viewMode === 'list'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-transparent border-white/10 text-white/50 hover:text-white/70 hover:bg-white/5'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </motion.div>
 
@@ -758,7 +788,10 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className={viewMode === 'boxes' 
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          : "space-y-4"
+        }
       >
         {getFilteredGroups().map((group: any, index: number) => {
           const userGroup = isMyGroup(group);
@@ -770,12 +803,69 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className={`backdrop-blur-lg rounded-xl p-6 transition-all duration-300 shadow-lg relative ${
+              className={`backdrop-blur-lg rounded-xl transition-all duration-300 shadow-lg relative ${
+                viewMode === 'boxes' ? 'p-6' : 'p-4'
+              } ${
                 userGroup && selectedView === 'all'
                   ? 'bg-emerald-900/30 border-2 border-emerald-500/50 hover:bg-emerald-900/40 hover:border-emerald-400/60 shadow-emerald-500/20' 
                   : 'bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50'
               }`}
             >
+              {viewMode === 'list' ? (
+                // List View Layout
+                <div className="flex items-center justify-between">
+                  {userGroup && selectedView === 'all' && (
+                    <div className="absolute -top-1 -left-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg border border-white/20">
+                      <Crown className="w-3 h-3 inline mr-1" />
+                      <span>{userRole}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-4 flex-1">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      userGroup && selectedView === 'all' ? 'bg-emerald-500/20' : 'bg-primary-500/20'
+                    }`}>
+                      <Users className={`w-5 h-5 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-primary-400'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-3 mb-1">
+                        <span className={`font-semibold text-lg truncate ${userGroup && selectedView === 'all' ? 'text-emerald-100' : 'text-white'}`}>
+                          {extractProjectName(group.path)}
+                        </span>
+                        <div className={`px-2 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(group.status)}`}>
+                          {group.status}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4 text-sm text-slate-400">
+                        <div className="flex items-center space-x-1">
+                          <Crown className="w-4 h-4" />
+                          <span>{getCaptainUsername(group)}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{formatDate(group.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedGroup(selectedGroup === group.id ? null : group.id)}
+                      className={`p-2 rounded-lg hover:bg-opacity-30 transition-colors ${
+                        userGroup && selectedView === 'all' ? 'bg-emerald-500/20 hover:bg-emerald-500/30' : 'bg-primary-500/20 hover:bg-primary-500/30'
+                      }`}
+                    >
+                      {selectedGroup === group.id ? 
+                        <ChevronUp className={`w-4 h-4 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-primary-400'}`} /> : 
+                        <ChevronDown className={`w-4 h-4 ${userGroup && selectedView === 'all' ? 'text-emerald-400' : 'text-primary-400'}`} />
+                      }
+                    </motion.button>
+                  </div>
+                </div>
+              ) : (
+                // Box View Layout (Original)
+                <>
               {/* Your Group Indicator */}
               {userGroup && selectedView === 'all' && (
                 <div className="absolute -top-2 -right-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-white/20">
@@ -936,7 +1026,70 @@ const GroupSection: React.FC<GroupSectionProps> = ({ user }) => {
                 )}
               </motion.div>
             )}
-          </motion.div>
+                </>
+              )}
+
+              {/* Expanded members section for both view modes */}
+              {selectedGroup === group.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 bg-slate-900/50 rounded-lg p-4 border border-slate-700/30"
+                >
+                  {membersLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                      <span className="ml-3 text-slate-400">Loading members...</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2 mb-4 pb-2 border-b border-slate-700/50">
+                        <UserPlus className="w-5 h-5 text-primary-400" />
+                        <span className="text-white font-semibold">
+                          Group Members ({membersData?.group_user?.length || 0})
+                        </span>
+                      </div>
+                      <div className="max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
+                        {membersData?.group_user?.map((member: any) => (
+                          <div key={member.id} className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 hover:bg-slate-800/70 transition-colors">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-gradient-to-br from-primary-500/30 to-primary-600/30 rounded-full flex items-center justify-center border border-primary-500/20">
+                                <span className="text-primary-300 text-sm font-semibold">
+                                  {member.user?.firstName?.[0] || member.user?.login?.[0] || 'U'}
+                                </span>
+                              </div>
+                              <div>
+                                <div className="text-white font-medium">
+                                  {member.user?.login || `User #${member.userId}`}
+                                </div>
+                                {member.user?.firstName && member.user?.lastName && (
+                                  <div className="text-slate-400 text-sm">
+                                    {member.user.firstName} {member.user.lastName}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-slate-400 text-xs">Joined</div>
+                              <div className="text-slate-300 text-sm">{formatDate(member.createdAt)}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {(membersData?.group_user?.length || 0) === 0 && (
+                        <div className="text-center py-8">
+                          <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                          <p className="text-slate-400 text-sm">
+                            No members found in this group
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </motion.div>
           );
         })}
       </motion.div>

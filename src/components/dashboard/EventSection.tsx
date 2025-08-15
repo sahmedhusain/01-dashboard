@@ -16,7 +16,9 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Grid3X3,
+  List
 } from 'lucide-react'
 import { User } from '../../types'
 import LoadingSpinner from '../ui/LoadingSpinner'
@@ -115,6 +117,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'boxes' | 'list'>('boxes');
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -417,6 +420,7 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
             </div>
           </motion.div>
 
+
       {/* Filters */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -436,19 +440,45 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
           />
         </div>
 
-        {/* Status Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-white/70" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="ongoing">Ongoing</option>
-          </select>
+        {/* Status Filter and View Toggle */}
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
+            <Filter className="w-4 h-4 text-white/70" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="ongoing">Ongoing</option>
+            </select>
+          </div>
+          
+          {/* View Mode Toggle */}
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => setViewMode('boxes')}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                viewMode === 'boxes'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-transparent border-white/10 text-white/50 hover:text-white/70 hover:bg-white/5'
+              }`}
+            >
+              <Grid3X3 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                viewMode === 'list'
+                  ? 'bg-white/10 border-white/20 text-white'
+                  : 'bg-transparent border-white/10 text-white/50 hover:text-white/70 hover:bg-white/5'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </motion.div>
 
@@ -457,7 +487,10 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className={viewMode === 'boxes' 
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          : "space-y-4"
+        }
       >
         {getFilteredEvents().map((event: any, index: number) => {
           const eventStatus = getEventStatus(event);
@@ -470,8 +503,59 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="bg-slate-800/50 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 shadow-lg"
+              className={`bg-slate-800/50 backdrop-blur-lg rounded-xl border border-slate-700/50 hover:bg-slate-800/70 hover:border-slate-600/50 transition-all duration-300 shadow-lg ${
+                viewMode === 'boxes' ? 'p-6' : 'p-4'
+              }`}
             >
+              {viewMode === 'list' ? (
+                // List View Layout
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4 flex-1">
+                    <div className="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Calendar className="w-5 h-5 text-primary-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-3 mb-1">
+                        <span className="text-white font-semibold text-lg truncate">{eventName}</span>
+                        <div className={`px-2 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${eventStatus.color}`}>
+                          {eventStatus.status}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4 text-sm text-slate-400">
+                        <div className="flex items-center space-x-1">
+                          <span className="text-slate-500">{moduleName}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{formatDate(event.createdAt)}</span>
+                        </div>
+                        {event.endAt && (
+                          <div className="flex items-center space-x-1">
+                            <Clock className={`w-4 h-4 ${
+                              isEventActive(event.endAt) ? 'text-cyan-400' : 'text-red-400'
+                            }`} />
+                            <span className={isEventActive(event.endAt) ? 'text-cyan-400' : 'text-red-400'}>
+                              {isEventActive(event.endAt) ? 'Ends' : 'Ended'} {formatDateTime(event.endAt)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedEvent(selectedEvent === event.id ? null : event.id)}
+                      className="p-2 bg-primary-500/20 rounded-lg hover:bg-primary-500/30 transition-colors"
+                    >
+                      {selectedEvent === event.id ? <ChevronUp className="w-4 h-4 text-primary-400" /> : <ChevronDown className="w-4 h-4 text-primary-400" />}
+                    </motion.button>
+                  </div>
+                </div>
+              ) : (
+                // Box View Layout (Original)
+                <>
               {/* Event Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
@@ -545,6 +629,76 @@ const EventSection: React.FC<EventSectionProps> = ({ user }) => {
               </div>
 
               {/* Event Participants (Expanded) */}
+              {selectedEvent === event.id && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 rounded-xl p-4 border border-emerald-400/20 backdrop-blur-sm"
+                >
+                  {(participantsLoading || participantUsersLoading) ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
+                      <span className="ml-3 text-slate-400">Loading participants...</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2 mb-4 pb-2 border-b border-slate-700/50">
+                        <UserCheck className="w-5 h-5 text-emerald-400" />
+                        <span className="text-white font-semibold">
+                          Event Participants ({participantsData?.event_user?.length || 0})
+                        </span>
+                      </div>
+                      <div className="max-h-48 overflow-y-auto space-y-2 custom-scrollbar">
+                        {participantsData?.event_user?.map((participant: any) => {
+                          
+                          const userData = participantUsersData?.user_public_view?.find((u: any) => u.id === participant.userId);
+                          
+                          return (
+                            <div key={participant.id} className="flex items-center justify-between bg-white/5 rounded-xl p-3 hover:bg-emerald-500/10 transition-all duration-300 border border-white/5 hover:border-emerald-400/20">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500/30 to-teal-500/30 rounded-full flex items-center justify-center border border-emerald-500/20 backdrop-blur-sm">
+                                  <span className="text-emerald-300 text-sm font-semibold">
+                                    {userData?.firstName?.[0] || userData?.login?.[0] || 'U'}
+                                  </span>
+                                </div>
+                                <div>
+                                  <div className="text-white font-medium">
+                                    {userData?.login || 'Unknown User'}
+                                  </div>
+                                  {userData?.firstName && userData?.lastName ? (
+                                    <div className="text-slate-400 text-sm">
+                                      {userData.firstName} {userData.lastName}
+                                    </div>
+                                  ) : (
+                                    <div className="text-slate-400 text-sm">
+                                      ID: {participant.userId}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-slate-400 text-xs">Joined</div>
+                                <div className="text-slate-300 text-sm">{formatDate(participant.createdAt)}</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {(participantsData?.event_user?.length || 0) === 0 && (
+                        <div className="text-center py-8">
+                          <Users className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                          <p className="text-slate-400 text-sm">No participants found for this event</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+                </>
+              )}
+
+              {/* Expanded participants section for both view modes */}
               {selectedEvent === event.id && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}

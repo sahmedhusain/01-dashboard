@@ -5,8 +5,10 @@ import { User as UserType } from '../../../types'
 import {
   User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, TrendingUp,
   Phone, CreditCard, Heart, Shield, UserCheck,
-  Briefcase, UserCog, Zap
+  Briefcase, UserCog, Zap, ExternalLink, Globe
 } from 'lucide-react'
+import intraIcon from '../../../assets/intra.png'
+import giteaIcon from '../../../assets/Gitea.png'
 import Avatar from '../../ui/Avatar'
 import {
   formatXPValue, formatDate, formatAuditRatio,
@@ -810,6 +812,67 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                       </div>
                     </motion.div>
                   )}
+
+                  {/* External Links Section */}
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.1 }}
+                    className="space-y-3"
+                  >
+                    <h4 className="text-xl font-bold text-white mb-4 flex items-center">
+                      <div className="p-2 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 rounded-lg mr-3">
+                        <Globe className="w-5 h-5 text-cyan-300" />
+                      </div>
+                      01 Platforms
+                    </h4>
+
+                    <div className="grid grid-cols-1 gap-3">
+                      {/* Intra Platform Link */}
+                      <motion.a
+                        href="https://learn.reboot01.com/intra/bahrain/profile"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.2 }}
+                        className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group cursor-pointer"
+                      >
+                        <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
+                          <img src={intraIcon} alt="Intra" className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs text-orange-200/80 font-medium">01 Module Platform</span>
+                          <div className="text-sm text-white font-semibold flex items-center">
+                            Intra
+                            <ExternalLink className="w-3 h-3 ml-1 opacity-60 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </div>
+                      </motion.a>
+
+                      {/* Gitea Platform Link */}
+                      <motion.a
+                        href={`https://learn.reboot01.com/git/${user.login}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.3 }}
+                        className="flex items-center space-x-4 p-4 bg-gradient-to-r from-emerald-500/10 to-green-500/10 rounded-xl border border-emerald-500/20 backdrop-blur-lg hover:from-emerald-500/20 hover:to-green-500/20 hover:border-emerald-400/30 transition-all duration-300 group cursor-pointer"
+                      >
+                        <div className="p-2 bg-gradient-to-r from-emerald-500/30 to-green-500/30 rounded-lg group-hover:from-emerald-400/40 group-hover:to-green-400/40 transition-all duration-300">
+                          <img src={giteaIcon} alt="Gitea" className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs text-emerald-200/80 font-medium">01 Git Platform</span>
+                          <div className="text-sm text-white font-semibold flex items-center">
+                            Gitea
+                            <ExternalLink className="w-3 h-3 ml-1 opacity-60 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </div>
+                      </motion.a>
+                    </div>
+                  </motion.div>
                 </div>
               )}
             </motion.div>

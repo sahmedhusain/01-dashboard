@@ -37,11 +37,25 @@ const ALL_PISCINE_DATA_QUERY = gql`
     piscineTransactions: transaction(
       where: {
         userId: { _eq: $userId }
+        type: { _eq: "xp" }
         _or: [
           { path: { _like: "/bahrain/bh-piscine/%" } }
           { path: { _like: "/bahrain/bh-module/piscine-%" } }
+          { 
+            event: { 
+              _or: [
+                { path: { _like: "/bahrain/bh-piscine/%" } }
+                { path: { _like: "/bahrain/bh-module/piscine-%" } }
+              ]
+            }
+          }
         ]
-        _not: { path: { _like: "%checkpoint%" } }
+        _not: { 
+          _and: [
+            { path: { _like: "%checkpoint%" } }
+            { event: { path: { _like: "%checkpoint%" } } }
+          ]
+        }
       }
       order_by: { createdAt: desc }
     ) {
@@ -50,6 +64,9 @@ const ALL_PISCINE_DATA_QUERY = gql`
       path
       createdAt
       type
+      event {
+        path
+      }
     }
     piscineProgress: progress(
       where: {
@@ -83,6 +100,21 @@ const ALL_PISCINE_DATA_QUERY = gql`
       amount
       path
       createdAt
+    }
+    
+    # Total Piscine XP using same method as DashboardSection
+    totalPiscineXP: transaction_aggregate(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+        event: { path: { _like: "%piscine%" } }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
     }
   }
 `;
@@ -172,6 +204,7 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
 
     const projectAttempts: Record<string, any> = {};
 
+    // First, process all progress data
     progress.forEach((prog: any) => {
       const projectPath = prog.path;
       if (!projectAttempts[projectPath]) {
@@ -189,11 +222,29 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
       projectAttempts[projectPath].attempts.push(prog);
     });
 
+    // Then, process all transactions (including those without progress entries)
     transactions.forEach((transaction: any) => {
-      if (projectAttempts[transaction.path]) {
-        if (transaction.type === 'xp') {
-          projectAttempts[transaction.path].totalXP += transaction.amount || 0;
-        }
+      // Use either transaction.path or transaction.event.path
+      const transactionPath = transaction.path || transaction.event?.path;
+      if (!transactionPath) return; // Skip if no valid path
+      
+      // If this path doesn't exist in projectAttempts, create it
+      if (!projectAttempts[transactionPath]) {
+        const { projectName, sectionName } = extractPathInfo(transactionPath);
+        projectAttempts[transactionPath] = {
+          path: transactionPath,
+          projectName,
+          sectionName,
+          piscineType: extractPiscineType(transactionPath),
+          attempts: [],
+          totalXP: 0,
+          lastDate: transaction.createdAt,
+        };
+      }
+      
+      // Add XP from transactions
+      if (transaction.type === 'xp') {
+        projectAttempts[transactionPath].totalXP += transaction.amount || 0;
       }
     });
 
@@ -230,8 +281,11 @@ const PiscinesDashboard: React.FC<PiscinesDashboardProps> = ({ user }) => {
 
     const totalXpTransactions = projectList.filter(p => p.totalXP > 0).length;
     const totalNonXpTransactions = projectList.length - totalXpTransactions;
+    // Use direct aggregate total XP instead of calculated sum
+    const totalPiscineXP = data.totalPiscineXP?.aggregate?.sum?.amount || 0;
+    
     const overallStats = {
-      totalXP: projectList.reduce((sum, p) => sum + p.totalXP, 0),
+      totalXP: totalPiscineXP, // Use direct aggregate
       totalProjects: projectList.length,
       passedProjects: projectList.filter(p => p.status === 'passed').length,
       passRate: projectList.length > 0 ? (projectList.filter(p => p.status === 'passed').length / projectList.length) * 100 : 0,

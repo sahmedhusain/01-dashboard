@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { useQuery, gql } from '@apollo/client'
 import { User as UserType } from '../../../types'
 import {
   User, Calendar, MapPin, Mail, Award, Star, Trophy, Code, Users, Target, TrendingUp,
@@ -12,6 +13,107 @@ import {
   extractPersonalInfo, formatPhoneNumber, getRankFromLevel
 } from '../../../utils/dataFormatting'
 import { useToken } from '../../../store'
+
+// Piscine data query from PiscinesDashboard
+const PISCINE_DATA_QUERY = gql`
+  query GetUserPiscineData($userId: Int!) {
+    piscineTransactions: transaction(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+        _or: [
+          { path: { _like: "/bahrain/bh-piscine/%" } }
+          { path: { _like: "/bahrain/bh-module/piscine-%" } }
+          { 
+            event: { 
+              _or: [
+                { path: { _like: "/bahrain/bh-piscine/%" } }
+                { path: { _like: "/bahrain/bh-module/piscine-%" } }
+              ]
+            }
+          }
+        ]
+        _not: { 
+          _and: [
+            { path: { _like: "%checkpoint%" } }
+            { event: { path: { _like: "%checkpoint%" } } }
+          ]
+        }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      amount
+      path
+      createdAt
+      type
+      event {
+        path
+      }
+    }
+    piscineProgress: progress(
+      where: {
+        userId: { _eq: $userId }
+        _or: [
+          { path: { _like: "/bahrain/bh-piscine/%" } }  
+          { path: { _like: "/bahrain/bh-module/piscine-%" } }
+        ]
+        _not: { path: { _like: "%checkpoint%" } }
+      }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      grade
+      isDone
+      path
+      createdAt
+    }
+    piscineLevels: transaction(
+      where: {
+        userId: { _eq: $userId },
+        type: { _eq: "level" },
+        _or: [
+          { path: { _like: "/bahrain/bh-piscine/%" } },
+          { path: { _like: "/bahrain/bh-module/piscine-%" } }
+        ]
+      },
+      order_by: { createdAt: desc }
+    ) {
+      id
+      amount
+      path
+      createdAt
+    }
+    
+    # Total Piscine XP using the same method as DashboardSection
+    totalPiscineXP: transaction_aggregate(
+      where: {
+        userId: { _eq: $userId }
+        type: { _eq: "xp" }
+        event: { path: { _like: "%piscine%" } }
+      }
+    ) {
+      aggregate {
+        sum {
+          amount
+        }
+      }
+    }
+  }
+`;
+
+// Piscine configuration from PiscinesDashboard
+const PISCINE_CONFIG = {
+  'go': { name: 'Go Piscine', path: '/bahrain/bh-piscine/', icon: Code, color: 'from-blue-500 to-cyan-500' },
+  'js': { name: 'JavaScript', path: '/bahrain/bh-module/piscine-js/', icon: Zap, color: 'from-yellow-500 to-orange-500' },
+  'flutter': { name: 'Flutter', path: '/bahrain/bh-module/piscine-flutter/', icon: Target, color: 'from-blue-400 to-blue-600' },
+  'rust': { name: 'Rust', path: '/bahrain/bh-module/piscine-rust/', icon: Target, color: 'from-orange-600 to-red-600' },
+  'ai': { name: 'AI/ML', path: '/bahrain/bh-module/piscine-ai/', icon: Zap, color: 'from-purple-500 to-pink-500' },
+  'blockchain': { name: 'Blockchain', path: '/bahrain/bh-module/piscine-blockchain/', icon: Trophy, color: 'from-green-500 to-emerald-500' },
+  'java': { name: 'Java', path: '/bahrain/bh-module/piscine-java/', icon: Code, color: 'from-red-500 to-red-700' },
+  'ux': { name: 'UX Design', path: '/bahrain/bh-module/piscine-ux/', icon: User, color: 'from-pink-500 to-rose-500' },
+  'ui': { name: 'UI Design', path: '/bahrain/bh-module/piscine-ui/', icon: User, color: 'from-indigo-500 to-purple-500' }
+};
 
 interface AnalyticsData {
   user: UserType;
@@ -42,8 +144,20 @@ interface AnalyticsData {
     passed: number;
     failed: number;
     total: number;
-    bhModule?: number;
-    piscines?: number;
+    bhModule?: {
+      total: number;
+      passed: number;
+      failed: number;
+      passRate: number;
+      completed: number;
+      inProgress: number;
+    };
+    piscines?: {
+      total: number;
+      passed: number;
+      failed: number;
+      passRate: number;
+    };
   };
   skills: {
     total: number;
@@ -88,6 +202,113 @@ interface ProfileSectionProps {
 const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
   const userData = analytics.user
   const token = useToken()
+
+  // Query piscine data
+  const { data: piscineData } = useQuery(PISCINE_DATA_QUERY, {
+    variables: { userId: user.id },
+    errorPolicy: 'all',
+    fetchPolicy: 'cache-and-network',
+  });
+
+  // Process piscine data like PiscinesDashboard does
+  const piscineAnalysis = React.useMemo(() => {
+    if (!piscineData) return null;
+
+    const transactions = piscineData.piscineTransactions || [];
+    const progress = piscineData.piscineProgress || [];
+    const levels = piscineData.piscineLevels || [];
+    const totalPiscineXP = piscineData.totalPiscineXP?.aggregate?.sum?.amount || 0;
+    
+    const extractPiscineType = (path: string): string => {
+      if (path.includes('/bahrain/bh-piscine/')) return 'go';
+      const match = path.match(/\/bahrain\/bh-module\/piscine-([^/]+)\//)
+      return match ? match[1] : 'unknown';
+    };
+
+    const projectAttempts: Record<string, any> = {};
+
+    // First, process all progress data
+    progress.forEach((prog: any) => {
+      const projectPath = prog.path;
+      if (!projectAttempts[projectPath]) {
+        projectAttempts[projectPath] = {
+          path: projectPath,
+          piscineType: extractPiscineType(projectPath),
+          attempts: [],
+          totalXP: 0,
+          lastDate: prog.createdAt,
+        };
+      }
+      projectAttempts[projectPath].attempts.push(prog);
+    });
+
+    // Then, process all transactions (including those without progress entries)
+    transactions.forEach((transaction: any) => {
+      // Use either transaction.path or transaction.event.path
+      const transactionPath = transaction.path || transaction.event?.path;
+      if (!transactionPath) return; // Skip if no valid path
+      
+      // If this path doesn't exist in projectAttempts, create it
+      if (!projectAttempts[transactionPath]) {
+        projectAttempts[transactionPath] = {
+          path: transactionPath,
+          piscineType: extractPiscineType(transactionPath),
+          attempts: [],
+          totalXP: 0,
+          lastDate: transaction.createdAt,
+        };
+      }
+      
+      // Add XP from transactions
+      if (transaction.type === 'xp') {
+        projectAttempts[transactionPath].totalXP += transaction.amount || 0;
+      }
+    });
+
+    // Determine project status
+    Object.values(projectAttempts).forEach((project: any) => {
+      const passed = project.attempts.some((p: any) => p.isDone && p.grade >= 1);
+      project.status = passed ? 'passed' : project.attempts.some((p: any) => p.isDone) ? 'failed' : 'in-progress';
+      project.failedAttempts = project.attempts.filter((p: any) => p.isDone && p.grade < 1).length;
+    });
+
+    const projectList = Object.values(projectAttempts);
+
+    // Calculate stats per piscine type
+    const piscineStats: Record<string, any> = {};
+    Object.keys(PISCINE_CONFIG).forEach(type => {
+      const typeProjects = projectList.filter((p: any) => p.piscineType === type);
+      const passedProjects = typeProjects.filter((p: any) => p.status === 'passed').length;
+      const totalXP = typeProjects.reduce((sum: number, p: any) => sum + p.totalXP, 0);
+      
+      const piscineLevelTransactions = levels.filter((level: any) => extractPiscineType(level.path) === type);
+      const latestLevel = piscineLevelTransactions.length > 0 ? piscineLevelTransactions[0].amount : 0;
+
+      if (typeProjects.length > 0) {
+        piscineStats[type] = {
+          totalXP,
+          totalProjects: typeProjects.length,
+          passedProjects,
+          passRate: typeProjects.length > 0 ? (passedProjects / typeProjects.length) * 100 : 0,
+          level: latestLevel,
+        };
+      }
+    });
+
+    // Use direct aggregate total XP instead of calculated sum
+    const overallStats = {
+      totalXP: totalPiscineXP, // Use direct aggregate from GraphQL
+      totalProjects: projectList.length,
+      passedProjects: projectList.filter((p: any) => p.status === 'passed').length,
+      passRate: projectList.length > 0 ? (projectList.filter((p: any) => p.status === 'passed').length / projectList.length) * 100 : 0,
+    };
+
+    return {
+      piscineStats,
+      availablePiscines: Object.keys(piscineStats).filter(type => piscineStats[type].totalProjects > 0),
+      overallStats,
+    };
+  }, [piscineData]);
 
   const getAvatarUrl = () => {
     const fileId = userData.attrs?.['pro-picUploadId'];
@@ -453,7 +674,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                       <CreditCard className="h-5 w-5 text-blue-300" />
                     </div>
                     <div className="flex-1">
-                      <span className="text-xs text-blue-200/80 font-medium">CPR Number</span>
+                      <span className="text-xs text-blue-200/80 font-medium">ID Number</span>
                       <div className="text-sm text-white font-mono font-semibold">{personalInfo.cprNumber}</div>
                     </div>
                   </motion.div>
@@ -739,7 +960,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
 
               {/* Next Level Preview */}
-              <div className="mt-6 pt-4 border-t border-white/20">
+              <div className="mt-6 pt-4 border-white/20">
                 <div className="text-center">
                   <div className="text-white/60 text-xs mb-2">
                     You are <span className="font-bold text-white">{levelsToNextRank}</span> level(s) away from the next rank!
@@ -752,6 +973,73 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   </div>
                 </div>
               </div>
+
+              {/* Academic Achievements within Level Card */}
+              <div className="mt-6 pt-4 border-t border-white/20">
+                <h4 className="text-base font-semibold text-white mb-4 flex items-center justify-center">
+                  <Trophy className="w-5 h-5 mr-2 text-yellow-400" />
+                  Academic Achievements
+                </h4>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Award className="w-4 h-4 text-blue-400" />
+                      <span className="text-white text-sm">Total XP</span>
+                    </div>
+                    <span className="text-blue-400 font-bold text-base">{formatXPValue(analytics.xp.total)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Trophy className="w-4 h-4 text-blue-400" />
+                      <span className="text-white text-sm">Main Module XP</span>
+                    </div>
+                    <span className="text-blue-400 font-bold text-base">{formatXPValue(analytics.xp.bhModule)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Zap className="w-4 h-4 text-green-400" />
+                      <span className="text-white text-sm">Piscines Completed</span>
+                    </div>
+                    <span className="text-green-400 font-bold text-base">{analytics.moduleData?.piscines || 0}</span>
+                  </div>
+                  
+                  {analytics.projects.lastFinished && (
+                    <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Code className="w-4 h-4 text-pink-400" />
+                        <span className="text-white text-sm">Last Finished Project</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-pink-400 font-bold text-base block">{analytics.projects.lastFinished.name}</span>
+                        <span className="text-white/70 text-xs">{formatDate(analytics.projects.lastFinished.completedAt)}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Target className="w-4 h-4 text-green-400" />
+                      <span className="text-white text-sm">Audit Ratio</span>
+                    </div>
+                    <span className="text-green-400 font-bold text-base">{formatAuditRatio(analytics.audits.ratio)}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Star className="w-4 h-4 text-purple-400" />
+                      <span className="text-white text-sm">Projects Completed</span>
+                    </div>
+                    <span className="text-purple-400 font-bold text-base">{analytics.projects.bhModule?.completed || analytics.projects.passed || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Code className="w-4 h-4 text-orange-400" />
+                      <span className="text-white text-sm">Skills Mastered</span>
+                    </div>
+                    <span className="text-orange-400 font-bold text-base">{analytics.skills.total}</span>
+                  </div>
+                </div>
+              </div>
             </motion.div>
 
           </div>
@@ -760,7 +1048,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
 
       {/* Enhanced Key Achievements Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Academic Achievements */}
+        {/* Piscine Achievements */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -769,72 +1057,93 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
         >
           {/* Background pattern */}
           <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
           </div>
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-            <Trophy className="w-5 h-5 mr-2 text-yellow-400" />
-            Academic Achievements
+            <Zap className="w-5 h-5 mr-2 text-blue-400" />
+            Piscine Achievements
           </h3>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Award className="w-5 h-5 text-blue-400" />
-                <span className="text-white text-sm">Total XP</span>
-              </div>
-              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.total)}</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Trophy className="w-5 h-5 text-blue-400" />
-                <span className="text-white text-sm">Main Module XP</span>
-              </div>
-              <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Zap className="w-5 h-5 text-green-400" />
-                <span className="text-white text-sm">Piscines Completed</span>
-              </div>
-              <span className="text-green-400 font-bold">{analytics.moduleData?.piscines || 0}</span>
-            </div>
+            {piscineAnalysis ? (
+              <>
+                {/* Real Piscine Summary Stats */}
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Award className="w-5 h-5 text-blue-400" />
+                    <span className="text-white text-sm">Total Piscine XP</span>
+                  </div>
+                  <span className="text-blue-400 font-bold">{formatXPValue(piscineAnalysis.overallStats.totalXP)}</span>
+                </div>
 
-            {analytics.projects.lastFinished && (
-              <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <Code className="w-5 h-5 text-pink-400" />
-                  <span className="text-white text-sm">Last Finished Project</span>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Code className="w-5 h-5 text-purple-400" />
+                    <span className="text-white text-sm">Total Piscine Projects</span>
+                  </div>
+                  <span className="text-purple-400 font-bold">{piscineAnalysis.overallStats.totalProjects}</span>
                 </div>
-                <div className="text-right">
-                  <span className="text-pink-400 font-bold block">{analytics.projects.lastFinished.name}</span>
-                  <span className="text-white/70 text-xs">{formatDate(analytics.projects.lastFinished.completedAt)}</span>
+
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Trophy className="w-5 h-5 text-green-400" />
+                    <span className="text-white text-sm">Overall Pass Rate</span>
+                  </div>
+                  <span className="text-green-400 font-bold">{Math.round(piscineAnalysis.overallStats.passRate)}%</span>
                 </div>
-              </div>
+
+                {/* Individual Piscines with Level and XP */}
+                {piscineAnalysis.availablePiscines.length > 0 && (
+                  <div className="space-y-3 mt-6">
+                    <h4 className="text-sm font-medium text-white/80 mb-3 flex items-center">
+                      <Star className="w-4 h-4 mr-2 text-yellow-400" />
+                      Piscine Details ({piscineAnalysis.availablePiscines.length} completed)
+                    </h4>
+                    
+                    {piscineAnalysis.availablePiscines.map((piscineType: string, index: number) => {
+                      const config = PISCINE_CONFIG[piscineType as keyof typeof PISCINE_CONFIG];
+                      const stats = piscineAnalysis.piscineStats[piscineType];
+                      if (!config || !stats) return null;
+                      
+                      const IconComponent = config.icon;
+                      
+                      return (
+                        <div key={piscineType} className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                              <IconComponent className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <span className="text-white text-sm font-semibold">{config.name}</span>
+                              <div className="text-xs text-blue-200/70">{stats.totalProjects} projects • {Math.round(stats.passRate)}% success</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-blue-400 font-bold text-sm">Level {stats.level}</span>
+                            <div className="text-xs text-purple-300">{formatXPValue(stats.totalXP)} XP</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* Fallback to analytics data while loading */}
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Award className="w-5 h-5 text-blue-400" />
+                    <span className="text-white text-sm">Total Piscine XP</span>
+                  </div>
+                  <span className="text-blue-400 font-bold">{formatXPValue(analytics.xp.piscines || 0)}</span>
+                </div>
+
+                <div className="text-center py-4">
+                  <div className="text-white/50 text-sm">Loading piscine details...</div>
+                </div>
+              </>
             )}
-
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Target className="w-5 h-5 text-green-400" />
-                <span className="text-white text-sm">Audit Ratio</span>
-              </div>
-              <span className="text-green-400 font-bold">{formatAuditRatio(analytics.audits.ratio)}</span>
-            </div>
-
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Star className="w-5 h-5 text-purple-400" />
-                <span className="text-white text-sm">Projects Completed</span>
-              </div>
-              <span className="text-purple-400 font-bold">{analytics.projects.bhModule.completed}</span>
-            </div>
-
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Code className="w-5 h-5 text-orange-400" />
-                <span className="text-white text-sm">Skills Mastered</span>
-              </div>
-              <span className="text-orange-400 font-bold">{analytics.skills.total}</span>
-            </div>
           </div>
         </motion.div>
 
@@ -908,7 +1217,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 <Target className="w-5 h-5 text-purple-400" />
                 <span className="text-white text-sm">Success Rate</span>
               </div>
-              <span className="text-purple-400 font-bold">{analytics.projects.bhModule.passRate}%</span>
+              <span className="text-purple-400 font-bold">{Math.round(analytics.projects.bhModule?.passRate || 0)}%</span>
             </div>
           </div>
         </motion.div>

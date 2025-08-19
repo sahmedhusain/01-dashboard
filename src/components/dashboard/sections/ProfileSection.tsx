@@ -315,7 +315,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
             >
               {/* Enhanced Contact Information */}
               <div className="space-y-4">
@@ -523,6 +523,74 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                   </motion.div>
                 )}
               </div>
+
+              {/* Enhanced Professional Information */}
+              {(personalInfo.currentEmployer || personalInfo.jobTitle || personalInfo.workExperience || personalInfo.employment) && (
+                <div className="space-y-4">
+                  <motion.h3 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="text-xl font-bold text-white mb-4 flex items-center"
+                  >
+                    <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg mr-3">
+                      <Briefcase className="w-5 h-5 text-blue-300" />
+                    </div>
+                    Professional Information
+                  </motion.h3>
+
+                  {personalInfo.jobTitle && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20 backdrop-blur-lg hover:from-green-500/20 hover:to-emerald-500/20 hover:border-green-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg group-hover:from-green-400/40 group-hover:to-emerald-400/40 transition-all duration-300">
+                        <UserCheck className="h-5 w-5 text-green-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-green-200/80 font-medium">Job Title</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.jobTitle}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {personalInfo.employment && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.9 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
+                        <Briefcase className="h-5 w-5 text-orange-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-orange-200/80 font-medium">Employment Status</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.employment}</div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {personalInfo.currentEmployer && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.0 }}
+                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-violet-500/20 hover:border-purple-400/30 transition-all duration-300 group"
+                    >
+                      <div className="p-2 bg-gradient-to-r from-purple-500/30 to-violet-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-violet-400/40 transition-all duration-300">
+                        <UserCog className="h-5 w-5 text-purple-300" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-xs text-purple-200/80 font-medium">Current Employer</span>
+                        <div className="text-sm text-white font-semibold">{personalInfo.currentEmployer}</div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              )}
             </motion.div>
 
             {/* Enhanced User Roles */}
@@ -564,44 +632,44 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </motion.div>
             )}
 
-            {/* Enhanced Emergency Contact */}
+            {/* Enhanced Emergency Contact - Compact Design */}
             {personalInfo.emergencyContact?.name && (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.3 }}
-                className="bg-gradient-to-br from-red-500/15 to-rose-500/15 backdrop-blur-lg rounded-2xl p-6 border border-red-500/30 shadow-lg shadow-red-500/10 hover:shadow-red-500/20 hover:border-red-400/40 transition-all duration-300"
+                className="bg-gradient-to-br from-red-500/15 to-rose-500/15 backdrop-blur-lg rounded-xl p-4 border border-red-500/30 shadow-lg shadow-red-500/10 hover:shadow-red-500/20 hover:border-red-400/40 transition-all duration-300"
               >
                 <motion.h3 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.4 }}
-                  className="text-xl font-bold text-white mb-4 flex items-center"
+                  className="text-lg font-bold text-white mb-3 flex items-center"
                 >
-                  <div className="p-2 bg-gradient-to-r from-red-500/30 to-rose-500/30 rounded-lg mr-3">
-                    <Heart className="w-5 h-5 text-red-300" />
+                  <div className="p-1.5 bg-gradient-to-r from-red-500/30 to-rose-500/30 rounded-lg mr-2">
+                    <Heart className="w-4 h-4 text-red-300" />
                   </div>
                   Emergency Contact
                 </motion.h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-4 flex-wrap">
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.5 }}
-                    className="bg-white/10 rounded-xl p-4 border border-red-400/20"
+                    className="bg-white/10 rounded-lg px-3 py-2 border border-red-400/20"
                   >
-                    <span className="text-xs text-red-200/80 font-medium">Name</span>
-                    <div className="text-sm text-white font-semibold mt-1">{personalInfo.emergencyContact.name}</div>
+                    <span className="text-xs text-red-200/80 font-medium">Name:</span>
+                    <span className="text-sm text-white font-semibold ml-2">{personalInfo.emergencyContact.name}</span>
                   </motion.div>
                   {personalInfo.emergencyContact.phone && (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1.6 }}
-                      className="bg-white/10 rounded-xl p-4 border border-red-400/20"
+                      className="bg-white/10 rounded-lg px-3 py-2 border border-red-400/20"
                     >
-                      <span className="text-xs text-red-200/80 font-medium">Phone</span>
-                      <div className="text-sm text-white font-mono font-semibold mt-1">{formatPhoneNumber(personalInfo.emergencyContact.phone)}</div>
+                      <span className="text-xs text-red-200/80 font-medium">Phone:</span>
+                      <span className="text-sm text-white font-mono font-semibold ml-2">{formatPhoneNumber(personalInfo.emergencyContact.phone)}</span>
                     </motion.div>
                   )}
                   {personalInfo.emergencyContact.relationship && (
@@ -609,10 +677,10 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1.7 }}
-                      className="bg-white/10 rounded-xl p-4 border border-red-400/20 md:col-span-2"
+                      className="bg-white/10 rounded-lg px-3 py-2 border border-red-400/20"
                     >
-                      <span className="text-xs text-red-200/80 font-medium">Relationship</span>
-                      <div className="text-sm text-white font-semibold mt-1">{personalInfo.emergencyContact.relationship}</div>
+                      <span className="text-xs text-red-200/80 font-medium">Relationship:</span>
+                      <span className="text-sm text-white font-semibold ml-2">{personalInfo.emergencyContact.relationship}</span>
                     </motion.div>
                   )}
                 </div>
@@ -669,82 +737,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                 </motion.div>
               </div>
 
-              {/* Progress Circle */}
-              <div className="flex justify-center mb-6">
-                <div className="relative w-40 h-40">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
-                    {/* Background circle */}
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="70"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.1)"
-                      strokeWidth="12"
-                    />
-                    {/* Progress circle */}
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="70"
-                      fill="none"
-                      stroke="url(#progressGradient)"
-                      strokeWidth="12"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 70}`}
-                      strokeDashoffset={`${2 * Math.PI * 70 * (1 - analytics.level.progress / 100)}`}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                    {/* Gradient definition */}
-                    <defs>
-                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#3B82F6" />
-                        <stop offset="100%" stopColor="#1D4ED8" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-
-                  {/* Center content */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-2xl font-bold text-white mb-1">
-                      {analytics.level.progress.toFixed(1)}%
-                    </div>
-                    <div className="text-xs text-white/60 text-center">
-                      Progress to<br />Level {analytics.level.current + 1}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress Details */}
-              <div className="space-y-4">
-                <div className="bg-white/10 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-white/80 text-sm">Current Progress</span>
-                    <span className="text-primary-400 font-bold">{analytics.level.progressInKB?.toFixed(1) || '0.0'} kB</span>
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
-                    <div
-                      className="bg-gradient-to-r from-primary-400 to-primary-500 h-2 rounded-full transition-all duration-1000"
-                      style={{ width: `${analytics.level.progress}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-white/10 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/80 text-sm">Remaining to Next Level</span>
-                    <span className="text-orange-400 font-bold">{analytics.level.remainingInKB?.toFixed(1) || '100.0'} kB</span>
-                  </div>
-                </div>
-
-                <div className="bg-white/10 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white/80 text-sm">Main Module XP</span>
-                    <span className="text-green-400 font-bold">{formatXPValue(analytics.xp.bhModule)}</span>
-                  </div>
-                </div>
-              </div>
 
               {/* Next Level Preview */}
               <div className="mt-6 pt-4 border-t border-white/20">
@@ -762,80 +754,6 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
               </div>
             </motion.div>
 
-            {/* Enhanced Professional Information - Below Level Container */}
-            {(personalInfo.currentEmployer || personalInfo.jobTitle || personalInfo.workExperience || personalInfo.employment) && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.3 }}
-                className="bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-lg rounded-2xl p-6 border border-slate-600/30 mt-6"
-              >
-                <motion.h3 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.4 }}
-                  className="text-xl font-bold text-white mb-6 flex items-center"
-                >
-                  <div className="p-2 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-lg mr-3">
-                    <Briefcase className="w-5 h-5 text-blue-300" />
-                  </div>
-                  Professional Information
-                </motion.h3>
-
-                <div className="grid grid-cols-1 gap-4">
-                  {personalInfo.jobTitle && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.5 }}
-                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20 backdrop-blur-lg hover:from-green-500/20 hover:to-emerald-500/20 hover:border-green-400/30 transition-all duration-300 group"
-                    >
-                      <div className="p-2 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded-lg group-hover:from-green-400/40 group-hover:to-emerald-400/40 transition-all duration-300">
-                        <UserCheck className="h-5 w-5 text-green-300" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs text-green-200/80 font-medium">Job Title</span>
-                        <div className="text-sm text-white font-semibold">{personalInfo.jobTitle}</div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {personalInfo.employment && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.6 }}
-                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 rounded-xl border border-orange-500/20 backdrop-blur-lg hover:from-orange-500/20 hover:to-amber-500/20 hover:border-orange-400/30 transition-all duration-300 group"
-                    >
-                      <div className="p-2 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-lg group-hover:from-orange-400/40 group-hover:to-amber-400/40 transition-all duration-300">
-                        <Briefcase className="h-5 w-5 text-orange-300" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs text-orange-200/80 font-medium">Employment Status</span>
-                        <div className="text-sm text-white font-semibold">{personalInfo.employment}</div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {personalInfo.currentEmployer && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.7 }}
-                      className="flex items-center space-x-4 p-4 bg-gradient-to-r from-purple-500/10 to-violet-500/10 rounded-xl border border-purple-500/20 backdrop-blur-lg hover:from-purple-500/20 hover:to-violet-500/20 hover:border-purple-400/30 transition-all duration-300 group"
-                    >
-                      <div className="p-2 bg-gradient-to-r from-purple-500/30 to-violet-500/30 rounded-lg group-hover:from-purple-400/40 group-hover:to-violet-400/40 transition-all duration-300">
-                        <UserCog className="h-5 w-5 text-purple-300" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-xs text-purple-200/80 font-medium">Current Employer</span>
-                        <div className="text-sm text-white font-semibold">{personalInfo.currentEmployer}</div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            )}
           </div>
         </div>
       </motion.div>

@@ -33,28 +33,20 @@ A modern, responsive student profile dashboard for the reboot01 platform, built 
 - **Real-time Updates**: Live data synchronization with the platform.
 - **Modern UI**: Glass morphism effects, smooth animations with Framer Motion, and intuitive micro-interactions.
 
-## 📸 Screenshots & GIFs
+## 📸 Screenshots
 
-### Main Dashboard
+### profile Dashboard
 *A central hub showing an overview of user stats, recent projects, and activity.*
 
-![Main Dashboard GIF](https://via.placeholder.com/800x450.gif?text=Main+Dashboard+View)
+![Main Dashboard](/screenshots/localhost_5173_dashboard%20(3).png)
+![Main Dashboard](/screenshots/localhost_5173_dashboard%20(4).png)
 
-### Profile & Statistics
+### Analytics & Statistics
 *Detailed user profile with level progression, skills, and comprehensive statistics.*
 
-![Profile & Statistics GIF](https://via.placeholder.com/800x450.gif?text=Profile+and+Stats+View)
-
-### Audits & Projects
-*Visualizations for audit performance and project success rates.*
-
-![Audits & Projects GIF](https://via.placeholder.com/800x450.gif?text=Audits+and+Projects+View)
-
-### Advanced Search
-*Powerful search and filtering capabilities to easily find users or projects.*
-
-![Advanced Search GIF](https://via.placeholder.com/800x450.gif?text=Advanced+Search+View)
-
+![Analytics & Statistics](/screenshots/localhost_5173_dashboard%20(1).png)
+![Analytics & Statistics](/screenshots/localhost_5173_dashboard%20(2).png)
+![Analytics & Statistics](/screenshots/localhost_5173_dashboard.png)
 
 ## 🛠️ Tech Stack
 

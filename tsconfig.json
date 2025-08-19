@@ -50,7 +50,7 @@
   ],
   "exclude": [
     "node_modules",
-    "dist",
+    "frontend/dist",
     "build",
     "coverage"
   ],

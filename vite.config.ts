@@ -5,6 +5,7 @@ import { URL } from 'node:url'
 export default defineConfig({
   plugins: [react()],
   build: {
+    outDir: 'frontend/dist',
     rollupOptions: {
       output: {
         manualChunks: {

@@ -18,38 +18,82 @@ interface AnalyticsSectionProps {
 }
 
 const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) => {
-  const [clickedElement, setClickedElement] = useState<{ type: string, data: any, x: number, y: number } | null>(null)
-  const [showTooltip, setShowTooltip] = useState(false)
+  const [hoveredElement, setHoveredElement] = useState<{ type: string, data: any, x: number, y: number } | null>(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [xpRange, setXpRange] = useState("all")
   const [auditRange, setAuditRange] = useState("all")
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Handle mouse movement to hide tooltip after delay
-  const handleMouseMovement = useCallback(() => {
-    if (clickedElement && showTooltip) {
-      // Clear existing timeout
-      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-      
-      // Set timeout to hide tooltip after 0.3 seconds of movement
-      hideTimeoutRef.current = setTimeout(() => {
-        setShowTooltip(false)
-        setClickedElement(null)
-      }, 100)
-    }
-  }, [clickedElement, showTooltip])
-
-  // Add global mouse move listener
+  // Track mouse position globally and update tooltip position if it's visible
   useEffect(() => {
-    const handleGlobalMouseMove = () => handleMouseMovement()
-    
-    if (showTooltip) {
-      document.addEventListener('mousemove', handleGlobalMouseMove)
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+      
+      // Update tooltip position in real-time if it's showing
+      if (hoveredElement) {
+        setHoveredElement(prev => prev ? {
+          ...prev,
+          x: e.clientX,
+          y: e.clientY
+        } : null)
+      }
     }
     
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove)
+    document.addEventListener('mousemove', handleMouseMove)
+    return () => document.removeEventListener('mousemove', handleMouseMove)
+  }, [hoveredElement])
+
+  // Handle mouse enter to show tooltip
+  const handleElementMouseEnter = useCallback((elementData: { type: string, data: any }, event?: React.MouseEvent) => {
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+    const mouseX = event?.clientX || mousePosition.x
+    const mouseY = event?.clientY || mousePosition.y
+    setHoveredElement({
+      ...elementData,
+      x: mouseX,
+      y: mouseY
+    })
+  }, [mousePosition])
+
+  // Handle mouse leave to hide tooltip with delay
+  const handleElementMouseLeave = useCallback(() => {
+    hideTimeoutRef.current = setTimeout(() => {
+      setHoveredElement(null)
+    }, 150)
+  }, [])
+
+  // Calculate optimal tooltip position
+  const getTooltipPosition = useCallback((mouseX: number, mouseY: number) => {
+    const tooltipWidth = 320 // max-w-xs is roughly 320px
+    const tooltipHeight = 200 // estimated height
+    const offset = 15
+    const padding = 10
+    
+    let x = mouseX + offset
+    let y = mouseY - tooltipHeight - offset
+    
+    // Adjust if tooltip would go beyond right edge
+    if (x + tooltipWidth > window.innerWidth - padding) {
+      x = mouseX - tooltipWidth - offset
     }
-  }, [showTooltip, handleMouseMovement])
+    
+    // Adjust if tooltip would go beyond top edge
+    if (y < padding) {
+      y = mouseY + offset
+    }
+    
+    // Adjust if tooltip would go beyond bottom edge
+    if (y + tooltipHeight > window.innerHeight - padding) {
+      y = window.innerHeight - tooltipHeight - padding
+    }
+    
+    // Adjust if tooltip would go beyond left edge
+    if (x < padding) {
+      x = padding
+    }
+    
+    return { x, y }
+  }, [])
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -118,12 +162,11 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   }
   const fullAuditProgression = getFullAuditProgression()
 
-  // Central handleElementClick for all charts
-  const handleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
-    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-    setClickedElement(elementData)
-    setShowTooltip(true)
+  // Central hover handlers for all charts
+  const handleElementHover = (elementData: { type: string, data: any }, event?: React.MouseEvent) => {
+    handleElementMouseEnter(elementData, event)
   }
+
 
   // Filter XP data based on selected range
   // Fill missing periods for continuous line
@@ -274,20 +317,18 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                   r="10"
                   fill="transparent"
                   className="hover:fill-emerald-500/20 cursor-pointer transition-all duration-200"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleElementClick({
+                  onMouseEnter={(e: React.MouseEvent) => {
+                    handleElementHover({
                       type: 'xp',
                       data: { 
                         month: point.month, 
                         xp: point.xp,
                         growth: index > 0 ? point.xp - points[index - 1].xp : 0,
                         projects: point.projects || 0
-                      },
-                      x: e.clientX,
-                      y: e.clientY
-                    });
+                      }
+                    }, e);
                   }}
+                  onMouseLeave={() => handleElementMouseLeave()}
                 />
               </g>
             ))
@@ -365,14 +406,14 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
     onTogglePoints,
     size = 400,
     radius = 120,
-    handleElementClick,
+    handleElementHover,
   }: {
     skills: Array<{ name: string; points: number }>
     showRadarPoints: boolean
     onTogglePoints: () => void
     size?: number
     radius?: number
-    handleElementClick?: (elementData: { type: string, data: any, x: number, y: number }) => void
+    handleElementHover?: (elementData: { type: string, data: any }, event?: React.MouseEvent) => void
   }) => {
     const center = size / 2
     const maxPoints = Math.max(...skills.map(s => s.points), 100)
@@ -456,20 +497,18 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                       r="16"
                       fill="transparent"
                       className="hover:fill-yellow-500/20 cursor-pointer transition-all duration-200"
-                      onClick={handleElementClick ? (e: React.MouseEvent) => {
-                        e.stopPropagation();
-                        handleElementClick({
+                      onMouseEnter={handleElementHover ? (e: React.MouseEvent) => {
+                        handleElementHover({
                           type: 'skill',
                           data: { 
                             name: skill.name, 
                             points: skill.points,
                             level: Math.floor(skill.points / 100) + 1,
                             progress: (skill.points % 100)
-                          },
-                          x: e.clientX,
-                          y: e.clientY
-                        });
+                          }
+                        }, e);
                       } : undefined}
+                      onMouseLeave={() => handleElementMouseLeave()}
                     />
                   </g>
                 )
@@ -578,20 +617,18 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                   strokeWidth="3"
                   filter="drop-shadow(0 2px 8px rgba(0,0,0,0.18))"
                   className="hover:opacity-90 cursor-pointer transition-all duration-200"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleElementClick({
+                  onMouseEnter={(e: React.MouseEvent) => {
+                    handleElementHover({
                       type: 'project',
                       data: { 
                         label: segment.label, 
                         value: segment.value,
                         percentage: segment.percentage,
                         total: total
-                      },
-                      x: e.clientX,
-                      y: e.clientY
-                    });
+                      }
+                    }, e);
                   }}
+                  onMouseLeave={() => handleElementMouseLeave()}
                 />
               )
             })}
@@ -842,9 +879,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                     strokeWidth="3"
                     filter="drop-shadow(0 2px 8px rgba(0,0,0,0.18))"
                     className="hover:opacity-90 cursor-pointer transition-all duration-200"
-                    onClick={(e: React.MouseEvent) => {
-                      e.stopPropagation();
-                      handleElementClick({
+                    onMouseEnter={(e: React.MouseEvent) => {
+                      handleElementHover({
                         type: 'project-xp',
                         data: { 
                           name: project.name, 
@@ -853,11 +889,10 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                           totalXP: totalXP,
                           count: project.count,
                           avgXP: Math.round(project.xp / project.count)
-                        },
-                        x: e.clientX,
-                        y: e.clientY
-                      });
+                        }
+                      }, e);
                     }}
+                    onMouseLeave={() => handleElementMouseLeave()}
                   />
                 );
               })}
@@ -926,11 +961,11 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
   const AuditTimelineChart = ({
     data,
-    handleElementClick,
+    handleElementHover,
     auditRange = "all"
   }: {
     data: any[]
-    handleElementClick: (elementData: { type: string, data: any, x: number, y: number }) => void
+    handleElementHover: (elementData: { type: string, data: any }, event?: React.MouseEvent) => void
     auditRange?: string
   }) => {
     const [showGiven, setShowGiven] = useState(true);
@@ -958,15 +993,15 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
       }
     }, [data, auditRange]);
 
-    // Only call handleElementClick if the bar type is visible
-    const safeHandleElementClick = (elementData: { type: string, data: any, x: number, y: number }) => {
+    // Only call handleElementHover if the bar type is visible
+    const safeHandleElementHover = (elementData: { type: string, data: any }, event?: React.MouseEvent) => {
       if (
         (elementData.type === 'audit-given' && !showGiven) ||
         (elementData.type === 'audit-received' && !showReceived)
       ) {
         return;
       }
-      handleElementClick(elementData)
+      handleElementHover(elementData, event)
     }
 
     const maxAuditsGiven = Math.max(...filteredData.map(d => d.audits || d.given || 0), 5)
@@ -1051,18 +1086,16 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                     fill="url(#auditGivenGradient)"
                     rx="3"
                     className="hover:opacity-80 cursor-pointer transition-all duration-200"
-                    onClick={showGiven ? (e: React.MouseEvent) => {
-                      e.stopPropagation();
-                      safeHandleElementClick({
+                    onMouseEnter={showGiven ? (e: React.MouseEvent) => {
+                      safeHandleElementHover({
                         type: 'audit-given',
                         data: { 
                           month: item.month, 
                           auditsGiven: auditsGiven
-                        },
-                        x: e.clientX,
-                        y: e.clientY
-                      });
+                        }
+                      }, e);
                     } : undefined}
+                    onMouseLeave={() => handleElementMouseLeave()}
                   />
                 )}
                 {/* Audits Received (Red) */}
@@ -1075,18 +1108,16 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                     fill="url(#auditReceivedGradient)"
                     rx="3"
                     className="hover:opacity-80 cursor-pointer transition-all duration-200"
-                    onClick={showReceived ? (e: React.MouseEvent) => {
-                      e.stopPropagation();
-                      safeHandleElementClick({
+                    onMouseEnter={showReceived ? (e: React.MouseEvent) => {
+                      safeHandleElementHover({
                         type: 'audit-received',
                         data: { 
                           month: item.month, 
                           auditsReceived: auditsReceived
-                        },
-                        x: e.clientX,
-                        y: e.clientY
-                      });
+                        }
+                      }, e);
                     } : undefined}
+                    onMouseLeave={() => handleElementMouseLeave()}
                   />
                 )}
                 {/* Month labels only if not "Since Start" */}
@@ -1332,13 +1363,13 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   onTogglePoints={() => setShowRadarPoints(v => !v)}
   size={Math.min((window.innerWidth - 64) * 1.15, 1800)}
   radius={Math.min(((window.innerWidth - 64) / 2 - 40) * 1.15, 900)}
-  handleElementClick={handleElementClick}
+  handleElementHover={handleElementHover}
 />
     </div>
   </div>
 </motion.div>
         {/* User Distribution Chart */}
-        <LeaderboardChart handleElementClick={handleElementClick} user={user} />
+        <LeaderboardChart handleElementHover={handleElementHover} handleElementLeave={() => handleElementMouseLeave()} user={user} />
       </div>
 
       {/* Charts Grid */}
@@ -1419,7 +1450,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             </div>
           </div>
           
-          <AuditTimelineChart data={auditRange === "all" ? fullAuditProgression : analytics.audits.monthlyData} handleElementClick={handleElementClick} auditRange={auditRange} />
+          <AuditTimelineChart data={auditRange === "all" ? fullAuditProgression : analytics.audits.monthlyData} handleElementHover={handleElementHover} auditRange={auditRange} />
           
           {/* Legend */}
           <div className="mt-4 flex justify-center space-x-6">
@@ -1449,7 +1480,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(analytics.xp.total, 2)}</div>
+            <div className="text-3xl font-bold text-blue-400 mb-2">{formatXPValue(analytics.xp.total)}</div>
             <div className="text-white/70 text-sm">Total XP Earned</div>
             <div className="text-white/50 text-xs mt-1">
               {analytics.xp.bhModule > analytics.xp.piscines ? 'Module-focused' : 'Piscine-heavy'} learning path
@@ -1474,9 +1505,9 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
           <div className="text-center">
             <div className="text-3xl font-bold text-purple-400 mb-2">
-  <span className="text-green-400">↑ {formatXPValue(analytics.audits.totalUp, 2)}</span>
+  <span className="text-green-400">↑ {formatXPValue(analytics.audits.totalUp)}</span>
   {" - "}
-  <span className="text-red-400">↓ {formatXPValue(analytics.audits.totalDown, 2)}</span>
+  <span className="text-red-400">↓ {formatXPValue(analytics.audits.totalDown)}</span>
 </div>
             <div className="text-white/70 text-sm">Up - Down Points</div>
             <div className="text-white/50 text-xs mt-1">
@@ -1486,99 +1517,105 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         </div>
       </motion.div>
 
-      {/* Click Tooltip Overlay */}
-      {clickedElement && showTooltip && (
+      {/* Hover Tooltip Overlay */}
+      {hoveredElement && (
         <motion.div
+          key={`${hoveredElement.x}-${hoveredElement.y}`}
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.85 }}
+          transition={{ duration: 0.15 }}
           className={`fixed z-50 max-w-xs pointer-events-none shadow-2xl rounded-2xl border-2 p-5
-            ${clickedElement.type === 'xp' ? 'border-blue-400 bg-gradient-to-br from-blue-900/90 via-blue-800/80 to-indigo-900/90' : ''}
-            ${clickedElement.type === 'skill' ? 'border-orange-400 bg-gradient-to-br from-orange-900/90 via-yellow-800/80 to-yellow-900/90' : ''}
-            ${clickedElement.type === 'project' ? 'border-green-400 bg-gradient-to-br from-green-900/90 via-green-800/80 to-emerald-900/90' : ''}
-            ${clickedElement.type === 'project-xp' ? 'border-purple-400 bg-gradient-to-br from-purple-900/90 via-purple-800/80 to-indigo-900/90' : ''}
-            ${(clickedElement.type === 'audit-given' || clickedElement.type === 'audit-received') ? 'border-emerald-400 bg-gradient-to-br from-emerald-900/90 via-emerald-800/80 to-teal-900/90' : ''}
-            ${clickedElement.type === 'distribution' ? 'border-cyan-400 bg-gradient-to-br from-cyan-900/90 via-blue-800/80 to-indigo-900/90' : ''}
+            ${hoveredElement.type === 'xp' ? 'border-blue-400 bg-gradient-to-br from-blue-900/90 via-blue-800/80 to-indigo-900/90' : ''}
+            ${hoveredElement.type === 'skill' ? 'border-orange-400 bg-gradient-to-br from-orange-900/90 via-yellow-800/80 to-yellow-900/90' : ''}
+            ${hoveredElement.type === 'project' ? 'border-green-400 bg-gradient-to-br from-green-900/90 via-green-800/80 to-emerald-900/90' : ''}
+            ${hoveredElement.type === 'project-xp' ? 'border-purple-400 bg-gradient-to-br from-purple-900/90 via-purple-800/80 to-indigo-900/90' : ''}
+            ${(hoveredElement.type === 'audit-given' || hoveredElement.type === 'audit-received') ? 'border-emerald-400 bg-gradient-to-br from-emerald-900/90 via-emerald-800/80 to-teal-900/90' : ''}
+            ${hoveredElement.type === 'distribution' ? 'border-cyan-400 bg-gradient-to-br from-cyan-900/90 via-blue-800/80 to-indigo-900/90' : ''}
           `}
-          style={{
-            left: `${Math.min(clickedElement.x + 10, window.innerWidth - 340)}px`,
-            top: `${Math.max(clickedElement.y - 120, 10)}px`,
-          }}
+          style={(() => {
+            const position = getTooltipPosition(hoveredElement.x, hoveredElement.y)
+            return {
+              left: `${position.x}px`,
+              top: `${position.y}px`,
+              transition: 'left 0.1s ease-out, top 0.1s ease-out'
+            }
+          })()}
         >
-          {clickedElement.type === 'xp' && (
+          {hoveredElement.type === 'xp' && (
             <div className="text-white space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-6 h-6 text-blue-300" />
-                <span className="text-xl font-bold text-blue-200">{clickedElement.data.month} XP</span>
+                <span className="text-xl font-bold text-blue-200">{hoveredElement.data.month} XP</span>
               </div>
               <div className="space-y-1 text-base">
-                <div>Total XP: <span className="text-blue-300 font-bold">{formatXPValue(clickedElement.data.xp)}</span></div>
-                {clickedElement.data.growth !== 0 && (
-                  <div>Growth: <span className={clickedElement.data.growth > 0 ? 'text-green-400' : 'text-red-400'}>
-                    {clickedElement.data.growth > 0 ? '+' : ''}{formatXPValue(clickedElement.data.growth)}
+                <div>Total XP: <span className="text-blue-300 font-bold">{formatXPValue(hoveredElement.data.xp)}</span></div>
+                {hoveredElement.data.growth !== 0 && (
+                  <div>Growth: <span className={hoveredElement.data.growth > 0 ? 'text-green-400' : 'text-red-400'}>
+                    {hoveredElement.data.growth > 0 ? '+' : ''}{formatXPValue(hoveredElement.data.growth)}
                   </span></div>
                 )}
-                <div>Level: <span className="text-yellow-400 font-bold">{Math.floor(clickedElement.data.xp / 1000) + 1}</span></div>
+                <div>Level: <span className="text-yellow-400 font-bold">{Math.floor(hoveredElement.data.xp / 1000) + 1}</span></div>
               </div>
             </div>
           )}
           
-          {clickedElement.type === 'skill' && (
+          {hoveredElement.type === 'skill' && (
             <div className="text-white space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <Activity className="w-6 h-6 text-orange-300" />
-                <span className="text-xl font-bold text-orange-200">{clickedElement.data.name}</span>
+                <span className="text-xl font-bold text-orange-200">{hoveredElement.data.name}</span>
               </div>
               <div className="space-y-1 text-base">
-                <div>Points: <span className="text-orange-300 font-bold">{clickedElement.data.points}%</span></div>
+                <div>Points: <span className="text-orange-300 font-bold">{hoveredElement.data.points}%</span></div>
               </div>
             </div>
           )}
           
-          {clickedElement.type === 'project' && (
+          {hoveredElement.type === 'project' && (
             <div className="text-white space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <PieChart className="w-6 h-6 text-green-300" />
-                <span className="text-xl font-bold text-green-200">Project {clickedElement.data.label}</span>
+                <span className="text-xl font-bold text-green-200">Project {hoveredElement.data.label}</span>
               </div>
               <div className="space-y-1 text-base">
-                <div>Count: <span className="text-white font-bold">{clickedElement.data.value}</span></div>
-                <div>Percentage: <span className="text-blue-400 font-bold">{clickedElement.data.percentage.toFixed(1)}%</span></div>
-                <div>Total Projects: <span className="text-gray-400 font-bold">{clickedElement.data.total}</span></div>
+                <div>Count: <span className="text-white font-bold">{hoveredElement.data.value}</span></div>
+                <div>Percentage: <span className="text-blue-400 font-bold">{hoveredElement.data.percentage.toFixed(1)}%</span></div>
+                <div>Total Projects: <span className="text-gray-400 font-bold">{hoveredElement.data.total}</span></div>
               </div>
             </div>
           )}
           
-          {clickedElement.type === 'audit-given' && (
+          {hoveredElement.type === 'audit-given' && (
   <div className="text-white space-y-2">
     <div className="flex items-center gap-2 mb-1">
       <Target className="w-6 h-6 text-emerald-300" />
       <span className="text-xl font-bold">
         <span className="text-green-300">
-          {clickedElement.data.month} Audit
+          {hoveredElement.data.month} Audit
         </span>
       </span>
     </div>
     <div className="space-y-1 text-base">
-      <div>Given: <span className="text-green-400 font-bold">{clickedElement.data.auditsGiven}</span></div>
+      <div>Given: <span className="text-green-400 font-bold">{hoveredElement.data.auditsGiven}</span></div>
       <div className="text-xs text-gray-400 mt-2">
         Audits you completed
       </div>
     </div>
   </div>
 )}
-{clickedElement.type === 'audit-received' && (
+{hoveredElement.type === 'audit-received' && (
   <div className="text-white space-y-2">
     <div className="flex items-center gap-2 mb-1">
       <Target className="w-6 h-6 text-emerald-300" />
       <span className="text-xl font-bold">
         <span className="text-red-300">
-          {clickedElement.data.month} Audit
+          {hoveredElement.data.month} Audit
         </span>
       </span>
     </div>
     <div className="space-y-1 text-base">
-      <div>Received: <span className="text-red-400 font-bold">{clickedElement.data.auditsReceived}</span></div>
+      <div>Received: <span className="text-red-400 font-bold">{hoveredElement.data.auditsReceived}</span></div>
       <div className="text-xs text-gray-400 mt-2">
         Audits you received from peers
       </div>
@@ -1586,17 +1623,17 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   </div>
 )}
           
-          {clickedElement.type === 'project-xp' && (
+          {hoveredElement.type === 'project-xp' && (
             <div className="text-white space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <PieChart className="w-6 h-6 text-purple-300" />
-                <span className="text-xl font-bold text-purple-200">{clickedElement.data.name}</span>
+                <span className="text-xl font-bold text-purple-200">{hoveredElement.data.name}</span>
               </div>
               <div className="space-y-1 text-base">
-                <div>Total XP: <span className="text-purple-300 font-bold">{formatXPValue(clickedElement.data.xp)}</span></div>
-                <div>Percentage: <span className="text-blue-400 font-bold">{clickedElement.data.percentage.toFixed(1)}%</span></div>
-                <div>Instances: <span className="text-green-400 font-bold">{clickedElement.data.count}</span></div>
-                <div>Avg XP: <span className="text-yellow-400 font-bold">{formatXPValue(clickedElement.data.avgXP)}</span></div>
+                <div>Total XP: <span className="text-purple-300 font-bold">{formatXPValue(hoveredElement.data.xp)}</span></div>
+                <div>Percentage: <span className="text-blue-400 font-bold">{hoveredElement.data.percentage.toFixed(1)}%</span></div>
+                <div>Instances: <span className="text-green-400 font-bold">{hoveredElement.data.count}</span></div>
+                <div>Avg XP: <span className="text-yellow-400 font-bold">{formatXPValue(hoveredElement.data.avgXP)}</span></div>
                 <div className="text-xs text-gray-400 mt-2">
                   XP earned from this project
                 </div>
@@ -1604,14 +1641,14 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
             </div>
           )}
 
-          {clickedElement.type === 'distribution' && (
+          {hoveredElement.type === 'distribution' && (
             <div className="text-white space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <BarChart3 className="w-6 h-6 text-cyan-300" />
                 <span className="text-xl font-bold text-cyan-200">
-                  {clickedElement.data.distributionType === 'level' ? 'Level' : 'Audit Ratio'} Range: {clickedElement.data.range}
+                  {hoveredElement.data.distributionType === 'level' ? 'Level' : 'Audit Ratio'} Range: {hoveredElement.data.range}
                 </span>
-                {clickedElement.data.isCurrentUserRange && (
+                {hoveredElement.data.isCurrentUserRange && (
                   <span className="ml-2 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-xs font-bold">
                     YOUR RANGE
                   </span>
@@ -1621,20 +1658,20 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                 <div className="flex items-center space-x-2">
                   <Users className="w-4 h-4 text-blue-400" />
                   <span>User Count: </span>
-                  <span className="text-blue-300 font-bold">{clickedElement.data.count}</span>
+                  <span className="text-blue-300 font-bold">{hoveredElement.data.count}</span>
                 </div>
-                <div>Percentage: <span className="text-green-400 font-bold">{clickedElement.data.percentage}%</span> of total users</div>
-                <div>Range: <span className="text-purple-300 font-bold">{clickedElement.data.rangeMin} - {clickedElement.data.rangeMax}</span></div>
-                <div>Population: <span className="text-orange-400 font-bold">{clickedElement.data.cohortFilter === 'all' ? 'All Students' : clickedElement.data.cohortFilter}</span></div>
-                <div>Total Users: <span className="text-cyan-400 font-bold">{clickedElement.data.totalUsers}</span></div>
-                {clickedElement.data.isCurrentUserRange && (
+                <div>Percentage: <span className="text-green-400 font-bold">{hoveredElement.data.percentage}%</span> of total users</div>
+                <div>Range: <span className="text-purple-300 font-bold">{hoveredElement.data.rangeMin} - {hoveredElement.data.rangeMax}</span></div>
+                <div>Population: <span className="text-orange-400 font-bold">{hoveredElement.data.cohortFilter === 'all' ? 'All Students' : hoveredElement.data.cohortFilter}</span></div>
+                <div>Total Users: <span className="text-cyan-400 font-bold">{hoveredElement.data.totalUsers}</span></div>
+                {hoveredElement.data.isCurrentUserRange && (
                   <div className="border-t border-emerald-600 pt-2 mt-2">
                     <Crown className="w-4 h-4 inline text-emerald-400 mr-1" />
                     <span className="text-emerald-400 font-semibold">You are in this range!</span>
                   </div>
                 )}
                 <div className="text-xs text-gray-400 mt-2 border-t border-gray-600 pt-2">
-                  Distribution of users by {clickedElement.data.distributionType === 'level' ? 'level progression' : 'audit contribution ratio'}
+                  Distribution of users by {hoveredElement.data.distributionType === 'level' ? 'level progression' : 'audit contribution ratio'}
                 </div>
               </div>
             </div>
@@ -1647,7 +1684,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
 // Completely Redesigned User Distribution Chart Component - From Scratch
 const LeaderboardChart: React.FC<{ 
-  handleElementClick: (data: any) => void
+  handleElementHover: (data: { type: string, data: any }, event?: React.MouseEvent) => void
+  handleElementLeave?: () => void
   user?: {
     id: number
     login: string
@@ -1655,7 +1693,7 @@ const LeaderboardChart: React.FC<{
     lastName?: string
     [key: string]: any
   }
-}> = ({ handleElementClick, user }) => {
+}> = ({ handleElementHover, handleElementLeave, user }) => {
   const [distributionType, setDistributionType] = useState<'level' | 'audit'>('level')
   const [cohortFilter, setCohortFilter] = useState<string>('all')
   
@@ -2172,9 +2210,8 @@ const LeaderboardChart: React.FC<{
                   fill={isCurrentUserRange ? "#10b981" : "#3b82f6"}
                   rx="6"
                   className="transition-all duration-300 hover:opacity-80 cursor-pointer"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect()
-                    handleElementClick({
+                  onMouseEnter={(e) => {
+                    handleElementHover({
                       type: 'distribution',
                       data: {
                         range: range.label,
@@ -2186,11 +2223,10 @@ const LeaderboardChart: React.FC<{
                         rangeMin: range.min,
                         rangeMax: range.max === 999 ? '∞' : range.max,
                         isCurrentUserRange: isCurrentUserRange
-                      },
-                      x: rect.left + rect.width / 2,
-                      y: rect.top
-                    })
+                      }
+                    }, e)
                   }}
+                  onMouseLeave={handleElementLeave || (() => {})}
                 />
                 
                 {/* Value Above Bar */}

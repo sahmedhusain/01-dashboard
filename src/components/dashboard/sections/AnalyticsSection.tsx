@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { defaultTransition, springTransition, fadeInVariants } from '../../../config/motion'
 import { BarChart3, TrendingUp, PieChart, Activity, Target, Users, Crown } from 'lucide-react'
@@ -23,40 +24,84 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   const [xpRange, setXpRange] = useState("all")
   const [auditRange, setAuditRange] = useState("all")
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const autoHideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Track mouse position globally and update tooltip position if it's visible
   useEffect(() => {
+    let animationFrame: number | null = null
+    
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-      
-      // Update tooltip position in real-time if it's showing
-      if (hoveredElement) {
-        setHoveredElement(prev => prev ? {
-          ...prev,
-          x: e.clientX,
-          y: e.clientY
-        } : null)
+      // Cancel previous animation frame to avoid excessive updates
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame)
       }
+      
+      animationFrame = requestAnimationFrame(() => {
+        const newPosition = { x: e.clientX, y: e.clientY }
+        setMousePosition(newPosition)
+        
+        // ALWAYS update tooltip position in real-time when tooltip is showing
+        if (hoveredElement) {
+          setHoveredElement(prev => prev ? {
+            ...prev,
+            x: newPosition.x,
+            y: newPosition.y
+          } : null)
+          
+          // Reset auto-hide timer on mouse movement
+          if (autoHideTimeoutRef.current) {
+            clearTimeout(autoHideTimeoutRef.current)
+          }
+          
+          // Set new auto-hide timer for 3 seconds
+          autoHideTimeoutRef.current = setTimeout(() => {
+            setHoveredElement(null)
+          }, 3000)
+        }
+      })
     }
     
-    document.addEventListener('mousemove', handleMouseMove)
-    return () => document.removeEventListener('mousemove', handleMouseMove)
+    // Add listener to document body to ensure we catch all mouse movements
+    document.body.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => {
+      document.body.removeEventListener('mousemove', handleMouseMove)
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame)
+      }
+      if (autoHideTimeoutRef.current) {
+        clearTimeout(autoHideTimeoutRef.current)
+      }
+    }
   }, [hoveredElement])
 
   // Handle mouse enter to show tooltip
   const handleElementMouseEnter = useCallback((elementData: { type: string, data: any }, event?: React.MouseEvent) => {
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-    const mouseX = event?.clientX || mousePosition.x
-    const mouseY = event?.clientY || mousePosition.y
+    if (autoHideTimeoutRef.current) clearTimeout(autoHideTimeoutRef.current)
+    
+    // Use current mouse position directly - this will be updated by mousemove
+    const currentX = mousePosition.x
+    const currentY = mousePosition.y
+    
     setHoveredElement({
       ...elementData,
-      x: mouseX,
-      y: mouseY
+      x: currentX,
+      y: currentY
     })
+    
+    // Set initial auto-hide timer for 3 seconds
+    autoHideTimeoutRef.current = setTimeout(() => {
+      setHoveredElement(null)
+    }, 3000)
   }, [mousePosition])
 
   // Handle mouse leave to hide tooltip with delay
   const handleElementMouseLeave = useCallback(() => {
+    // Clear auto-hide timer when user leaves element
+    if (autoHideTimeoutRef.current) {
+      clearTimeout(autoHideTimeoutRef.current)
+    }
+    
     hideTimeoutRef.current = setTimeout(() => {
       setHoveredElement(null)
     }, 150)
@@ -64,41 +109,74 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
 
   // Calculate optimal tooltip position
   const getTooltipPosition = useCallback((mouseX: number, mouseY: number) => {
+    // Dynamic tooltip dimensions - more accurate estimates
     const tooltipWidth = 320 // max-w-xs is roughly 320px
-    const tooltipHeight = 200 // estimated height
-    const offset = 15
-    const padding = 10
+    const tooltipHeight = 240 // increased for better estimate
+    const offset = 12 // smaller offset for closer positioning
+    const padding = 8 // reduced padding
     
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth
+    const viewportHeight = window.innerHeight
+    
+    // Primary position: above and to the right of cursor
     let x = mouseX + offset
     let y = mouseY - tooltipHeight - offset
     
-    // Adjust if tooltip would go beyond right edge
-    if (x + tooltipWidth > window.innerWidth - padding) {
+    // Horizontal boundary checks
+    if (x + tooltipWidth > viewportWidth - padding) {
+      // Try positioning to the left of cursor
       x = mouseX - tooltipWidth - offset
+      
+      // If still doesn't fit, center on cursor horizontally
+      if (x < padding) {
+        x = mouseX - (tooltipWidth / 2)
+        // Final safety check for left edge
+        if (x < padding) {
+          x = padding
+        }
+        // Final safety check for right edge  
+        if (x + tooltipWidth > viewportWidth - padding) {
+          x = viewportWidth - tooltipWidth - padding
+        }
+      }
     }
     
-    // Adjust if tooltip would go beyond top edge
+    // Vertical boundary checks
     if (y < padding) {
+      // Position below cursor
       y = mouseY + offset
+      
+      // If tooltip goes below viewport, position above cursor but closer
+      if (y + tooltipHeight > viewportHeight - padding) {
+        y = mouseY - tooltipHeight + 20 // slight overlap to stay close to cursor
+        
+        // Final safety - if still doesn't fit, center vertically on cursor
+        if (y < padding) {
+          y = mouseY - (tooltipHeight / 2)
+          if (y < padding) {
+            y = padding
+          }
+          if (y + tooltipHeight > viewportHeight - padding) {
+            y = viewportHeight - tooltipHeight - padding
+          }
+        }
+      }
     }
     
-    // Adjust if tooltip would go beyond bottom edge
-    if (y + tooltipHeight > window.innerHeight - padding) {
-      y = window.innerHeight - tooltipHeight - padding
+    // Ensure tooltip doesn't go below viewport
+    if (y + tooltipHeight > viewportHeight - padding) {
+      y = viewportHeight - tooltipHeight - padding
     }
     
-    // Adjust if tooltip would go beyond left edge
-    if (x < padding) {
-      x = padding
-    }
-    
-    return { x, y }
+    return { x: Math.round(x), y: Math.round(y) }
   }, [])
 
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+      if (autoHideTimeoutRef.current) clearTimeout(autoHideTimeoutRef.current)
     }
   }, [])
   
@@ -1517,8 +1595,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
         </div>
       </motion.div>
 
-      {/* Hover Tooltip Overlay */}
-      {hoveredElement && (
+      {/* Hover Tooltip Overlay - Rendered as Portal */}
+      {hoveredElement && createPortal(
         <motion.div
           key={`${hoveredElement.x}-${hoveredElement.y}`}
           initial={{ opacity: 0, scale: 0.85 }}
@@ -1536,9 +1614,13 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
           style={(() => {
             const position = getTooltipPosition(hoveredElement.x, hoveredElement.y)
             return {
+              position: 'fixed', // Explicitly set fixed positioning
               left: `${position.x}px`,
               top: `${position.y}px`,
-              transition: 'left 0.1s ease-out, top 0.1s ease-out'
+              transform: 'translateZ(0)', // Force GPU acceleration
+              willChange: 'transform', // Optimize for frequent changes
+              transition: 'left 0.08s cubic-bezier(0.16, 1, 0.3, 1), top 0.08s cubic-bezier(0.16, 1, 0.3, 1)',
+              zIndex: 9999 // Ensure it's on top
             }
           })()}
         >
@@ -1676,7 +1758,8 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
               </div>
             </div>
           )}
-        </motion.div>
+        </motion.div>, 
+        document.body
       )}
     </div>
   )

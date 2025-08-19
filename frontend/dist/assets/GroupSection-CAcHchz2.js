@@ -1,4 +1,4 @@
-import{r as b,j as e,m as o}from"./animation-vendor-BWQ_wUI_.js";import{L as X,b as ue}from"./index-zsyNcCwq.js";import{U as x,w as xe,e as Q,y as w,k as he,D as pe,W as ge,ad as be,_ as fe,$ as Z,Y as ee,ag as te,aa as je,ab as Ne}from"./ui-vendor-B1oIOTiF.js";import{d as f,e as j}from"./apollo-vendor-8AJvV5pX.js";import"./react-vendor-DJG_os-6.js";const ye=j`
+import{r as b,j as e,m as o}from"./animation-vendor-BWQ_wUI_.js";import{L as X,b as ue}from"./index-ChD3UmY2.js";import{U as x,w as xe,e as Q,y as w,k as he,D as pe,W as ge,ad as be,_ as fe,$ as Z,Y as ee,ag as te,aa as je,ab as Ne}from"./ui-vendor-B1oIOTiF.js";import{d as f,e as j}from"./apollo-vendor-8AJvV5pX.js";import"./react-vendor-DJG_os-6.js";const ye=j`
   query GetAllGroups($limit: Int = 50, $offset: Int = 0) {
     group(
       limit: $limit, 

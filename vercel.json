@@ -1,21 +1,6 @@
 {
   "version": 2,
   "name": "graphql-profile-dashboard",
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/dist/$1"
-    }
-  ],
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install",

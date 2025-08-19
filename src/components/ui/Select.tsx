@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(({ className, children, ...props }, ref) => {
+export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(({ className, children, onAnimationStart, onAnimationEnd, onAnimationIteration, onDragStart, onDragEnd, onDrag, onDragEnter, onDragLeave, onDragOver, onDrop, ...props }, ref) => {
   return (
     <motion.select
       whileFocus={{ scale: 1.02, y: -2 }}

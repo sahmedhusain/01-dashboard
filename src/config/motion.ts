@@ -126,7 +126,7 @@ export const getDeviceOptimizedTransition = (): Transition => {
   }
   
   // Check for high refresh rate displays
-  const isHighRefreshRate = window.screen?.refreshRate >= 120 || 
+  const isHighRefreshRate = (window.screen as any)?.refreshRate >= 120 || 
                            window.matchMedia('(min-resolution: 144dpi)').matches
 
   if (isHighRefreshRate && performanceMonitor.getCurrentFPS() >= 90) {
@@ -142,7 +142,7 @@ export const createAdaptiveTransition = (complexity: 'low' | 'medium' | 'high' =
     return { duration: 0.01, ease: 'linear' }
   }
   
-  return getAdaptiveTransition(complexity) as Transition
+  return getAdaptiveTransition(complexity) as unknown as Transition
 }
 
 // Global motion config

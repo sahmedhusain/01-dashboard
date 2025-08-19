@@ -1004,15 +1004,15 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, analytics }) => {
                     <span className="text-green-400 font-bold text-base">{analytics.moduleData?.piscines || 0}</span>
                   </div>
                   
-                  {analytics.projects.lastFinished && (
+                  {(analytics.projects as any)?.lastFinished && (
                     <div className="flex items-center justify-between p-2 bg-white/10 rounded-lg">
                       <div className="flex items-center space-x-2">
                         <Code className="w-4 h-4 text-pink-400" />
-                        <span className="text-white text-sm">Last Finished Project</span>
+                        <span className="text-white text-sm">Recent Completion</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-pink-400 font-bold text-base block">{analytics.projects.lastFinished.name}</span>
-                        <span className="text-white/70 text-xs">{formatDate(analytics.projects.lastFinished.completedAt)}</span>
+                        <span className="text-pink-400 font-bold text-base block">{(analytics.projects as any).lastFinished.name}</span>
+                        <span className="text-white/70 text-xs">{formatDate((analytics.projects as any).lastFinished.completedAt)}</span>
                       </div>
                     </div>
                   )}

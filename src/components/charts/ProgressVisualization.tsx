@@ -41,7 +41,7 @@ const ProgressVisualization: React.FC<ProgressVisualizationProps> = ({
     }
   }
 
-  const getStatusColor = (status: ProgressItem['status']) => {
+  const _getStatusColor = (status: ProgressItem['status']) => {
     switch (status) {
       case 'completed':
         return 'bg-green-500'

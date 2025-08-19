@@ -27,7 +27,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
   const combinedActivities: ActivityItem[] = [
     ...transactions.map(t => ({
       id: t.id,
-      type: t.type.startsWith('skill') ? 'skill' : t.type,
+      type: t.type.startsWith('skill') ? 'skill' as const : 'xp' as const,
       title: t.type.startsWith('skill') ? `Skill: ${t.type.replace('skill_', '')}` : `XP: ${t.path.split('/').pop()}`,
       details: `Received ${formatXPValue(t.amount)} XP`,
       timestamp: t.createdAt,
@@ -35,7 +35,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
     })),
     ...progress.map(p => ({
       id: p.id,
-      type: 'progress',
+      type: 'progress' as const,
       title: `Project: ${p.path.split('/').pop()}`,
       details: p.isDone ? `Completed with grade ${formatGrade(p.grade)}` : 'In Progress',
       timestamp: p.updatedAt,
@@ -44,7 +44,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ transactions, progress, aud
     })),
     ...audits.map(a => ({
       id: a.id,
-      type: 'audit',
+      type: 'audit' as const,
       title: 'Audit',
       details: `Completed audit with grade ${formatGrade(a.grade)}`,
       timestamp: a.endAt,

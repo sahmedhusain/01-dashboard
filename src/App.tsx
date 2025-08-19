@@ -30,14 +30,15 @@ const AppContent: React.FC = () => {
             try {
               const completeUser = await fetchUserData(storedData.user.id, storedData.token)
               login(completeUser, storedData.token)
-            } catch (fetchError) {
+            } catch (_fetchError) {
               localStorage.clear()
             }
           } else if (storedData.token.startsWith('mock-dev-token')) {
             login(storedData.user, storedData.token)
           }
         }
-      } catch (error) {
+      } catch (_error) {
+        // Silent fail - initialization errors are handled gracefully
       } finally {
         setLoading(false)
         setIsInitializing(false)

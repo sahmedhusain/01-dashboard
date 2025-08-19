@@ -567,6 +567,7 @@ const DashboardSection: React.FC<DashboardSectionProps> = ({ user }) => {
       },
       groups: {
         total: totalGroups,
+        captain: captainedGroups,
         captained: captainedGroups,
         member: memberGroups
       },

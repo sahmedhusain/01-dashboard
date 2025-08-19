@@ -33,8 +33,8 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, userData, analy
               ...userData,
               avatarUrl: userData?.attrs?.['pro-picUploadId']
                 ? `https://public.reboot01.com/api/graphql-engine/v1/graphql`
-                : null
-            }}
+                : undefined
+            } as any}
             size="lg"
             className="ring-2 ring-white/20"
           />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, ...props }, ref) => {
+export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, onAnimationStart, onAnimationEnd, onAnimationIteration, onDragStart, onDragEnd, onDrag, onDragEnter, onDragLeave, onDragOver, onDrop, ...props }, ref) => {
   return (
     <motion.input
       whileFocus={{ scale: 1.02, y: -2 }}

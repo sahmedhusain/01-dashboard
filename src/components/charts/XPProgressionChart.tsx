@@ -113,7 +113,7 @@ const XPProgressionChart: React.FC<XPProgressionChartProps> = ({
         const tooltip = g.append("g")
           .attr("id", "tooltip")
 
-        const tooltipBg = tooltip.append("rect")
+        const _tooltipBg = tooltip.append("rect")
           .attr("x", xScale(new Date(d.date)) + 10)
           .attr("y", yScale(d.cumulativeXP) - 40)
           .attr("width", 160)

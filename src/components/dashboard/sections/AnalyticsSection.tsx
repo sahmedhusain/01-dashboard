@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { defaultTransition, springTransition, fadeInVariants } from '../../../config/motion'
+import { defaultTransition } from '../../../config/motion'
 import { BarChart3, TrendingUp, PieChart, Activity, Target, Users, Crown } from 'lucide-react'
 import { useQuery } from '@apollo/client'
 import { formatXPValue } from '../../../utils/dataFormatting'
@@ -18,7 +18,7 @@ interface AnalyticsSectionProps {
   }
 }
 
-const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) => {
+const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user: _user }) => {
   const [hoveredElement, setHoveredElement] = useState<{ type: string, data: any, x: number, y: number } | null>(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [xpRange, setXpRange] = useState("all")
@@ -75,7 +75,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   }, [hoveredElement])
 
   // Handle mouse enter to show tooltip
-  const handleElementMouseEnter = useCallback((elementData: { type: string, data: any }, event?: React.MouseEvent) => {
+  const handleElementMouseEnter = useCallback((elementData: { type: string, data: any }, _event?: React.MouseEvent) => {
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
     if (autoHideTimeoutRef.current) clearTimeout(autoHideTimeoutRef.current)
     
@@ -481,7 +481,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   const SkillsRadarChart = ({
     skills,
     showRadarPoints,
-    onTogglePoints,
+    onTogglePoints: _onTogglePoints,
     size = 400,
     radius = 120,
     handleElementHover,
@@ -1221,7 +1221,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                 strokeWidth="2"
                 strokeDasharray="8 4"
                 points={
-                  data.map((item, index) => {
+                  data.map((_, index) => {
                     const x = padding + (index + 0.1) * ((width - 2 * padding) / data.length) + ((width - 2 * padding) / data.length) * 0.175;
                     const y = height - padding - (avgGiven / maxAudits) * (height - 2 * padding);
                     return `${x},${y}`;
@@ -1247,7 +1247,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
                 strokeWidth="2"
                 strokeDasharray="8 4"
                 points={
-                  data.map((item, index) => {
+                  data.map((_, index) => {
                     const x = padding + (index + 0.1) * ((width - 2 * padding) / data.length) + ((width - 2 * padding) / data.length) * 0.525;
                     const y = height - padding - (avgReceived / maxAudits) * (height - 2 * padding);
                     return `${x},${y}`;
@@ -1447,7 +1447,7 @@ const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ analytics, user }) 
   </div>
 </motion.div>
         {/* User Distribution Chart */}
-        <LeaderboardChart handleElementHover={handleElementHover} handleElementLeave={() => handleElementMouseLeave()} user={user} />
+        <LeaderboardChart handleElementHover={handleElementHover} handleElementLeave={() => handleElementMouseLeave()} user={_user} />
       </div>
 
       {/* Charts Grid */}
@@ -1776,7 +1776,7 @@ const LeaderboardChart: React.FC<{
     lastName?: string
     [key: string]: any
   }
-}> = ({ handleElementHover, handleElementLeave, user }) => {
+}> = ({ handleElementHover, handleElementLeave, user: _user }) => {
   const [distributionType, setDistributionType] = useState<'level' | 'audit'>('level')
   const [cohortFilter, setCohortFilter] = useState<string>('all')
   
@@ -2013,13 +2013,13 @@ const LeaderboardChart: React.FC<{
 
   // Find current user's data from the processed users
   const currentUserData = React.useMemo(() => {
-    if (!user || !allUsers.length) return null
+    if (!_user || !allUsers.length) return null
     
-    const userData = allUsers.find(u => u.id === user.id)
+    const userData = allUsers.find(u => u.id === _user.id)
     if (userData) return userData
     
     // If not found in bhModuleUsers, look in allUsersWithEvents
-    const fallbackUser = leaderboardData?.allUsersWithEvents?.find((u: any) => u.id === user.id)
+    const fallbackUser = leaderboardData?.allUsersWithEvents?.find((u: any) => u.id === _user.id)
     if (fallbackUser) {
       return {
         id: fallbackUser.id,
@@ -2031,7 +2031,7 @@ const LeaderboardChart: React.FC<{
     }
     
     return null
-  }, [user, allUsers, leaderboardData])
+  }, [_user, allUsers, leaderboardData])
 
   // Find current user's cohort (exact copy from LeaderboardSection)
   const currentUserCohort = React.useMemo(() => {

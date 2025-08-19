@@ -11,6 +11,8 @@ import { getStoredAuthData, fetchUserData } from './utils/auth'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 import ErrorBoundary from './components/ErrorBoundary'
 import { performanceMonitor } from './utils/performanceMonitor'
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const AppContent: React.FC = () => {
   const isAuthenticated = useIsAuthenticated()
@@ -154,6 +156,8 @@ const App: React.FC = () => {
           >
             <UserProvider>
               <AppContent />
+              <Analytics />
+              <SpeedInsights />
             </UserProvider>
           </RefreshProvider>
         </ThemeProvider>

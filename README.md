@@ -1,4 +1,4 @@
-# 01 Profile Dashboard
+# 01 Dashboard
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React Version](https://img.shields.io/badge/react-19-blue.svg)](https://reactjs.org/)

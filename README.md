@@ -12,6 +12,12 @@ Built with modern web technologies, this dashboard connects to the reboot01 plat
 
 Think of it as your personal learning analytics platform - showing you not just what you've done, but helping you understand patterns in your progress, compare your performance with peers, and make data-driven decisions about your learning path.
 
+## 🌐 Live
+
+**Try it out now:** [01-dashboard-kappa.vercel.app/](https://01-dashboard-kappa.vercel.app/)
+
+Experience the dashboard live with your reboot01 credentials!
+
 ## 📋 Table of Contents
 
 - [Features](#-features)

@@ -1,10 +1,47 @@
-# 01 Dashboard
+# 01 Dashboard 🚀📊
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![React Version](https://img.shields.io/badge/react-19-blue.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/tailwind_css-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![GraphQL](https://img.shields.io/badge/-GraphQL-E10098?style=for-the-badge&logo=graphql&logoColor=white)](https://graphql.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![GraphQL](https://img.shields.io/badge/GraphQL-E10098?logo=graphql&logoColor=white)](https://graphql.org/)
+[![Apollo Client](https://img.shields.io/badge/Apollo_Client-311C87?logo=apollographql&logoColor=white)](https://www.apollographql.com/docs/react/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
+
+---
+
+<p align="center">
+  <strong>01 Profile Dashboard</strong><br/>
+  <em>Your personal command center for reboot01 learning analytics.</em>
+</p>
+
+<p align="center">
+  Progress insights • XP analytics • Audit performance • Real-time sync • Beautiful charts
+</p>
+
+<p align="center">
+  <a href="#-live">Live Demo</a> •
+  <a href="#-what-makes-this-dashboard-special">Highlights</a> •
+  <a href="#-the-technology-behind-the-magic">Tech Stack</a> •
+  <a href="#-lets-get-you-set-up">Get Started</a> •
+  <a href="#-screenshots">Screenshots</a>
+</p>
+
+<p align="left">
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="34" alt="React"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" width="34" alt="TypeScript"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/graphql/graphql-plain.svg" width="34" alt="GraphQL"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/apollographql/apollographql-original.svg" width="34" alt="Apollo Client"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vitejs/vitejs-original.svg" width="34" alt="Vite"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-original.svg" width="34" alt="Tailwind CSS"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vercel/vercel-original.svg" width="34" alt="Vercel"/>
+</p>
+
+---
+
+<details>
+<summary><strong>Why this dashboard exists (read the story)</strong></summary>
 
 Hey there! 👋 Welcome to the **01 Profile Dashboard** - your personal command center for tracking progress at reboot01. This isn't just another dashboard; it's a comprehensive tool that helps students like you understand their learning journey, celebrate achievements, and identify areas for growth.
 
@@ -12,11 +49,25 @@ Built with modern web technologies, this dashboard connects to the reboot01 plat
 
 Think of it as your personal learning analytics platform - showing you not just what you've done, but helping you understand patterns in your progress, compare your performance with peers, and make data-driven decisions about your learning path.
 
+</details>
+
+## ⭐ Key Highlights
+
+- **Clear learning analytics:** XP, projects, audits, and trends presented in a way that’s easy to read and compare over time.
+- **GraphQL + Apollo Client:** Structured queries with caching and request batching to keep the dashboard responsive.
+- **Responsive UI:** Works well across screen sizes, with charts and interactions that stay smooth.
+- **JWT auth flow:** Token-based login with refresh handling and careful credential usage.
+- **Vercel-friendly setup:** Simple deployment workflow with environment-based configuration.
+
+---
+
 ## 🌐 Live
 
 **Try it out now:** [01-dashboard-kappa.vercel.app/](https://01-dashboard-kappa.vercel.app/)
 
 Experience the dashboard live with your reboot01 credentials!
+
+---
 
 ## 📋 Table of Contents
 
@@ -32,79 +83,90 @@ Experience the dashboard live with your reboot01 credentials!
 - [Author](#-author)
 - [Acknowledgments](#-acknowledgments)
 
-## ✨ What Makes This Dashboard Special
+---
+
+<details open>
+<summary><strong>✨ What Makes This Dashboard Special</strong></summary>
 
 ### 🎯 Core Learning Analytics
 
-**Deep Progress Insights**
-Ever wondered how you're really doing in your coding journey? This dashboard doesn't just show numbers - it tells a story. With over 30 specialized GraphQL queries, we pull in every piece of data about your learning: from the projects you've tackled, to the peer reviews you've given and received, to your XP gains over time. It's like having a personal learning coach that knows your every move.
+**Deep Progress Insights**  
+The dashboard aggregates your reboot01 activity using 30+ GraphQL queries—projects, audits, XP, and timelines—so you can see your progress in one place.
 
-**XP Tracking That Actually Helps**
-XP isn't just points - it's your effort made visible. We break down your XP by project type, difficulty level, and time periods. Want to know if you're getting better at algorithms? Or if you're spending too much time on easy projects? The dashboard shows you exactly where your XP comes from and helps you optimize your learning strategy.
+**XP Tracking (with useful breakdowns)**  
+XP is broken down by project type, difficulty, and time range. This makes it easier to spot where most of your effort goes and how your activity changes over time.
 
-**Audit Analytics You Can Learn From**
-Peer code reviews are crucial at reboot01, and this dashboard makes them actionable. See your audit ratio (how you perform as both reviewer and reviewee), track your improvement over time, and identify patterns in your feedback. Are you consistently catching bugs in others' code? Are you receiving constructive feedback? The data helps you become a better developer and reviewer.
+**Audit Analytics**  
+Track audit ratio and review activity to understand how you perform as both reviewer and reviewee. The goal here is clarity: what’s happening, when, and how it trends.
 
-**Smart Project Analysis**
-Projects are the heart of reboot01 learning. We analyze your completion patterns, success rates across different difficulty levels, and even time spent on various project types. Are you stronger in front-end or back-end? Do you struggle with certain technologies? The dashboard helps you identify your strengths and areas for growth.
+**Project Analysis**  
+View completion patterns and outcomes across different project types and difficulty levels to highlight strengths and areas to improve.
 
 ### ⚡ Performance That Feels Instant
 
-**Intelligent Data Management**
-Nobody likes waiting for dashboards to load. That's why we built smart caching that remembers what you've viewed and serves it up instantly. Apollo Client's field-level caching means your frequently accessed data loads in milliseconds, not seconds.
+**Caching & re-use**  
+Apollo Client caching helps reduce repeated fetching, so returning to pages feels faster.
 
-**Optimized Network Usage**
-We batch multiple data requests together, so instead of making 20 separate calls to the API, we make 2-3 smart ones. This reduces load times and makes the whole experience feel snappy, even on slower connections.
+**Request batching**  
+Multiple queries are batched where possible to reduce network overhead and improve perceived speed.
 
-**Built-in Performance Monitoring**
-The dashboard watches its own performance. If queries are running slow, we log it and help you understand what's happening. This transparency means you always know the system is working optimally.
-
-**Error Handling That Doesn't Break Your Flow**
-Things go wrong sometimes - network issues, API timeouts, you name it. Our robust error handling catches these gracefully, retries failed requests automatically, and shows helpful messages instead of cryptic errors. Your learning flow stays uninterrupted.
+**Graceful error handling**  
+Common issues (timeouts, network drops) are handled with retries and readable messages instead of breaking the experience.
 
 ### 🎨 User Experience That Delights
 
-**Security You Can Trust**
-Your reboot01 credentials are sacred. We use industry-standard JWT authentication with automatic token refresh, so you stay logged in securely without constant re-authentication. Your data is protected with the same security reboot01 uses.
+**Authentication you can trust**  
+JWT-based login with refresh handling keeps sessions stable without frequent re-logins.
 
-**Charts That Tell Stories**
-Forget boring bar graphs. Our custom SVG visualizations bring your data to life with interactive charts that respond to your clicks and hovers. Watch your XP climb over time, see your project completion patterns, and understand your audit performance trends - all in beautiful, responsive visuals.
+**Charts that support the data**  
+Custom SVG charts visualize XP trends, audit performance, and project patterns in a way that stays readable on different screen sizes.
 
-**Works Everywhere, Looks Great Everywhere**
-Whether you're on your laptop during a study session, checking progress on your phone during commute, or reviewing stats on a tablet, the dashboard adapts perfectly. Built mobile-first with Material Design 3 principles, it feels native on every device.
+**Responsive layout**  
+Built mobile-first and designed to work comfortably on desktop, tablet, and phone.
 
-**Real-Time Sync**
-As you complete projects, receive audits, or gain XP on the reboot01 platform, this dashboard updates automatically. No need to refresh - your progress appears as it happens.
+**Real-time sync**  
+As your reboot01 data changes (projects, XP, audits), the dashboard updates without needing a manual refresh.
 
-**Modern Design That Inspires**
-We didn't just make it functional - we made it beautiful. Glass morphism effects create depth, Framer Motion animations add delightful micro-interactions, and the overall design motivates you to keep learning. Plus, full dark mode support means you can learn comfortably anytime, day or night.
+**UI polish**  
+Motion and micro-interactions are used sparingly to keep the interface clean while still feeling modern.
 
-## 🛠️ The Technology Behind the Magic
+</details>
 
-We chose our tech stack carefully to create something that feels fast, reliable, and delightful to use. Here's what powers your dashboard:
+---
+
+<details>
+<summary><strong>🛠️ The Technology Behind the Magic</strong></summary>
+
+This project uses a modern front-end stack and a GraphQL data layer to keep the UI responsive and the codebase maintainable:
 
 ### 🎨 Frontend Foundation
-- **React 19**: The latest and greatest React, giving us cutting-edge features like the new compiler and improved concurrent rendering for buttery-smooth interactions
-- **Vite**: Lightning-fast development server and build tool that makes development feel instant - no more waiting for builds!
-- **Tailwind CSS**: Utility-first CSS framework that lets us build beautiful, responsive designs without writing custom CSS. Everything is styled consistently and looks great out of the box.
+- **React 19**: Component-based UI with modern rendering features for smooth interactions
+- **Vite**: Fast dev server and build tooling
+- **Tailwind CSS**: Utility-first styling for consistent, responsive layouts
 
 ### 🔄 Smart Data Management
 - **React Context API**: Simple, effective state management for user preferences and app-wide settings
-- **Apollo Client**: Industry-leading GraphQL client that handles all our data fetching, caching, and synchronization. It's incredibly smart about when to fetch fresh data and when to use cached results.
+- **Apollo Client**: GraphQL client for queries, caching, and synchronization
 
 ### 📊 GraphQL & Performance
-- **Apollo Client Advanced Features**: We leverage Apollo's intelligent caching with field-level policies, so your dashboard remembers what you've viewed and serves it up instantly. Query batching reduces network requests, and built-in performance monitoring ensures everything runs smoothly.
+- **Apollo Client Advanced Features**: Apollo's caching and query batching help keep data fresh and network usage efficient.
 
 ### ✨ Polish & User Experience
-- **Framer Motion**: Powers all the smooth animations and micro-interactions that make the dashboard feel alive and responsive
+- **Framer Motion**: Motion and micro-interactions for UI polish
 - **Custom SVG Charts**: We built our own chart components using SVG for crisp, scalable visualizations that work perfectly on any screen size
-- **JWT Authentication**: Secure token-based auth with automatic refresh, so you stay logged in without annoying re-authentication prompts
+- **JWT Authentication**: Token-based auth with refresh handling
 - **Lucide React Icons**: Beautiful, consistent iconography that scales perfectly and matches our design system
 
 ### 🚀 Deployment Ready
-- **Vercel-Optimized**: Configured for instant deployment on Vercel with proper build settings, environment variable handling, and performance optimizations
+- **Vercel**: Deployment with environment variable configuration
 
-## 🗄 reboot01 Database Schema & GraphQL API
+ 
+</details>
+
+---
+
+<details>
+<summary><strong>🗄 reboot01 Database Schema & GraphQL API (ERD + Queries)</strong></summary>
 
 The reboot01 platform uses a PostgreSQL database with a comprehensive GraphQL API. This section explains the actual database structure, relationships, and how to query the data using GraphQL.
 
@@ -491,6 +553,11 @@ For complete database structure and relations, see:
 
 This ERD and query examples accurately reflect the reboot01 platform's actual database structure and GraphQL API capabilities.
 
+ 
+</details>
+
+---
+
 ## 📸 Screenshots
 
 ### Profile Dashboard
@@ -505,6 +572,8 @@ This ERD and query examples accurately reflect the reboot01 platform's actual da
 ![Analytics & Statistics](/screenshots/localhost_5173_dashboard%20(1).png)
 ![Analytics & Statistics](/screenshots/localhost_5173_dashboard%20(2).png)
 ![Analytics & Statistics](/screenshots/localhost_5173_dashboard.png)
+
+---
 
 ## 🏗️ Project Structure
 
@@ -528,13 +597,15 @@ src/
 └── utils/                # Utility functions and helpers
 ```
 
+---
+
 ## 🚀 Let's Get You Set Up!
 
-Getting started with your personal dashboard is straightforward. We'll have you up and running in just a few minutes!
+Getting started is straightforward.
 
 ### 📋 What You'll Need First
 
-Before we begin, make sure you have these ready:
+Make sure you have the following:
 - **Node.js 18 or higher** - The runtime that powers modern JavaScript applications
 - **npm** - Comes bundled with Node.js, handles package management
 - **reboot01 account** - You'll need your login credentials to access the platform data
@@ -552,13 +623,13 @@ This downloads all the project files to your computer and navigates into the pro
 ```bash
 ./run.sh dev
 ```
-Our handy script takes care of everything - installing dependencies, setting up the environment, and starting the development server. You'll see your dashboard come to life!
+The script installs dependencies, prepares the environment, and starts the development server.
 
 **3. Open Your Dashboard**
 Point your browser to `http://localhost:5173` - that's where your dashboard lives during development.
 
 **4. Sign In**
-Use your reboot01 username and password to log in. The dashboard connects directly to the reboot01 platform to fetch your data securely.
+Log in using your reboot01 credentials. The dashboard fetches your data through the reboot01 API.
 
 ### 🎛️ Available Commands
 
@@ -574,7 +645,10 @@ The `run.sh` script is your command center for common tasks:
 
 **Pro tip**: During development, keep `./run.sh dev` running in one terminal. It automatically reloads when you make changes - no need to restart manually!
 
-## 🔧 Configuration & Customization
+---
+
+<details>
+<summary><strong>🔧 Configuration & Customization</strong></summary>
 
 The dashboard is designed to be highly configurable without touching the code. Everything is controlled through environment variables, making it easy to customize for different environments or personal preferences.
 
@@ -631,6 +705,11 @@ Each environment can have its own configuration, so you can safely test changes 
 - **Documentation**: Check the comments in `.env.example` for detailed explanations
 - **Testing Changes**: Restart your dev server after configuration changes to see them take effect
 
+ 
+</details>
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -643,18 +722,25 @@ Contributions are welcome! Please follow these steps:
 6.  Push to the branch (`git push origin feature/your-feature-name`).
 7.  Submit a pull request.
 
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE.md](LICENSE.md) file for details.
+
+---
 
 ## 👨‍💻 Author
 
 **Sayed Ahmed Husain**
 - Email: [sayedahmed97.sad@gmail.com](mailto:sayedahmed97.sad@gmail.com)
 
-## 🙏 Acknowledgments
+---
 
-This dashboard wouldn't have been possible without the incredible support and resources from these amazing communities and platforms. A special thank you to everyone who contributed to making this learning journey possible!
+<details>
+<summary><strong>🙏 Acknowledgments</strong></summary>
+
+Thanks to the communities and tools below—this project relies on their documentation and open-source work.
 
 ### 🚀 **reboot01 Platform**
 - **The Heart of Our Data**: Huge gratitude to the reboot01 platform for providing the comprehensive GraphQL API that powers all our analytics. Your well-structured database and thoughtful API design made building this dashboard an absolute pleasure.
@@ -709,7 +795,7 @@ Material Design 3 has been our guiding light for creating beautiful, accessible,
 - **ESLint & Prettier**: Code quality and consistency tools
 
 ### 🌟 **Open Source Community**
-A massive thank you to all the maintainers, contributors, and communities behind these open-source projects. Your dedication to creating high-quality, free tools empowers developers worldwide to build amazing things.
+Thanks to the maintainers and contributors behind these open-source projects.
 
 ### 📚 **Learning Resources**
 - **Reboot01 Documentation**: Comprehensive guides that helped us understand the platform
@@ -723,3 +809,5 @@ To the reboot01 Bahrain campus community for the inspiration and feedback during
 **Built with ❤️ for the reboot01 community.**
 
 **⭐ If you find this project useful, please give it a star!**
+
+</details>
